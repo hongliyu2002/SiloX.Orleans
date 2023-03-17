@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "resources", "resources", "{A8C94635-CF84-42F5-92AC-376FB5E736AB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3365796E-DC4C-4D45-AA70-83D5982B013E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{A550815D-2BE7-408D-BB01-50582C101C79}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "icons", "icons", "{FCE1AEE9-E834-4F94-B7FC-0179C25FD537}"
+	ProjectSection(SolutionItems) = preProject
+		resources\icons\logo_128.png = resources\icons\logo_128.png
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.Modules.Orleans.Server", "src\Fluxera.Extensions.Hosting.Modules.Orleans.Server\Fluxera.Extensions.Hosting.Modules.Orleans.Server.csproj", "{98333171-E519-467A-AA23-70D4C10F34F4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FCE1AEE9-E834-4F94-B7FC-0179C25FD537} = {A8C94635-CF84-42F5-92AC-376FB5E736AB}
+		{98333171-E519-467A-AA23-70D4C10F34F4} = {3365796E-DC4C-4D45-AA70-83D5982B013E}
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{98333171-E519-467A-AA23-70D4C10F34F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98333171-E519-467A-AA23-70D4C10F34F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98333171-E519-467A-AA23-70D4C10F34F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98333171-E519-467A-AA23-70D4C10F34F4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
