@@ -19,11 +19,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.AdoNet", "src\Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.AdoNet\Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.AdoNet.csproj", "{99896B59-C4C7-48C3-BB1B-B45120D0945E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.Modules.Orleans.Reminder", "src\Fluxera.Extensions.Hosting.Modules.Orleans.Reminder\Fluxera.Extensions.Hosting.Modules.Orleans.Reminder.csproj", "{CC7CC142-FA42-410C-89DE-CA5648910B20}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.Modules.Orleans.Reminders", "src\Fluxera.Extensions.Hosting.Modules.Orleans.Reminders\Fluxera.Extensions.Hosting.Modules.Orleans.Reminders.csproj", "{CC7CC142-FA42-410C-89DE-CA5648910B20}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.Local", "src\Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.Local\Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.Local.csproj", "{006331C7-56EE-4B76-9C58-C2D3DB8A4013}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.Modules.Orleans.Reminder.Local", "src\Fluxera.Extensions.Hosting.Modules.Orleans.Reminder.Local\Fluxera.Extensions.Hosting.Modules.Orleans.Reminder.Local.csproj", "{72777DA7-CF6A-4EEF-BA66-9811FE31BD77}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.Modules.Orleans.Reminders.Local", "src\Fluxera.Extensions.Hosting.Modules.Orleans.Reminders.Local\Fluxera.Extensions.Hosting.Modules.Orleans.Reminders.Local.csproj", "{72777DA7-CF6A-4EEF-BA66-9811FE31BD77}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.Modules.Orleans.Reminders.AdoNet", "src\Fluxera.Extensions.Hosting.Modules.Orleans.Reminders.AdoNet\Fluxera.Extensions.Hosting.Modules.Orleans.Reminders.AdoNet.csproj", "{8C199437-8476-41C4-9D6C-CB30492FE758}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,7 @@ Global
 		{CC7CC142-FA42-410C-89DE-CA5648910B20} = {3365796E-DC4C-4D45-AA70-83D5982B013E}
 		{006331C7-56EE-4B76-9C58-C2D3DB8A4013} = {3365796E-DC4C-4D45-AA70-83D5982B013E}
 		{72777DA7-CF6A-4EEF-BA66-9811FE31BD77} = {3365796E-DC4C-4D45-AA70-83D5982B013E}
+		{8C199437-8476-41C4-9D6C-CB30492FE758} = {3365796E-DC4C-4D45-AA70-83D5982B013E}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{98333171-E519-467A-AA23-70D4C10F34F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -69,5 +72,9 @@ Global
 		{72777DA7-CF6A-4EEF-BA66-9811FE31BD77}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{72777DA7-CF6A-4EEF-BA66-9811FE31BD77}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{72777DA7-CF6A-4EEF-BA66-9811FE31BD77}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C199437-8476-41C4-9D6C-CB30492FE758}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C199437-8476-41C4-9D6C-CB30492FE758}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C199437-8476-41C4-9D6C-CB30492FE758}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C199437-8476-41C4-9D6C-CB30492FE758}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

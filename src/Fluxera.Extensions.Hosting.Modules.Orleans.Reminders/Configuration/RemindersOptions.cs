@@ -1,11 +1,11 @@
 ﻿using JetBrains.Annotations;
 
-namespace Fluxera.Extensions.Hosting.Modules.Orleans.Reminder;
+namespace Fluxera.Extensions.Hosting.Modules.Orleans.Reminders;
 
 /// <summary>
 /// </summary>
 [PublicAPI]
-public sealed class ReminderOptions
+public sealed class RemindersOptions
 {
     /// <summary>
     ///     The minimum period for reminders.
@@ -13,13 +13,13 @@ public sealed class ReminderOptions
     /// <remarks>
     ///     High-frequency reminders are dangerous for production systems.
     /// </remarks>
-    public TimeSpan MinimumReminderPeriod { get; set; } = TimeSpan.FromMinutes(1);
+    public TimeSpan MinimumRemindersPeriod { get; set; } = TimeSpan.FromMinutes(1);
 
     /// <summary>
-    ///     The period between reminder table refreshes.
+    ///     The period between reminders table refreshes.
     /// </summary>
-    /// <value>Refresh the reminder table every 5 minutes by default.</value>
-    public TimeSpan RefreshReminderListPeriod { get; set; } = TimeSpan.FromMinutes(5);
+    /// <value>Refresh the reminders table every 5 minutes by default.</value>
+    public TimeSpan RefreshRemindersListPeriod { get; set; } = TimeSpan.FromMinutes(5);
 
     /// <summary>
     ///     The maximum amount of time to attempt to initialize reminders before giving up.
