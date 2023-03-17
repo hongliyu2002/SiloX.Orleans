@@ -13,6 +13,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "icons", "icons", "{FCE1AEE9
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.Modules.Orleans.Server", "src\Fluxera.Extensions.Hosting.Modules.Orleans.Server\Fluxera.Extensions.Hosting.Modules.Orleans.Server.csproj", "{98333171-E519-467A-AA23-70D4C10F34F4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.Redis", "src\Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.Redis\Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.Redis.csproj", "{858F2875-5618-4C2F-A402-22618941CC2E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.Modules.Orleans.Clustering", "src\Fluxera.Extensions.Hosting.Modules.Orleans.Clustering\Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.csproj", "{2DBF05A3-7B75-4F85-9E36-2635DA801B82}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,11 +25,21 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{FCE1AEE9-E834-4F94-B7FC-0179C25FD537} = {A8C94635-CF84-42F5-92AC-376FB5E736AB}
 		{98333171-E519-467A-AA23-70D4C10F34F4} = {3365796E-DC4C-4D45-AA70-83D5982B013E}
+		{858F2875-5618-4C2F-A402-22618941CC2E} = {3365796E-DC4C-4D45-AA70-83D5982B013E}
+		{2DBF05A3-7B75-4F85-9E36-2635DA801B82} = {3365796E-DC4C-4D45-AA70-83D5982B013E}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{98333171-E519-467A-AA23-70D4C10F34F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{98333171-E519-467A-AA23-70D4C10F34F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{98333171-E519-467A-AA23-70D4C10F34F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{98333171-E519-467A-AA23-70D4C10F34F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{858F2875-5618-4C2F-A402-22618941CC2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{858F2875-5618-4C2F-A402-22618941CC2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{858F2875-5618-4C2F-A402-22618941CC2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{858F2875-5618-4C2F-A402-22618941CC2E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DBF05A3-7B75-4F85-9E36-2635DA801B82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DBF05A3-7B75-4F85-9E36-2635DA801B82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DBF05A3-7B75-4F85-9E36-2635DA801B82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DBF05A3-7B75-4F85-9E36-2635DA801B82}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

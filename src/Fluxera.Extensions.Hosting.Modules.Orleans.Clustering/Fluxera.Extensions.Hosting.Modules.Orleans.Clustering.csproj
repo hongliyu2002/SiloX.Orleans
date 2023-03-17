@@ -4,9 +4,9 @@
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <PackageId>Fluxera.Extensions.Hosting.Modules.Orleans.Server</PackageId>
-        <Title>A server module for Microsoft Orleans</Title>
-        <Description>A server module that for Microsoft Orleans.</Description>
+        <PackageId>Fluxera.Extensions.Hosting.Modules.Orleans.Clustering</PackageId>
+        <Title>Clustering module</Title>
+        <Description>Clustering module that for Microsoft Orleans.</Description>
         <Version>7.1.0</Version>
         <AssemblyVersion>7.1.0.0</AssemblyVersion>
         <FileVersion>7.1.0.0</FileVersion>
@@ -15,7 +15,7 @@
         <RepositoryUrl>https://github.com/hongliyu2002/Fluxera.Extensions.Orleans</RepositoryUrl>
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageTags>library;extensions;hosting;modular;orleans</PackageTags>
+        <PackageTags>library;extensions;hosting;modular;orleans;clustering;orleans-clustering</PackageTags>
         <PackageProjectUrl>https://github.com/hongliyu2002/Fluxera.Extensions.Orleans</PackageProjectUrl>
         <PackageIcon>logo_128.png</PackageIcon>
         <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -27,7 +27,7 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <OrleansBuildTimeCodeGen>true</OrleansBuildTimeCodeGen>
-        <RootNamespace>Fluxera.Extensions.Hosting.Modules.Orleans.Server</RootNamespace>
+        <RootNamespace>Fluxera.Extensions.Hosting.Modules.Orleans.Clustering</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -40,21 +40,10 @@
         <PackageReference Include="Fluxera.Utilities" Version="7.1.0" />
         <PackageReference Include="Microsoft.NETCore.Platforms" Version="7.0.1" />
         <PackageReference Include="Microsoft.NETCore.Targets" Version="5.0.0" />
-        <PackageReference Include="Microsoft.Orleans.BroadcastChannel" Version="7.1.0" />
-        <PackageReference Include="Microsoft.Orleans.EventSourcing" Version="7.1.0" />
-        <PackageReference Include="Microsoft.Orleans.Reminders" Version="7.1.0" />
-        <PackageReference Include="Microsoft.Orleans.Server" Version="7.1.0" />
-        <PackageReference Include="Microsoft.Orleans.Streaming" Version="7.1.0" />
-        <PackageReference Include="Microsoft.Orleans.Transactions" Version="7.1.0" />
-        <PackageReference Include="System.Interactive" Version="6.0.1" />
-        <PackageReference Include="System.Interactive.Async" Version="6.0.1" />
-        <PackageReference Include="System.Interactive.Async.Providers" Version="6.0.1" />
-        <PackageReference Include="System.Interactive.Providers" Version="6.0.1" />
-        <PackageReference Include="System.Linq.Async" Version="6.0.1" />
-        <PackageReference Include="System.Linq.Async.Queryable" Version="6.0.1" />
-        <PackageReference Include="System.Reactive" Version="5.0.0" />
+        <PackageReference Include="Microsoft.Orleans.Runtime" Version="7.1.0" />
+        <PackageReference Include="Microsoft.Orleans.Sdk" Version="7.1.0" />
     </ItemGroup>
-    
+
     <ItemGroup>
         <None Include="..\..\resources\icons\logo_128.png" Pack="true" PackagePath="">
             <Link>logo_128.png</Link>

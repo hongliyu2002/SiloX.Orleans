@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Hosting;
 using Orleans.Configuration;
 
-namespace Fluxera.Extensions.Hosting.Modules.Orleans.Hosting;
+namespace Fluxera.Extensions.Hosting.Modules.Orleans;
 
 /// <summary>
 /// </summary>
@@ -17,11 +17,6 @@ public static class ServiceCollectionExtensions
     {
         return services.AddOrleans(siloBuilder =>
                                    {
-                                       siloBuilder.Configure<ClusterOptions>(cluster =>
-                                                                             {
-                                                                                 cluster.ServiceId = options.ServiceId;
-                                                                                 cluster.ClusterId = options.ClusterId;
-                                                                             });
                                        siloBuilder.Configure<EndpointOptions>(endpoint =>
                                                                               {
                                                                                   endpoint.AdvertisedIPAddress = options.AdvertisedIPAddress;

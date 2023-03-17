@@ -9,16 +9,6 @@ namespace Fluxera.Extensions.Hosting.Modules.Orleans;
 public sealed class OrleansServerOptions
 {
     /// <summary>
-    ///     A unique identifier for this service, which should survive deployment and redeployment, where as <see cref="ClusterId" /> might not.
-    /// </summary>
-    public string ServiceId { get; set; } = "eMachine";
-
-    /// <summary>
-    ///     The cluster identity. This used to be called DeploymentId before Orleans 2.0 name.
-    /// </summary>
-    public string ClusterId { get; set; } = "eMachine-default";
-
-    /// <summary>
     ///     The IP address used for clustering.
     /// </summary>
     public IPAddress AdvertisedIPAddress { get; set; } = IPAddress.Loopback;

@@ -1,6 +1,5 @@
 ﻿using Fluxera.Extensions.Hosting.Modules.Configuration;
 using Fluxera.Extensions.Hosting.Modules.Orleans.Contributors;
-using Fluxera.Extensions.Hosting.Modules.Orleans.Hosting;
 using JetBrains.Annotations;
 
 namespace Fluxera.Extensions.Hosting.Modules.Orleans;
