@@ -2,29 +2,29 @@
 using Fluxera.Extensions.Hosting.Modules.Configuration;
 using Fluxera.Extensions.Hosting.Modules.HealthChecks;
 using Fluxera.Extensions.Hosting.Modules.OpenTelemetry;
-using Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.Redis.Contributors;
+using Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.AdoNet.Contributors;
 using JetBrains.Annotations;
 
-namespace Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.Redis;
+namespace Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.AdoNet;
 
 /// <summary>
 /// </summary>
 [PublicAPI]
 [DependsOn<ConfigurationModule>]
-public class OrleansRedisClusteringModule : ConfigureServicesModule
+public class OrleansAdoNetClusteringModule : ConfigureServicesModule
 {
     /// <inheritdoc />
     public override void PreConfigureServices(IServiceConfigurationContext context)
     {
-        context.Services.AddConfigureOptionsContributor<ConfigureRedisClusteringOptionsContributor>();
-        context.Services.AddHealthCheckContributor<RedisClusteringHealthChecksContributor>();
+        context.Services.AddConfigureOptionsContributor<ConfigureAdoNetClusteringOptionsContributor>();
+        context.Services.AddHealthCheckContributor<AdoNetClusteringHealthChecksContributor>();
         context.Services.AddTracerProviderContributor<TracerProviderContributor>();
     }
 
     /// <inheritdoc />
     public override void ConfigureServices(IServiceConfigurationContext context)
     {
-        var clusteringOptions = context.Services.GetObject<RedisClusteringOptions>();
-        context.Log("AddOrleansRedisClustering", services => services.AddOrleansRedisClustering(clusteringOptions));
+        var clusteringOptions = context.Services.GetObject<AdoNetClusteringOptions>();
+        context.Log("AddOrleansAdoNetClustering", services => services.AddOrleansAdoNetClustering(clusteringOptions));
     }
 }

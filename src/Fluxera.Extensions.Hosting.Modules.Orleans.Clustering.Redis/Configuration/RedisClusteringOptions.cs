@@ -21,5 +21,6 @@ public sealed class RedisClusteringOptions
     /// <summary>
     ///     Gets the connection strings.
     /// </summary>
+    [Redact]
     public ConnectionStrings ConnectionStrings { get; internal set; } = new();
 }
