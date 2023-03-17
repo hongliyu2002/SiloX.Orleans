@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Net;
+using Fluxera.Utilities.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Orleans.Configuration;
 
@@ -19,11 +21,11 @@ public static class ServiceCollectionExtensions
                                    {
                                        siloBuilder.Configure<EndpointOptions>(endpoint =>
                                                                               {
-                                                                                  endpoint.AdvertisedIPAddress = options.AdvertisedIPAddress;
+                                                                                  endpoint.AdvertisedIPAddress = options.AdvertisedIPAddress.IsNullOrEmpty() ? IPAddress.Loopback : IPAddress.Parse(options.AdvertisedIPAddress);
                                                                                   endpoint.SiloPort = options.SiloPort;
                                                                                   endpoint.GatewayPort = options.GatewayPort;
-                                                                                  endpoint.SiloListeningEndpoint = options.SiloListeningEndpoint;
-                                                                                  endpoint.GatewayListeningEndpoint = options.GatewayListeningEndpoint;
+                                                                                  endpoint.SiloListeningEndpoint = options.SiloListeningEndpoint.IsNullOrEmpty() ? null : IPEndPoint.Parse(options.SiloListeningEndpoint!);
+                                                                                  endpoint.GatewayListeningEndpoint = options.GatewayListeningEndpoint.IsNullOrEmpty() ? null : IPEndPoint.Parse(options.GatewayListeningEndpoint!);
                                                                               });
                                        siloBuilder.Configure<SiloOptions>(silo => silo.SiloName = options.SiloName);
                                    });

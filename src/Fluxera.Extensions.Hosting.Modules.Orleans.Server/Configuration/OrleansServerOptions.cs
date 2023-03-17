@@ -1,5 +1,4 @@
-﻿using System.Net;
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 
 namespace Fluxera.Extensions.Hosting.Modules.Orleans;
 
@@ -11,7 +10,7 @@ public sealed class OrleansServerOptions
     /// <summary>
     ///     The IP address used for clustering.
     /// </summary>
-    public IPAddress AdvertisedIPAddress { get; set; } = IPAddress.Loopback;
+    public string AdvertisedIPAddress { get; set; } = "127.0.0.1";
 
     /// <summary>
     ///     The port this silo uses for silo-to-silo communication.
@@ -27,13 +26,13 @@ public sealed class OrleansServerOptions
     ///     The endpoint used to listen for silo to silo communication.
     ///     If not set will default to <see cref="AdvertisedIPAddress" /> + <see cref="SiloPort" />
     /// </summary>
-    public IPEndPoint? SiloListeningEndpoint { get; set; }
+    public string? SiloListeningEndpoint { get; set; }
 
     /// <summary>
     ///     The endpoint used to listen for client to silo communication.
     ///     If not set will default to <see cref="AdvertisedIPAddress" /> + <see cref="GatewayPort" />
     /// </summary>
-    public IPEndPoint? GatewayListeningEndpoint { get; set; }
+    public string? GatewayListeningEndpoint { get; set; }
 
     /// <summary>
     ///     The silo name.

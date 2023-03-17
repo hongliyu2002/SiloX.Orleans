@@ -19,6 +19,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.AdoNet", "src\Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.AdoNet\Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.AdoNet.csproj", "{99896B59-C4C7-48C3-BB1B-B45120D0945E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.Modules.Orleans.Reminder", "src\Fluxera.Extensions.Hosting.Modules.Orleans.Reminder\Fluxera.Extensions.Hosting.Modules.Orleans.Reminder.csproj", "{CC7CC142-FA42-410C-89DE-CA5648910B20}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.Local", "src\Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.Local\Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.Local.csproj", "{006331C7-56EE-4B76-9C58-C2D3DB8A4013}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,6 +34,8 @@ Global
 		{858F2875-5618-4C2F-A402-22618941CC2E} = {3365796E-DC4C-4D45-AA70-83D5982B013E}
 		{2DBF05A3-7B75-4F85-9E36-2635DA801B82} = {3365796E-DC4C-4D45-AA70-83D5982B013E}
 		{99896B59-C4C7-48C3-BB1B-B45120D0945E} = {3365796E-DC4C-4D45-AA70-83D5982B013E}
+		{CC7CC142-FA42-410C-89DE-CA5648910B20} = {3365796E-DC4C-4D45-AA70-83D5982B013E}
+		{006331C7-56EE-4B76-9C58-C2D3DB8A4013} = {3365796E-DC4C-4D45-AA70-83D5982B013E}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{98333171-E519-467A-AA23-70D4C10F34F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -48,5 +54,13 @@ Global
 		{99896B59-C4C7-48C3-BB1B-B45120D0945E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{99896B59-C4C7-48C3-BB1B-B45120D0945E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{99896B59-C4C7-48C3-BB1B-B45120D0945E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC7CC142-FA42-410C-89DE-CA5648910B20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC7CC142-FA42-410C-89DE-CA5648910B20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC7CC142-FA42-410C-89DE-CA5648910B20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC7CC142-FA42-410C-89DE-CA5648910B20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{006331C7-56EE-4B76-9C58-C2D3DB8A4013}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{006331C7-56EE-4B76-9C58-C2D3DB8A4013}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{006331C7-56EE-4B76-9C58-C2D3DB8A4013}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{006331C7-56EE-4B76-9C58-C2D3DB8A4013}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
