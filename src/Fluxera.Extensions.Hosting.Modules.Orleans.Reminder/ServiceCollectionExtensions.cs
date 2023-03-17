@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Fluxera.Extensions.Hosting.Modules.Orleans.Reminder;
 
@@ -13,9 +14,15 @@ public static class ServiceCollectionExtensions
     /// <returns></returns>
     public static IServiceCollection AddOrleansReminder(this IServiceCollection services, ReminderOptions options)
     {
-        // return services.AddOrleans(siloBuilder =>
-        //                            {
-        //                            });
-        return services;
+        return services.AddOrleans(siloBuilder =>
+                                   {
+                                       siloBuilder.Configure<ReminderOptions>(reminderOptions =>
+                                                                              {
+                                                                                  reminderOptions.MinimumReminderPeriod = options.MinimumReminderPeriod;
+                                                                                  reminderOptions.RefreshReminderListPeriod = options.RefreshReminderListPeriod;
+                                                                                  reminderOptions.InitializationTimeout = options.InitializationTimeout;
+                                                                              });
+                                       siloBuilder.AddReminders();
+                                   });
     }
 }

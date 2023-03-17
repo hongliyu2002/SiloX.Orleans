@@ -31,12 +31,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.DataManagement" Version="7.1.4" />
-        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.HealthChecks" Version="7.1.4" />
-        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.OpenTelemetry" Version="7.1.4" />
-    </ItemGroup>
-
-    <ItemGroup>
         <ProjectReference Include="..\Fluxera.Extensions.Hosting.Modules.Orleans.Clustering\Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.csproj" />
     </ItemGroup>
 

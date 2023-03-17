@@ -1,7 +1,5 @@
 ﻿using Fluxera.Extensions.DependencyInjection;
 using Fluxera.Extensions.Hosting.Modules.Configuration;
-using Fluxera.Extensions.Hosting.Modules.HealthChecks;
-using Fluxera.Extensions.Hosting.Modules.OpenTelemetry;
 using Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.Local.Contributors;
 using JetBrains.Annotations;
 
