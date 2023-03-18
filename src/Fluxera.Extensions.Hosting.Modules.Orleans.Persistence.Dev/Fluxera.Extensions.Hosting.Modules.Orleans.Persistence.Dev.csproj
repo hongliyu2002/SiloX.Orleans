@@ -4,9 +4,9 @@
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <PackageId>Fluxera.Extensions.Hosting.Modules.Orleans.Persistence.Local</PackageId>
-        <Title>Local persistence module</Title>
-        <Description>Local persistence module that for Microsoft Orleans.</Description>
+        <PackageId>Fluxera.Extensions.Hosting.Modules.Orleans.Persistence.Dev</PackageId>
+        <Title>Dev persistence module</Title>
+        <Description>Dev persistence module that for Microsoft Orleans.</Description>
         <Version>7.1.0</Version>
         <AssemblyVersion>7.1.0.0</AssemblyVersion>
         <FileVersion>7.1.0.0</FileVersion>
@@ -27,13 +27,13 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <OrleansBuildTimeCodeGen>true</OrleansBuildTimeCodeGen>
-        <RootNamespace>Fluxera.Extensions.Hosting.Modules.Orleans.Persistence.Local</RootNamespace>
+        <RootNamespace>Fluxera.Extensions.Hosting.Modules.Orleans.Persistence.Dev</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Microsoft.Orleans.Persistence.Memory" Version="7.1.0" />
     </ItemGroup>
-    
+
     <ItemGroup>
         <ProjectReference Include="..\Fluxera.Extensions.Hosting.Modules.Orleans.Persistence\Fluxera.Extensions.Hosting.Modules.Orleans.Persistence.csproj" />
     </ItemGroup>

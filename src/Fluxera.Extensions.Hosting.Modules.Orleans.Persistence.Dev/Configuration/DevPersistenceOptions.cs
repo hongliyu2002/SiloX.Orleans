@@ -1,12 +1,12 @@
 ﻿using JetBrains.Annotations;
 using Orleans.Providers;
 
-namespace Fluxera.Extensions.Hosting.Modules.Orleans.Persistence.Local;
+namespace Fluxera.Extensions.Hosting.Modules.Orleans.Persistence.Dev;
 
 /// <summary>
 /// </summary>
 [PublicAPI]
-public sealed class LocalPersistenceOptions
+public sealed class DevPersistenceOptions
 {
     /// <summary>
     ///     The storage descriptions.

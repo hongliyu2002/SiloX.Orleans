@@ -21,9 +21,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.Modules.Orleans.Reminders", "src\Fluxera.Extensions.Hosting.Modules.Orleans.Reminders\Fluxera.Extensions.Hosting.Modules.Orleans.Reminders.csproj", "{CC7CC142-FA42-410C-89DE-CA5648910B20}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.Local", "src\Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.Local\Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.Local.csproj", "{006331C7-56EE-4B76-9C58-C2D3DB8A4013}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.Dev", "src\Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.Dev\Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.Dev.csproj", "{006331C7-56EE-4B76-9C58-C2D3DB8A4013}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.Modules.Orleans.Reminders.Local", "src\Fluxera.Extensions.Hosting.Modules.Orleans.Reminders.Local\Fluxera.Extensions.Hosting.Modules.Orleans.Reminders.Local.csproj", "{72777DA7-CF6A-4EEF-BA66-9811FE31BD77}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.Modules.Orleans.Reminders.Dev", "src\Fluxera.Extensions.Hosting.Modules.Orleans.Reminders.Dev\Fluxera.Extensions.Hosting.Modules.Orleans.Reminders.Dev.csproj", "{72777DA7-CF6A-4EEF-BA66-9811FE31BD77}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.Modules.Orleans.Reminders.AdoNet", "src\Fluxera.Extensions.Hosting.Modules.Orleans.Reminders.AdoNet\Fluxera.Extensions.Hosting.Modules.Orleans.Reminders.AdoNet.csproj", "{8C199437-8476-41C4-9D6C-CB30492FE758}"
 EndProject
@@ -31,7 +31,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.Modules.Orleans.Persistence", "src\Fluxera.Extensions.Hosting.Modules.Orleans.Persistence\Fluxera.Extensions.Hosting.Modules.Orleans.Persistence.csproj", "{AA053E78-1BBC-4A02-B815-D99325838F11}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.Modules.Orleans.Persistence.Local", "src\Fluxera.Extensions.Hosting.Modules.Orleans.Persistence.Local\Fluxera.Extensions.Hosting.Modules.Orleans.Persistence.Local.csproj", "{04CDEF88-1C36-4A39-AD80-AB0AA0E4AEB9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.Modules.Orleans.Persistence.Dev", "src\Fluxera.Extensions.Hosting.Modules.Orleans.Persistence.Dev\Fluxera.Extensions.Hosting.Modules.Orleans.Persistence.Dev.csproj", "{04CDEF88-1C36-4A39-AD80-AB0AA0E4AEB9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.Modules.Orleans.Persistence.AdoNet", "src\Fluxera.Extensions.Hosting.Modules.Orleans.Persistence.AdoNet\Fluxera.Extensions.Hosting.Modules.Orleans.Persistence.AdoNet.csproj", "{8A8DCD4E-1A8D-4589-B356-0C3DC40C288D}"
 EndProject

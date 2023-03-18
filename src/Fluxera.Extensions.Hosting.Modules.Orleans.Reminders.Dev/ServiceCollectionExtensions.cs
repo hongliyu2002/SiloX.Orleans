@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Fluxera.Extensions.Hosting.Modules.Orleans.Reminders.Local;
+namespace Fluxera.Extensions.Hosting.Modules.Orleans.Reminders.Dev;
 
 /// <summary>
 /// </summary>
@@ -12,7 +12,7 @@ public static class ServiceCollectionExtensions
     /// <param name="services"></param>
     /// <param name="options"></param>
     /// <returns></returns>
-    public static IServiceCollection AddOrleansLocalReminders(this IServiceCollection services, LocalRemindersOptions options)
+    public static IServiceCollection AddOrleansDevReminders(this IServiceCollection services, DevRemindersOptions options)
     {
         return services.AddOrleans(siloBuilder =>
                                    {

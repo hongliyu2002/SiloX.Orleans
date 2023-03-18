@@ -1,12 +1,12 @@
 ﻿using JetBrains.Annotations;
 using Orleans.Configuration;
 
-namespace Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.Local;
+namespace Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.Dev;
 
 /// <summary>
 /// </summary>
 [PublicAPI]
-public sealed class LocalClusteringOptions
+public sealed class DevClusteringOptions
 {
     /// <summary>
     ///     Is this configuration intended for client-side use?
