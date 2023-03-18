@@ -9,19 +9,19 @@ internal sealed class TracerProviderContributor : ITracerProviderContributor
     /// <inheritdoc />
     public void Configure(TracerProviderBuilder builder, IServiceConfigurationContext context)
     {
-        var options = context.Services.GetOptions<AdoNetClusteringOptions>();
-        switch (options.DbProvider)
-        {
-            case AdoNetDbProvider.SQLServer:
-                builder.AddSqlClientInstrumentation();
-                break;
-            case AdoNetDbProvider.PostgreSQL:
-                break;
-            case AdoNetDbProvider.MySQL:
-                builder.AddMySqlDataInstrumentation();
-                break;
-            case AdoNetDbProvider.Oracle:
-                break;
-        }
+        // var options = context.Services.GetOptions<AdoNetClusteringOptions>();
+        // switch (options.DbProvider)
+        // {
+        //     case AdoNetDbProvider.SQLServer:
+        //         builder.AddSqlClientInstrumentation();
+        //         break;
+        //     case AdoNetDbProvider.PostgreSQL:
+        //         break;
+        //     case AdoNetDbProvider.MySQL:
+        //         builder.AddMySqlDataInstrumentation();
+        //         break;
+        //     case AdoNetDbProvider.Oracle:
+        //         break;
+        // }
     }
 }

@@ -4,9 +4,9 @@
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <PackageId>Fluxera.Extensions.Hosting.Modules.Orleans.Persistence.AdoNet</PackageId>
-        <Title>AdoNet persistence module</Title>
-        <Description>AdoNet persistence module that for Microsoft Orleans.</Description>
+        <PackageId>Fluxera.Extensions.Hosting.Modules.Orleans.Persistence.Redis</PackageId>
+        <Title>Redis persistence module</Title>
+        <Description>Redis persistence module that for Microsoft Orleans.</Description>
         <Version>7.1.0</Version>
         <AssemblyVersion>7.1.0.0</AssemblyVersion>
         <FileVersion>7.1.0.0</FileVersion>
@@ -27,21 +27,17 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <OrleansBuildTimeCodeGen>true</OrleansBuildTimeCodeGen>
-        <RootNamespace>Fluxera.Extensions.Hosting.Modules.Orleans.Persistence.AdoNet</RootNamespace>
+        <RootNamespace>Fluxera.Extensions.Hosting.Modules.Orleans.Persistence.Redis</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AspNetCore.HealthChecks.MySql" Version="7.0.0-rc2.4" />
-        <PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="7.0.0-rc2.6" />
-        <PackageReference Include="AspNetCore.HealthChecks.Oracle" Version="7.0.0-rc2.6" />
-        <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="7.0.0-rc2.10" />
+        <PackageReference Include="AspNetCore.HealthChecks.Redis" Version="7.0.0-rc2.5" />
         <PackageReference Include="Fluxera.Extensions.DataManagement" Version="7.1.2" />
         <PackageReference Include="Fluxera.Extensions.Hosting.Modules.DataManagement" Version="7.1.4" />
         <PackageReference Include="Fluxera.Extensions.Hosting.Modules.HealthChecks" Version="7.1.4" />
         <PackageReference Include="Fluxera.Extensions.Hosting.Modules.OpenTelemetry" Version="7.1.4" />
-        <PackageReference Include="Microsoft.Orleans.Persistence.AdoNet" Version="7.1.0" />
-        <PackageReference Include="OpenTelemetry.Instrumentation.MySqlData" Version="1.0.0-beta.6" />
-        <PackageReference Include="OpenTelemetry.Instrumentation.SqlClient" Version="1.0.0-rc9.14" />
+        <PackageReference Include="Microsoft.Orleans.Persistence.Redis" Version="7.1.0-beta1" />
+        <PackageReference Include="OpenTelemetry.Instrumentation.StackExchangeRedis" Version="1.0.0-rc9.8" />
     </ItemGroup>
 
     <ItemGroup>
@@ -55,11 +51,6 @@
         <None Include=".\README.md" Pack="true" PackagePath="">
             <Link>README.md</Link>
         </None>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="SqlScripts\Main" />
-      <Folder Include="SqlScripts\Persistence" />
     </ItemGroup>
 
 </Project>
