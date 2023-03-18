@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.Modules.Orleans.Reminders.AdoNet", "src\Fluxera.Extensions.Hosting.Modules.Orleans.Reminders.AdoNet\Fluxera.Extensions.Hosting.Modules.Orleans.Reminders.AdoNet.csproj", "{8C199437-8476-41C4-9D6C-CB30492FE758}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.Modules.Orleans.Reminders.Redis", "src\Fluxera.Extensions.Hosting.Modules.Orleans.Reminders.Redis\Fluxera.Extensions.Hosting.Modules.Orleans.Reminders.Redis.csproj", "{B29F5BDC-1756-4C31-ADDD-2DCB53FE1F2A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,6 +44,7 @@ Global
 		{006331C7-56EE-4B76-9C58-C2D3DB8A4013} = {3365796E-DC4C-4D45-AA70-83D5982B013E}
 		{72777DA7-CF6A-4EEF-BA66-9811FE31BD77} = {3365796E-DC4C-4D45-AA70-83D5982B013E}
 		{8C199437-8476-41C4-9D6C-CB30492FE758} = {3365796E-DC4C-4D45-AA70-83D5982B013E}
+		{B29F5BDC-1756-4C31-ADDD-2DCB53FE1F2A} = {3365796E-DC4C-4D45-AA70-83D5982B013E}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{98333171-E519-467A-AA23-70D4C10F34F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -76,5 +79,9 @@ Global
 		{8C199437-8476-41C4-9D6C-CB30492FE758}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8C199437-8476-41C4-9D6C-CB30492FE758}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8C199437-8476-41C4-9D6C-CB30492FE758}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B29F5BDC-1756-4C31-ADDD-2DCB53FE1F2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B29F5BDC-1756-4C31-ADDD-2DCB53FE1F2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B29F5BDC-1756-4C31-ADDD-2DCB53FE1F2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B29F5BDC-1756-4C31-ADDD-2DCB53FE1F2A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
