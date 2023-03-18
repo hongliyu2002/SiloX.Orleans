@@ -2,17 +2,17 @@
 
 /// <summary>
 /// </summary>
-public enum DevLogConsistencyProvider
+public enum DevLogProvider
 {
     /// <summary>
     /// </summary>
-    LogStorageBased,
+    LogBased,
 
     /// <summary>
     /// </summary>
-    StateStorageBased,
+    StateBased,
 
     /// <summary>
     /// </summary>
-    CustomStorageBased
+    CustomBased
 }

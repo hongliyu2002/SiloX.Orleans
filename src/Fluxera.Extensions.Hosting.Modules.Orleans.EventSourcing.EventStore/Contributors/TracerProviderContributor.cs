@@ -9,7 +9,7 @@ internal sealed class TracerProviderContributor : ITracerProviderContributor
     public void Configure(TracerProviderBuilder builder, IServiceConfigurationContext context)
     {
         // var eventSourcingOptions = context.Services.GetObject<EventStoreEventSourcingOptions>();
-        // foreach (var storage in eventSourcingOptions.Storages)
+        // foreach (var storage in eventSourcingOptions.LogConsistencies)
         // {
         //     builder.AddEventStoreInstrumentation();
         // }

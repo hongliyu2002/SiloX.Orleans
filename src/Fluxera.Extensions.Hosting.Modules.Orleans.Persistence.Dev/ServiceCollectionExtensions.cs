@@ -16,7 +16,7 @@ public static class ServiceCollectionExtensions
     {
         return services.AddOrleans(siloBuilder =>
                                    {
-                                       foreach (var storage in options.Storages)
+                                       foreach (var storage in options.StorageOptions)
                                        {
                                            siloBuilder.AddMemoryGrainStorage(storage.Name,
                                                                              storageOptions =>

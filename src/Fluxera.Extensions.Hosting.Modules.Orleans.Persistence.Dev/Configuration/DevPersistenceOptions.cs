@@ -9,27 +9,30 @@ namespace Fluxera.Extensions.Hosting.Modules.Orleans.Persistence.Dev;
 public sealed class DevPersistenceOptions
 {
     /// <summary>
-    ///     The storage descriptions.
+    ///     The storage options.
     /// </summary>
-    public StorageSettings[] Storages { get; set; } = Array.Empty<StorageSettings>();
+    public DevPersistenceStorageOptions[] StorageOptions { get; set; } = Array.Empty<DevPersistenceStorageOptions>();
+}
+
+/// <summary>
+/// </summary>
+/// <summary>
+/// </summary>
+[PublicAPI]
+public sealed class DevPersistenceStorageOptions
+{
+    /// <summary>
+    ///     The name of the connection string.
+    /// </summary>
+    public string Name { get; set; } = ProviderConstants.DEFAULT_STORAGE_PROVIDER_NAME;
 
     /// <summary>
+    ///     The number of store grains to use.
     /// </summary>
-    public class StorageSettings
-    {
-        /// <summary>
-        ///     The name of the connection string.
-        /// </summary>
-        public string Name { get; set; } = ProviderConstants.DEFAULT_STORAGE_PROVIDER_NAME;
+    public int NumStorageGrains { get; set; } = 10;
 
-        /// <summary>
-        ///     The number of store grains to use.
-        /// </summary>
-        public int NumStorageGrains { get; set; } = 10;
-
-        /// <summary>
-        ///     The stage of silo lifecycle where storage should be initialized.  Storage must be initialized prior to use.
-        /// </summary>
-        public int InitStage { get; set; } = 10000;
-    }
+    /// <summary>
+    ///     The stage of silo lifecycle where storage should be initialized.  Storage must be initialized prior to use.
+    /// </summary>
+    public int InitStage { get; set; } = 10000;
 }

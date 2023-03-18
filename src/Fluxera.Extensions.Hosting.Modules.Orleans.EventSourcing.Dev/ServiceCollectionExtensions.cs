@@ -24,13 +24,13 @@ public static class ServiceCollectionExtensions
                                        {
                                            switch (logConsistency.LogProvider)
                                            {
-                                               case DevLogConsistencyProvider.LogStorageBased:
+                                               case DevLogProvider.LogBased:
                                                    siloBuilder.AddLogStorageBasedLogConsistencyProvider(logConsistency.Name);
                                                    break;
-                                               case DevLogConsistencyProvider.StateStorageBased:
+                                               case DevLogProvider.StateBased:
                                                    siloBuilder.AddStateStorageBasedLogConsistencyProvider(logConsistency.Name);
                                                    break;
-                                               case DevLogConsistencyProvider.CustomStorageBased:
+                                               case DevLogProvider.CustomBased:
                                                    siloBuilder.AddCustomStorageBasedLogConsistencyProvider(logConsistency.Name, logConsistency.PrimaryCluster);
                                                    break;
                                                default:

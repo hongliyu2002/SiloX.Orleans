@@ -18,9 +18,9 @@ internal sealed class ConfigureEventStoreEventSourcingOptionsContributor : Confi
                     services =>
                     {
                         services.Configure<EventStoreEventSourcingOptions>(eventSourcing =>
-                                                                         {
-                                                                             eventSourcing.ConnectionStrings = createdOptions.ConnectionStrings;
-                                                                         });
+                                                                           {
+                                                                               eventSourcing.ConnectionStrings = createdOptions.ConnectionStrings;
+                                                                           });
                     });
     }
 }

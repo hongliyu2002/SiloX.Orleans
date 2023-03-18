@@ -7,5 +7,4 @@ namespace Fluxera.Extensions.Hosting.Modules.Orleans.Persistence;
 [PublicAPI]
 public sealed class PersistenceOptions
 {
-
 }

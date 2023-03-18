@@ -10,9 +10,9 @@ namespace Fluxera.Extensions.Hosting.Modules.Orleans.Persistence.EventStore;
 public sealed class EventStorePersistenceOptions
 {
     /// <summary>
-    ///     The storage descriptions.
+    ///     The storage options.
     /// </summary>
-    public StorageSettings[] Storages { get; set; } = Array.Empty<StorageSettings>();
+    public EventStorePersistenceStorageOptions[] Storages { get; set; } = Array.Empty<EventStorePersistenceStorageOptions>();
 
     /// <summary>
     ///     Gets the connection strings.
@@ -20,23 +20,25 @@ public sealed class EventStorePersistenceOptions
     [Redact]
     public ConnectionStrings ConnectionStrings { get; internal set; } = new();
 
+}
+
+/// <summary>
+/// </summary>
+[PublicAPI]
+public sealed class EventStorePersistenceStorageOptions
+{
     /// <summary>
+    ///     The name of the connection string.
     /// </summary>
-    public class StorageSettings
-    {
-        /// <summary>
-        ///     The name of the connection string.
-        /// </summary>
-        public string ConnectionStringName { get; set; } = ProviderConstants.DEFAULT_STORAGE_PROVIDER_NAME;
+    public string ConnectionStringName { get; set; } = ProviderConstants.DEFAULT_STORAGE_PROVIDER_NAME;
 
-        /// <summary>
-        ///     Whether or not to delete state during a clear operation.
-        /// </summary>
-        public bool DeleteStateOnClear { get; set; }
+    /// <summary>
+    ///     Whether or not to delete state during a clear operation.
+    /// </summary>
+    public bool DeleteStateOnClear { get; set; }
 
-        /// <summary>
-        ///     The stage of silo lifecycle where storage should be initialized.  Storage must be initialized prior to use.
-        /// </summary>
-        public int InitStage { get; set; } = 10000;
-    }
+    /// <summary>
+    ///     The stage of silo lifecycle where storage should be initialized.  Storage must be initialized prior to use.
+    /// </summary>
+    public int InitStage { get; set; } = 10000;
 }

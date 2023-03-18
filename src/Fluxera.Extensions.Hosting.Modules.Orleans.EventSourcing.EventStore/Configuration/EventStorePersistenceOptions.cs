@@ -10,28 +10,29 @@ namespace Fluxera.Extensions.Hosting.Modules.Orleans.EventSourcing.EventStore;
 public sealed class EventStoreEventSourcingOptions
 {
     /// <summary>
-    ///     The storage descriptions.
+    ///     The log Consistency provider options.
     /// </summary>
-    public StorageSettings[] Storages { get; set; } = Array.Empty<StorageSettings>();
+    public EventStoreEventSourcingLogConsistencyOptions[] LogConsistencies { get; set; } = Array.Empty<EventStoreEventSourcingLogConsistencyOptions>();
 
     /// <summary>
     ///     Gets the connection strings.
     /// </summary>
     [Redact]
     public ConnectionStrings ConnectionStrings { get; internal set; } = new();
+}
+
+/// <summary>
+/// </summary>
+[PublicAPI]
+public sealed class EventStoreEventSourcingLogConsistencyOptions
+{
+    /// <summary>
+    ///     The name of the connection string.
+    /// </summary>
+    public string ConnectionStringName { get; set; } = ProviderConstants.DEFAULT_LOG_CONSISTENCY_PROVIDER_NAME;
 
     /// <summary>
+    ///     The stage of silo lifecycle where storage should be initialized.  Storage must be initialized prior to use.
     /// </summary>
-    public class StorageSettings
-    {
-        /// <summary>
-        ///     The name of the connection string.
-        /// </summary>
-        public string ConnectionStringName { get; set; } = ProviderConstants.DEFAULT_STORAGE_PROVIDER_NAME;
-
-        /// <summary>
-        ///     The stage of silo lifecycle where storage should be initialized.  Storage must be initialized prior to use.
-        /// </summary>
-        public int InitStage { get; set; } = 10000;
-    }
+    public int InitStage { get; set; } = 10000;
 }

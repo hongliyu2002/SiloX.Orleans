@@ -17,15 +17,15 @@ public static class ServiceCollectionExtensions
     {
         return services.AddOrleans(siloBuilder =>
                                    {
-                                       foreach (var storage in options.Storages)
+                                       foreach (var logConsistency in options.LogConsistencies)
                                        {
-                                           if (options.ConnectionStrings.TryGetValue(storage.ConnectionStringName, out var connectionString))
+                                           if (options.ConnectionStrings.TryGetValue(logConsistency.ConnectionStringName, out var connectionString))
                                            {
-                                               siloBuilder.AddEventStoreBasedLogConsistencyProvider(storage.ConnectionStringName,
+                                               siloBuilder.AddEventStoreBasedLogConsistencyProvider(logConsistency.ConnectionStringName,
                                                                                                     eventSourcing =>
                                                                                                     {
                                                                                                         eventSourcing.ClientSettings = EventStoreClientSettings.Create(connectionString);
-                                                                                                        eventSourcing.InitStage = storage.InitStage;
+                                                                                                        eventSourcing.InitStage = logConsistency.InitStage;
                                                                                                     });
                                            }
                                        }
