@@ -39,6 +39,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.Modules.Orleans.Persistence.EventStore", "src\Fluxera.Extensions.Hosting.Modules.Orleans.Persistence.EventStore\Fluxera.Extensions.Hosting.Modules.Orleans.Persistence.EventStore.csproj", "{2C94C860-1D9E-4865-AF06-AE52611F0E53}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.Modules.Orleans.EventSourcing", "src\Fluxera.Extensions.Hosting.Modules.Orleans.EventSourcing\Fluxera.Extensions.Hosting.Modules.Orleans.EventSourcing.csproj", "{BBB4EA77-9C11-45E8-A2B4-A4FDEB4D00A4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.Modules.Orleans.EventSourcing.EventStore", "src\Fluxera.Extensions.Hosting.Modules.Orleans.EventSourcing.EventStore\Fluxera.Extensions.Hosting.Modules.Orleans.EventSourcing.EventStore.csproj", "{06953E44-65C1-4A6C-B4B1-A081C5E8C263}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -60,6 +64,8 @@ Global
 		{8A8DCD4E-1A8D-4589-B356-0C3DC40C288D} = {3365796E-DC4C-4D45-AA70-83D5982B013E}
 		{2937D2F3-B31B-4804-8B5C-8AE028CF5433} = {3365796E-DC4C-4D45-AA70-83D5982B013E}
 		{2C94C860-1D9E-4865-AF06-AE52611F0E53} = {3365796E-DC4C-4D45-AA70-83D5982B013E}
+		{BBB4EA77-9C11-45E8-A2B4-A4FDEB4D00A4} = {3365796E-DC4C-4D45-AA70-83D5982B013E}
+		{06953E44-65C1-4A6C-B4B1-A081C5E8C263} = {3365796E-DC4C-4D45-AA70-83D5982B013E}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{98333171-E519-467A-AA23-70D4C10F34F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -118,5 +124,13 @@ Global
 		{2C94C860-1D9E-4865-AF06-AE52611F0E53}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2C94C860-1D9E-4865-AF06-AE52611F0E53}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2C94C860-1D9E-4865-AF06-AE52611F0E53}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BBB4EA77-9C11-45E8-A2B4-A4FDEB4D00A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBB4EA77-9C11-45E8-A2B4-A4FDEB4D00A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBB4EA77-9C11-45E8-A2B4-A4FDEB4D00A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBB4EA77-9C11-45E8-A2B4-A4FDEB4D00A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06953E44-65C1-4A6C-B4B1-A081C5E8C263}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06953E44-65C1-4A6C-B4B1-A081C5E8C263}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06953E44-65C1-4A6C-B4B1-A081C5E8C263}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06953E44-65C1-4A6C-B4B1-A081C5E8C263}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
