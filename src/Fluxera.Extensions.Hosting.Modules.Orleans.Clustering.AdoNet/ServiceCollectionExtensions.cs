@@ -9,7 +9,7 @@ public static class ServiceCollectionExtensions
 {
     /// <summary>
     ///  </summary>
-    public const string DbProviderNotSupports = "Database provider does not support.";
+    public const string DbProviderDoesNotSupport = "Database provider does not support.";
 
     /// <summary>
     /// </summary>
@@ -35,7 +35,7 @@ public static class ServiceCollectionExtensions
                                                                                                                   AdoNetDbProvider.PostgreSQL => AdoNetInvariants.InvariantNamePostgreSql,
                                                                                                                   AdoNetDbProvider.MySQL => AdoNetInvariants.InvariantNameMySql,
                                                                                                                   AdoNetDbProvider.Oracle => AdoNetInvariants.InvariantNameOracleDatabase,
-                                                                                                                  _ => throw new ArgumentOutOfRangeException(nameof(options.DbProvider), DbProviderNotSupports)
+                                                                                                                  _ => throw new ArgumentOutOfRangeException(nameof(options.DbProvider), DbProviderDoesNotSupport)
                                                                                                               };
                                                                                    });
                                              });
@@ -51,7 +51,7 @@ public static class ServiceCollectionExtensions
                                                                                                       AdoNetDbProvider.PostgreSQL => AdoNetInvariants.InvariantNamePostgreSql,
                                                                                                       AdoNetDbProvider.MySQL => AdoNetInvariants.InvariantNameMySql,
                                                                                                       AdoNetDbProvider.Oracle => AdoNetInvariants.InvariantNameOracleDatabase,
-                                                                                                      _ => throw new ArgumentOutOfRangeException(nameof(options.DbProvider), DbProviderNotSupports)
+                                                                                                      _ => throw new ArgumentOutOfRangeException(nameof(options.DbProvider), DbProviderDoesNotSupport)
                                                                                                   };
                                                                        });
                                    });

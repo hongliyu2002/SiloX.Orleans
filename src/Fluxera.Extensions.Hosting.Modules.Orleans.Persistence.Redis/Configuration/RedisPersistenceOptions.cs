@@ -12,7 +12,7 @@ public sealed class RedisPersistenceOptions
     /// <summary>
     ///     The storage descriptions.
     /// </summary>
-    public StorageDescription[] Storages { get; set; } = Array.Empty<StorageDescription>();
+    public StorageSettings[] Storages { get; set; } = Array.Empty<StorageSettings>();
 
     /// <summary>
     ///     Gets the connection strings.
@@ -22,7 +22,7 @@ public sealed class RedisPersistenceOptions
 
     /// <summary>
     /// </summary>
-    public class StorageDescription
+    public class StorageSettings
     {
         /// <summary>
         ///     The name of the connection string.

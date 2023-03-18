@@ -9,7 +9,7 @@ public static class ServiceCollectionExtensions
 {
     /// <summary>
     /// </summary>
-    public const string LogProviderNotSupports = "Log consistency provider does not support.";
+    public const string LogProviderDoesNotSupport = "Log consistency provider does not support.";
 
     /// <summary>
     /// </summary>
@@ -20,21 +20,21 @@ public static class ServiceCollectionExtensions
     {
         return services.AddOrleans(siloBuilder =>
                                    {
-                                       foreach (var provider in options.LogConsistencyProviders)
+                                       foreach (var logConsistency in options.LogConsistencies)
                                        {
-                                           switch (provider.Provider)
+                                           switch (logConsistency.LogProvider)
                                            {
                                                case DevLogConsistencyProvider.LogStorageBased:
-                                                   siloBuilder.AddLogStorageBasedLogConsistencyProvider(provider.Name);
+                                                   siloBuilder.AddLogStorageBasedLogConsistencyProvider(logConsistency.Name);
                                                    break;
                                                case DevLogConsistencyProvider.StateStorageBased:
-                                                   siloBuilder.AddStateStorageBasedLogConsistencyProvider(provider.Name);
+                                                   siloBuilder.AddStateStorageBasedLogConsistencyProvider(logConsistency.Name);
                                                    break;
                                                case DevLogConsistencyProvider.CustomStorageBased:
-                                                   siloBuilder.AddCustomStorageBasedLogConsistencyProvider(provider.Name, provider.PrimaryCluster);
+                                                   siloBuilder.AddCustomStorageBasedLogConsistencyProvider(logConsistency.Name, logConsistency.PrimaryCluster);
                                                    break;
                                                default:
-                                                   throw new ArgumentOutOfRangeException(nameof(provider.Provider), LogProviderNotSupports);
+                                                   throw new ArgumentOutOfRangeException(nameof(logConsistency.LogProvider), LogProviderDoesNotSupport);
                                            }
                                        }
                                    });

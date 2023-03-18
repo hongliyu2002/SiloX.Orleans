@@ -12,11 +12,11 @@ public sealed class DevEventSourcingOptions
     /// <summary>
     ///     The storage descriptions.
     /// </summary>
-    public LogConsistencyProviderDescription[] LogConsistencyProviders { get; set; } = Array.Empty<LogConsistencyProviderDescription>();
+    public LogConsistencySettings[] LogConsistencies { get; set; } = Array.Empty<LogConsistencySettings>();
 
     /// <summary>
     /// </summary>
-    public class LogConsistencyProviderDescription
+    public class LogConsistencySettings
     {
         /// <summary>
         ///     The name of the log Consistency provider.
@@ -27,10 +27,10 @@ public sealed class DevEventSourcingOptions
         ///     The type of the log Consistency provider.
         /// </summary>
         [Newtonsoft.Json.JsonConverter(typeof(JsonStringEnumConverter))]
-        public DevLogConsistencyProvider Provider { get; set; } = DevLogConsistencyProvider.LogStorageBased;
+        public DevLogConsistencyProvider LogProvider { get; set; } = DevLogConsistencyProvider.LogStorageBased;
 
         /// <summary>
-        ///     The name of the log Consistency provider.
+        ///     The primary cluster of the custom storage based log Consistency provider.
         /// </summary>
         public string? PrimaryCluster { get; set; }
     }

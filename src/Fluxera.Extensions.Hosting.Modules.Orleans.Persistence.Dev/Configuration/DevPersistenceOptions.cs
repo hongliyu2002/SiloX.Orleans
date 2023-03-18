@@ -11,11 +11,11 @@ public sealed class DevPersistenceOptions
     /// <summary>
     ///     The storage descriptions.
     /// </summary>
-    public StorageDescription[] Storages { get; set; } = Array.Empty<StorageDescription>();
+    public StorageSettings[] Storages { get; set; } = Array.Empty<StorageSettings>();
 
     /// <summary>
     /// </summary>
-    public class StorageDescription
+    public class StorageSettings
     {
         /// <summary>
         ///     The name of the connection string.
