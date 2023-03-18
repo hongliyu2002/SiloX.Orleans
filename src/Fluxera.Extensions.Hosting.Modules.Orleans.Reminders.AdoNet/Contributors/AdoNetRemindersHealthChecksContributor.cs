@@ -13,24 +13,23 @@ internal sealed class AdoNetRemindersHealthChecksContributor : IHealthChecksCont
     {
         var remindersOptions = context.Services.GetObject<AdoNetRemindersOptions>();
         remindersOptions.ConnectionStrings = context.Services.GetObject<ConnectionStrings>();
-        if (!remindersOptions.ConnectionStrings.TryGetValue(remindersOptions.ConnectionStringName, out var connectionString))
+        if (remindersOptions.ConnectionStrings.TryGetValue(remindersOptions.ConnectionStringName, out var connectionString))
         {
-            return;
-        }
-        switch (remindersOptions.DbProvider)
-        {
-            case AdoNetDbProvider.SQLServer:
-                builder.AddSqlServer(connectionString, "SELECT 1;", null, "AdoNetReminders", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
-                break;
-            case AdoNetDbProvider.PostgreSQL:
-                builder.AddNpgSql(connectionString, "SELECT 1;", null, "AdoNetReminders", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
-                break;
-            case AdoNetDbProvider.MySQL:
-                builder.AddMySql(connectionString, "AdoNetReminders", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
-                break;
-            case AdoNetDbProvider.Oracle:
-                builder.AddOracle(connectionString, "select * from v$version", null, "AdoNetReminders", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
-                break;
+            switch (remindersOptions.DbProvider)
+            {
+                case AdoNetDbProvider.SQLServer:
+                    builder.AddSqlServer(connectionString, "SELECT 1;", null, "AdoNetReminders", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
+                    break;
+                case AdoNetDbProvider.PostgreSQL:
+                    builder.AddNpgSql(connectionString, "SELECT 1;", null, "AdoNetReminders", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
+                    break;
+                case AdoNetDbProvider.MySQL:
+                    builder.AddMySql(connectionString, "AdoNetReminders", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
+                    break;
+                case AdoNetDbProvider.Oracle:
+                    builder.AddOracle(connectionString, "select * from v$version", null, "AdoNetReminders", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
+                    break;
+            }
         }
     }
 }

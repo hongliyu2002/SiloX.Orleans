@@ -13,10 +13,9 @@ internal sealed class RedisRemindersHealthChecksContributor : IHealthChecksContr
     {
         var remindersOptions = context.Services.GetObject<RedisRemindersOptions>();
         remindersOptions.ConnectionStrings = context.Services.GetObject<ConnectionStrings>();
-        if (!remindersOptions.ConnectionStrings.TryGetValue(remindersOptions.ConnectionStringName, out var connectionString))
+        if (remindersOptions.ConnectionStrings.TryGetValue(remindersOptions.ConnectionStringName, out var connectionString))
         {
-            return;
+            builder.AddRedis(connectionString, "RedisReminders", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
         }
-        builder.AddRedis(connectionString, "RedisReminders", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
     }
 }

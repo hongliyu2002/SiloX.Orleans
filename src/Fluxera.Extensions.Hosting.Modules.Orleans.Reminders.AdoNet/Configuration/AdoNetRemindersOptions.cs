@@ -26,6 +26,11 @@ public sealed class AdoNetRemindersOptions
     public AdoNetDbProvider DbProvider { get; set; } = AdoNetDbProvider.SQLServer;
 
     /// <summary>
+    ///     The stage of silo lifecycle where storage should be initialized.  Storage must be initialized prior to use.
+    /// </summary>
+    public int InitStage { get; set; } = 10000;
+
+    /// <summary>
     ///     Gets the connection strings.
     /// </summary>
     [Redact]
