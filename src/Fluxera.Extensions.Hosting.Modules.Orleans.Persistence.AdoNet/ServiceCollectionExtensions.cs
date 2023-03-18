@@ -7,7 +7,9 @@ namespace Fluxera.Extensions.Hosting.Modules.Orleans.Persistence.AdoNet;
 /// </summary>
 public static class ServiceCollectionExtensions
 {
-    private const string notSupportsMessage = "Database provider does not support.";
+    /// <summary>
+    ///  </summary>
+    public const string DbProviderNotSupports = "Database provider does not support.";
 
     /// <summary>
     /// </summary>
@@ -32,7 +34,7 @@ public static class ServiceCollectionExtensions
                                                                                                                  AdoNetDbProvider.PostgreSQL => AdoNetInvariants.InvariantNamePostgreSql,
                                                                                                                  AdoNetDbProvider.MySQL => AdoNetInvariants.InvariantNameMySql,
                                                                                                                  AdoNetDbProvider.Oracle => AdoNetInvariants.InvariantNameOracleDatabase,
-                                                                                                                 _ => throw new ArgumentOutOfRangeException(nameof(storage.DbProvider), notSupportsMessage)
+                                                                                                                 _ => throw new ArgumentOutOfRangeException(nameof(storage.DbProvider), DbProviderNotSupports)
                                                                                                              };
                                                                                      persistence.InitStage = storage.InitStage;
                                                                                  });
