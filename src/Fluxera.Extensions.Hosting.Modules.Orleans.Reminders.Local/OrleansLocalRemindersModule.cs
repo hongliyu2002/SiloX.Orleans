@@ -8,6 +8,7 @@ namespace Fluxera.Extensions.Hosting.Modules.Orleans.Reminders.Local;
 /// <summary>
 /// </summary>
 [PublicAPI]
+[DependsOn<OrleansRemindersModule>]
 [DependsOn<ConfigurationModule>]
 public class OrleansLocalRemindersModule : ConfigureServicesModule
 {
@@ -18,7 +19,7 @@ public class OrleansLocalRemindersModule : ConfigureServicesModule
     }
 
     /// <inheritdoc />
-    public override void ConfigureServices(IServiceConfigurationContext context)
+    public override void PostConfigureServices(IServiceConfigurationContext context)
     {
         var remindersOptions = context.Services.GetObject<LocalRemindersOptions>();
         context.Log("AddOrleansLocalReminders", services => services.AddOrleansLocalReminders(remindersOptions));

@@ -17,7 +17,7 @@ public class OrleansRemindersModule : ConfigureServicesModule
     }
 
     /// <inheritdoc />
-    public override void ConfigureServices(IServiceConfigurationContext context)
+    public override void PostConfigureServices(IServiceConfigurationContext context)
     {
         var remindersOptions = context.Services.GetOptions<RemindersOptions>();
         context.Log("AddOrleansReminders", services => services.AddOrleansReminders(remindersOptions));

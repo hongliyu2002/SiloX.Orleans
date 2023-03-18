@@ -8,6 +8,7 @@ namespace Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.Local;
 /// <summary>
 /// </summary>
 [PublicAPI]
+[DependsOn<OrleansClusteringModule>]
 [DependsOn<ConfigurationModule>]
 public class OrleansLocalClusteringModule : ConfigureServicesModule
 {
@@ -18,7 +19,7 @@ public class OrleansLocalClusteringModule : ConfigureServicesModule
     }
 
     /// <inheritdoc />
-    public override void ConfigureServices(IServiceConfigurationContext context)
+    public override void PostConfigureServices(IServiceConfigurationContext context)
     {
         var clusteringOptions = context.Services.GetObject<LocalClusteringOptions>();
         context.Log("AddOrleansLocalClustering", services => services.AddOrleansLocalClustering(clusteringOptions));

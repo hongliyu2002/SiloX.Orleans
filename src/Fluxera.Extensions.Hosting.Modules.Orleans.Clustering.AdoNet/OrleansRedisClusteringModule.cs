@@ -1,5 +1,6 @@
 ﻿using Fluxera.Extensions.DependencyInjection;
 using Fluxera.Extensions.Hosting.Modules.Configuration;
+using Fluxera.Extensions.Hosting.Modules.DataManagement;
 using Fluxera.Extensions.Hosting.Modules.HealthChecks;
 using Fluxera.Extensions.Hosting.Modules.OpenTelemetry;
 using Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.AdoNet.Contributors;
@@ -10,6 +11,10 @@ namespace Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.AdoNet;
 /// <summary>
 /// </summary>
 [PublicAPI]
+[DependsOn<OrleansClusteringModule>]
+[DependsOn<HealthChecksModule>]
+[DependsOn<DataManagementModule>]
+[DependsOn<OpenTelemetryModule>]
 [DependsOn<ConfigurationModule>]
 public class OrleansAdoNetClusteringModule : ConfigureServicesModule
 {
@@ -22,7 +27,7 @@ public class OrleansAdoNetClusteringModule : ConfigureServicesModule
     }
 
     /// <inheritdoc />
-    public override void ConfigureServices(IServiceConfigurationContext context)
+    public override void PostConfigureServices(IServiceConfigurationContext context)
     {
         var clusteringOptions = context.Services.GetObject<AdoNetClusteringOptions>();
         context.Log("AddOrleansAdoNetClustering", services => services.AddOrleansAdoNetClustering(clusteringOptions));

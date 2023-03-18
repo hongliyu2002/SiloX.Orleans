@@ -8,6 +8,7 @@ namespace Fluxera.Extensions.Hosting.Modules.Orleans.Persistence.Local;
 /// <summary>
 /// </summary>
 [PublicAPI]
+[DependsOn<OrleansPersistenceModule>]
 [DependsOn<ConfigurationModule>]
 public class OrleansLocalPersistenceModule : ConfigureServicesModule
 {
@@ -18,7 +19,7 @@ public class OrleansLocalPersistenceModule : ConfigureServicesModule
     }
 
     /// <inheritdoc />
-    public override void ConfigureServices(IServiceConfigurationContext context)
+    public override void PostConfigureServices(IServiceConfigurationContext context)
     {
         var persistenceOptions = context.Services.GetObject<LocalPersistenceOptions>();
         context.Log("AddOrleansLocalPersistence", services => services.AddOrleansLocalPersistence(persistenceOptions));
