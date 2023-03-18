@@ -7,5 +7,4 @@ namespace Fluxera.Extensions.Hosting.Modules.Orleans.EventSourcing;
 [PublicAPI]
 public sealed class EventSourcingOptions
 {
-
 }

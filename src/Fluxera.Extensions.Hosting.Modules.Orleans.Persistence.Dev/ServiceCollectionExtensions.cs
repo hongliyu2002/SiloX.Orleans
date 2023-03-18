@@ -19,10 +19,10 @@ public static class ServiceCollectionExtensions
                                        foreach (var storage in options.StorageOptions)
                                        {
                                            siloBuilder.AddMemoryGrainStorage(storage.Name,
-                                                                             storageOptions =>
+                                                                             persistence =>
                                                                              {
-                                                                                 storageOptions.NumStorageGrains = storage.NumStorageGrains;
-                                                                                 storageOptions.InitStage = storage.InitStage;
+                                                                                 persistence.NumStorageGrains = storage.NumStorageGrains;
+                                                                                 persistence.InitStage = storage.InitStage;
                                                                              });
                                        }
                                    });
