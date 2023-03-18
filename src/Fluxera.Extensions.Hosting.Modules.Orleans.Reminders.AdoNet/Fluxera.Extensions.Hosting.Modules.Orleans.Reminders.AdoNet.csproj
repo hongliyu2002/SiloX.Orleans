@@ -31,17 +31,15 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AspNetCore.HealthChecks.MySql" Version="7.0.0-rc2.4" />
-        <PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="7.0.0-rc2.6" />
-        <PackageReference Include="AspNetCore.HealthChecks.Oracle" Version="7.0.0-rc2.6" />
-        <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="7.0.0-rc2.10" />
+        <PackageReference Include="AspNetCore.HealthChecks.MySql" Version="6.0.2" />
+        <PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="6.0.2" />
+        <PackageReference Include="AspNetCore.HealthChecks.Oracle" Version="6.0.3" />
+        <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="6.0.2" />
         <PackageReference Include="Fluxera.Extensions.DataManagement" Version="7.1.2" />
         <PackageReference Include="Fluxera.Extensions.Hosting.Modules.DataManagement" Version="7.1.4" />
         <PackageReference Include="Fluxera.Extensions.Hosting.Modules.HealthChecks" Version="7.1.4" />
         <PackageReference Include="Fluxera.Extensions.Hosting.Modules.OpenTelemetry" Version="7.1.4" />
         <PackageReference Include="Microsoft.Orleans.Reminders.AdoNet" Version="7.1.0" />
-        <PackageReference Include="OpenTelemetry.Instrumentation.MySqlData" Version="1.0.0-beta.6" />
-        <PackageReference Include="OpenTelemetry.Instrumentation.SqlClient" Version="1.0.0-rc9.14" />
     </ItemGroup>
 
     <ItemGroup>
@@ -55,10 +53,6 @@
         <None Include=".\README.md" Pack="true" PackagePath="">
             <Link>README.md</Link>
         </None>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="SqlScripts" />
     </ItemGroup>
 
 </Project>

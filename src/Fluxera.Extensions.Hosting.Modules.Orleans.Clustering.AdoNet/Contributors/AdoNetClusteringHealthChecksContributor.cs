@@ -18,7 +18,7 @@ internal sealed class AdoNetClusteringHealthChecksContributor : IHealthChecksCon
             switch (clusteringOptions.DbProvider)
             {
                 case AdoNetDbProvider.SQLServer:
-                    builder.AddSqlServer(connectionString, "SELECT 1;", null, "AdoNetClustering", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
+                    builder.AddSqlServer(connectionString, "SELECT 1;", "AdoNetClustering", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
                     break;
                 case AdoNetDbProvider.PostgreSQL:
                     builder.AddNpgSql(connectionString, "SELECT 1;", null, "AdoNetClustering", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
@@ -27,7 +27,7 @@ internal sealed class AdoNetClusteringHealthChecksContributor : IHealthChecksCon
                     builder.AddMySql(connectionString, "AdoNetClustering", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
                     break;
                 case AdoNetDbProvider.Oracle:
-                    builder.AddOracle(connectionString, "select * from v$version", null, "AdoNetClustering", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
+                    builder.AddOracle(connectionString, "select * from v$version", "AdoNetClustering", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
                     break;
             }
         }

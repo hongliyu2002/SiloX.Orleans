@@ -4,9 +4,9 @@
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <PackageId>Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.Redis</PackageId>
-        <Title>Redis clustering module</Title>
-        <Description>Redis clustering module that for Microsoft Orleans.</Description>
+        <PackageId>Fluxera.Extensions.Hosting.Modules.Orleans.Persistence.EventStore</PackageId>
+        <Title>EventStore persistence module</Title>
+        <Description>EventStore persistence module that for Microsoft Orleans.</Description>
         <Version>7.1.0</Version>
         <AssemblyVersion>7.1.0.0</AssemblyVersion>
         <FileVersion>7.1.0.0</FileVersion>
@@ -15,7 +15,7 @@
         <RepositoryUrl>https://github.com/hongliyu2002/Fluxera.Extensions.Orleans</RepositoryUrl>
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageTags>library;extensions;hosting;modular;orleans;clustering;orleans-clustering</PackageTags>
+        <PackageTags>library;extensions;hosting;modular;orleans;persistence;orleans-persistence</PackageTags>
         <PackageProjectUrl>https://github.com/hongliyu2002/Fluxera.Extensions.Orleans</PackageProjectUrl>
         <PackageIcon>logo_128.png</PackageIcon>
         <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -27,20 +27,20 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <OrleansBuildTimeCodeGen>true</OrleansBuildTimeCodeGen>
-        <RootNamespace>Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.Redis</RootNamespace>
+        <RootNamespace>Fluxera.Extensions.Hosting.Modules.Orleans.Persistence.EventStore</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AspNetCore.HealthChecks.Redis" Version="6.0.4" />
+        <PackageReference Include="AspNetCore.HealthChecks.EventStore.gRPC" Version="6.0.1" />
         <PackageReference Include="Fluxera.Extensions.DataManagement" Version="7.1.2" />
         <PackageReference Include="Fluxera.Extensions.Hosting.Modules.DataManagement" Version="7.1.4" />
         <PackageReference Include="Fluxera.Extensions.Hosting.Modules.HealthChecks" Version="7.1.4" />
         <PackageReference Include="Fluxera.Extensions.Hosting.Modules.OpenTelemetry" Version="7.1.4" />
-        <PackageReference Include="Microsoft.Orleans.Clustering.Redis" Version="7.1.0-beta1" />
+        <PackageReference Include="Orleans.Persistence.EventStore" Version="7.1.0" />
     </ItemGroup>
-    
+
     <ItemGroup>
-        <ProjectReference Include="..\Fluxera.Extensions.Hosting.Modules.Orleans.Clustering\Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.csproj" />
+        <ProjectReference Include="..\Fluxera.Extensions.Hosting.Modules.Orleans.Persistence\Fluxera.Extensions.Hosting.Modules.Orleans.Persistence.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -51,5 +51,5 @@
             <Link>README.md</Link>
         </None>
     </ItemGroup>
-    
+
 </Project>

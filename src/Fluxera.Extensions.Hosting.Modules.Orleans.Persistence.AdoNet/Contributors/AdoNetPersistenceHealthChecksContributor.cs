@@ -20,7 +20,7 @@ internal sealed class AdoNetPersistenceHealthChecksContributor : IHealthChecksCo
                 switch (storage.DbProvider)
                 {
                     case AdoNetDbProvider.SQLServer:
-                        builder.AddSqlServer(connectionString, "SELECT 1;", null, $"AdoNetPersistence-{storage.ConnectionStringName}", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
+                        builder.AddSqlServer(connectionString, "SELECT 1;", $"AdoNetPersistence-{storage.ConnectionStringName}", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
                         break;
                     case AdoNetDbProvider.PostgreSQL:
                         builder.AddNpgSql(connectionString, "SELECT 1;", null, $"AdoNetPersistence-{storage.ConnectionStringName}", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
@@ -29,7 +29,7 @@ internal sealed class AdoNetPersistenceHealthChecksContributor : IHealthChecksCo
                         builder.AddMySql(connectionString, $"AdoNetPersistence-{storage.ConnectionStringName}", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
                         break;
                     case AdoNetDbProvider.Oracle:
-                        builder.AddOracle(connectionString, "select * from v$version", null, $"AdoNetPersistence-{storage.ConnectionStringName}", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
+                        builder.AddOracle(connectionString, "select * from v$version", $"AdoNetPersistence-{storage.ConnectionStringName}", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
                         break;
                 }
             }

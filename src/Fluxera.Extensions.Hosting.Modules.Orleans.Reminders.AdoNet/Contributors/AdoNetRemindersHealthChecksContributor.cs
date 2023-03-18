@@ -18,7 +18,7 @@ internal sealed class AdoNetRemindersHealthChecksContributor : IHealthChecksCont
             switch (remindersOptions.DbProvider)
             {
                 case AdoNetDbProvider.SQLServer:
-                    builder.AddSqlServer(connectionString, "SELECT 1;", null, "AdoNetReminders", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
+                    builder.AddSqlServer(connectionString, "SELECT 1;", "AdoNetReminders", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
                     break;
                 case AdoNetDbProvider.PostgreSQL:
                     builder.AddNpgSql(connectionString, "SELECT 1;", null, "AdoNetReminders", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
@@ -27,7 +27,7 @@ internal sealed class AdoNetRemindersHealthChecksContributor : IHealthChecksCont
                     builder.AddMySql(connectionString, "AdoNetReminders", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
                     break;
                 case AdoNetDbProvider.Oracle:
-                    builder.AddOracle(connectionString, "select * from v$version", null, "AdoNetReminders", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
+                    builder.AddOracle(connectionString, "select * from v$version", "AdoNetReminders", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
                     break;
             }
         }
