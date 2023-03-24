@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.Dev;
+namespace Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.InMemory;
 
 /// <summary>
 /// </summary>
@@ -12,7 +12,7 @@ public static class ServiceCollectionExtensions
     /// <param name="services"></param>
     /// <param name="options"></param>
     /// <returns></returns>
-    public static IServiceCollection AddOrleansDevClustering(this IServiceCollection services, DevClusteringOptions options)
+    public static IServiceCollection AddOrleansInMemoryClustering(this IServiceCollection services, InMemoryClusteringOptions options)
     {
         if (options.UsedByClient)
         {

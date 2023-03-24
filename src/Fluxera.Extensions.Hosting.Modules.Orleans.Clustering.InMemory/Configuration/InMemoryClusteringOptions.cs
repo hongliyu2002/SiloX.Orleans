@@ -1,12 +1,12 @@
 ﻿using JetBrains.Annotations;
 using Orleans.Configuration;
 
-namespace Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.Dev;
+namespace Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.InMemory;
 
 /// <summary>
 /// </summary>
 [PublicAPI]
-public sealed class DevClusteringOptions
+public sealed class InMemoryClusteringOptions
 {
     /// <summary>
     ///     Is this configuration intended for client-side use?

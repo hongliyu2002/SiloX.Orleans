@@ -21,7 +21,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.Modules.Orleans.Reminders", "src\Fluxera.Extensions.Hosting.Modules.Orleans.Reminders\Fluxera.Extensions.Hosting.Modules.Orleans.Reminders.csproj", "{CC7CC142-FA42-410C-89DE-CA5648910B20}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.Dev", "src\Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.Dev\Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.Dev.csproj", "{006331C7-56EE-4B76-9C58-C2D3DB8A4013}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.InMemory", "src\Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.InMemory\Fluxera.Extensions.Hosting.Modules.Orleans.Clustering.InMemory.csproj", "{006331C7-56EE-4B76-9C58-C2D3DB8A4013}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.Modules.Orleans.Reminders.Dev", "src\Fluxera.Extensions.Hosting.Modules.Orleans.Reminders.Dev\Fluxera.Extensions.Hosting.Modules.Orleans.Reminders.Dev.csproj", "{72777DA7-CF6A-4EEF-BA66-9811FE31BD77}"
 EndProject
@@ -43,7 +43,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.Modules.Orleans.EventSourcing.EventStore", "src\Fluxera.Extensions.Hosting.Modules.Orleans.EventSourcing.EventStore\Fluxera.Extensions.Hosting.Modules.Orleans.EventSourcing.EventStore.csproj", "{06953E44-65C1-4A6C-B4B1-A081C5E8C263}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.Modules.Orleans.EventSourcing.Dev", "src\Fluxera.Extensions.Hosting.Modules.Orleans.EventSourcing.Dev\Fluxera.Extensions.Hosting.Modules.Orleans.EventSourcing.Dev.csproj", "{F32E81B1-7D17-448A-9925-71D88F23377B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.Modules.Orleans.EventSourcing.InMemory", "src\Fluxera.Extensions.Hosting.Modules.Orleans.EventSourcing.InMemory\Fluxera.Extensions.Hosting.Modules.Orleans.EventSourcing.InMemory.csproj", "{F32E81B1-7D17-448A-9925-71D88F23377B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluxera.Extensions.Hosting.Modules.Orleans.Streaming", "src\Fluxera.Extensions.Hosting.Modules.Orleans.Streaming\Fluxera.Extensions.Hosting.Modules.Orleans.Streaming.csproj", "{23EFCC94-5355-434F-B856-A111E19D331D}"
 EndProject

@@ -1,8 +1,8 @@
-﻿namespace Fluxera.Extensions.Hosting.Modules.Orleans.EventSourcing.Dev;
+﻿namespace Fluxera.Extensions.Hosting.Modules.Orleans.EventSourcing.InMemory;
 
 /// <summary>
 /// </summary>
-public enum DevLogProvider
+public enum InMemoryLogProvider
 {
     /// <summary>
     /// </summary>

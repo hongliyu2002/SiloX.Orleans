@@ -2,23 +2,23 @@
 using JetBrains.Annotations;
 using Orleans.Providers;
 
-namespace Fluxera.Extensions.Hosting.Modules.Orleans.EventSourcing.Dev;
+namespace Fluxera.Extensions.Hosting.Modules.Orleans.EventSourcing.InMemory;
 
 /// <summary>
 /// </summary>
 [PublicAPI]
-public sealed class DevEventSourcingOptions
+public sealed class InMemoryEventSourcingOptions
 {
     /// <summary>
     ///     The log Consistency provider options.
     /// </summary>
-    public DevEventSourcingLogConsistencyOptions[] LogConsistencies { get; set; } = Array.Empty<DevEventSourcingLogConsistencyOptions>();
+    public InMemoryEventSourcingLogConsistencyOptions[] LogConsistencies { get; set; } = Array.Empty<InMemoryEventSourcingLogConsistencyOptions>();
 }
 
 /// <summary>
 /// </summary>
 [PublicAPI]
-public sealed class DevEventSourcingLogConsistencyOptions
+public sealed class InMemoryEventSourcingLogConsistencyOptions
 {
     /// <summary>
     ///     The name of the log Consistency provider.
@@ -28,8 +28,8 @@ public sealed class DevEventSourcingLogConsistencyOptions
     /// <summary>
     ///     The type of the log Consistency provider.
     /// </summary>
-    [Newtonsoft.Json.JsonConverter(typeof(JsonStringEnumConverter))]
-    public DevLogProvider LogProvider { get; set; } = DevLogProvider.LogBased;
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public InMemoryLogProvider LogProvider { get; set; } = InMemoryLogProvider.LogBased;
 
     /// <summary>
     ///     The primary cluster of the custom storage based log Consistency provider.

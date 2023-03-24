@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Fluxera.Extensions.Hosting.Modules.Orleans.EventSourcing.Dev;
+namespace Fluxera.Extensions.Hosting.Modules.Orleans.EventSourcing.InMemory;
 
 /// <summary>
 /// </summary>
@@ -16,7 +16,7 @@ public static class ServiceCollectionExtensions
     /// <param name="services"></param>
     /// <param name="options"></param>
     /// <returns></returns>
-    public static IServiceCollection AddOrleansDevEventSourcing(this IServiceCollection services, DevEventSourcingOptions options)
+    public static IServiceCollection AddOrleansInMemoryEventSourcing(this IServiceCollection services, InMemoryEventSourcingOptions options)
     {
         return services.AddOrleans(siloBuilder =>
                                    {
@@ -24,13 +24,13 @@ public static class ServiceCollectionExtensions
                                        {
                                            switch (logConsistency.LogProvider)
                                            {
-                                               case DevLogProvider.LogBased:
+                                               case InMemoryLogProvider.LogBased:
                                                    siloBuilder.AddLogStorageBasedLogConsistencyProvider(logConsistency.Name);
                                                    break;
-                                               case DevLogProvider.StateBased:
+                                               case InMemoryLogProvider.StateBased:
                                                    siloBuilder.AddStateStorageBasedLogConsistencyProvider(logConsistency.Name);
                                                    break;
-                                               case DevLogProvider.CustomBased:
+                                               case InMemoryLogProvider.CustomBased:
                                                    siloBuilder.AddCustomStorageBasedLogConsistencyProvider(logConsistency.Name, logConsistency.PrimaryCluster);
                                                    break;
                                                default:
