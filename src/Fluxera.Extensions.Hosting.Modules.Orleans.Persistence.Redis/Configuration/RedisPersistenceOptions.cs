@@ -40,5 +40,5 @@ public sealed class RedisPersistenceStorageOptions
     /// <summary>
     ///     The stage of silo lifecycle where storage should be initialized.  Storage must be initialized prior to use.
     /// </summary>
-    public int InitStage { get; set; } = 10000;
+    public int InitStage { get; set; } = ServiceLifecycleStage.ApplicationServices;
 }

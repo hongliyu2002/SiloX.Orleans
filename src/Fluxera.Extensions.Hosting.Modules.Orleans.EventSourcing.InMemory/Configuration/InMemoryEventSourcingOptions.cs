@@ -12,7 +12,7 @@ public sealed class InMemoryEventSourcingOptions
     /// <summary>
     ///     The log Consistency provider options.
     /// </summary>
-    public InMemoryEventSourcingLogConsistencyOptions[] LogConsistencies { get; set; } = Array.Empty<InMemoryEventSourcingLogConsistencyOptions>();
+    public InMemoryEventSourcingLogConsistencyOptions[] LogConsistencyOptions { get; set; } = Array.Empty<InMemoryEventSourcingLogConsistencyOptions>();
 }
 
 /// <summary>

@@ -18,7 +18,7 @@ public static class ServiceCollectionExtensions
     {
         return services.AddOrleans(siloBuilder =>
                                    {
-                                       foreach (var logConsistency in options.LogConsistencies)
+                                       foreach (var logConsistency in options.LogConsistencyOptions)
                                        {
                                            if (options.ConnectionStrings.TryGetValue(logConsistency.ConnectionStringName, out var connectionString))
                                            {

@@ -16,13 +16,11 @@ public sealed class InMemoryPersistenceOptions
 
 /// <summary>
 /// </summary>
-/// <summary>
-/// </summary>
 [PublicAPI]
 public sealed class InMemoryPersistenceStorageOptions
 {
     /// <summary>
-    ///     The name of the connection string.
+    ///     The name of the connection.
     /// </summary>
     public string Name { get; set; } = ProviderConstants.DEFAULT_STORAGE_PROVIDER_NAME;
 
@@ -34,5 +32,5 @@ public sealed class InMemoryPersistenceStorageOptions
     /// <summary>
     ///     The stage of silo lifecycle where storage should be initialized.  Storage must be initialized prior to use.
     /// </summary>
-    public int InitStage { get; set; } = 10000;
+    public int InitStage { get; set; } = ServiceLifecycleStage.ApplicationServices;
 }

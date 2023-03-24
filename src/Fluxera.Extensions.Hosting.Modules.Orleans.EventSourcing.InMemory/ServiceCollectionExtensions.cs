@@ -20,7 +20,7 @@ public static class ServiceCollectionExtensions
     {
         return services.AddOrleans(siloBuilder =>
                                    {
-                                       foreach (var logConsistency in options.LogConsistencies)
+                                       foreach (var logConsistency in options.LogConsistencyOptions)
                                        {
                                            switch (logConsistency.LogProvider)
                                            {

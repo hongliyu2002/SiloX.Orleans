@@ -23,11 +23,8 @@ public static class ServiceCollectionExtensions
         }
         return services.AddOrleans(siloBuilder =>
                                    {
-                                       // siloBuilder.Configure<StreamingOptions>(streamingOptions =>
+                                       // siloBuilder.Configure<StreamingOptions>(streaming =>
                                        //                                         {
-                                       //                                             streamingOptions.MinimumStreamingPeriod = options.MinimumStreamingPeriod;
-                                       //                                             streamingOptions.RefreshStreamingListPeriod = options.RefreshStreamingListPeriod;
-                                       //                                             streamingOptions.InitializationTimeout = options.InitializationTimeout;
                                        //                                         });
                                        siloBuilder.AddStreaming();
                                    });

@@ -12,7 +12,7 @@ public sealed class EventStoreEventSourcingOptions
     /// <summary>
     ///     The log Consistency provider options.
     /// </summary>
-    public EventStoreEventSourcingLogConsistencyOptions[] LogConsistencies { get; set; } = Array.Empty<EventStoreEventSourcingLogConsistencyOptions>();
+    public EventStoreEventSourcingLogConsistencyOptions[] LogConsistencyOptions { get; set; } = Array.Empty<EventStoreEventSourcingLogConsistencyOptions>();
 
     /// <summary>
     ///     Gets the connection strings.
@@ -46,5 +46,5 @@ public sealed class EventStoreEventSourcingLogConsistencyOptions
     /// <summary>
     ///     The stage of silo lifecycle where storage should be initialized.  Storage must be initialized prior to use.
     /// </summary>
-    public int InitStage { get; set; } = 10000;
+    public int InitStage { get; set; } = ServiceLifecycleStage.ApplicationServices;
 }
