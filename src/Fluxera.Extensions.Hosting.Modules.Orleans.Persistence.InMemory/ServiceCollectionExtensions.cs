@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Fluxera.Extensions.Hosting.Modules.Orleans.Persistence.Dev;
+namespace Fluxera.Extensions.Hosting.Modules.Orleans.Persistence.InMemory;
 
 /// <summary>
 /// </summary>
@@ -12,7 +12,7 @@ public static class ServiceCollectionExtensions
     /// <param name="services"></param>
     /// <param name="options"></param>
     /// <returns></returns>
-    public static IServiceCollection AddOrleansDevPersistence(this IServiceCollection services, DevPersistenceOptions options)
+    public static IServiceCollection AddOrleansInMemoryPersistence(this IServiceCollection services, InMemoryPersistenceOptions options)
     {
         return services.AddOrleans(siloBuilder =>
                                    {

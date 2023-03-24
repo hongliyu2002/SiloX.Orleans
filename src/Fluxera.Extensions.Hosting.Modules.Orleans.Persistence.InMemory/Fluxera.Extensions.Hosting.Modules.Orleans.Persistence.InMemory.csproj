@@ -4,9 +4,9 @@
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <PackageId>Fluxera.Extensions.Hosting.Modules.Orleans.Persistence.Dev</PackageId>
-        <Title>Dev persistence module</Title>
-        <Description>Dev persistence module that for Microsoft Orleans.</Description>
+        <PackageId>Fluxera.Extensions.Hosting.Modules.Orleans.Persistence.InMemory</PackageId>
+        <Title>InMemory persistence module</Title>
+        <Description>InMemory persistence module that for Microsoft Orleans.</Description>
         <Version>7.1.0</Version>
         <AssemblyVersion>7.1.0.0</AssemblyVersion>
         <FileVersion>7.1.0.0</FileVersion>
@@ -27,7 +27,6 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <OrleansBuildTimeCodeGen>true</OrleansBuildTimeCodeGen>
-        <RootNamespace>Fluxera.Extensions.Hosting.Modules.Orleans.Persistence.Dev</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>

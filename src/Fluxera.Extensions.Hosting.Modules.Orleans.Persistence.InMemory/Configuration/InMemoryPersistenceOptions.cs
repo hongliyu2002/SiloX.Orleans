@@ -1,17 +1,17 @@
 ﻿using JetBrains.Annotations;
 using Orleans.Providers;
 
-namespace Fluxera.Extensions.Hosting.Modules.Orleans.Persistence.Dev;
+namespace Fluxera.Extensions.Hosting.Modules.Orleans.Persistence.InMemory;
 
 /// <summary>
 /// </summary>
 [PublicAPI]
-public sealed class DevPersistenceOptions
+public sealed class InMemoryPersistenceOptions
 {
     /// <summary>
     ///     The storage options.
     /// </summary>
-    public DevPersistenceStorageOptions[] StorageOptions { get; set; } = Array.Empty<DevPersistenceStorageOptions>();
+    public InMemoryPersistenceStorageOptions[] StorageOptions { get; set; } = Array.Empty<InMemoryPersistenceStorageOptions>();
 }
 
 /// <summary>
@@ -19,7 +19,7 @@ public sealed class DevPersistenceOptions
 /// <summary>
 /// </summary>
 [PublicAPI]
-public sealed class DevPersistenceStorageOptions
+public sealed class InMemoryPersistenceStorageOptions
 {
     /// <summary>
     ///     The name of the connection string.
