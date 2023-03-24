@@ -4,9 +4,9 @@
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <PackageId>Fluxera.Extensions.Hosting.Modules.Orleans.EventSourcing</PackageId>
-        <Title>Event-sourcing module</Title>
-        <Description>Event-sourcing module that for Microsoft Orleans.</Description>
+        <PackageId>Fluxera.Extensions.Hosting.Modules.Orleans.Streaming</PackageId>
+        <Title>Streaming module</Title>
+        <Description>Streaming module that for Microsoft Orleans.</Description>
         <Version>7.1.0</Version>
         <AssemblyVersion>7.1.0.0</AssemblyVersion>
         <FileVersion>7.1.0.0</FileVersion>
@@ -15,7 +15,7 @@
         <RepositoryUrl>https://github.com/hongliyu2002/Fluxera.Extensions.Orleans</RepositoryUrl>
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageTags>library;extensions;hosting;modular;orleans;event-sourcing;orleans-event-sourcing</PackageTags>
+        <PackageTags>library;extensions;hosting;modular;orleans;streaming;orleans-streaming</PackageTags>
         <PackageProjectUrl>https://github.com/hongliyu2002/Fluxera.Extensions.Orleans</PackageProjectUrl>
         <PackageIcon>logo_128.png</PackageIcon>
         <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -27,7 +27,7 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <OrleansBuildTimeCodeGen>true</OrleansBuildTimeCodeGen>
-        <RootNamespace>Fluxera.Extensions.Hosting.Modules.Orleans.EventSourcing</RootNamespace>
+        <RootNamespace>Fluxera.Extensions.Hosting.Modules.Orleans.Streaming</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -40,7 +40,7 @@
         <PackageReference Include="Fluxera.Utilities" Version="7.1.0" />
         <PackageReference Include="Microsoft.NETCore.Platforms" Version="7.0.1" />
         <PackageReference Include="Microsoft.NETCore.Targets" Version="5.0.0" />
-        <PackageReference Include="Microsoft.Orleans.EventSourcing" Version="7.1.1" />
+        <PackageReference Include="Microsoft.Orleans.Streaming" Version="7.1.1" />
         <PackageReference Include="Microsoft.Orleans.Runtime" Version="7.1.1" />
         <PackageReference Include="Microsoft.Orleans.Sdk" Version="7.1.1" />
     </ItemGroup>
@@ -53,5 +53,5 @@
             <Link>README.md</Link>
         </None>
     </ItemGroup>
-    
+
 </Project>

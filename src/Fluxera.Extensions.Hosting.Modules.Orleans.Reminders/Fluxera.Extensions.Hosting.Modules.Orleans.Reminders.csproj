@@ -35,14 +35,14 @@
         <PackageReference Include="Fluxera.Extensions.DependencyInjection.Abstractions" Version="7.1.2" />
         <PackageReference Include="Fluxera.Extensions.Hosting" Version="7.1.3" />
         <PackageReference Include="Fluxera.Extensions.Hosting.Abstractions" Version="7.1.3" />
-        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.Configuration" Version="7.1.4" />
+        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.Configuration" Version="7.1.5" />
         <PackageReference Include="Fluxera.Guards" Version="7.1.0" />
         <PackageReference Include="Fluxera.Utilities" Version="7.1.0" />
         <PackageReference Include="Microsoft.NETCore.Platforms" Version="7.0.1" />
         <PackageReference Include="Microsoft.NETCore.Targets" Version="5.0.0" />
-        <PackageReference Include="Microsoft.Orleans.Reminders" Version="7.1.0" />
-        <PackageReference Include="Microsoft.Orleans.Runtime" Version="7.1.0" />
-        <PackageReference Include="Microsoft.Orleans.Sdk" Version="7.1.0" />
+        <PackageReference Include="Microsoft.Orleans.Reminders" Version="7.1.1" />
+        <PackageReference Include="Microsoft.Orleans.Runtime" Version="7.1.1" />
+        <PackageReference Include="Microsoft.Orleans.Sdk" Version="7.1.1" />
     </ItemGroup>
 
     <ItemGroup>
