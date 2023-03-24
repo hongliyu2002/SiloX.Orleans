@@ -32,6 +32,18 @@ public sealed class EventStoreEventSourcingLogConsistencyOptions
     public string ConnectionStringName { get; set; } = ProviderConstants.DEFAULT_LOG_CONSISTENCY_PROVIDER_NAME;
 
     /// <summary>
+    ///     The user name of credentials that have permissions to append events.
+    /// </summary>
+    [Redact]
+    public string? Username { get; set; }
+
+    /// <summary>
+    ///     The password of credentials that have permissions to append events.
+    /// </summary>
+    [Redact]
+    public string? Password { get; set; }
+
+    /// <summary>
     ///     The stage of silo lifecycle where storage should be initialized.  Storage must be initialized prior to use.
     /// </summary>
     public int InitStage { get; set; } = 10000;

@@ -33,6 +33,18 @@ public sealed class EventStorePersistenceStorageOptions
     public string ConnectionStringName { get; set; } = ProviderConstants.DEFAULT_STORAGE_PROVIDER_NAME;
 
     /// <summary>
+    ///     The user name of credentials that have permissions to append events.
+    /// </summary>
+    [Redact]
+    public string? Username { get; set; }
+
+    /// <summary>
+    ///     The password of credentials that have permissions to append events.
+    /// </summary>
+    [Redact]
+    public string? Password { get; set; }
+
+    /// <summary>
     ///     Whether or not to delete state during a clear operation.
     /// </summary>
     public bool DeleteStateOnClear { get; set; }

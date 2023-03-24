@@ -1,4 +1,5 @@
 ﻿using EventStore.Client;
+using Fluxera.Utilities.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -25,6 +26,10 @@ public static class ServiceCollectionExtensions
                                                                                      persistence =>
                                                                                      {
                                                                                          persistence.ClientSettings = EventStoreClientSettings.Create(connectionString);
+                                                                                         if (storage is { Username: { }, Password: { } } && storage.Username.IsNotNullOrEmpty() && storage.Password.IsNotNullOrEmpty())
+                                                                                         {
+                                                                                             persistence.Credentials = new UserCredentials(storage.Username, storage.Password);
+                                                                                         }
                                                                                          persistence.DeleteStateOnClear = storage.DeleteStateOnClear;
                                                                                          persistence.InitStage = storage.InitStage;
                                                                                      });

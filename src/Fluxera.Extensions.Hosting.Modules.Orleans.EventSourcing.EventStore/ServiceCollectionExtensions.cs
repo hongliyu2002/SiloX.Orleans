@@ -1,4 +1,5 @@
 ﻿using EventStore.Client;
+using Fluxera.Utilities.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -25,6 +26,10 @@ public static class ServiceCollectionExtensions
                                                                                                     eventSourcing =>
                                                                                                     {
                                                                                                         eventSourcing.ClientSettings = EventStoreClientSettings.Create(connectionString);
+                                                                                                        if (logConsistency is { Username: { }, Password: { } } && logConsistency.Username.IsNotNullOrEmpty() && logConsistency.Password.IsNotNullOrEmpty())
+                                                                                                        {
+                                                                                                            eventSourcing.Credentials = new UserCredentials(logConsistency.Username, logConsistency.Password);
+                                                                                                        }
                                                                                                         eventSourcing.InitStage = logConsistency.InitStage;
                                                                                                     });
                                            }
