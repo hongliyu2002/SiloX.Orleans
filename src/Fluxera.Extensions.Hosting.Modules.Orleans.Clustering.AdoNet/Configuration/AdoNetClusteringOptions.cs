@@ -15,9 +15,9 @@ public sealed class AdoNetClusteringOptions
     public bool UsedByClient { get; set; }
 
     /// <summary>
-    ///     The name of the connection string.
+    ///     The name of the provider (also used as connection string name).
     /// </summary>
-    public string ConnectionStringName { get; set; } = "AdoNetCluster";
+    public string ProviderName { get; set; } = "AdoNetCluster";
 
     /// <summary>
     ///     The name and database provider type of the connection string.

@@ -15,9 +15,9 @@ internal sealed class EventStoreEventSourcingHealthChecksContributor : IHealthCh
         eventSourcingOptions.ConnectionStrings = context.Services.GetObject<ConnectionStrings>();
         foreach (var logConsistency in eventSourcingOptions.LogConsistencyOptions)
         {
-            if (eventSourcingOptions.ConnectionStrings.TryGetValue(logConsistency.ConnectionStringName, out var connectionString))
+            if (eventSourcingOptions.ConnectionStrings.TryGetValue(logConsistency.ProviderName, out var connectionString))
             {
-                builder.AddEventStore(connectionString, $"EventStoreEventSourcing-{logConsistency.ConnectionStringName}", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
+                builder.AddEventStore(connectionString, $"EventStoreEventSourcing-{logConsistency.ProviderName}", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
             }
         }
     }

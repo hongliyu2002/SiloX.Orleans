@@ -20,9 +20,9 @@ public static class ServiceCollectionExtensions
                                    {
                                        foreach (var logConsistency in options.LogConsistencyOptions)
                                        {
-                                           if (options.ConnectionStrings.TryGetValue(logConsistency.ConnectionStringName, out var connectionString))
+                                           if (options.ConnectionStrings.TryGetValue(logConsistency.ProviderName, out var connectionString))
                                            {
-                                               siloBuilder.AddEventStoreBasedLogConsistencyProvider(logConsistency.ConnectionStringName,
+                                               siloBuilder.AddEventStoreBasedLogConsistencyProvider(logConsistency.ProviderName,
                                                                                                     eventSourcing =>
                                                                                                     {
                                                                                                         eventSourcing.ClientSettings = EventStoreClientSettings.Create(connectionString);

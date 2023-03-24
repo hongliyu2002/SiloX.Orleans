@@ -27,9 +27,9 @@ public sealed class EventStoreEventSourcingOptions
 public sealed class EventStoreEventSourcingLogConsistencyOptions
 {
     /// <summary>
-    ///     The name of the connection string.
+    ///     The name of the provider (also used as connection string name).
     /// </summary>
-    public string ConnectionStringName { get; set; } = ProviderConstants.DEFAULT_LOG_CONSISTENCY_PROVIDER_NAME;
+    public string ProviderName { get; set; } = ProviderConstants.DEFAULT_LOG_CONSISTENCY_PROVIDER_NAME;
 
     /// <summary>
     ///     The user name of credentials that have permissions to append events.

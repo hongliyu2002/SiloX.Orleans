@@ -14,9 +14,9 @@ public sealed class RedisRemindersOptions
     public bool UsedByClient { get; set; }
 
     /// <summary>
-    ///     The name of the connection string.
+    ///     The name of the provider (also used as connection string name).
     /// </summary>
-    public string ConnectionStringName { get; set; } = "RedisReminders";
+    public string ProviderName { get; set; } = "RedisReminders";
 
     /// <summary>
     ///     Gets the connection strings.

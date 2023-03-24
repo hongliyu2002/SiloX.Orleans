@@ -28,9 +28,9 @@ public sealed class AdoNetPersistenceOptions
 public sealed class AdoNetPersistenceStorageOptions
 {
     /// <summary>
-    ///     The name of the connection string.
+    ///     The name of the provider (also used as connection string name).
     /// </summary>
-    public string ConnectionStringName { get; set; } = ProviderConstants.DEFAULT_STORAGE_PROVIDER_NAME;
+    public string ProviderName { get; set; } = ProviderConstants.DEFAULT_STORAGE_PROVIDER_NAME;
 
     /// <summary>
     ///     The name and database provider type of the connection string.

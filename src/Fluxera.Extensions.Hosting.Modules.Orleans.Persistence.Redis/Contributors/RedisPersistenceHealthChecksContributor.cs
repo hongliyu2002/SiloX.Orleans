@@ -15,9 +15,9 @@ internal sealed class RedisPersistenceHealthChecksContributor : IHealthChecksCon
         persistenceOptions.ConnectionStrings = context.Services.GetObject<ConnectionStrings>();
         foreach (var storage in persistenceOptions.Storages)
         {
-            if (persistenceOptions.ConnectionStrings.TryGetValue(storage.ConnectionStringName, out var connectionString))
+            if (persistenceOptions.ConnectionStrings.TryGetValue(storage.ProviderName, out var connectionString))
             {
-                builder.AddRedis(connectionString, $"RedisPersistence-{storage.ConnectionStringName}", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
+                builder.AddRedis(connectionString, $"RedisPersistence-{storage.ProviderName}", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
             }
         }
     }

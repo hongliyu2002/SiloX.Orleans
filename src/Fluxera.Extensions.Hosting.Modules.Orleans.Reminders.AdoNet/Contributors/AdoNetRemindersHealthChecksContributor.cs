@@ -13,7 +13,7 @@ internal sealed class AdoNetRemindersHealthChecksContributor : IHealthChecksCont
     {
         var remindersOptions = context.Services.GetObject<AdoNetRemindersOptions>();
         remindersOptions.ConnectionStrings = context.Services.GetObject<ConnectionStrings>();
-        if (remindersOptions.ConnectionStrings.TryGetValue(remindersOptions.ConnectionStringName, out var connectionString))
+        if (remindersOptions.ConnectionStrings.TryGetValue(remindersOptions.ProviderName, out var connectionString))
         {
             switch (remindersOptions.DbProvider)
             {

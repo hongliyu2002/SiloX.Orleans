@@ -19,9 +19,9 @@ public static class ServiceCollectionExtensions
                                    {
                                        foreach (var storage in options.Storages)
                                        {
-                                           if (options.ConnectionStrings.TryGetValue(storage.ConnectionStringName, out var connectionString))
+                                           if (options.ConnectionStrings.TryGetValue(storage.ProviderName, out var connectionString))
                                            {
-                                               siloBuilder.AddRedisGrainStorage(storage.ConnectionStringName,
+                                               siloBuilder.AddRedisGrainStorage(storage.ProviderName,
                                                                                 persistence =>
                                                                                 {
                                                                                     persistence.ConfigurationOptions = ConfigurationOptions.Parse(connectionString);

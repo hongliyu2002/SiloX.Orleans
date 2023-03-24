@@ -15,7 +15,7 @@ internal sealed class TracerProviderContributor : ITracerProviderContributor
         //     switch (storage.DbProvider)
         //     {
         //         case AdoNetDbProvider.SQLServer:
-        //             builder.AddSqlClientInstrumentation(storage.ConnectionStringName, instrumentationOptions => instrumentationOptions.RecordException = true);
+        //             builder.AddSqlClientInstrumentation(storage.ProviderName, instrumentationOptions => instrumentationOptions.RecordException = true);
         //             break;
         //         case AdoNetDbProvider.PostgreSQL:
         //             break;

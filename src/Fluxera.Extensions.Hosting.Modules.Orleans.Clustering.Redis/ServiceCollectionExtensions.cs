@@ -15,7 +15,7 @@ public static class ServiceCollectionExtensions
     /// <returns></returns>
     public static IServiceCollection AddOrleansRedisClustering(this IServiceCollection services, RedisClusteringOptions options)
     {
-        if (!options.ConnectionStrings.TryGetValue(options.ConnectionStringName, out var connectionString))
+        if (!options.ConnectionStrings.TryGetValue(options.ProviderName, out var connectionString))
         {
             return services;
         }

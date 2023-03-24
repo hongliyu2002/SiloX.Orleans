@@ -15,7 +15,7 @@ public static class ServiceCollectionExtensions
     /// <returns></returns>
     public static IServiceCollection AddOrleansRedisReminders(this IServiceCollection services, RedisRemindersOptions options)
     {
-        if (!options.ConnectionStrings.TryGetValue(options.ConnectionStringName, out var connectionString))
+        if (!options.ConnectionStrings.TryGetValue(options.ProviderName, out var connectionString))
         {
             return services;
         }

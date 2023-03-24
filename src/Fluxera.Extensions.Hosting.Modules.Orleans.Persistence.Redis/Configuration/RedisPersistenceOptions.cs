@@ -28,9 +28,9 @@ public sealed class RedisPersistenceOptions
 public sealed class RedisPersistenceStorageOptions
 {
     /// <summary>
-    ///     The name of the connection string.
+    ///     The name of the provider (also used as connection string name).
     /// </summary>
-    public string ConnectionStringName { get; set; } = ProviderConstants.DEFAULT_STORAGE_PROVIDER_NAME;
+    public string ProviderName { get; set; } = ProviderConstants.DEFAULT_STORAGE_PROVIDER_NAME;
 
     /// <summary>
     ///     Whether or not to delete state during a clear operation.

@@ -12,6 +12,11 @@ namespace Fluxera.Extensions.Hosting.Modules.Orleans.Streaming.InMemory;
 public sealed class InMemoryStreamingOptions
 {
     /// <summary>
+    ///     Is this configuration intended for client-side use?
+    /// </summary>
+    public bool UsedByClient { get; set; }
+
+    /// <summary>
     ///     The streams options.
     /// </summary>
     public InMemoryStreamingStreamsOptions[] StreamsOptions { get; set; } = Array.Empty<InMemoryStreamingStreamsOptions>();

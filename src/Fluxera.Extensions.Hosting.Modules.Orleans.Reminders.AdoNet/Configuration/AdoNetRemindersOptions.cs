@@ -15,9 +15,9 @@ public sealed class AdoNetRemindersOptions
     public bool UsedByClient { get; set; }
 
     /// <summary>
-    ///     The name of the connection string.
+    ///     The name of the provider (also used as connection string name).
     /// </summary>
-    public string ConnectionStringName { get; set; } = "AdoNetReminders";
+    public string ProviderName { get; set; } = "AdoNetReminders";
 
     /// <summary>
     ///     The name and database provider type of the connection string.

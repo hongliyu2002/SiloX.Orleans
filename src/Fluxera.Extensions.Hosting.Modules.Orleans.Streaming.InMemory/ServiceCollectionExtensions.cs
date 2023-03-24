@@ -18,6 +18,30 @@ public static class ServiceCollectionExtensions
     /// <returns></returns>
     public static IServiceCollection AddOrleansInMemoryStreaming(this IServiceCollection services, InMemoryStreamingOptions options)
     {
+        if (options.UsedByClient)
+        {
+            return services.AddOrleansClient(clientBuilder =>
+                                             {
+                                                 foreach (var streams in options.StreamsOptions)
+                                                 {
+                                                     clientBuilder.AddMemoryStreams(streams.ProviderName,
+                                                                                    configurator =>
+                                                                                    {
+                                                                                        configurator.ConfigureStreamPubSub(streams.PubSubType);
+                                                                                        configurator.ConfigurePartitioning(streams.NumQueues);
+                                                                                        configurator.ConfigureLifecycle(builder =>
+                                                                                                                        {
+                                                                                                                            builder.Configure(lifecycle =>
+                                                                                                                                              {
+                                                                                                                                                  lifecycle.InitStage = streams.InitStage;
+                                                                                                                                                  lifecycle.StartStage = streams.StartStage;
+                                                                                                                                                  lifecycle.StartupState = streams.StartupState;
+                                                                                                                                              });
+                                                                                                                        });
+                                                                                    });
+                                                 }
+                                             });
+        }
         return services.AddOrleans(siloBuilder =>
                                    {
                                        foreach (var streams in options.StreamsOptions)

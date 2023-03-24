@@ -18,7 +18,7 @@ public static class ServiceCollectionExtensions
     /// <returns></returns>
     public static IServiceCollection AddOrleansAdoNetClustering(this IServiceCollection services, AdoNetClusteringOptions options)
     {
-        if (!options.ConnectionStrings.TryGetValue(options.ConnectionStringName, out var connectionString))
+        if (!options.ConnectionStrings.TryGetValue(options.ProviderName, out var connectionString))
         {
             return services;
         }

@@ -15,9 +15,9 @@ internal sealed class EventStorePersistenceHealthChecksContributor : IHealthChec
         persistenceOptions.ConnectionStrings = context.Services.GetObject<ConnectionStrings>();
         foreach (var storage in persistenceOptions.Storages)
         {
-            if (persistenceOptions.ConnectionStrings.TryGetValue(storage.ConnectionStringName, out var connectionString))
+            if (persistenceOptions.ConnectionStrings.TryGetValue(storage.ProviderName, out var connectionString))
             {
-                builder.AddEventStore(connectionString, $"EventStorePersistence-{storage.ConnectionStringName}", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
+                builder.AddEventStore(connectionString, $"EventStorePersistence-{storage.ProviderName}", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
             }
         }
     }
