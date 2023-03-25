@@ -175,18 +175,18 @@ public static class ServiceCollectionExtensions
                                                                                         default:
                                                                                             throw new ArgumentOutOfRangeException(nameof(streams.QueueBalancerMode), QueueBalancerModeDoesNotSupport);
                                                                                     }
-                                                                                    if (eventStoreOptions.ConnectionStrings.TryGetValue(streams.CheckpointerProviderName, out var checkpointerConnectionString))
+                                                                                    if (eventStoreOptions.ConnectionStrings.TryGetValue(streams.CheckpointProviderName, out var checkpointerConnectionString))
                                                                                     {
                                                                                         configurator.UseEventStoreCheckpointer(builder =>
                                                                                                                                {
                                                                                                                                    builder.Configure(checkpointer =>
                                                                                                                                                      {
                                                                                                                                                          checkpointer.ClientSettings = EventStoreClientSettings.Create(checkpointerConnectionString);
-                                                                                                                                                         if (streams.CheckpointerUsername.IsNotNullOrEmpty() && streams.CheckpointerPassword.IsNotNullOrEmpty())
+                                                                                                                                                         if (streams.CheckpointUsername.IsNotNullOrEmpty() && streams.CheckpointPassword.IsNotNullOrEmpty())
                                                                                                                                                          {
-                                                                                                                                                             checkpointer.Credentials = new UserCredentials(streams.CheckpointerUsername!, streams.CheckpointerPassword!);
+                                                                                                                                                             checkpointer.Credentials = new UserCredentials(streams.CheckpointUsername!, streams.CheckpointPassword!);
                                                                                                                                                          }
-                                                                                                                                                         checkpointer.PersistInterval = streams.CheckpointerPersistInterval;
+                                                                                                                                                         checkpointer.PersistInterval = streams.CheckpointPersistInterval;
                                                                                                                                                      });
                                                                                                                                });
                                                                                     }
