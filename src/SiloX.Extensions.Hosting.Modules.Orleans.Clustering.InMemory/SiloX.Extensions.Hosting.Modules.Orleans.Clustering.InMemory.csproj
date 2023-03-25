@@ -1,0 +1,46 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <PackageId>SiloX.Extensions.Hosting.Modules.Orleans.Clustering.InMemory</PackageId>
+        <Title>InMemory clustering module</Title>
+        <Description>InMemory clustering module that for Microsoft Orleans.</Description>
+        <Version>7.1.0</Version>
+        <AssemblyVersion>7.1.0.0</AssemblyVersion>
+        <FileVersion>7.1.0.0</FileVersion>
+        <Authors>Leo Hong</Authors>
+        <Copyright>Copyright 2023 (c) Leo Hong. All rights reserved.</Copyright>
+        <RepositoryUrl>https://github.com/hongliyu2002/Fluxera.Extensions.Orleans</RepositoryUrl>
+        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageTags>library;extensions;hosting;modular;orleans;clustering;orleans-clustering</PackageTags>
+        <PackageProjectUrl>https://github.com/hongliyu2002/Fluxera.Extensions.Orleans</PackageProjectUrl>
+        <PackageIcon>logo_128.png</PackageIcon>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <!--SourceLink-->
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <OrleansBuildTimeCodeGen>false</OrleansBuildTimeCodeGen>
+        <RootNamespace>SiloX.Extensions.Hosting.Modules.Orleans.Clustering.InMemory</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\SiloX.Extensions.Hosting.Modules.Orleans.Clustering\SiloX.Extensions.Hosting.Modules.Orleans.Clustering.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="..\..\resources\icons\logo_128.png" Pack="true" PackagePath="">
+            <Link>logo_128.png</Link>
+        </None>
+        <None Include=".\README.md" Pack="true" PackagePath="">
+            <Link>README.md</Link>
+        </None>
+    </ItemGroup>
+
+</Project>
