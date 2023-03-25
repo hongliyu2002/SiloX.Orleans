@@ -19,11 +19,27 @@ public static class ServiceCollectionExtensions
             return services.AddOrleansClient(clientBuilder =>
                                              {
                                                  clientBuilder.AddStreaming();
+                                                 foreach (var broadcast in options.Broadcasts)
+                                                 {
+                                                     clientBuilder.AddBroadcastChannel(broadcast.ProviderName,
+                                                                                       channel =>
+                                                                                       {
+                                                                                           channel.FireAndForgetDelivery = broadcast.FireAndForgetDelivery;
+                                                                                       });
+                                                 }
                                              });
         }
         return services.AddOrleans(siloBuilder =>
                                    {
                                        siloBuilder.AddStreaming();
+                                       foreach (var broadcast in options.Broadcasts)
+                                       {
+                                           siloBuilder.AddBroadcastChannel(broadcast.ProviderName,
+                                                                           channel =>
+                                                                           {
+                                                                               channel.FireAndForgetDelivery = broadcast.FireAndForgetDelivery;
+                                                                           });
+                                       }
                                    });
     }
 }

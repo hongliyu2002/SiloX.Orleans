@@ -24,6 +24,49 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
     </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Fluxera.Extensions.DependencyInjection" Version="7.1.2" />
+        <PackageReference Include="Fluxera.Extensions.DependencyInjection.Abstractions" Version="7.1.2" />
+        <PackageReference Include="Fluxera.Extensions.Hosting" Version="7.1.3" />
+        <PackageReference Include="Fluxera.Extensions.Hosting.Abstractions" Version="7.1.3" />
+        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.Configuration" Version="7.1.5" />
+        <PackageReference Include="Fluxera.Guards" Version="7.1.0" />
+        <PackageReference Include="Fluxera.Utilities" Version="7.1.0" />
+        <PackageReference Include="Microsoft.NETCore.Platforms" Version="7.0.1" />
+        <PackageReference Include="Microsoft.NETCore.Targets" Version="5.0.0" />
+        <PackageReference Include="Orleans.FluentResults" Version="7.1.1" />
+        <PackageReference Include="System.Interactive" Version="6.0.1" />
+        <PackageReference Include="System.Interactive.Async" Version="6.0.1" />
+        <PackageReference Include="System.Interactive.Async.Providers" Version="6.0.1" />
+        <PackageReference Include="System.Interactive.Providers" Version="6.0.1" />
+        <PackageReference Include="System.Linq.Async" Version="6.0.1" />
+        <PackageReference Include="System.Linq.Async.Queryable" Version="6.0.1" />
+        <PackageReference Include="System.Reactive" Version="5.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\SiloX.Orleans.Clustering.AdoNet\SiloX.Orleans.Clustering.AdoNet.csproj" />
+        <ProjectReference Include="..\..\src\SiloX.Orleans.Clustering.InMemory\SiloX.Orleans.Clustering.InMemory.csproj" />
+        <ProjectReference Include="..\..\src\SiloX.Orleans.Clustering.Redis\SiloX.Orleans.Clustering.Redis.csproj" />
+        <ProjectReference Include="..\..\src\SiloX.Orleans.Clustering\SiloX.Orleans.Clustering.csproj" />
+        <ProjectReference Include="..\..\src\SiloX.Orleans.EventSourcing.EventStore\SiloX.Orleans.EventSourcing.EventStore.csproj" />
+        <ProjectReference Include="..\..\src\SiloX.Orleans.EventSourcing.InMemory\SiloX.Orleans.EventSourcing.InMemory.csproj" />
+        <ProjectReference Include="..\..\src\SiloX.Orleans.EventSourcing\SiloX.Orleans.EventSourcing.csproj" />
+        <ProjectReference Include="..\..\src\SiloX.Orleans.Persistence.AdoNet\SiloX.Orleans.Persistence.AdoNet.csproj" />
+        <ProjectReference Include="..\..\src\SiloX.Orleans.Persistence.EventStore\SiloX.Orleans.Persistence.EventStore.csproj" />
+        <ProjectReference Include="..\..\src\SiloX.Orleans.Persistence.InMemory\SiloX.Orleans.Persistence.InMemory.csproj" />
+        <ProjectReference Include="..\..\src\SiloX.Orleans.Persistence.Redis\SiloX.Orleans.Persistence.Redis.csproj" />
+        <ProjectReference Include="..\..\src\SiloX.Orleans.Persistence\SiloX.Orleans.Persistence.csproj" />
+        <ProjectReference Include="..\..\src\SiloX.Orleans.Reminders.AdoNet\SiloX.Orleans.Reminders.AdoNet.csproj" />
+        <ProjectReference Include="..\..\src\SiloX.Orleans.Reminders.InMemory\SiloX.Orleans.Reminders.InMemory.csproj" />
+        <ProjectReference Include="..\..\src\SiloX.Orleans.Reminders.Redis\SiloX.Orleans.Reminders.Redis.csproj" />
+        <ProjectReference Include="..\..\src\SiloX.Orleans.Reminders\SiloX.Orleans.Reminders.csproj" />
+        <ProjectReference Include="..\..\src\SiloX.Orleans.Server\SiloX.Orleans.Server.csproj" />
+        <ProjectReference Include="..\..\src\SiloX.Orleans.Streaming.EventStore\SiloX.Orleans.Streaming.EventStore.csproj" />
+        <ProjectReference Include="..\..\src\SiloX.Orleans.Streaming.InMemory\SiloX.Orleans.Streaming.InMemory.csproj" />
+        <ProjectReference Include="..\..\src\SiloX.Orleans.Streaming\SiloX.Orleans.Streaming.csproj" />
+    </ItemGroup>
     
     <ItemGroup>
         <None Update="appsettings.json">
@@ -31,6 +74,11 @@
             <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
             <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
         </None>
+    </ItemGroup>
+    
+    <ItemGroup>
+      <Folder Include="EventSourcing\Grains" />
+      <Folder Include="Persistence\Grains" />
     </ItemGroup>
     
 </Project>

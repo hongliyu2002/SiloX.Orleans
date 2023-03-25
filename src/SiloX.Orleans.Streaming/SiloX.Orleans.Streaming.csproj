@@ -40,6 +40,7 @@
         <PackageReference Include="Fluxera.Utilities" Version="7.1.0" />
         <PackageReference Include="Microsoft.NETCore.Platforms" Version="7.0.1" />
         <PackageReference Include="Microsoft.NETCore.Targets" Version="5.0.0" />
+        <PackageReference Include="Microsoft.Orleans.BroadcastChannel" Version="7.1.1" />
         <PackageReference Include="Microsoft.Orleans.Streaming" Version="7.1.1" />
         <PackageReference Include="Microsoft.Orleans.Runtime" Version="7.1.1" />
         <PackageReference Include="Microsoft.Orleans.Sdk" Version="7.1.1" />

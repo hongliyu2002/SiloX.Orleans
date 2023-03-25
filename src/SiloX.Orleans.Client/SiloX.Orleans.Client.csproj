@@ -4,9 +4,9 @@
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <PackageId>SiloX.Orleans.Server</PackageId>
-        <Title>A server module for Microsoft Orleans</Title>
-        <Description>A server module that for Microsoft Orleans.</Description>
+        <PackageId>SiloX.Orleans.Client</PackageId>
+        <Title>A client module for Microsoft Orleans</Title>
+        <Description>A client module that for Microsoft Orleans.</Description>
         <Version>7.1.0</Version>
         <AssemblyVersion>7.1.0.0</AssemblyVersion>
         <FileVersion>7.1.0.0</FileVersion>
@@ -27,7 +27,7 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <OrleansBuildTimeCodeGen>false</OrleansBuildTimeCodeGen>
-        <RootNamespace>SiloX.Orleans.Server</RootNamespace>
+        <RootNamespace>SiloX.Orleans.Client</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -35,7 +35,7 @@
         <PackageReference Include="Fluxera.Extensions.Hosting.Modules.DataManagement" Version="7.1.5" />
         <PackageReference Include="Fluxera.Extensions.Hosting.Modules.HealthChecks" Version="7.1.5" />
         <PackageReference Include="Fluxera.Extensions.Hosting.Modules.OpenTelemetry" Version="7.1.5" />
-        <PackageReference Include="Microsoft.Orleans.Server" Version="7.1.1" />
+        <PackageReference Include="Microsoft.Orleans.Client" Version="7.1.1" />
     </ItemGroup>
 
     <ItemGroup>
