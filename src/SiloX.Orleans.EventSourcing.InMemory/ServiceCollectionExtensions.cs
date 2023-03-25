@@ -14,13 +14,13 @@ public static class ServiceCollectionExtensions
     /// <summary>
     /// </summary>
     /// <param name="services"></param>
-    /// <param name="options"></param>
+    /// <param name="inMemoryOptions"></param>
     /// <returns></returns>
-    public static IServiceCollection AddOrleansInMemoryEventSourcing(this IServiceCollection services, InMemoryEventSourcingOptions options)
+    public static IServiceCollection AddOrleansInMemoryEventSourcing(this IServiceCollection services, InMemoryEventSourcingOptions inMemoryOptions)
     {
         return services.AddOrleans(siloBuilder =>
                                    {
-                                       foreach (var logConsistency in options.LogConsistencies)
+                                       foreach (var logConsistency in inMemoryOptions.LogConsistencies)
                                        {
                                            switch (logConsistency.LogProvider)
                                            {

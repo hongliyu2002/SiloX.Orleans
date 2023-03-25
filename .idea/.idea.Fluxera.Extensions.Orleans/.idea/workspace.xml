@@ -5,30 +5,47 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b5418578-4598-4c01-aaff-5d5746213128" name="Changes" comment="Update">
-      <change afterPath="$PROJECT_DIR$/tests/SiloX.Orleans.UnitTests/SiloX.Orleans.UnitTests.csproj" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/SiloX.Orleans.UnitTests/appsettings.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Fluxera.Extensions.Orleans/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Fluxera.Extensions.Orleans/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SiloX.Orleans.sln" beforeDir="false" afterPath="$PROJECT_DIR$/SiloX.Orleans.sln" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Clustering.AdoNet/SqlScripts/Clustering/Oracle-Clustering.sql" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Clustering.AdoNet/SqlScripts/Clustering/Oracle-Clustering.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Clustering.AdoNet/SqlScripts/Clustering/PostgreSQL-Clustering.sql" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Clustering.AdoNet/SqlScripts/Clustering/PostgreSQL-Clustering.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Clustering.InMemory/Configuration/InMemoryClusteringOptions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Clustering.InMemory/Configuration/InMemoryClusteringOptions.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Clustering.InMemory/ServiceCollectionExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Clustering.InMemory/ServiceCollectionExtensions.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.EventSourcing.EventStore/Configuration/EventStorePersistenceOptions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.EventSourcing.EventStore/Configuration/EventStorePersistenceOptions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Clustering/OrleansClusteringModule.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Clustering/OrleansClusteringModule.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.EventSourcing.EventStore/Contributors/EventStoreEventSourcingHealthChecksContributor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.EventSourcing.EventStore/Contributors/EventStoreEventSourcingHealthChecksContributor.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.EventSourcing.EventStore/Contributors/TracerProviderContributor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.EventSourcing.EventStore/Contributors/TracerProviderContributor.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.EventSourcing.EventStore/OrleansEventStoreEventSourcingModule.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.EventSourcing.EventStore/OrleansEventStoreEventSourcingModule.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.EventSourcing.EventStore/ServiceCollectionExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.EventSourcing.EventStore/ServiceCollectionExtensions.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.EventSourcing.InMemory/Configuration/InMemoryEventSourcingOptions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.EventSourcing.InMemory/Configuration/InMemoryEventSourcingOptions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.EventSourcing.InMemory/OrleansInMemoryEventSourcingModule.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.EventSourcing.InMemory/OrleansInMemoryEventSourcingModule.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.EventSourcing.InMemory/ServiceCollectionExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.EventSourcing.InMemory/ServiceCollectionExtensions.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.EventSourcing/ServiceCollectionExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.EventSourcing/ServiceCollectionExtensions.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Persistence.InMemory/Configuration/InMemoryPersistenceOptions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Persistence.InMemory/Configuration/InMemoryPersistenceOptions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.EventSourcing/OrleansEventSourcingModule.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.EventSourcing/OrleansEventSourcingModule.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Persistence.AdoNet/Contributors/AdoNetPersistenceHealthChecksContributor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Persistence.AdoNet/Contributors/AdoNetPersistenceHealthChecksContributor.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Persistence.AdoNet/OrleansAdoNetPersistenceModule.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Persistence.AdoNet/OrleansAdoNetPersistenceModule.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Persistence.AdoNet/ServiceCollectionExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Persistence.AdoNet/ServiceCollectionExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Persistence.EventStore/Contributors/EventStorePersistenceHealthChecksContributor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Persistence.EventStore/Contributors/EventStorePersistenceHealthChecksContributor.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Persistence.EventStore/OrleansEventStorePersistenceModule.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Persistence.EventStore/OrleansEventStorePersistenceModule.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Persistence.EventStore/ServiceCollectionExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Persistence.EventStore/ServiceCollectionExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Persistence.InMemory/OrleansInMemoryPersistenceModule.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Persistence.InMemory/OrleansInMemoryPersistenceModule.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Persistence.InMemory/ServiceCollectionExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Persistence.InMemory/ServiceCollectionExtensions.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Persistence/ServiceCollectionExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Persistence/ServiceCollectionExtensions.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Reminders.AdoNet/Configuration/AdoNetRemindersOptions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Reminders.AdoNet/Configuration/AdoNetRemindersOptions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Persistence.Redis/Contributors/RedisPersistenceHealthChecksContributor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Persistence.Redis/Contributors/RedisPersistenceHealthChecksContributor.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Persistence.Redis/OrleansRedisPersistenceModule.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Persistence.Redis/OrleansRedisPersistenceModule.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Persistence.Redis/ServiceCollectionExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Persistence.Redis/ServiceCollectionExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Persistence/OrleansPersistenceModule.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Persistence/OrleansPersistenceModule.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Reminders.AdoNet/Contributors/AdoNetRemindersHealthChecksContributor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Reminders.AdoNet/Contributors/AdoNetRemindersHealthChecksContributor.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Reminders.AdoNet/OrleansAdoNetRemindersModule.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Reminders.AdoNet/OrleansAdoNetRemindersModule.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Reminders.AdoNet/ServiceCollectionExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Reminders.AdoNet/ServiceCollectionExtensions.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Reminders.Redis/Configuration/RedisRemindersOptions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Reminders.Redis/Configuration/RedisRemindersOptions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Reminders.InMemory/OrleansInMemoryRemindersModule.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Reminders.InMemory/OrleansInMemoryRemindersModule.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Reminders.InMemory/ServiceCollectionExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Reminders.InMemory/ServiceCollectionExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Reminders.Redis/Contributors/RedisRemindersHealthChecksContributor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Reminders.Redis/Contributors/RedisRemindersHealthChecksContributor.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Reminders.Redis/OrleansRedisRemindersModule.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Reminders.Redis/OrleansRedisRemindersModule.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Reminders.Redis/ServiceCollectionExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Reminders.Redis/ServiceCollectionExtensions.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Reminders/ServiceCollectionExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Reminders/ServiceCollectionExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Reminders/OrleansRemindersModule.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Reminders/OrleansRemindersModule.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Server/OrleansServerModule.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Server/OrleansServerModule.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Streaming.EventStore/Configuration/EventStoreStreamingOptions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Streaming.EventStore/Configuration/EventStoreStreamingOptions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Streaming.EventStore/Contributors/EventStoreStreamingHealthChecksContributor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Streaming.EventStore/Contributors/EventStoreStreamingHealthChecksContributor.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Streaming.EventStore/Contributors/TracerProviderContributor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Streaming.EventStore/Contributors/TracerProviderContributor.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Streaming.EventStore/OrleansEventStoreStreamingModule.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Streaming.EventStore/OrleansEventStoreStreamingModule.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Streaming.EventStore/ServiceCollectionExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Streaming.EventStore/ServiceCollectionExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Streaming.InMemory/Configuration/InMemoryStreamingOptions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Streaming.InMemory/Configuration/InMemoryStreamingOptions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Streaming.InMemory/OrleansInMemoryStreamingModule.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Streaming.InMemory/OrleansInMemoryStreamingModule.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Streaming.InMemory/ServiceCollectionExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Streaming.InMemory/ServiceCollectionExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Streaming/OrleansStreamingModule.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Streaming/OrleansStreamingModule.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SiloX.Orleans.Streaming/ServiceCollectionExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/SiloX.Orleans.Streaming/ServiceCollectionExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/SiloX.Orleans.UnitTests/appsettings.json" beforeDir="false" afterPath="$PROJECT_DIR$/tests/SiloX.Orleans.UnitTests/appsettings.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,7 +62,10 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/63e3622e770d4796b12f027b7335bced29000/06/75069d4a/UserCredentials.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/6e5cf5376b6a41ce9a6f22410734740822fa0/ba/02036a25/CustomStorageSiloBuilderExtensions.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/aff89be18a7044438884f6379eddbc368000/44/1d4795fb/ServiceCollectionExtensions.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/c5ad9673e6af4200b1ccaee81410b9113e800/3f/1bcc15cc/PersistentSubscriptionSettings.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/d421cc2c043642018bcc7f08a8a1e3781b800/15/d2168b21/EventStoreOptions.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/d421cc2c043642018bcc7f08a8a1e3781b800/3a/8dd7d5cf/EventStoreReceiverOptions.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/d421cc2c043642018bcc7f08a8a1e3781b800/62/ecda8a8e/EventStoreStreamCachePressureOptions.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/26627f4d2fc640df33ac583570b73d5ff159a98a543f39ac9646984b16c08163/PersistentStreamConfiguratorExtension.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/3ec5b62cb12f9f830156d74c0a31b3ef4793fabd435b528fe9a4d2fcdabeb/MemoryStreamBuilder.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/4b51c86c8770c4a9cb7b66dd4feaa2974628b43c884ff79a06de1f23da9486d/SiloBuilderStreamingExtensions.cs" root0="SKIP_HIGHLIGHTING" />
@@ -63,6 +83,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/a2b153aa5397596ece8ab65152d27c572155fd31dff5b1434d27af740d315eb/DeploymentBasedQueueBalancerOptions.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/cbbdede8f49f54ded7781b3c9786b99e77b6337e3dd1fcb4c3ad5286b3ffe4/ClusterOptions.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/fb1d6e4cc18713e4532b34c37d71f8562c133310cc8e2136b1b76d46bf96/StreamingServiceCollectionExtensions.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://F:/RiderProjects/Fluxera.Extensions.Orleans/src/SiloX.Orleans.Clustering.AdoNet/Contributors/AdoNetClusteringHealthChecksContributor.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/SiloX.Orleans.Clustering.Redis/OrleansRedisClusteringModule.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/SiloX.Orleans.Server/Configuration/OrleansServerOptions.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/SiloX.Orleans.Server/OrleansServerModule.cs" root0="FORCE_HIGHLIGHTING" />
@@ -92,7 +113,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "WebServerToolWindowFactoryState": "false",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "settings.editor.selected.configurable": "preferences.sourceCode.C#",
     "vue.rearranger.settings.migration": "true"
   },
   "keyToStringList": {
@@ -117,7 +138,7 @@
       <workItem from="1679365874679" duration="721000" />
       <workItem from="1679640416417" duration="1658000" />
       <workItem from="1679670406365" duration="17410000" />
-      <workItem from="1679705259599" duration="8538000" />
+      <workItem from="1679705259599" duration="14201000" />
     </task>
     <task id="LOCAL-00001" summary="Update">
       <created>1679083011137</created>
@@ -322,7 +343,14 @@
       <option name="project" value="LOCAL" />
       <updated>1679707439079</updated>
     </task>
-    <option name="localTasksCounter" value="30" />
+    <task id="LOCAL-00030" summary="Update">
+      <created>1679718489422</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1679718489422</updated>
+    </task>
+    <option name="localTasksCounter" value="31" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

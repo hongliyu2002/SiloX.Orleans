@@ -11,15 +11,15 @@ public static class ServiceCollectionExtensions
     /// <summary>
     /// </summary>
     /// <param name="services"></param>
-    /// <param name="options"></param>
+    /// <param name="redisOptions"></param>
     /// <returns></returns>
-    public static IServiceCollection AddOrleansRedisPersistence(this IServiceCollection services, RedisPersistenceOptions options)
+    public static IServiceCollection AddOrleansRedisPersistence(this IServiceCollection services, RedisPersistenceOptions redisOptions)
     {
         return services.AddOrleans(siloBuilder =>
                                    {
-                                       foreach (var storage in options.Storages)
+                                       foreach (var storage in redisOptions.Storages)
                                        {
-                                           if (options.ConnectionStrings.TryGetValue(storage.ProviderName, out var connectionString))
+                                           if (redisOptions.ConnectionStrings.TryGetValue(storage.ProviderName, out var connectionString))
                                            {
                                                siloBuilder.AddRedisGrainStorage(storage.ProviderName,
                                                                                 persistence =>

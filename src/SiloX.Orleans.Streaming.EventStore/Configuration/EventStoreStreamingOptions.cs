@@ -13,14 +13,9 @@ namespace SiloX.Orleans.Streaming.EventStore;
 public sealed class EventStoreStreamingOptions
 {
     /// <summary>
-    ///     Is this configuration intended for client-side use?
-    /// </summary>
-    public bool UsedByClient { get; set; }
-
-    /// <summary>
     ///     The streams options.
     /// </summary>
-    public EventStoreStreamingStreamsOptions[] StreamsOptions { get; set; } = Array.Empty<EventStoreStreamingStreamsOptions>();
+    public EventStoreStreamingStreamsOptions[] Streams { get; set; } = Array.Empty<EventStoreStreamingStreamsOptions>();
 
     /// <summary>
     ///     Gets the connection strings.
@@ -60,6 +55,101 @@ public sealed class EventStoreStreamingStreamsOptions
     ///     The queue names (aka stream names) of EventStore.
     /// </summary>
     public List<string> Queues { get; set; } = new();
+
+    #region Receiver Options
+
+    /// <summary>
+    ///     Whether the <see cref="T:EventStore.Client.PersistentSubscription"></see> should resolve linkTo events to their linked events.
+    /// </summary>
+    public bool SubscriptionResolveLinkTos { get; set; }
+
+    /// <summary>
+    ///     Whether to track latency statistics on this subscription.
+    /// </summary>
+    public bool SubscriptionExtraStatistics { get; set; }
+
+    /// <summary>
+    ///     The amount of time after which to consider a message as timed out and retried.
+    /// </summary>
+    public TimeSpan? SubscriptionMessageTimeout { get; set; }
+
+    /// <summary>
+    ///     The maximum number of retries (due to timeout) before a message is considered to be parked.
+    /// </summary>
+    public int SubscriptionMaxRetryCount { get; set; } = 10;
+
+    /// <summary>
+    ///     The size of the buffer (in-memory) listening to live messages as they happen before paging occurs.
+    /// </summary>
+    public int SubscriptionLiveBufferSize { get; set; } = 500;
+
+    /// <summary>
+    ///     The number of events read at a time when paging through history.
+    /// </summary>
+    public int SubscriptionReadBatchSize { get; set; } = 20;
+
+    /// <summary>
+    ///     The number of events to cache when paging through history.
+    /// </summary>
+    public int SubscriptionHistoryBufferSize { get; set; } = 500;
+
+    /// <summary>
+    ///     The amount of time to try to checkpoint after.
+    /// </summary>
+    public TimeSpan SubscriptionCheckPointAfter { get; set; } = TimeSpan.FromMinutes(1);
+
+    /// <summary>
+    ///     The minimum number of messages to process before a checkpoint may be written.
+    /// </summary>
+    public int SubscriptionCheckPointLowerBound { get; set; } = 1;
+
+    /// <summary>
+    ///     The maximum number of messages not checkpointed before forcing a checkpoint.
+    /// </summary>
+    public int SubscriptionCheckPointUpperBound { get; set; } = 1000;
+
+    /// <summary>
+    ///     The maximum number of subscribers allowed.
+    /// </summary>
+    public int SubscriptionMaxSubscriberCount { get; set; }
+
+    /// <summary>
+    ///     The strategy to use for distributing events to client consumers. See <see cref="T:EventStore.Client.SystemConsumerStrategies" /> for system supported strategies.
+    /// </summary>
+    public string SubscriptionConsumerStrategyName { get; set; } = "RoundRobin";
+
+    /// <summary>
+    ///     Optional parameter that configures the receiver prefetch count.
+    /// </summary>
+    public int PrefetchCount { get; set; } = 10;
+
+    /// <summary>
+    ///     In cases where no checkpoint is found,
+    ///     this indicates if service should read from the most recent data, or from the beginning of a stream.
+    /// </summary>
+    public bool StartFromNow { get; set; } = true;
+
+    #endregion
+
+    #region Stream Cache Pressure Options
+
+    /// <summary>
+    ///     Slow consuming pressure monitor config.
+    /// </summary>
+    public double? SlowConsumingMonitorFlowControlThreshold { get; set; }
+
+    /// <summary>
+    ///     Slow consuming monitor pressure windowsize.
+    /// </summary>
+    public TimeSpan? SlowConsumingMonitorPressureWindowSize { get; set; }
+
+    /// <summary>
+    ///     AveragingCachePressureMonitorFlowControlThreshold, AveragingCachePressureMonitor is turn on by default.
+    ///     User can turn it off by setting this value to null
+    /// </summary>
+    public double? AveragingCachePressureMonitorFlowControlThreshold { get; set; } = EventStoreStreamCachePressureOptions.DefaultAveragingCachePressureMonitoringThreshold;
+
+    #endregion
 
     #region Stream Pub/Sub Options
 
@@ -200,6 +290,32 @@ public sealed class EventStoreStreamingStreamsOptions
     /// </summary>
     /// <value>The silo maturity period.</value>
     public TimeSpan SiloMaturityPeriod { get; set; } = DeploymentBasedQueueBalancerOptions.DEFAULT_SILO_MATURITY_PERIOD;
+
+    #endregion
+
+    #region Stream Checkpointer Options
+
+    /// <summary>
+    ///     The name of the provider (also used as connection string name).
+    /// </summary>
+    public string CheckpointerProviderName { get; set; } = ProviderConstants.DEFAULT_STORAGE_PROVIDER_NAME;
+
+    /// <summary>
+    ///     The user name of credentials that have permissions to append events.
+    /// </summary>
+    [Redact]
+    public string? CheckpointerUsername { get; set; }
+
+    /// <summary>
+    ///     The password of credentials that have permissions to append events.
+    /// </summary>
+    [Redact]
+    public string? CheckpointerPassword { get; set; }
+
+    /// <summary>
+    ///     Interval to write checkpoints.  Prevents spamming storage.
+    /// </summary>
+    public TimeSpan CheckpointerPersistInterval { get; set; } = EventStoreStreamCheckpointerOptions.DefaultCheckpointPersistInterval;
 
     #endregion
 

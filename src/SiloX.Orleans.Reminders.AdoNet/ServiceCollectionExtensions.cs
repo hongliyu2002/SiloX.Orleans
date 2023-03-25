@@ -14,24 +14,24 @@ public static class ServiceCollectionExtensions
     /// <summary>
     /// </summary>
     /// <param name="services"></param>
-    /// <param name="options"></param>
+    /// <param name="adoNetOptions"></param>
     /// <returns></returns>
-    public static IServiceCollection AddOrleansAdoNetReminders(this IServiceCollection services, AdoNetRemindersOptions options)
+    public static IServiceCollection AddOrleansAdoNetReminders(this IServiceCollection services, AdoNetRemindersOptions adoNetOptions)
     {
-        if (options.ConnectionStrings.TryGetValue(options.ProviderName, out var connectionString))
+        if (adoNetOptions.ConnectionStrings.TryGetValue(adoNetOptions.ProviderName, out var connectionString))
         {
             return services.AddOrleans(siloBuilder =>
                                        {
                                            siloBuilder.UseAdoNetReminderService(reminders =>
                                                                                 {
                                                                                     reminders.ConnectionString = connectionString;
-                                                                                    reminders.Invariant = options.DbProvider switch
+                                                                                    reminders.Invariant = adoNetOptions.DbProvider switch
                                                                                                           {
                                                                                                               AdoNetDbProvider.SQLServer => AdoNetInvariants.InvariantNameSqlServer,
                                                                                                               AdoNetDbProvider.PostgreSQL => AdoNetInvariants.InvariantNamePostgreSql,
                                                                                                               AdoNetDbProvider.MySQL => AdoNetInvariants.InvariantNameMySql,
                                                                                                               AdoNetDbProvider.Oracle => AdoNetInvariants.InvariantNameOracleDatabase,
-                                                                                                              _ => throw new ArgumentOutOfRangeException(nameof(options.DbProvider), DbProviderDoesNotSupport)
+                                                                                                              _ => throw new ArgumentOutOfRangeException(nameof(adoNetOptions.DbProvider), DbProviderDoesNotSupport)
                                                                                                           };
                                                                                 });
                                        });

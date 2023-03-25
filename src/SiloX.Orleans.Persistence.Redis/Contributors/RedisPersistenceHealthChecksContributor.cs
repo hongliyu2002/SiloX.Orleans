@@ -12,13 +12,13 @@ internal sealed class RedisPersistenceHealthChecksContributor : IHealthChecksCon
     /// <inheritdoc />
     public void ConfigureHealthChecks(IHealthChecksBuilder builder, IServiceConfigurationContext context)
     {
-        var persistenceOptions = context.Services.GetObject<RedisPersistenceOptions>();
-        persistenceOptions.ConnectionStrings = context.Services.GetObject<ConnectionStrings>();
-        foreach (var storage in persistenceOptions.Storages)
+        var redisOptions = context.Services.GetObject<RedisPersistenceOptions>();
+        redisOptions.ConnectionStrings = context.Services.GetObject<ConnectionStrings>();
+        foreach (var storage in redisOptions.Storages)
         {
-            if (persistenceOptions.ConnectionStrings.TryGetValue(storage.ProviderName, out var connectionString))
+            if (redisOptions.ConnectionStrings.TryGetValue(storage.ProviderName, out var connectionString))
             {
-                builder.AddRedis(connectionString, $"RedisPersistence-{storage.ProviderName}", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
+                builder.AddRedis(connectionString, storage.ProviderName, HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
             }
         }
     }

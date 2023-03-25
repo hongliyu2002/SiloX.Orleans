@@ -14,15 +14,15 @@ public static class ServiceCollectionExtensions
     /// <summary>
     /// </summary>
     /// <param name="services"></param>
-    /// <param name="options"></param>
+    /// <param name="adoNetOptions"></param>
     /// <returns></returns>
-    public static IServiceCollection AddOrleansAdoNetPersistence(this IServiceCollection services, AdoNetPersistenceOptions options)
+    public static IServiceCollection AddOrleansAdoNetPersistence(this IServiceCollection services, AdoNetPersistenceOptions adoNetOptions)
     {
         return services.AddOrleans(siloBuilder =>
                                    {
-                                       foreach (var storage in options.Storages)
+                                       foreach (var storage in adoNetOptions.Storages)
                                        {
-                                           if (options.ConnectionStrings.TryGetValue(storage.ProviderName, out var connectionString))
+                                           if (adoNetOptions.ConnectionStrings.TryGetValue(storage.ProviderName, out var connectionString))
                                            {
                                                siloBuilder.AddAdoNetGrainStorage(storage.ProviderName,
                                                                                  persistence =>

@@ -12,15 +12,15 @@ public static class ServiceCollectionExtensions
     /// <summary>
     /// </summary>
     /// <param name="services"></param>
-    /// <param name="options"></param>
+    /// <param name="eventStoreOptions"></param>
     /// <returns></returns>
-    public static IServiceCollection AddOrleansEventStorePersistence(this IServiceCollection services, EventStorePersistenceOptions options)
+    public static IServiceCollection AddOrleansEventStorePersistence(this IServiceCollection services, EventStorePersistenceOptions eventStoreOptions)
     {
         return services.AddOrleans(siloBuilder =>
                                    {
-                                       foreach (var storage in options.Storages)
+                                       foreach (var storage in eventStoreOptions.Storages)
                                        {
-                                           if (options.ConnectionStrings.TryGetValue(storage.ProviderName, out var connectionString))
+                                           if (eventStoreOptions.ConnectionStrings.TryGetValue(storage.ProviderName, out var connectionString))
                                            {
                                                siloBuilder.AddEventStoreGrainStorage(storage.ProviderName,
                                                                                      persistence =>

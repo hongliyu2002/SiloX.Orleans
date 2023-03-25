@@ -15,14 +15,15 @@ public static class ServiceCollectionExtensions
     /// </summary>
     /// <param name="services"></param>
     /// <param name="options"></param>
+    /// <param name="inMemoryOptions"></param>
     /// <returns></returns>
-    public static IServiceCollection AddOrleansInMemoryStreaming(this IServiceCollection services, InMemoryStreamingOptions options)
+    public static IServiceCollection AddOrleansInMemoryStreaming(this IServiceCollection services, StreamingOptions options, InMemoryStreamingOptions inMemoryOptions)
     {
         if (options.UsedByClient)
         {
             return services.AddOrleansClient(clientBuilder =>
                                              {
-                                                 foreach (var streams in options.StreamsOptions)
+                                                 foreach (var streams in inMemoryOptions.Streams)
                                                  {
                                                      clientBuilder.AddMemoryStreams(streams.ProviderName,
                                                                                     configurator =>
@@ -44,7 +45,7 @@ public static class ServiceCollectionExtensions
         }
         return services.AddOrleans(siloBuilder =>
                                    {
-                                       foreach (var streams in options.StreamsOptions)
+                                       foreach (var streams in inMemoryOptions.Streams)
                                        {
                                            siloBuilder.AddMemoryStreams(streams.ProviderName,
                                                                         configurator =>

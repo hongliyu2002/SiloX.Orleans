@@ -17,16 +17,17 @@ public static class ServiceCollectionExtensions
     /// </summary>
     /// <param name="services"></param>
     /// <param name="options"></param>
+    /// <param name="eventStoreOptions"></param>
     /// <returns></returns>
-    public static IServiceCollection AddOrleansEventStoreStreaming(this IServiceCollection services, EventStoreStreamingOptions options)
+    public static IServiceCollection AddOrleansEventStoreStreaming(this IServiceCollection services, StreamingOptions options, EventStoreStreamingOptions eventStoreOptions)
     {
         if (options.UsedByClient)
         {
             return services.AddOrleansClient(clientBuilder =>
                                              {
-                                                 foreach (var streams in options.StreamsOptions)
+                                                 foreach (var streams in eventStoreOptions.Streams)
                                                  {
-                                                     if (options.ConnectionStrings.TryGetValue(streams.ProviderName, out var connectionString))
+                                                     if (eventStoreOptions.ConnectionStrings.TryGetValue(streams.ProviderName, out var connectionString))
                                                      {
                                                          clientBuilder.AddEventStoreStreams(streams.ProviderName,
                                                                                             configurator =>
@@ -61,9 +62,9 @@ public static class ServiceCollectionExtensions
         }
         return services.AddOrleans(siloBuilder =>
                                    {
-                                       foreach (var streams in options.StreamsOptions)
+                                       foreach (var streams in eventStoreOptions.Streams)
                                        {
-                                           if (options.ConnectionStrings.TryGetValue(streams.ProviderName, out var connectionString))
+                                           if (eventStoreOptions.ConnectionStrings.TryGetValue(streams.ProviderName, out var connectionString))
                                            {
                                                siloBuilder.AddEventStoreStreams(streams.ProviderName,
                                                                                 configurator =>
@@ -81,6 +82,36 @@ public static class ServiceCollectionExtensions
                                                                                                                                                store.Queues = streams.Queues;
                                                                                                                                            });
                                                                                                                      });
+                                                                                    configurator.ConfigureReceiver(builder =>
+                                                                                                                   {
+                                                                                                                       builder.Configure(receiver =>
+                                                                                                                                         {
+                                                                                                                                             receiver.SubscriptionSettings = new PersistentSubscriptionSettings(streams.SubscriptionResolveLinkTos,
+                                                                                                                                                                                                                null,
+                                                                                                                                                                                                                streams.SubscriptionExtraStatistics,
+                                                                                                                                                                                                                streams.SubscriptionMessageTimeout,
+                                                                                                                                                                                                                streams.SubscriptionMaxRetryCount,
+                                                                                                                                                                                                                streams.SubscriptionLiveBufferSize,
+                                                                                                                                                                                                                streams.SubscriptionReadBatchSize,
+                                                                                                                                                                                                                streams.SubscriptionHistoryBufferSize,
+                                                                                                                                                                                                                streams.SubscriptionCheckPointAfter,
+                                                                                                                                                                                                                streams.SubscriptionCheckPointLowerBound,
+                                                                                                                                                                                                                streams.SubscriptionCheckPointUpperBound,
+                                                                                                                                                                                                                streams.SubscriptionMaxSubscriberCount,
+                                                                                                                                                                                                                streams.SubscriptionConsumerStrategyName);
+                                                                                                                                             receiver.PrefetchCount = streams.PrefetchCount;
+                                                                                                                                             receiver.StartFromNow = streams.StartFromNow;
+                                                                                                                                         });
+                                                                                                                   });
+                                                                                    configurator.ConfigureCachePressuring(builder =>
+                                                                                                                          {
+                                                                                                                              builder.Configure(pressure =>
+                                                                                                                                                {
+                                                                                                                                                    pressure.SlowConsumingMonitorFlowControlThreshold = streams.SlowConsumingMonitorFlowControlThreshold;
+                                                                                                                                                    pressure.SlowConsumingMonitorPressureWindowSize = streams.SlowConsumingMonitorPressureWindowSize;
+                                                                                                                                                    pressure.AveragingCachePressureMonitorFlowControlThreshold = streams.AveragingCachePressureMonitorFlowControlThreshold;
+                                                                                                                                                });
+                                                                                                                          });
                                                                                     configurator.ConfigureStreamPubSub(streams.PubSubType);
                                                                                     configurator.ConfigureLifecycle(builder =>
                                                                                                                     {
@@ -143,6 +174,21 @@ public static class ServiceCollectionExtensions
                                                                                             break;
                                                                                         default:
                                                                                             throw new ArgumentOutOfRangeException(nameof(streams.QueueBalancerMode), QueueBalancerModeDoesNotSupport);
+                                                                                    }
+                                                                                    if (eventStoreOptions.ConnectionStrings.TryGetValue(streams.CheckpointerProviderName, out var checkpointerConnectionString))
+                                                                                    {
+                                                                                        configurator.UseEventStoreCheckpointer(builder =>
+                                                                                                                               {
+                                                                                                                                   builder.Configure(checkpointer =>
+                                                                                                                                                     {
+                                                                                                                                                         checkpointer.ClientSettings = EventStoreClientSettings.Create(checkpointerConnectionString);
+                                                                                                                                                         if (streams.CheckpointerUsername.IsNotNullOrEmpty() && streams.CheckpointerPassword.IsNotNullOrEmpty())
+                                                                                                                                                         {
+                                                                                                                                                             checkpointer.Credentials = new UserCredentials(streams.CheckpointerUsername!, streams.CheckpointerPassword!);
+                                                                                                                                                         }
+                                                                                                                                                         checkpointer.PersistInterval = streams.CheckpointerPersistInterval;
+                                                                                                                                                     });
+                                                                                                                               });
                                                                                     }
                                                                                 });
                                            }

@@ -31,7 +31,7 @@ public class OrleansRedisPersistenceModule : ConfigureServicesModule
     /// <inheritdoc />
     public override void PostConfigureServices(IServiceConfigurationContext context)
     {
-        var persistenceOptions = context.Services.GetObject<RedisPersistenceOptions>();
-        context.Log("AddOrleansRedisPersistence", services => services.AddOrleansRedisPersistence(persistenceOptions));
+        var redisOptions = context.Services.GetObject<RedisPersistenceOptions>();
+        context.Log("AddOrleansRedisPersistence", services => services.AddOrleansRedisPersistence(redisOptions));
     }
 }

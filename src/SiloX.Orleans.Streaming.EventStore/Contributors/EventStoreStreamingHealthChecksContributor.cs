@@ -12,13 +12,13 @@ internal sealed class EventStoreStreamingHealthChecksContributor : IHealthChecks
     /// <inheritdoc />
     public void ConfigureHealthChecks(IHealthChecksBuilder builder, IServiceConfigurationContext context)
     {
-        var streamingOptions = context.Services.GetObject<EventStoreStreamingOptions>();
-        streamingOptions.ConnectionStrings = context.Services.GetObject<ConnectionStrings>();
-        foreach (var streams in streamingOptions.StreamsOptions)
+        var eventStoreOptions = context.Services.GetObject<EventStoreStreamingOptions>();
+        eventStoreOptions.ConnectionStrings = context.Services.GetObject<ConnectionStrings>();
+        foreach (var streams in eventStoreOptions.Streams)
         {
-            if (streamingOptions.ConnectionStrings.TryGetValue(streams.ProviderName, out var connectionString))
+            if (eventStoreOptions.ConnectionStrings.TryGetValue(streams.ProviderName, out var connectionString))
             {
-                builder.AddEventStore(connectionString, $"EventStoreStreaming-{streams.ProviderName}", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
+                builder.AddEventStore(connectionString, streams.ProviderName, HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
             }
         }
     }

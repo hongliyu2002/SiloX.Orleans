@@ -21,7 +21,7 @@ public class OrleansEventSourcingModule : ConfigureServicesModule
     /// <inheritdoc />
     public override void PostConfigureServices(IServiceConfigurationContext context)
     {
-        var eventSourcingOptions = context.Services.GetOptions<EventSourcingOptions>();
-        context.Log("AddOrleansEventSourcing", services => services.AddOrleansEventSourcing(eventSourcingOptions));
+        var options = context.Services.GetOptions<EventSourcingOptions>();
+        context.Log("AddOrleansEventSourcing", services => services.AddOrleansEventSourcing(options));
     }
 }

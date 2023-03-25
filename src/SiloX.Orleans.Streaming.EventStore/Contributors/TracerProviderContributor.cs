@@ -10,7 +10,7 @@ internal sealed class TracerProviderContributor : ITracerProviderContributor
     public void Configure(TracerProviderBuilder builder, IServiceConfigurationContext context)
     {
         // var streamingOptions = context.Services.GetObject<EventStoreStreamingOptions>();
-        // foreach (var storage in streamingOptions.StreamsOptions)
+        // foreach (var storage in streamingOptions.Streams)
         // {
         //     builder.AddEventStoreInstrumentation();
         // }

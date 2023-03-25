@@ -12,13 +12,13 @@ internal sealed class EventStoreEventSourcingHealthChecksContributor : IHealthCh
     /// <inheritdoc />
     public void ConfigureHealthChecks(IHealthChecksBuilder builder, IServiceConfigurationContext context)
     {
-        var eventSourcingOptions = context.Services.GetObject<EventStoreEventSourcingOptions>();
-        eventSourcingOptions.ConnectionStrings = context.Services.GetObject<ConnectionStrings>();
-        foreach (var logConsistency in eventSourcingOptions.LogConsistencies)
+        var eventStoreOptions = context.Services.GetObject<EventStoreEventSourcingOptions>();
+        eventStoreOptions.ConnectionStrings = context.Services.GetObject<ConnectionStrings>();
+        foreach (var logConsistency in eventStoreOptions.LogConsistencies)
         {
-            if (eventSourcingOptions.ConnectionStrings.TryGetValue(logConsistency.ProviderName, out var connectionString))
+            if (eventStoreOptions.ConnectionStrings.TryGetValue(logConsistency.ProviderName, out var connectionString))
             {
-                builder.AddEventStore(connectionString, $"EventStoreEventSourcing-{logConsistency.ProviderName}", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
+                builder.AddEventStore(connectionString, logConsistency.ProviderName, HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
             }
         }
     }

@@ -21,7 +21,7 @@ public class OrleansServerModule : ConfigureServicesModule
     /// <inheritdoc />
     public override void PostConfigureServices(IServiceConfigurationContext context)
     {
-        var serverOptions = context.Services.GetOptions<OrleansServerOptions>();
-        context.Log("AddOrleansServer", services => services.AddOrleansServer(serverOptions));
+        var options = context.Services.GetOptions<OrleansServerOptions>();
+        context.Log("AddOrleansServer", services => services.AddOrleansServer(options));
     }
 }

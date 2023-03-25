@@ -11,11 +11,11 @@ public static class ServiceCollectionExtensions
     /// <summary>
     /// </summary>
     /// <param name="services"></param>
-    /// <param name="options"></param>
+    /// <param name="redisOptions"></param>
     /// <returns></returns>
-    public static IServiceCollection AddOrleansRedisReminders(this IServiceCollection services, RedisRemindersOptions options)
+    public static IServiceCollection AddOrleansRedisReminders(this IServiceCollection services, RedisRemindersOptions redisOptions)
     {
-        if (options.ConnectionStrings.TryGetValue(options.ProviderName, out var connectionString))
+        if (redisOptions.ConnectionStrings.TryGetValue(redisOptions.ProviderName, out var connectionString))
         {
             return services.AddOrleans(siloBuilder =>
                                        {

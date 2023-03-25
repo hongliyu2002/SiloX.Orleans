@@ -23,7 +23,7 @@ public class OrleansInMemoryPersistenceModule : ConfigureServicesModule
     /// <inheritdoc />
     public override void PostConfigureServices(IServiceConfigurationContext context)
     {
-        var persistenceOptions = context.Services.GetObject<InMemoryPersistenceOptions>();
-        context.Log("AddOrleansInMemoryPersistence", services => services.AddOrleansInMemoryPersistence(persistenceOptions));
+        var inMemoryOptions = context.Services.GetObject<InMemoryPersistenceOptions>();
+        context.Log("AddOrleansInMemoryPersistence", services => services.AddOrleansInMemoryPersistence(inMemoryOptions));
     }
 }

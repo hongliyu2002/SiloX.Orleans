@@ -10,9 +10,9 @@ public static class ServiceCollectionExtensions
     /// <summary>
     /// </summary>
     /// <param name="services"></param>
-    /// <param name="options"></param>
+    /// <param name="inMemoryOptions"></param>
     /// <returns></returns>
-    public static IServiceCollection AddOrleansInMemoryReminders(this IServiceCollection services, InMemoryRemindersOptions options)
+    public static IServiceCollection AddOrleansInMemoryReminders(this IServiceCollection services, InMemoryRemindersOptions inMemoryOptions)
     {
         return services.AddOrleans(siloBuilder =>
                                    {

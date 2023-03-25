@@ -31,7 +31,7 @@ public class OrleansAdoNetPersistenceModule : ConfigureServicesModule
     /// <inheritdoc />
     public override void PostConfigureServices(IServiceConfigurationContext context)
     {
-        var persistenceOptions = context.Services.GetObject<AdoNetPersistenceOptions>();
-        context.Log("AddOrleansAdoNetPersistence", services => services.AddOrleansAdoNetPersistence(persistenceOptions));
+        var adoNetOptions = context.Services.GetObject<AdoNetPersistenceOptions>();
+        context.Log("AddOrleansAdoNetPersistence", services => services.AddOrleansAdoNetPersistence(adoNetOptions));
     }
 }

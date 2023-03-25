@@ -31,7 +31,8 @@ public class OrleansEventStoreStreamingModule : ConfigureServicesModule
     /// <inheritdoc />
     public override void PostConfigureServices(IServiceConfigurationContext context)
     {
-        var streamingOptions = context.Services.GetObject<EventStoreStreamingOptions>();
-        context.Log("AddOrleansEventStoreStreaming", services => services.AddOrleansEventStoreStreaming(streamingOptions));
+        var options = context.Services.GetObject<StreamingOptions>();
+        var eventStoreOptions = context.Services.GetObject<EventStoreStreamingOptions>();
+        context.Log("AddOrleansEventStoreStreaming", services => services.AddOrleansEventStoreStreaming(options, eventStoreOptions));
     }
 }

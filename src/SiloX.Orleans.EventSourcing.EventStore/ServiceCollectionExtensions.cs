@@ -12,15 +12,15 @@ public static class ServiceCollectionExtensions
     /// <summary>
     /// </summary>
     /// <param name="services"></param>
-    /// <param name="options"></param>
+    /// <param name="eventStoreOptions"></param>
     /// <returns></returns>
-    public static IServiceCollection AddOrleansEventStoreEventSourcing(this IServiceCollection services, EventStoreEventSourcingOptions options)
+    public static IServiceCollection AddOrleansEventStoreEventSourcing(this IServiceCollection services, EventStoreEventSourcingOptions eventStoreOptions)
     {
         return services.AddOrleans(siloBuilder =>
                                    {
-                                       foreach (var logConsistency in options.LogConsistencies)
+                                       foreach (var logConsistency in eventStoreOptions.LogConsistencies)
                                        {
-                                           if (options.ConnectionStrings.TryGetValue(logConsistency.ProviderName, out var connectionString))
+                                           if (eventStoreOptions.ConnectionStrings.TryGetValue(logConsistency.ProviderName, out var connectionString))
                                            {
                                                siloBuilder.AddEventStoreBasedLogConsistencyProvider(logConsistency.ProviderName,
                                                                                                     eventSourcing =>

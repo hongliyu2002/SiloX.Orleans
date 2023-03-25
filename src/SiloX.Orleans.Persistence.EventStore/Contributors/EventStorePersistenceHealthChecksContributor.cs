@@ -12,13 +12,13 @@ internal sealed class EventStorePersistenceHealthChecksContributor : IHealthChec
     /// <inheritdoc />
     public void ConfigureHealthChecks(IHealthChecksBuilder builder, IServiceConfigurationContext context)
     {
-        var persistenceOptions = context.Services.GetObject<EventStorePersistenceOptions>();
-        persistenceOptions.ConnectionStrings = context.Services.GetObject<ConnectionStrings>();
-        foreach (var storage in persistenceOptions.Storages)
+        var eventStoreOptions = context.Services.GetObject<EventStorePersistenceOptions>();
+        eventStoreOptions.ConnectionStrings = context.Services.GetObject<ConnectionStrings>();
+        foreach (var storage in eventStoreOptions.Storages)
         {
-            if (persistenceOptions.ConnectionStrings.TryGetValue(storage.ProviderName, out var connectionString))
+            if (eventStoreOptions.ConnectionStrings.TryGetValue(storage.ProviderName, out var connectionString))
             {
-                builder.AddEventStore(connectionString, $"EventStorePersistence-{storage.ProviderName}", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
+                builder.AddEventStore(connectionString, storage.ProviderName, HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
             }
         }
     }

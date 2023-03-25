@@ -23,7 +23,7 @@ public class OrleansInMemoryEventSourcingModule : ConfigureServicesModule
     /// <inheritdoc />
     public override void PostConfigureServices(IServiceConfigurationContext context)
     {
-        var eventSourcingOptions = context.Services.GetObject<InMemoryEventSourcingOptions>();
-        context.Log("AddOrleansInMemoryEventSourcing", services => services.AddOrleansInMemoryEventSourcing(eventSourcingOptions));
+        var inMemoryOptions = context.Services.GetObject<InMemoryEventSourcingOptions>();
+        context.Log("AddOrleansInMemoryEventSourcing", services => services.AddOrleansInMemoryEventSourcing(inMemoryOptions));
     }
 }

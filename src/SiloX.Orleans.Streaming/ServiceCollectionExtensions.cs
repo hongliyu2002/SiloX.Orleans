@@ -23,9 +23,6 @@ public static class ServiceCollectionExtensions
         }
         return services.AddOrleans(siloBuilder =>
                                    {
-                                       // siloBuilder.Configure<StreamingOptions>(streaming =>
-                                       //                                         {
-                                       //                                         });
                                        siloBuilder.AddStreaming();
                                    });
     }

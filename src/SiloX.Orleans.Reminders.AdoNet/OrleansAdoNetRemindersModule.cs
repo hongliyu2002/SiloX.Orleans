@@ -31,7 +31,7 @@ public class OrleansAdoNetRemindersModule : ConfigureServicesModule
     /// <inheritdoc />
     public override void PostConfigureServices(IServiceConfigurationContext context)
     {
-        var remindersOptions = context.Services.GetObject<AdoNetRemindersOptions>();
-        context.Log("AddOrleansAdoNetReminders", services => services.AddOrleansAdoNetReminders(remindersOptions));
+        var adoNetOptions = context.Services.GetObject<AdoNetRemindersOptions>();
+        context.Log("AddOrleansAdoNetReminders", services => services.AddOrleansAdoNetReminders(adoNetOptions));
     }
 }

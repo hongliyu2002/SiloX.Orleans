@@ -23,7 +23,8 @@ public class OrleansInMemoryStreamingModule : ConfigureServicesModule
     /// <inheritdoc />
     public override void PostConfigureServices(IServiceConfigurationContext context)
     {
-        var streamingOptions = context.Services.GetObject<InMemoryStreamingOptions>();
-        context.Log("AddOrleansInMemoryStreaming", services => services.AddOrleansInMemoryStreaming(streamingOptions));
+        var options = context.Services.GetObject<StreamingOptions>();
+        var inMemoryOptions = context.Services.GetObject<InMemoryStreamingOptions>();
+        context.Log("AddOrleansInMemoryStreaming", services => services.AddOrleansInMemoryStreaming(options, inMemoryOptions));
     }
 }

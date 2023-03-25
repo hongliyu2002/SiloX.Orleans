@@ -12,25 +12,25 @@ internal sealed class AdoNetPersistenceHealthChecksContributor : IHealthChecksCo
     /// <inheritdoc />
     public void ConfigureHealthChecks(IHealthChecksBuilder builder, IServiceConfigurationContext context)
     {
-        var persistenceOptions = context.Services.GetObject<AdoNetPersistenceOptions>();
-        persistenceOptions.ConnectionStrings = context.Services.GetObject<ConnectionStrings>();
-        foreach (var storage in persistenceOptions.Storages)
+        var adoNetOptions = context.Services.GetObject<AdoNetPersistenceOptions>();
+        adoNetOptions.ConnectionStrings = context.Services.GetObject<ConnectionStrings>();
+        foreach (var storage in adoNetOptions.Storages)
         {
-            if (persistenceOptions.ConnectionStrings.TryGetValue(storage.ProviderName, out var connectionString))
+            if (adoNetOptions.ConnectionStrings.TryGetValue(storage.ProviderName, out var connectionString))
             {
                 switch (storage.DbProvider)
                 {
                     case AdoNetDbProvider.SQLServer:
-                        builder.AddSqlServer(connectionString, "SELECT 1;", $"AdoNetPersistence-{storage.ProviderName}", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
+                        builder.AddSqlServer(connectionString, "SELECT 1;", storage.ProviderName, HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
                         break;
                     case AdoNetDbProvider.PostgreSQL:
-                        builder.AddNpgSql(connectionString, "SELECT 1;", null, $"AdoNetPersistence-{storage.ProviderName}", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
+                        builder.AddNpgSql(connectionString, "SELECT 1;", null, storage.ProviderName, HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
                         break;
                     case AdoNetDbProvider.MySQL:
-                        builder.AddMySql(connectionString, $"AdoNetPersistence-{storage.ProviderName}", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
+                        builder.AddMySql(connectionString, storage.ProviderName, HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
                         break;
                     case AdoNetDbProvider.Oracle:
-                        builder.AddOracle(connectionString, "select * from v$version", $"AdoNetPersistence-{storage.ProviderName}", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
+                        builder.AddOracle(connectionString, "select * from v$version", storage.ProviderName, HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
                         break;
                 }
             }
