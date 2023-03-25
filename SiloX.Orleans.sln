@@ -55,6 +55,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiloX.Orleans.UnitTests", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiloX.Orleans.Client", "src\SiloX.Orleans.Client\SiloX.Orleans.Client.csproj", "{76135226-1BBE-40F4-B0E8-45F6EB0FCA7E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiloX.Domain.Abstractions", "src\SiloX.Domain.Abstractions\SiloX.Domain.Abstractions.csproj", "{BB2D4655-5272-4306-921F-E39F08F6934E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -84,6 +86,7 @@ Global
 		{90335E87-3DA8-4B94-B6A4-EC8F93F42FFF} = {3365796E-DC4C-4D45-AA70-83D5982B013E}
 		{CED1BC94-4219-418B-80FC-51B9F759AF2C} = {A550815D-2BE7-408D-BB01-50582C101C79}
 		{76135226-1BBE-40F4-B0E8-45F6EB0FCA7E} = {3365796E-DC4C-4D45-AA70-83D5982B013E}
+		{BB2D4655-5272-4306-921F-E39F08F6934E} = {3365796E-DC4C-4D45-AA70-83D5982B013E}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{98333171-E519-467A-AA23-70D4C10F34F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -174,5 +177,9 @@ Global
 		{76135226-1BBE-40F4-B0E8-45F6EB0FCA7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{76135226-1BBE-40F4-B0E8-45F6EB0FCA7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{76135226-1BBE-40F4-B0E8-45F6EB0FCA7E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB2D4655-5272-4306-921F-E39F08F6934E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB2D4655-5272-4306-921F-E39F08F6934E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB2D4655-5272-4306-921F-E39F08F6934E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB2D4655-5272-4306-921F-E39F08F6934E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
