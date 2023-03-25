@@ -31,7 +31,8 @@ public class OrleansRedisClusteringModule : ConfigureServicesModule
     /// <inheritdoc />
     public override void PostConfigureServices(IServiceConfigurationContext context)
     {
-        var clusteringOptions = context.Services.GetObject<RedisClusteringOptions>();
-        context.Log("AddOrleansRedisClustering", services => services.AddOrleansRedisClustering(clusteringOptions));
+        var options = context.Services.GetObject<ClusteringOptions>();
+        var redisOptions = context.Services.GetObject<RedisClusteringOptions>();
+        context.Log("AddOrleansRedisClustering", services => services.AddOrleansRedisClustering(options, redisOptions));
     }
 }

@@ -20,18 +20,18 @@ public static class ServiceCollectionExtensions
     {
         return services.AddOrleans(siloBuilder =>
                                    {
-                                       foreach (var logConsistency in options.LogConsistencyOptions)
+                                       foreach (var logConsistency in options.LogConsistencies)
                                        {
                                            switch (logConsistency.LogProvider)
                                            {
                                                case InMemoryLogProvider.LogBased:
-                                                   siloBuilder.AddLogStorageBasedLogConsistencyProvider(logConsistency.Name);
+                                                   siloBuilder.AddLogStorageBasedLogConsistencyProvider(logConsistency.ProviderName);
                                                    break;
                                                case InMemoryLogProvider.StateBased:
-                                                   siloBuilder.AddStateStorageBasedLogConsistencyProvider(logConsistency.Name);
+                                                   siloBuilder.AddStateStorageBasedLogConsistencyProvider(logConsistency.ProviderName);
                                                    break;
                                                case InMemoryLogProvider.CustomBased:
-                                                   siloBuilder.AddCustomStorageBasedLogConsistencyProvider(logConsistency.Name, logConsistency.PrimaryCluster);
+                                                   siloBuilder.AddCustomStorageBasedLogConsistencyProvider(logConsistency.ProviderName, logConsistency.PrimaryCluster);
                                                    break;
                                                default:
                                                    throw new ArgumentOutOfRangeException(nameof(logConsistency.LogProvider), LogProviderDoesNotSupport);

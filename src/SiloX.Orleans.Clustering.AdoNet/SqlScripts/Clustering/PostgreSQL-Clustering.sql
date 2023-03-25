@@ -73,7 +73,7 @@ BEGIN
     BEGIN
 
         INSERT INTO OrleansMembershipVersionTable
-        (DeploymentId)
+            (DeploymentId)
         SELECT DeploymentIdArg ON CONFLICT (DeploymentId) DO NOTHING;
 
         GET DIAGNOSTICS RowCountVar = ROW_COUNT;

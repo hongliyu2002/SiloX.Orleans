@@ -15,16 +15,16 @@ public static class ServiceCollectionExtensions
     /// <returns></returns>
     public static IServiceCollection AddOrleansRedisReminders(this IServiceCollection services, RedisRemindersOptions options)
     {
-        if (!options.ConnectionStrings.TryGetValue(options.ProviderName, out var connectionString))
+        if (options.ConnectionStrings.TryGetValue(options.ProviderName, out var connectionString))
         {
-            return services;
+            return services.AddOrleans(siloBuilder =>
+                                       {
+                                           siloBuilder.UseRedisReminderService(reminders =>
+                                                                               {
+                                                                                   reminders.ConfigurationOptions = ConfigurationOptions.Parse(connectionString);
+                                                                               });
+                                       });
         }
-        return services.AddOrleans(siloBuilder =>
-                                   {
-                                       siloBuilder.UseRedisReminderService(reminders =>
-                                                                           {
-                                                                               reminders.ConfigurationOptions = ConfigurationOptions.Parse(connectionString);
-                                                                           });
-                                   });
+        return services;
     }
 }

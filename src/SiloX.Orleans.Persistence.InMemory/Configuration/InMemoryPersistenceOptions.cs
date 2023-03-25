@@ -11,7 +11,7 @@ public sealed class InMemoryPersistenceOptions
     /// <summary>
     ///     The storage options.
     /// </summary>
-    public InMemoryPersistenceStorageOptions[] StorageOptions { get; set; } = Array.Empty<InMemoryPersistenceStorageOptions>();
+    public InMemoryPersistenceStorageOptions[] Storages { get; set; } = Array.Empty<InMemoryPersistenceStorageOptions>();
 }
 
 /// <summary>
@@ -20,9 +20,9 @@ public sealed class InMemoryPersistenceOptions
 public sealed class InMemoryPersistenceStorageOptions
 {
     /// <summary>
-    ///     The name of the connection.
+    ///     The name of the provider (also used as connection string name).
     /// </summary>
-    public string Name { get; set; } = ProviderConstants.DEFAULT_STORAGE_PROVIDER_NAME;
+    public string ProviderName { get; set; } = ProviderConstants.DEFAULT_STORAGE_PROVIDER_NAME;
 
     /// <summary>
     ///     The number of store grains to use.

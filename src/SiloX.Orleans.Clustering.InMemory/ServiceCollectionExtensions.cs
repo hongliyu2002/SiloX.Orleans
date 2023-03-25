@@ -11,19 +11,20 @@ public static class ServiceCollectionExtensions
     /// </summary>
     /// <param name="services"></param>
     /// <param name="options"></param>
+    /// <param name="inMemoryOptions"></param>
     /// <returns></returns>
-    public static IServiceCollection AddOrleansInMemoryClustering(this IServiceCollection services, InMemoryClusteringOptions options)
+    public static IServiceCollection AddOrleansInMemoryClustering(this IServiceCollection services, ClusteringOptions options, InMemoryClusteringOptions inMemoryOptions)
     {
         if (options.UsedByClient)
         {
             return services.AddOrleansClient(clientBuilder =>
                                              {
-                                                 clientBuilder.UseLocalhostClustering(options.GatewayPort, options.ServiceId, options.ClusterId);
+                                                 clientBuilder.UseLocalhostClustering(inMemoryOptions.LocalGatewayPort, inMemoryOptions.LocalServiceId, inMemoryOptions.LocalClusterId);
                                              });
         }
         return services.AddOrleans(siloBuilder =>
                                    {
-                                       siloBuilder.UseLocalhostClustering(options.SiloPort, options.GatewayPort, null, options.ServiceId, options.ClusterId);
+                                       siloBuilder.UseLocalhostClustering(inMemoryOptions.LocalSiloPort, inMemoryOptions.LocalGatewayPort, null, inMemoryOptions.LocalServiceId, inMemoryOptions.LocalClusterId);
                                    });
     }
 }

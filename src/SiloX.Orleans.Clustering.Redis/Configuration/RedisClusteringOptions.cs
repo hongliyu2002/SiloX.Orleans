@@ -9,11 +9,6 @@ namespace SiloX.Orleans.Clustering.Redis;
 public sealed class RedisClusteringOptions
 {
     /// <summary>
-    ///     Is this configuration intended for client-side use?
-    /// </summary>
-    public bool UsedByClient { get; set; }
-
-    /// <summary>
     ///     The name of the provider (also used as connection string name).
     /// </summary>
     public string ProviderName { get; set; } = "RedisCluster";

@@ -16,11 +16,11 @@ public static class ServiceCollectionExtensions
     {
         return services.AddOrleans(siloBuilder =>
                                    {
-                                       siloBuilder.Configure<RemindersOptions>(remindersOptions =>
+                                       siloBuilder.Configure<RemindersOptions>(reminders =>
                                                                                {
-                                                                                   remindersOptions.MinimumRemindersPeriod = options.MinimumRemindersPeriod;
-                                                                                   remindersOptions.RefreshRemindersListPeriod = options.RefreshRemindersListPeriod;
-                                                                                   remindersOptions.InitializationTimeout = options.InitializationTimeout;
+                                                                                   reminders.MinimumRemindersPeriod = options.MinimumRemindersPeriod;
+                                                                                   reminders.RefreshRemindersListPeriod = options.RefreshRemindersListPeriod;
+                                                                                   reminders.InitializationTimeout = options.InitializationTimeout;
                                                                                });
                                        siloBuilder.AddReminders();
                                    });

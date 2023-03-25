@@ -12,7 +12,7 @@ public sealed class InMemoryEventSourcingOptions
     /// <summary>
     ///     The log Consistency provider options.
     /// </summary>
-    public InMemoryEventSourcingLogConsistencyOptions[] LogConsistencyOptions { get; set; } = Array.Empty<InMemoryEventSourcingLogConsistencyOptions>();
+    public InMemoryEventSourcingLogConsistencyOptions[] LogConsistencies { get; set; } = Array.Empty<InMemoryEventSourcingLogConsistencyOptions>();
 }
 
 /// <summary>
@@ -21,9 +21,9 @@ public sealed class InMemoryEventSourcingOptions
 public sealed class InMemoryEventSourcingLogConsistencyOptions
 {
     /// <summary>
-    ///     The name of the log Consistency provider.
+    ///     The name of the provider (also used as connection string name).
     /// </summary>
-    public string Name { get; set; } = ProviderConstants.DEFAULT_LOG_CONSISTENCY_PROVIDER_NAME;
+    public string ProviderName { get; set; } = ProviderConstants.DEFAULT_LOG_CONSISTENCY_PROVIDER_NAME;
 
     /// <summary>
     ///     The type of the log Consistency provider.

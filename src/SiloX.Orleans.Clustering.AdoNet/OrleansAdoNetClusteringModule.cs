@@ -31,7 +31,8 @@ public class OrleansAdoNetClusteringModule : ConfigureServicesModule
     /// <inheritdoc />
     public override void PostConfigureServices(IServiceConfigurationContext context)
     {
-        var clusteringOptions = context.Services.GetObject<AdoNetClusteringOptions>();
-        context.Log("AddOrleansAdoNetClustering", services => services.AddOrleansAdoNetClustering(clusteringOptions));
+        var options = context.Services.GetObject<ClusteringOptions>();
+        var adoNetOptions = context.Services.GetObject<AdoNetClusteringOptions>();
+        context.Log("AddOrleansAdoNetClustering", services => services.AddOrleansAdoNetClustering(options, adoNetOptions));
     }
 }

@@ -140,7 +140,7 @@ RETURN NUMBER IS
 PRAGMA AUTONOMOUS_TRANSACTION;
 BEGIN
     INSERT INTO OrleansMembershipVersionTable
-    (DeploymentId)
+        (DeploymentId)
     SELECT PARAM_DEPLOYMENTID
     FROM DUAL
     WHERE NOT EXISTS

@@ -23,7 +23,8 @@ public class OrleansInMemoryClusteringModule : ConfigureServicesModule
     /// <inheritdoc />
     public override void PostConfigureServices(IServiceConfigurationContext context)
     {
-        var clusteringOptions = context.Services.GetObject<InMemoryClusteringOptions>();
-        context.Log("AddOrleansInMemoryClustering", services => services.AddOrleansInMemoryClustering(clusteringOptions));
+        var options = context.Services.GetObject<ClusteringOptions>();
+        var inMemoryOptions = context.Services.GetObject<InMemoryClusteringOptions>();
+        context.Log("AddOrleansInMemoryClustering", services => services.AddOrleansInMemoryClustering(options, inMemoryOptions));
     }
 }

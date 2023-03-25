@@ -36,11 +36,9 @@ public static class ServiceCollectionExtensions
                                                                                                                                      builder.Configure(store =>
                                                                                                                                                        {
                                                                                                                                                            store.ClientSettings = EventStoreClientSettings.Create(connectionString);
-                                                                                                                                                           if (streams is { Username: { }, Password: { } }
-                                                                                                                                                            && streams.Username.IsNotNullOrEmpty()
-                                                                                                                                                            && streams.Password.IsNotNullOrEmpty())
+                                                                                                                                                           if (streams.Username.IsNotNullOrEmpty() && streams.Password.IsNotNullOrEmpty())
                                                                                                                                                            {
-                                                                                                                                                               store.Credentials = new UserCredentials(streams.Username, streams.Password);
+                                                                                                                                                               store.Credentials = new UserCredentials(streams.Username!, streams.Password!);
                                                                                                                                                            }
                                                                                                                                                            store.Name = streams.Name.IsNullOrEmpty() ? streams.ProviderName : streams.Name;
                                                                                                                                                            store.Queues = streams.Queues;
@@ -75,11 +73,9 @@ public static class ServiceCollectionExtensions
                                                                                                                          builder.Configure(store =>
                                                                                                                                            {
                                                                                                                                                store.ClientSettings = EventStoreClientSettings.Create(connectionString);
-                                                                                                                                               if (streams is { Username: { }, Password: { } }
-                                                                                                                                                && streams.Username.IsNotNullOrEmpty()
-                                                                                                                                                && streams.Password.IsNotNullOrEmpty())
+                                                                                                                                               if (streams.Username.IsNotNullOrEmpty() && streams.Password.IsNotNullOrEmpty())
                                                                                                                                                {
-                                                                                                                                                   store.Credentials = new UserCredentials(streams.Username, streams.Password);
+                                                                                                                                                   store.Credentials = new UserCredentials(streams.Username!, streams.Password!);
                                                                                                                                                }
                                                                                                                                                store.Name = streams.Name.IsNullOrEmpty() ? streams.ProviderName : streams.Name;
                                                                                                                                                store.Queues = streams.Queues;

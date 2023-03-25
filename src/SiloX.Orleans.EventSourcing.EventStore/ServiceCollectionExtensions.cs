@@ -18,7 +18,7 @@ public static class ServiceCollectionExtensions
     {
         return services.AddOrleans(siloBuilder =>
                                    {
-                                       foreach (var logConsistency in options.LogConsistencyOptions)
+                                       foreach (var logConsistency in options.LogConsistencies)
                                        {
                                            if (options.ConnectionStrings.TryGetValue(logConsistency.ProviderName, out var connectionString))
                                            {
@@ -26,9 +26,9 @@ public static class ServiceCollectionExtensions
                                                                                                     eventSourcing =>
                                                                                                     {
                                                                                                         eventSourcing.ClientSettings = EventStoreClientSettings.Create(connectionString);
-                                                                                                        if (logConsistency is { Username: { }, Password: { } } && logConsistency.Username.IsNotNullOrEmpty() && logConsistency.Password.IsNotNullOrEmpty())
+                                                                                                        if (logConsistency.Username.IsNotNullOrEmpty() && logConsistency.Password.IsNotNullOrEmpty())
                                                                                                         {
-                                                                                                            eventSourcing.Credentials = new UserCredentials(logConsistency.Username, logConsistency.Password);
+                                                                                                            eventSourcing.Credentials = new UserCredentials(logConsistency.Username!, logConsistency.Password!);
                                                                                                         }
                                                                                                         eventSourcing.InitStage = logConsistency.InitStage;
                                                                                                     });

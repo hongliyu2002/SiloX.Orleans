@@ -12,7 +12,7 @@ public sealed class EventStoreEventSourcingOptions
     /// <summary>
     ///     The log Consistency provider options.
     /// </summary>
-    public EventStoreEventSourcingLogConsistencyOptions[] LogConsistencyOptions { get; set; } = Array.Empty<EventStoreEventSourcingLogConsistencyOptions>();
+    public EventStoreEventSourcingLogConsistencyOptions[] LogConsistencies { get; set; } = Array.Empty<EventStoreEventSourcingLogConsistencyOptions>();
 
     /// <summary>
     ///     Gets the connection strings.

@@ -14,7 +14,7 @@ internal sealed class EventStoreEventSourcingHealthChecksContributor : IHealthCh
     {
         var eventSourcingOptions = context.Services.GetObject<EventStoreEventSourcingOptions>();
         eventSourcingOptions.ConnectionStrings = context.Services.GetObject<ConnectionStrings>();
-        foreach (var logConsistency in eventSourcingOptions.LogConsistencyOptions)
+        foreach (var logConsistency in eventSourcingOptions.LogConsistencies)
         {
             if (eventSourcingOptions.ConnectionStrings.TryGetValue(logConsistency.ProviderName, out var connectionString))
             {

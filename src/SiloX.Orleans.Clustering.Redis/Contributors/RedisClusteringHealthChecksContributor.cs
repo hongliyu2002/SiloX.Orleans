@@ -12,11 +12,11 @@ internal sealed class RedisClusteringHealthChecksContributor : IHealthChecksCont
     /// <inheritdoc />
     public void ConfigureHealthChecks(IHealthChecksBuilder builder, IServiceConfigurationContext context)
     {
-        var clusteringOptions = context.Services.GetObject<RedisClusteringOptions>();
-        clusteringOptions.ConnectionStrings = context.Services.GetObject<ConnectionStrings>();
-        if (clusteringOptions.ConnectionStrings.TryGetValue(clusteringOptions.ProviderName, out var connectionString))
+        var redisOptions = context.Services.GetObject<RedisClusteringOptions>();
+        redisOptions.ConnectionStrings = context.Services.GetObject<ConnectionStrings>();
+        if (redisOptions.ConnectionStrings.TryGetValue(redisOptions.ProviderName, out var connectionString))
         {
-            builder.AddRedis(connectionString, "RedisClustering", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
+            builder.AddRedis(connectionString, redisOptions.ProviderName, HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
         }
     }
 }

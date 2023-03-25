@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace SiloX.Orleans.Persistence;
 
@@ -14,8 +13,9 @@ public static class ServiceCollectionExtensions
     /// <returns></returns>
     public static IServiceCollection AddOrleansPersistence(this IServiceCollection services, PersistenceOptions options)
     {
-        return services.AddOrleans(siloBuilder =>
-                                   {
-                                   });
+        // return services.AddOrleans(siloBuilder =>
+        //                            {
+        //                            });
+        return services;
     }
 }

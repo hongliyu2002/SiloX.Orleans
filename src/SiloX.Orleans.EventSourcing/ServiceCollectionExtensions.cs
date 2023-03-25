@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace SiloX.Orleans.EventSourcing;
 
@@ -14,8 +13,9 @@ public static class ServiceCollectionExtensions
     /// <returns></returns>
     public static IServiceCollection AddOrleansEventSourcing(this IServiceCollection services, EventSourcingOptions options)
     {
-        return services.AddOrleans(siloBuilder =>
-                                   {
-                                   });
+        // return services.AddOrleans(siloBuilder =>
+        //                            {
+        //                            });
+        return services;
     }
 }

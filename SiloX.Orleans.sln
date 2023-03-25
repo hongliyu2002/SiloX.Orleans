@@ -51,6 +51,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiloX.Orleans.Persistence.R
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiloX.Orleans.Clustering", "src\SiloX.Orleans.Clustering\SiloX.Orleans.Clustering.csproj", "{90335E87-3DA8-4B94-B6A4-EC8F93F42FFF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiloX.Orleans.UnitTests", "tests\SiloX.Orleans.UnitTests\SiloX.Orleans.UnitTests.csproj", "{CED1BC94-4219-418B-80FC-51B9F759AF2C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -78,6 +80,7 @@ Global
 		{17797ED8-7D7A-4FA4-AD85-A3DB2BEEFDF1} = {3365796E-DC4C-4D45-AA70-83D5982B013E}
 		{8FF73133-F6E2-4823-955C-8FD3E2C29D9D} = {3365796E-DC4C-4D45-AA70-83D5982B013E}
 		{90335E87-3DA8-4B94-B6A4-EC8F93F42FFF} = {3365796E-DC4C-4D45-AA70-83D5982B013E}
+		{CED1BC94-4219-418B-80FC-51B9F759AF2C} = {A550815D-2BE7-408D-BB01-50582C101C79}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{98333171-E519-467A-AA23-70D4C10F34F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -160,5 +163,9 @@ Global
 		{90335E87-3DA8-4B94-B6A4-EC8F93F42FFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{90335E87-3DA8-4B94-B6A4-EC8F93F42FFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{90335E87-3DA8-4B94-B6A4-EC8F93F42FFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CED1BC94-4219-418B-80FC-51B9F759AF2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CED1BC94-4219-418B-80FC-51B9F759AF2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CED1BC94-4219-418B-80FC-51B9F759AF2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CED1BC94-4219-418B-80FC-51B9F759AF2C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

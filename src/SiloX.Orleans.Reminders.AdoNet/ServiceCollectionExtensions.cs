@@ -18,24 +18,24 @@ public static class ServiceCollectionExtensions
     /// <returns></returns>
     public static IServiceCollection AddOrleansAdoNetReminders(this IServiceCollection services, AdoNetRemindersOptions options)
     {
-        if (!options.ConnectionStrings.TryGetValue(options.ProviderName, out var connectionString))
+        if (options.ConnectionStrings.TryGetValue(options.ProviderName, out var connectionString))
         {
-            return services;
+            return services.AddOrleans(siloBuilder =>
+                                       {
+                                           siloBuilder.UseAdoNetReminderService(reminders =>
+                                                                                {
+                                                                                    reminders.ConnectionString = connectionString;
+                                                                                    reminders.Invariant = options.DbProvider switch
+                                                                                                          {
+                                                                                                              AdoNetDbProvider.SQLServer => AdoNetInvariants.InvariantNameSqlServer,
+                                                                                                              AdoNetDbProvider.PostgreSQL => AdoNetInvariants.InvariantNamePostgreSql,
+                                                                                                              AdoNetDbProvider.MySQL => AdoNetInvariants.InvariantNameMySql,
+                                                                                                              AdoNetDbProvider.Oracle => AdoNetInvariants.InvariantNameOracleDatabase,
+                                                                                                              _ => throw new ArgumentOutOfRangeException(nameof(options.DbProvider), DbProviderDoesNotSupport)
+                                                                                                          };
+                                                                                });
+                                       });
         }
-        return services.AddOrleans(siloBuilder =>
-                                   {
-                                       siloBuilder.UseAdoNetReminderService(reminders =>
-                                                                            {
-                                                                                reminders.ConnectionString = connectionString;
-                                                                                reminders.Invariant = options.DbProvider switch
-                                                                                                      {
-                                                                                                          AdoNetDbProvider.SQLServer => AdoNetInvariants.InvariantNameSqlServer,
-                                                                                                          AdoNetDbProvider.PostgreSQL => AdoNetInvariants.InvariantNamePostgreSql,
-                                                                                                          AdoNetDbProvider.MySQL => AdoNetInvariants.InvariantNameMySql,
-                                                                                                          AdoNetDbProvider.Oracle => AdoNetInvariants.InvariantNameOracleDatabase,
-                                                                                                          _ => throw new ArgumentOutOfRangeException(nameof(options.DbProvider), DbProviderDoesNotSupport)
-                                                                                                      };
-                                                                            });
-                                   });
+        return services;
     }
 }
