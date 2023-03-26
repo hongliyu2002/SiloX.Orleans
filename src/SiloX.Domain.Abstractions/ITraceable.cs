@@ -6,18 +6,17 @@
 public interface ITraceable
 {
     /// <summary>
-    ///     Gets the trace ID associated with this traceable object.
+    ///     The trace ID associated with this traceable object.
     /// </summary>
-    Guid TraceId { get; }
-    
-    /// <summary>
-    ///     Gets the timestamp when the operation is performed.
-    /// </summary>
-    /// 
-    DateTimeOffset OperatedAt { get; }
+    public Guid TraceId { get; init; }
 
     /// <summary>
-    ///     Gets the operator information who performs the operation.
+    ///     The timestamp when the operation is performed.
     /// </summary>
-    string OperatedBy { get; }
+    public DateTimeOffset OperatedAt { get; init; }
+
+    /// <summary>
+    ///     The operator information who performs the operation.
+    /// </summary>
+    public string OperatedBy { get; init; }
 }
