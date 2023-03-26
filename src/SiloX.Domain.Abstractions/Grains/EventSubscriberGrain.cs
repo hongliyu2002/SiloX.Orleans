@@ -5,7 +5,7 @@ using Orleans.Streams;
 namespace SiloX.Domain.Abstractions;
 
 /// <summary>
-///     Represents a base class for Orleans event subscribers that can subscribe to a stream of <see cref="TEvent" />.
+///     Represents a base class for Orleans event subscribers that can subscribe to a stream of TEvent.
 /// </summary>
 public abstract class EventSubscriberGrain<TEvent> : Grain, IGrainWithGuidKey
     where TEvent : DomainEvent

@@ -5,11 +5,11 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <PackageId>SiloX.Domain.Abstractions</PackageId>
-        <Title>Domain abstractions module</Title>
+        <Title>Domain abstractions modulee for Microsoft Orleans</Title>
         <Description>Domain abstractions module that for Microsoft Orleans.</Description>
-        <Version>7.1.1</Version>
-        <AssemblyVersion>7.1.1.0</AssemblyVersion>
-        <FileVersion>7.1.1.0</FileVersion>
+        <Version>7.1.0</Version>
+        <AssemblyVersion>7.1.0.0</AssemblyVersion>
+        <FileVersion>7.1.0.0</FileVersion>
         <Authors>Leo Hong</Authors>
         <Copyright>Copyright 2023 (c) Leo Hong. All rights reserved.</Copyright>
         <RepositoryUrl>https://github.com/hongliyu2002/SiloX.Orleans</RepositoryUrl>
@@ -26,7 +26,7 @@
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <OrleansBuildTimeCodeGen>false</OrleansBuildTimeCodeGen>
+        <OrleansBuildTimeCodeGen>true</OrleansBuildTimeCodeGen>
         <RootNamespace>SiloX.Domain.Abstractions</RootNamespace>
     </PropertyGroup>
 
@@ -36,7 +36,6 @@
         <PackageReference Include="Microsoft.Orleans.EventSourcing" Version="7.1.1" />
         <PackageReference Include="Microsoft.Orleans.Sdk" Version="7.1.1" />
         <PackageReference Include="Microsoft.Orleans.Streaming" Version="7.1.1" />
-        <PackageReference Include="Microsoft.Orleans.Transactions" Version="7.1.1" />
         <PackageReference Include="Orleans.FluentResults" Version="7.1.1" />
         <PackageReference Include="System.Interactive" Version="6.0.1" />
         <PackageReference Include="System.Interactive.Async" Version="6.0.1" />

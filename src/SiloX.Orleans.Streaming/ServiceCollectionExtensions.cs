@@ -31,6 +31,7 @@ public static class ServiceCollectionExtensions
         }
         return services.AddOrleans(siloBuilder =>
                                    {
+        
                                        siloBuilder.AddStreaming();
                                        foreach (var broadcast in options.Broadcasts)
                                        {

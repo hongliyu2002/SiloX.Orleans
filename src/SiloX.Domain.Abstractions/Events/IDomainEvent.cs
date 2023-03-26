@@ -13,5 +13,5 @@ public interface IDomainEvent : ITraceable
     /// <summary>
     ///     The version of the domain event.
     /// </summary>
-    long Version { get; init; }
+    int Version { get; init; }
 }

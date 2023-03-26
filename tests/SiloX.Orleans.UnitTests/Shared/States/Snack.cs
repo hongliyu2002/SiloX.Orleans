@@ -7,7 +7,12 @@ namespace SiloX.Orleans.UnitTests.Shared.States;
 [GenerateSerializer]
 public sealed class Snack
 {
+    public Snack()
+    {
+    }
+
     public Snack(Guid id, string name, string? pictureUrl = null)
+        : this()
     {
         Id = Guard.Against.Empty(id, nameof(id));
         Name = Guard.Against.NullOrEmpty(name, nameof(name));
@@ -41,7 +46,7 @@ public sealed class Snack
     public bool IsDeleted { get; set; }
 
     [Id(8)]
-    public string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
 
     [Id(9)]
     public string? PictureUrl { get; set; }

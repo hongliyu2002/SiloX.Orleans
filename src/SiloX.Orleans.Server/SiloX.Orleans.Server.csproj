@@ -5,7 +5,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <PackageId>SiloX.Orleans.Server</PackageId>
-        <Title>A server module for Microsoft Orleans</Title>
+        <Title>Server module for Microsoft Orleans</Title>
         <Description>A server module that for Microsoft Orleans.</Description>
         <Version>7.1.0</Version>
         <AssemblyVersion>7.1.0.0</AssemblyVersion>

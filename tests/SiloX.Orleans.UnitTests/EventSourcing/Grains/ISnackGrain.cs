@@ -13,20 +13,20 @@ public interface ISnackGrain : IGrainWithGuidKey
     [AlwaysInterleave]
     Task<bool> CanInitializeAsync(SnackInitializeCommand command);
 
-    Task<Result<bool>> InitializeAsync(SnackInitializeCommand command);
+    Task<Result> InitializeAsync(SnackInitializeCommand command);
 
     [AlwaysInterleave]
     Task<bool> CanRemoveAsync(SnackRemoveCommand command);
 
-    Task<Result<bool>> RemoveAsync(SnackRemoveCommand command);
+    Task<Result> RemoveAsync(SnackRemoveCommand command);
 
     [AlwaysInterleave]
     Task<bool> CanChangeNameAsync(SnackChangeNameCommand command);
 
-    Task<Result<bool>> ChangeNameAsync(SnackChangeNameCommand command);
+    Task<Result> ChangeNameAsync(SnackChangeNameCommand command);
 
     [AlwaysInterleave]
     Task<bool> CanChangePictureUrlAsync(SnackChangePictureUrlCommand command);
 
-    Task<Result<bool>> ChangePictureUrlAsync(SnackChangePictureUrlCommand command);
+    Task<Result> ChangePictureUrlAsync(SnackChangePictureUrlCommand command);
 }

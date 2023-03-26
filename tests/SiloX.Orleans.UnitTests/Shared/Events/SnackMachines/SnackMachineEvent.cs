@@ -5,5 +5,5 @@ namespace SiloX.Orleans.UnitTests.Shared.Events;
 [Immutable]
 [Serializable]
 [GenerateSerializer]
-public record SnackMachineEvent(Guid Id, long Version, Guid TraceId, DateTimeOffset OperatedAt, string OperatedBy) 
+public abstract record SnackMachineEvent(Guid Id, int Version, Guid TraceId, DateTimeOffset OperatedAt, string OperatedBy) 
     : DomainEvent(Id, Version, TraceId, OperatedAt, OperatedBy);
