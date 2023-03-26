@@ -39,10 +39,11 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\src\SiloX.Domain.Abstractions\SiloX.Domain.Abstractions.csproj" />
-        <ProjectReference Include="..\..\src\SiloX.Orleans.AdoNet\SiloX.Orleans.AdoNet.csproj" />
-        <ProjectReference Include="..\..\src\SiloX.Orleans.InMemory\SiloX.Orleans.InMemory.csproj" />
-        <ProjectReference Include="..\..\src\SiloX.Orleans.Redis\SiloX.Orleans.Redis.csproj" />
-        <ProjectReference Include="..\..\src\SiloX.Orleans.Clustering\SiloX.Orleans.csproj" />
+        <ProjectReference Include="..\..\src\SiloX.Orleans.Client\SiloX.Orleans.Client.csproj" />
+        <ProjectReference Include="..\..\src\SiloX.Orleans.Clustering.AdoNet\SiloX.Orleans.Clustering.AdoNet.csproj" />
+        <ProjectReference Include="..\..\src\SiloX.Orleans.Clustering.InMemory\SiloX.Orleans.Clustering.InMemory.csproj" />
+        <ProjectReference Include="..\..\src\SiloX.Orleans.Clustering.Redis\SiloX.Orleans.Clustering.Redis.csproj" />
+        <ProjectReference Include="..\..\src\SiloX.Orleans.Clustering\SiloX.Orleans.Clustering.csproj" />
         <ProjectReference Include="..\..\src\SiloX.Orleans.EventSourcing.EventStore\SiloX.Orleans.EventSourcing.EventStore.csproj" />
         <ProjectReference Include="..\..\src\SiloX.Orleans.EventSourcing.InMemory\SiloX.Orleans.EventSourcing.InMemory.csproj" />
         <ProjectReference Include="..\..\src\SiloX.Orleans.EventSourcing\SiloX.Orleans.EventSourcing.csproj" />
@@ -60,7 +61,7 @@
         <ProjectReference Include="..\..\src\SiloX.Orleans.Streaming.InMemory\SiloX.Orleans.Streaming.InMemory.csproj" />
         <ProjectReference Include="..\..\src\SiloX.Orleans.Streaming\SiloX.Orleans.Streaming.csproj" />
     </ItemGroup>
-    
+
     <ItemGroup>
         <None Update="appsettings.json">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -68,10 +69,10 @@
             <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
         </None>
     </ItemGroup>
-    
+
     <ItemGroup>
-      <Folder Include="Persistence\Grains" />
-      <Folder Include="Reminders" />
+        <Folder Include="Persistence\Grains" />
+        <Folder Include="Reminders" />
     </ItemGroup>
-    
+
 </Project>

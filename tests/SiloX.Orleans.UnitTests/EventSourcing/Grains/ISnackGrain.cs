@@ -1,6 +1,5 @@
 ﻿using Orleans.Concurrency;
 using Orleans.FluentResults;
-using SiloX.Orleans.Clustering.UnitTests.Shared.Commands;
 using SiloX.Orleans.UnitTests.Shared.Commands;
 using SiloX.Orleans.UnitTests.Shared.States;
 
@@ -12,17 +11,22 @@ public interface ISnackGrain : IGrainWithGuidKey
     Task<Result<Snack>> GetAsync();
 
     [AlwaysInterleave]
-    Task<bool> CanInitializeAsync();
+    Task<bool> CanInitializeAsync(SnackInitializeCommand command);
 
-    Task<Result<bool>> InitializeAsync(SnackInitializeCommand cmd);
-
-    [AlwaysInterleave]
-    Task<bool> CanRemoveAsync();
-
-    Task<Result<bool>> RemoveAsync(SnackRemoveCommand cmd);
+    Task<Result<bool>> InitializeAsync(SnackInitializeCommand command);
 
     [AlwaysInterleave]
-    Task<bool> CanChangeNameAsync();
+    Task<bool> CanRemoveAsync(SnackRemoveCommand command);
 
-    Task<Result<bool>> ChangeNameAsync(SnackChangeNameCommand cmd);
+    Task<Result<bool>> RemoveAsync(SnackRemoveCommand command);
+
+    [AlwaysInterleave]
+    Task<bool> CanChangeNameAsync(SnackChangeNameCommand command);
+
+    Task<Result<bool>> ChangeNameAsync(SnackChangeNameCommand command);
+
+    [AlwaysInterleave]
+    Task<bool> CanChangePictureUrlAsync(SnackChangePictureUrlCommand command);
+
+    Task<Result<bool>> ChangePictureUrlAsync(SnackChangePictureUrlCommand command);
 }
