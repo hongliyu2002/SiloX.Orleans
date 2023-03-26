@@ -5,42 +5,40 @@ using Orleans.Streams;
 namespace SiloX.Domain.Abstractions;
 
 /// <summary>
-///     Represents a base class for Orleans event subscribers that can subscribe to a stream of <see cref="DomainEvent" />.
+///     Represents a base class for Orleans event subscribers that can subscribe to a stream of <see cref="TEvent" />.
 /// </summary>
-public abstract class EventSubscriberGrain : Grain, IGrainWithGuidKey
+public abstract class EventSubscriberGrain<TEvent> : Grain, IGrainWithGuidKey
+    where TEvent : DomainEvent
 {
-    private readonly string _streamProviderName;
-    private readonly string _streamNamespace;
-
-    private IStreamProvider _streamProvider = null!;
-    private IAsyncStream<DomainEvent> _stream = null!;
-    private StreamSubscriptionHandle<DomainEvent>? _subscription;
+    private readonly IStreamProvider _streamProvider;
+    private IAsyncStream<TEvent>? _stream;
+    private StreamSubscriptionHandle<TEvent>? _subscription;
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="EventSubscriberGrain" /> class with the specified stream provider name and stream namespace.
+    ///     Initializes a new instance of the <see cref="EventSubscriberGrain{TEvent}" /> class with the specified stream provider name and stream namespace.
     /// </summary>
     /// <param name="streamProviderName">The name of the stream provider.</param>
-    /// <param name="streamNamespace">The namespace of the stream.</param>
-    protected EventSubscriberGrain(string streamProviderName, string streamNamespace)
+    protected EventSubscriberGrain(string streamProviderName)
     {
-        _streamProviderName = Guard.Against.NullOrWhiteSpace(streamProviderName, nameof(streamProviderName));
-        _streamNamespace = Guard.Against.NullOrWhiteSpace(streamNamespace, nameof(streamNamespace));
+        streamProviderName = Guard.Against.NullOrWhiteSpace(streamProviderName, nameof(streamProviderName));
+        _streamProvider = this.GetStreamProvider(streamProviderName);
     }
 
     /// <inheritdoc />
     public override async Task OnActivateAsync(CancellationToken cancellationToken)
     {
         await base.OnActivateAsync(cancellationToken);
-        _streamProvider = this.GetStreamProvider(_streamProviderName);
-        _stream = _streamProvider.GetStream<DomainEvent>(StreamId.Create(_streamNamespace, this.GetPrimaryKey()));
-        _subscription = await _stream.SubscribeAsync(HandleNextAsync, HandleExceptionAsync, HandCompleteAsync);
+        _subscription = await GetStream().SubscribeAsync(HandleNextAsync, HandleExceptionAsync, HandCompleteAsync);
     }
 
     /// <inheritdoc />
     public override async Task OnDeactivateAsync(DeactivationReason reason, CancellationToken cancellationToken)
     {
-        await _subscription!.UnsubscribeAsync();
-        var subscriptions = await _stream.GetAllSubscriptionHandles();
+        if (_subscription != null)
+        {
+            await _subscription.UnsubscribeAsync();
+        }
+        var subscriptions = await GetStream().GetAllSubscriptionHandles();
         if (subscriptions is { Count: > 0 })
         {
             await Task.WhenAll(subscriptions.Select(subscription => subscription.UnsubscribeAsync()));
@@ -49,11 +47,26 @@ public abstract class EventSubscriberGrain : Grain, IGrainWithGuidKey
     }
 
     /// <summary>
+    ///     Gets the stream namespace.
+    /// </summary>
+    /// <returns>The stream namespace.</returns>
+    protected abstract string GetStreamNamespace();
+
+    /// <summary>
+    ///     Gets the stream for the grain.
+    /// </summary>
+    /// <returns>The stream.</returns>
+    private IAsyncStream<TEvent> GetStream()
+    {
+        return _stream ??= _streamProvider.GetStream<TEvent>(StreamId.Create(GetStreamNamespace(), this.GetPrimaryKey()));
+    }
+
+    /// <summary>
     ///     Handles the next event in the stream.
     /// </summary>
     /// <param name="domainEvent">The next event in the stream.</param>
     /// <param name="sequenceToken">The sequence token of the event.</param>
-    protected abstract Task HandleNextAsync(DomainEvent domainEvent, StreamSequenceToken sequenceToken);
+    protected abstract Task HandleNextAsync(TEvent domainEvent, StreamSequenceToken sequenceToken);
 
     /// <summary>
     ///     Handles an exception that occurred while processing the stream.

@@ -10,32 +10,39 @@ namespace SiloX.Domain.Abstractions;
 ///     Provides a base class for grains that use event sourcing for persistence.
 /// </summary>
 /// <typeparam name="TState">The type of state used by the grain.</typeparam>
-public abstract class EventSourcingGrain<TState> : JournaledGrain<TState, DomainEvent>, IGrainWithGuidKey
+/// <typeparam name="TEvent">The type of domain event used by the grain.</typeparam>
+/// <typeparam name="TErrorEvent">The type of domain error event used by the grain.</typeparam>
+public abstract class EventSourcingGrain<TState, TEvent, TErrorEvent> : JournaledGrain<TState, TEvent>, IGrainWithGuidKey
     where TState : class, new()
+    where TEvent : DomainEvent
+    where TErrorEvent : TEvent, IDomainErrorEvent
 {
-    private readonly string _streamProviderName;
-    private readonly string _streamNamespace;
-
-    private IStreamProvider _streamProvider = null!;
-    private IAsyncStream<DomainEvent> _stream = null!;
+    private readonly IStreamProvider _streamProvider;
+    private IAsyncStream<TEvent>? _stream;
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="EventSourcingGrain{TState}" /> class.
+    ///     Initializes a new instance of the <see cref="EventSourcingGrain{TState, TEvent, TErrorEvent}" /> class.
     /// </summary>
     /// <param name="streamProviderName">The name of the stream provider.</param>
-    /// <param name="streamNamespace">The namespace of the stream.</param>
-    protected EventSourcingGrain(string streamProviderName, string streamNamespace)
+    protected EventSourcingGrain(string streamProviderName)
     {
-        _streamProviderName = Guard.Against.NullOrWhiteSpace(streamProviderName, nameof(streamProviderName));
-        _streamNamespace = Guard.Against.NullOrWhiteSpace(streamNamespace, nameof(streamNamespace));
+        streamProviderName = Guard.Against.NullOrWhiteSpace(streamProviderName, nameof(streamProviderName));
+        _streamProvider = this.GetStreamProvider(streamProviderName);
     }
 
-    /// <inheritdoc />
-    public override async Task OnActivateAsync(CancellationToken cancellationToken)
+    /// <summary>
+    ///     Gets the stream namespace.
+    /// </summary>
+    /// <returns>The stream namespace.</returns>
+    protected abstract string GetStreamNamespace();
+
+    /// <summary>
+    ///     Gets the stream for the grain.
+    /// </summary>
+    /// <returns>The stream.</returns>
+    private IAsyncStream<TEvent> GetStream()
     {
-        await base.OnActivateAsync(cancellationToken);
-        _streamProvider = this.GetStreamProvider(_streamProviderName);
-        _stream = _streamProvider.GetStream<DomainEvent>(StreamId.Create(_streamNamespace, this.GetPrimaryKey()));
+        return _stream ??= _streamProvider.GetStream<TEvent>(StreamId.Create(GetStreamNamespace(), this.GetPrimaryKey()));
     }
 
     /// <summary>
@@ -43,9 +50,12 @@ public abstract class EventSourcingGrain<TState> : JournaledGrain<TState, Domain
     /// </summary>
     /// <param name="domainEvent">The domain event to publish.</param>
     /// <returns>A <see cref="Result{T}" /> that represents the result of the operation.</returns>
-    protected Task<Result<bool>> PublishOnPersistedAsync(DomainEvent domainEvent)
+    protected Task<Result<bool>> PublishOnPersistedAsync(TEvent domainEvent)
     {
-        return Result.Ok().MapTryAsync(() => RaiseConditionalEvent(domainEvent)).MapTryIfAsync(raised => raised, _ => PersistAsync(domainEvent)).TapTryAsync(() => _stream.OnNextAsync(domainEvent with { Version = Version }));
+        return Result.Ok()
+                     .MapTryAsync(() => RaiseConditionalEvent(domainEvent))
+                     .MapTryIfAsync(raised => raised, _ => PersistAsync(domainEvent))
+                     .TapTryIfAsync(persisted => persisted, () => GetStream().OnNextAsync(domainEvent with { Version = Version }));
     }
 
     /// <summary>
@@ -53,9 +63,9 @@ public abstract class EventSourcingGrain<TState> : JournaledGrain<TState, Domain
     /// </summary>
     /// <param name="errorEvent">The domain error event to publish.</param>
     /// <returns>A <see cref="Result" /> that represents the result of the operation.</returns>
-    protected Task<Result> PublishOnErrorAsync(DomainErrorEvent errorEvent)
+    protected Task<Result> PublishOnErrorAsync(TErrorEvent errorEvent)
     {
-        return Result.Ok().TapTryAsync(() => _stream.OnNextAsync(errorEvent));
+        return Result.Ok().TapTryAsync(() => GetStream().OnNextAsync(errorEvent));
     }
 
     /// <summary>
@@ -63,5 +73,5 @@ public abstract class EventSourcingGrain<TState> : JournaledGrain<TState, Domain
     /// </summary>
     /// <param name="domainEvent">The domain event to persist.</param>
     /// <returns>A <see cref="Task{TResult}" /> representing the result of the asynchronous operation.</returns>
-    protected abstract Task<bool> PersistAsync(DomainEvent domainEvent);
+    protected abstract Task<bool> PersistAsync(TEvent domainEvent);
 }

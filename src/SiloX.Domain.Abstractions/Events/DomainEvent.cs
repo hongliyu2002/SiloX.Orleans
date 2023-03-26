@@ -5,10 +5,10 @@
 /// </summary>
 /// <param name="Id">The unique identifier of the original object who raises this event.</param>
 /// <param name="Version">The version of the domain event.</param>
-/// <param name="TraceId">The unique identifier for the trace.</param>
-/// <param name="OperatedAt">The date and time when the operation was performed.</param>
-/// <param name="OperatedBy">The name of the operator who performed the operation.</param>
+/// <param name="TraceId">The trace ID associated with this traceable object.</param>
+/// <param name="OperatedAt">The timestamp when the operation is performed.</param>
+/// <param name="OperatedBy">The operator information who performs the operation.</param>
 [Immutable]
 [Serializable]
 [GenerateSerializer]
-public abstract record DomainEvent(Guid Id, long Version, Guid TraceId, DateTimeOffset OperatedAt, string OperatedBy) : ITraceable;
+public abstract record DomainEvent(Guid Id, long Version, Guid TraceId, DateTimeOffset OperatedAt, string OperatedBy) : IDomainEvent;
