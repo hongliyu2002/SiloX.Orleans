@@ -14,7 +14,7 @@ public sealed class ProjectionEFCoreOptions
     /// <summary>
     ///     The name of the provider (also used as connection string name).
     /// </summary>
-    public string ProviderName { get; set; } = "Vending";
+    public string ProviderName { get; set; } = "Vending-Projection";
 
     /// <summary>
     ///     The table name for the migrations history table.
@@ -33,9 +33,9 @@ public sealed class ProjectionEFCoreOptions
     public int MaxRetry { get; set; } = 3;
 
     /// <summary>
-    ///     The maximum delay (in milliseconds) between retries.
+    ///     The maximum delay between retries.
     /// </summary>
-    public int MaxRetryDelay { get; set; } = 1000;
+    public TimeSpan MaxRetryDelay { get; set; } = TimeSpan.FromSeconds(5);
 
     /// <summary>
     ///     Gets the connection strings.

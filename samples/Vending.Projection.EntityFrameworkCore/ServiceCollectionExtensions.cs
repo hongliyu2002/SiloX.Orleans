@@ -34,8 +34,7 @@ public static class ServiceCollectionExtensions
                                                                                                                                     break;
                                                                                                                             }
                                                                                                                         }
-                                                                                                                        var retryDelay = TimeSpan.FromMilliseconds(efCoreOptions.MaxRetryDelay);
-                                                                                                                        dbContext.EnableRetryOnFailure(efCoreOptions.MaxRetry, retryDelay, new[] { -999 });
+                                                                                                                        dbContext.EnableRetryOnFailure(efCoreOptions.MaxRetry, efCoreOptions.MaxRetryDelay, new[] { -999 });
                                                                                                                         dbContext.UseQuerySplittingBehavior(efCoreOptions.QuerySplittingBehavior);
                                                                                                                     });
                                                                   });
