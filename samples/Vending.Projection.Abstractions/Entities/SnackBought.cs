@@ -9,6 +9,23 @@ namespace Vending.Projection.Abstractions.Entities;
 [Serializable]
 public sealed class SnackBought
 {
+    public SnackBought()
+    {
+    }
+
+    public SnackBought(Guid machineId, int position, Guid snackId, string snackName, string? snackPictureUrl, decimal boughtPrice, DateTimeOffset? boughtAt,
+                       string? boughtBy)
+    {
+        MachineId = machineId;
+        Position = position;
+        SnackId = snackId;
+        SnackName = snackName;
+        SnackPictureUrl = snackPictureUrl;
+        BoughtPrice = boughtPrice;
+        BoughtAt = boughtAt;
+        BoughtBy = boughtBy;
+    }
+
     /// <summary>
     ///     Gets or sets the ID of the vending machine where the snack was bought.
     /// </summary>

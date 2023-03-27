@@ -9,6 +9,30 @@ namespace Vending.Projection.Abstractions.Entities;
 [Serializable]
 public sealed class Snack
 {
+    public Snack()
+    {
+    }
+
+    public Snack(Guid id, int version, DateTimeOffset? createdAt, string? createdBy, DateTimeOffset? lastModifiedAt, string? lastModifiedBy,
+                 DateTimeOffset? deletedAt, string? deletedBy, bool isDeleted, string name, string? pictureUrl, int machineCount, int boughtCount,
+                 decimal boughtAmount)
+    {
+        Id = id;
+        Version = version;
+        CreatedAt = createdAt;
+        CreatedBy = createdBy;
+        LastModifiedAt = lastModifiedAt;
+        LastModifiedBy = lastModifiedBy;
+        DeletedAt = deletedAt;
+        DeletedBy = deletedBy;
+        IsDeleted = isDeleted;
+        Name = name;
+        PictureUrl = pictureUrl;
+        MachineCount = machineCount;
+        BoughtCount = boughtCount;
+        BoughtAmount = boughtAmount;
+    }
+
     /// <summary>
     ///     Gets or sets the ID of the snack.
     /// </summary>
