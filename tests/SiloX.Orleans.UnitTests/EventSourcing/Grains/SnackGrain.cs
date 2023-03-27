@@ -35,7 +35,8 @@ public sealed class SnackGrain : EventSourcingGrain<Snack, SnackEvent, SnackErro
     public Task<Result<Snack>> GetAsync()
     {
         var id = this.GetPrimaryKey();
-        return Task.FromResult(Result.Ok(State).Ensure(State.IsCreated, $"Snack {id} is not initialized."));
+        return Task.FromResult(Result.Ok(State)
+                                     .Ensure(State == null || State.IsCreated, $"Snack {id} is not initialized."));
     }
 
     private Result ValidateInitialize(SnackInitializeCommand command)
