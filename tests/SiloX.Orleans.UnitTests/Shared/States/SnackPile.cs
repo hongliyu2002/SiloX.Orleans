@@ -31,14 +31,14 @@ public sealed record SnackPile(Guid SnackId, int Quantity, decimal Price)
 
     #region Pop
 
-    public bool TryPopOne(out SnackPile? snackPile)
+    public bool CanPopOne(out SnackPile? snackPile)
     {
         if (Quantity < 1)
         {
             snackPile = null;
             return false;
         }
-        snackPile = this with { Quantity = Quantity - 1 };
+        snackPile = this;
         return true;
     }
 

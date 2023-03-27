@@ -7,4 +7,4 @@ namespace SiloX.Orleans.UnitTests.Shared.Events;
 [Serializable]
 [GenerateSerializer]
 public sealed record SnackMachineErrorEvent(Guid Id, int Version, int Code, IImmutableList<string> Reasons, Guid TraceId, DateTimeOffset OperatedAt, string OperatedBy)
-    : SnackEvent(Id, Version, TraceId, OperatedAt, OperatedBy), IDomainErrorEvent;
+    : SnackMachineEvent(Id, Version, TraceId, OperatedAt, OperatedBy), IDomainErrorEvent;

@@ -28,7 +28,7 @@ public abstract class EventSubscriberGrain<TEvent> : Grain, IGrainWithGuidKey
     public override async Task OnActivateAsync(CancellationToken cancellationToken)
     {
         await base.OnActivateAsync(cancellationToken);
-        _subscription = await GetStream().SubscribeAsync(HandleNextAsync, HandleExceptionAsync, HandCompleteAsync);
+        _subscription = await GetStream().SubscribeAsync(HandleNextAsync, HandleExceptionAsync, HandleCompleteAsync);
     }
 
     /// <inheritdoc />
@@ -77,5 +77,5 @@ public abstract class EventSubscriberGrain<TEvent> : Grain, IGrainWithGuidKey
     /// <summary>
     ///     Handles the completion of the stream.
     /// </summary>
-    protected abstract Task HandCompleteAsync();
+    protected abstract Task HandleCompleteAsync();
 }

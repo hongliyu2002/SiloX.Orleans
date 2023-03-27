@@ -7,6 +7,10 @@ namespace SiloX.Orleans.UnitTests.Shared.States;
 [GenerateSerializer]
 public sealed class SnackMachine
 {
+    public SnackMachine()
+    {
+    }
+
     public SnackMachine(Guid id, Money moneyInside, decimal amountInTransaction, IList<Slot> slots)
     {
         Id = Guard.Against.Empty(id, nameof(id));
@@ -42,13 +46,13 @@ public sealed class SnackMachine
     public bool IsDeleted { get; set; }
 
     [Id(8)]
-    public Money MoneyInside { get; set; }
+    public Money MoneyInside { get; set; } = Money.Zero;
 
     [Id(9)]
     public decimal AmountInTransaction { get; set; }
 
     [Id(10)]
-    public IList<Slot> Slots { get; set; }
+    public IList<Slot> Slots { get; set; } = new List<Slot>();
 
     public int SlotsCount => Slots.Count;
 
@@ -111,34 +115,22 @@ public sealed class SnackMachine
 
     public void Apply(SnackMachineMoneyReturnedEvent evt)
     {
-        if (!MoneyInside.TryAllocate(AmountInTransaction, out var moneyAllocated))
-        {
-            return;
-        }
-        MoneyInside -= moneyAllocated;
+        MoneyInside -= evt.MoneyReturned;
         LastModifiedAt = evt.OperatedAt;
         LastModifiedBy = evt.OperatedBy;
     }
 
     public void Apply(SnackMachineSnacksLoadedEvent evt)
     {
-        if (!TryGetSlot(evt.Position, out var slot) || slot == null)
-        {
-            return;
-        }
-        slot.SnackPile = evt.SnackPile;
+        evt.Slot.SnackPile = evt.SnackPile;
         LastModifiedAt = evt.OperatedAt;
         LastModifiedBy = evt.OperatedBy;
     }
 
     public void Apply(SnackMachineSnackBoughtEvent evt)
     {
-        if (!TryGetSlot(evt.Position, out var slot) || slot?.SnackPile == null || !slot.SnackPile.TryPopOne(out var snackPilePopped) || snackPilePopped == null)
-        {
-            return;
-        }
-        slot.SnackPile = snackPilePopped;
-        AmountInTransaction -= snackPilePopped.Price;
+        evt.Slot.SnackPile = evt.SnackPile with { Quantity = evt.SnackPile.Quantity - 1 };
+        AmountInTransaction -= evt.SnackPile.Price;
         LastModifiedAt = evt.OperatedAt;
         LastModifiedBy = evt.OperatedBy;
     }

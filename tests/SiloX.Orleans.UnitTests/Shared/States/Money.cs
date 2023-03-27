@@ -54,15 +54,15 @@ public sealed record Money(int Yuan1, int Yuan2, int Yuan5, int Yuan10, int Yuan
 
     #region Allocate
 
-    public bool TryAllocate(decimal amount, out Money moneyAllocated)
+    public bool CanAllocate(decimal amount, out Money moneyToReturn)
     {
         if (amount < 0)
         {
-            moneyAllocated = Zero;
+            moneyToReturn = Zero;
             return false;
         }
-        moneyAllocated = AllocateCore(amount);
-        return moneyAllocated.Amount == amount;
+        moneyToReturn = AllocateCore(amount);
+        return moneyToReturn.Amount == amount;
     }
 
     private Money AllocateCore(decimal amount)
