@@ -1,6 +1,11 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;&#xD;
   &lt;Assembly Path="C:\Users\hongl\.nuget\packages\microsoft.orleans.streaming\7.1.1\lib\net7.0\Orleans.Streaming.dll" /&gt;&#xD;
+  &lt;PhysicalFolder Path="C:\Users\hongl\.nuget\packages\microsoft.orleans.transactions\3.6.0" Loaded="True" /&gt;&#xD;
+  &lt;PhysicalFolder Path="C:\Users\hongl\.nuget\packages\microsoft.orleans.transactions\3.6.5" Loaded="True" /&gt;&#xD;
+  &lt;PhysicalFolder Path="C:\Users\hongl\.nuget\packages\microsoft.orleans.transactions\7.0.0" Loaded="True" /&gt;&#xD;
+  &lt;PhysicalFolder Path="C:\Users\hongl\.nuget\packages\microsoft.orleans.transactions\7.1.0" Loaded="True" /&gt;&#xD;
+  &lt;PhysicalFolder Path="C:\Users\hongl\.nuget\packages\microsoft.orleans.transactions\7.1.1" Loaded="True" /&gt;&#xD;
 &lt;/AssemblyExplorer&gt;</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=17924b6c_002Da32d_002D43c0_002Da596_002Df8eccfed356b/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="SnackGrainTests" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;

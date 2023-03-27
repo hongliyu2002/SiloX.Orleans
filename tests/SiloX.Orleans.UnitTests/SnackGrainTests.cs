@@ -11,9 +11,10 @@ namespace SiloX.Orleans.UnitTests;
 public class SnackGrainTests : StartupModuleTestBase<UnitTestsModule>
 {
     [SetUp]
-    public void SetUp()
+    public async Task SetUp()
     {
         StartApplication();
+        await Task.Delay(1000);
     }
 
     [TearDown]
