@@ -1,5 +1,4 @@
-﻿using Fluxera.Extensions.DependencyInjection;
-using Fluxera.Extensions.Hosting;
+﻿using Fluxera.Extensions.Hosting;
 using Fluxera.Extensions.Hosting.Modules;
 using Fluxera.Extensions.Hosting.Modules.Configuration;
 using Fluxera.Extensions.Hosting.Modules.DataManagement;
@@ -31,8 +30,8 @@ public class OrleansAdoNetClusteringModule : ConfigureServicesModule
     /// <inheritdoc />
     public override void PostConfigureServices(IServiceConfigurationContext context)
     {
-        var options = context.Services.GetObject<ClusteringOptions>();
-        var adoNetOptions = context.Services.GetObject<AdoNetClusteringOptions>();
+        var options = context.Services.GetOptions<ClusteringOptions>();
+        var adoNetOptions = context.Services.GetOptions<AdoNetClusteringOptions>();
         context.Log("AddOrleansAdoNetClustering", services => services.AddOrleansAdoNetClustering(options, adoNetOptions));
     }
 }

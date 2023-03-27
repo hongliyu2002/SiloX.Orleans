@@ -1,5 +1,4 @@
-﻿using Fluxera.Extensions.DependencyInjection;
-using Fluxera.Extensions.Hosting;
+﻿using Fluxera.Extensions.Hosting;
 using Fluxera.Extensions.Hosting.Modules;
 using Fluxera.Extensions.Hosting.Modules.Configuration;
 using JetBrains.Annotations;
@@ -23,8 +22,8 @@ public class OrleansInMemoryStreamingModule : ConfigureServicesModule
     /// <inheritdoc />
     public override void PostConfigureServices(IServiceConfigurationContext context)
     {
-        var options = context.Services.GetObject<StreamingOptions>();
-        var inMemoryOptions = context.Services.GetObject<InMemoryStreamingOptions>();
+        var options = context.Services.GetOptions<StreamingOptions>();
+        var inMemoryOptions = context.Services.GetOptions<InMemoryStreamingOptions>();
         context.Log("AddOrleansInMemoryStreaming", services => services.AddOrleansInMemoryStreaming(options, inMemoryOptions));
     }
 }

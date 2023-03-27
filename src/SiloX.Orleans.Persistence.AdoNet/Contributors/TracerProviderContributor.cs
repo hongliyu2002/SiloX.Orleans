@@ -9,7 +9,7 @@ internal sealed class TracerProviderContributor : ITracerProviderContributor
     /// <inheritdoc />
     public void Configure(TracerProviderBuilder builder, IServiceConfigurationContext context)
     {
-        // var persistenceOptions = context.Services.GetObject<AdoNetPersistenceOptions>();
+        // var persistenceOptions = context.Services.GetOptions<AdoNetPersistenceOptions>();
         // foreach (var storage in persistenceOptions.Storages)
         // {
         //     switch (storage.DbProvider)

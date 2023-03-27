@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
-using Fluxera.Extensions.Hosting.Modules.UnitTesting;
+using Fluxera.Extensions.Hosting;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using SiloX.Orleans.UnitTests.EventSourcing.Grains;
@@ -8,26 +9,37 @@ using SiloX.Orleans.UnitTests.Shared.Commands;
 namespace SiloX.Orleans.UnitTests;
 
 [TestFixture]
-public class SnackGrainTests : StartupModuleTestBase<UnitTestsModule>
+public class SnackGrainTests
 {
-    [SetUp]
-    public async Task SetUp()
+    private TestServer _testServer = null!;
+
+    [OneTimeSetUp]
+    public async Task Initialize()
     {
-        StartApplication();
-        await Task.Delay(1000);
+        _testServer = await TestApplicationHost.RunAsync<UnitTestsApplicationHost>();
+    }
+
+    [OneTimeTearDown]
+    public void Close()
+    {
+        _testServer.Dispose();
+    }
+
+    [SetUp]
+    public void SetUp()
+    {
     }
 
     [TearDown]
     public void TearDown()
     {
-        StopApplication();
     }
 
     [Test]
     public async Task GetAsync_Should_Return_Result_With_Snack_Object_When_Snack_Is_Created()
     {
         // Arrange
-        var grainFactory = ApplicationLoader.ServiceProvider.GetRequiredService<IGrainFactory>();
+        var grainFactory = _testServer.Services.GetRequiredService<IGrainFactory>();
         var grain = grainFactory.GetGrain<ISnackGrain>(Guid.NewGuid());
         var name = "Test Snack";
         var pictureUrl = "https://test.com/snack.png";
@@ -52,7 +64,7 @@ public class SnackGrainTests : StartupModuleTestBase<UnitTestsModule>
     [Test]
     public async Task GetAsync_Should_Return_Error_When_Snack_Is_Not_Initialized()
     {
-        var grainFactory = ApplicationLoader.ServiceProvider.GetRequiredService<IGrainFactory>();
+        var grainFactory = _testServer.Services.GetRequiredService<IGrainFactory>();
         var grain = grainFactory.GetGrain<ISnackGrain>(Guid.NewGuid());
         var result = await grain.GetAsync();
         result.IsFailed.Should().BeTrue();
@@ -62,7 +74,7 @@ public class SnackGrainTests : StartupModuleTestBase<UnitTestsModule>
     [Test]
     public async Task InitializeAsync_Should_Return_Error_When_Snack_Has_Already_Been_Created()
     {
-        var grainFactory = ApplicationLoader.ServiceProvider.GetRequiredService<IGrainFactory>();
+        var grainFactory = _testServer.Services.GetRequiredService<IGrainFactory>();
         var grain = grainFactory.GetGrain<ISnackGrain>(Guid.NewGuid());
         var command = new SnackInitializeCommand("Chips", null, Guid.NewGuid(), DateTimeOffset.UtcNow, "user");
         await grain.InitializeAsync(command);
@@ -74,7 +86,7 @@ public class SnackGrainTests : StartupModuleTestBase<UnitTestsModule>
     [Test]
     public async Task InitializeAsync_Should_Return_Error_When_Snack_Has_Already_Been_Removed()
     {
-        var grainFactory = ApplicationLoader.ServiceProvider.GetRequiredService<IGrainFactory>();
+        var grainFactory = _testServer.Services.GetRequiredService<IGrainFactory>();
         var grain = grainFactory.GetGrain<ISnackGrain>(Guid.NewGuid());
         var command = new SnackInitializeCommand("Chips", null, Guid.NewGuid(), DateTimeOffset.UtcNow, "user");
         var removeCommand = new SnackRemoveCommand(Guid.NewGuid(), DateTimeOffset.UtcNow, "user");
@@ -88,7 +100,7 @@ public class SnackGrainTests : StartupModuleTestBase<UnitTestsModule>
     [Test]
     public async Task InitializeAsync_Should_Return_Error_When_Name_Is_NullOrEmpty()
     {
-        var grainFactory = ApplicationLoader.ServiceProvider.GetRequiredService<IGrainFactory>();
+        var grainFactory = _testServer.Services.GetRequiredService<IGrainFactory>();
         var grain = grainFactory.GetGrain<ISnackGrain>(Guid.NewGuid());
         var command = new SnackInitializeCommand(null, null, Guid.NewGuid(), DateTimeOffset.UtcNow, "user");
         var result = await grain.InitializeAsync(command);

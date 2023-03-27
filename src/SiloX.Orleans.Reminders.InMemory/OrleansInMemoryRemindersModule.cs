@@ -1,5 +1,4 @@
-﻿using Fluxera.Extensions.DependencyInjection;
-using Fluxera.Extensions.Hosting;
+﻿using Fluxera.Extensions.Hosting;
 using Fluxera.Extensions.Hosting.Modules;
 using Fluxera.Extensions.Hosting.Modules.Configuration;
 using JetBrains.Annotations;
@@ -23,7 +22,7 @@ public class OrleansInMemoryRemindersModule : ConfigureServicesModule
     /// <inheritdoc />
     public override void PostConfigureServices(IServiceConfigurationContext context)
     {
-        var inMemoryOptions = context.Services.GetObject<InMemoryRemindersOptions>();
+        var inMemoryOptions = context.Services.GetOptions<InMemoryRemindersOptions>();
         context.Log("AddOrleansInMemoryReminders", services => services.AddOrleansInMemoryReminders(inMemoryOptions));
     }
 }

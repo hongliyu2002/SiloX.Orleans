@@ -1,5 +1,4 @@
-﻿using Fluxera.Extensions.DependencyInjection;
-using Fluxera.Extensions.Hosting;
+﻿using Fluxera.Extensions.Hosting;
 using Fluxera.Extensions.Hosting.Modules;
 using Fluxera.Extensions.Hosting.Modules.Configuration;
 using Fluxera.Extensions.Hosting.Modules.DataManagement;
@@ -31,7 +30,7 @@ public class OrleansAdoNetPersistenceModule : ConfigureServicesModule
     /// <inheritdoc />
     public override void PostConfigureServices(IServiceConfigurationContext context)
     {
-        var adoNetOptions = context.Services.GetObject<AdoNetPersistenceOptions>();
+        var adoNetOptions = context.Services.GetOptions<AdoNetPersistenceOptions>();
         context.Log("AddOrleansAdoNetPersistence", services => services.AddOrleansAdoNetPersistence(adoNetOptions));
     }
 }

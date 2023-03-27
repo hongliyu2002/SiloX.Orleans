@@ -9,7 +9,7 @@ internal sealed class TracerProviderContributor : ITracerProviderContributor
     /// <inheritdoc />
     public void Configure(TracerProviderBuilder builder, IServiceConfigurationContext context)
     {
-        // var persistenceOptions = context.Services.GetObject<RedisPersistenceOptions>();
+        // var persistenceOptions = context.Services.GetOptions<RedisPersistenceOptions>();
         // foreach (var storage in persistenceOptions.Storages)
         // {
         //     builder.AddRedisInstrumentation();

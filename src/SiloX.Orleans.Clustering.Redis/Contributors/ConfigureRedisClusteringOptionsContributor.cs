@@ -14,7 +14,7 @@ internal sealed class ConfigureRedisClusteringOptionsContributor : ConfigureOpti
     /// <inheritdoc />
     protected override void AdditionalConfigure(IServiceConfigurationContext context, RedisClusteringOptions createdOptions)
     {
-        createdOptions.ConnectionStrings = context.Services.GetObject<ConnectionStrings>();
+        createdOptions.ConnectionStrings = context.Services.GetOptions<ConnectionStrings>();
         context.Log("Configure(RedisClusteringOptions)",
                     services =>
                     {

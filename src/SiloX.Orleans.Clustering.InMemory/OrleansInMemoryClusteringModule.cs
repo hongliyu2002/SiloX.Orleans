@@ -1,5 +1,4 @@
-﻿using Fluxera.Extensions.DependencyInjection;
-using Fluxera.Extensions.Hosting;
+﻿using Fluxera.Extensions.Hosting;
 using Fluxera.Extensions.Hosting.Modules;
 using Fluxera.Extensions.Hosting.Modules.Configuration;
 using JetBrains.Annotations;
@@ -23,8 +22,8 @@ public class OrleansInMemoryClusteringModule : ConfigureServicesModule
     /// <inheritdoc />
     public override void PostConfigureServices(IServiceConfigurationContext context)
     {
-        var options = context.Services.GetObject<ClusteringOptions>();
-        var inMemoryOptions = context.Services.GetObject<InMemoryClusteringOptions>();
+        var options = context.Services.GetOptions<ClusteringOptions>();
+        var inMemoryOptions = context.Services.GetOptions<InMemoryClusteringOptions>();
         context.Log("AddOrleansInMemoryClustering", services => services.AddOrleansInMemoryClustering(options, inMemoryOptions));
     }
 }

@@ -1,5 +1,4 @@
-﻿using Fluxera.Extensions.DependencyInjection;
-using Fluxera.Extensions.Hosting;
+﻿using Fluxera.Extensions.Hosting;
 using Fluxera.Extensions.Hosting.Modules;
 using Fluxera.Extensions.Hosting.Modules.Configuration;
 using Fluxera.Extensions.Hosting.Modules.DataManagement;
@@ -31,7 +30,7 @@ public class OrleansEventStoreEventSourcingModule : ConfigureServicesModule
     /// <inheritdoc />
     public override void PostConfigureServices(IServiceConfigurationContext context)
     {
-        var eventStoreOptions = context.Services.GetObject<EventStoreEventSourcingOptions>();
+        var eventStoreOptions = context.Services.GetOptions<EventStoreEventSourcingOptions>();
         context.Log("AddOrleansEventStoreEventSourcing", services => services.AddOrleansEventStoreEventSourcing(eventStoreOptions));
     }
 }

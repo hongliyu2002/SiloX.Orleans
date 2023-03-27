@@ -1,6 +1,6 @@
 ﻿using Fluxera.Extensions.DataManagement;
-using Fluxera.Extensions.DependencyInjection;
 using Fluxera.Extensions.Hosting;
+using Fluxera.Extensions.Hosting.Modules.Configuration;
 using Fluxera.Extensions.Hosting.Modules.HealthChecks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -12,8 +12,8 @@ internal sealed class AdoNetPersistenceHealthChecksContributor : IHealthChecksCo
     /// <inheritdoc />
     public void ConfigureHealthChecks(IHealthChecksBuilder builder, IServiceConfigurationContext context)
     {
-        var adoNetOptions = context.Services.GetObject<AdoNetPersistenceOptions>();
-        adoNetOptions.ConnectionStrings = context.Services.GetObject<ConnectionStrings>();
+        var adoNetOptions = context.Services.GetOptions<AdoNetPersistenceOptions>();
+        adoNetOptions.ConnectionStrings = context.Services.GetOptions<ConnectionStrings>();
         foreach (var storage in adoNetOptions.Storages)
         {
             if (adoNetOptions.ConnectionStrings.TryGetValue(storage.ProviderName, out var connectionString))

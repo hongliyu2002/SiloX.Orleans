@@ -1,5 +1,4 @@
-﻿using Fluxera.Extensions.DependencyInjection;
-using Fluxera.Extensions.Hosting;
+﻿using Fluxera.Extensions.Hosting;
 using Fluxera.Extensions.Hosting.Modules;
 using Fluxera.Extensions.Hosting.Modules.Configuration;
 using Fluxera.Extensions.Hosting.Modules.DataManagement;
@@ -31,8 +30,8 @@ public class OrleansRedisClusteringModule : ConfigureServicesModule
     /// <inheritdoc />
     public override void PostConfigureServices(IServiceConfigurationContext context)
     {
-        var options = context.Services.GetObject<ClusteringOptions>();
-        var redisOptions = context.Services.GetObject<RedisClusteringOptions>();
+        var options = context.Services.GetOptions<ClusteringOptions>();
+        var redisOptions = context.Services.GetOptions<RedisClusteringOptions>();
         context.Log("AddOrleansRedisClustering", services => services.AddOrleansRedisClustering(options, redisOptions));
     }
 }

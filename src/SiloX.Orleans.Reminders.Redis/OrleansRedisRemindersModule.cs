@@ -1,5 +1,4 @@
-﻿using Fluxera.Extensions.DependencyInjection;
-using Fluxera.Extensions.Hosting;
+﻿using Fluxera.Extensions.Hosting;
 using Fluxera.Extensions.Hosting.Modules;
 using Fluxera.Extensions.Hosting.Modules.Configuration;
 using Fluxera.Extensions.Hosting.Modules.DataManagement;
@@ -31,7 +30,7 @@ public class OrleansRedisRemindersModule : ConfigureServicesModule
     /// <inheritdoc />
     public override void PostConfigureServices(IServiceConfigurationContext context)
     {
-        var redisOptions = context.Services.GetObject<RedisRemindersOptions>();
+        var redisOptions = context.Services.GetOptions<RedisRemindersOptions>();
         context.Log("AddOrleansRedisReminders", services => services.AddOrleansRedisReminders(redisOptions));
     }
 }

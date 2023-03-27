@@ -1,5 +1,4 @@
 ﻿using Fluxera.Extensions.DataManagement;
-using Fluxera.Extensions.DependencyInjection;
 using Fluxera.Extensions.Hosting;
 using Fluxera.Extensions.Hosting.Modules.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,7 +13,7 @@ internal sealed class ConfigureRedisRemindersOptionsContributor : ConfigureOptio
     /// <inheritdoc />
     protected override void AdditionalConfigure(IServiceConfigurationContext context, RedisRemindersOptions createdOptions)
     {
-        createdOptions.ConnectionStrings = context.Services.GetObject<ConnectionStrings>();
+        createdOptions.ConnectionStrings = context.Services.GetOptions<ConnectionStrings>();
         context.Log("Configure(RedisRemindersOptions)",
                     services =>
                     {
