@@ -13,9 +13,8 @@ public sealed class Snack
     {
     }
 
-    public Snack(Guid id, int version, DateTimeOffset? createdAt, string? createdBy, DateTimeOffset? lastModifiedAt, string? lastModifiedBy,
-                 DateTimeOffset? deletedAt, string? deletedBy, bool isDeleted, string name, string? pictureUrl, int machineCount, int boughtCount,
-                 decimal boughtAmount)
+    public Snack(Guid id, int version, DateTimeOffset? createdAt, string? createdBy, DateTimeOffset? lastModifiedAt, string? lastModifiedBy, DateTimeOffset? deletedAt, string? deletedBy, bool isDeleted, string name, string? pictureUrl,
+                 int machineCount, int boughtCount, decimal boughtAmount)
     {
         Id = id;
         Version = version;

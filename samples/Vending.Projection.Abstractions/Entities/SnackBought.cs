@@ -13,8 +13,7 @@ public sealed class SnackBought
     {
     }
 
-    public SnackBought(Guid machineId, int position, Guid snackId, string snackName, string? snackPictureUrl, decimal boughtPrice, DateTimeOffset? boughtAt,
-                       string? boughtBy)
+    public SnackBought(Guid machineId, int position, Guid snackId, string snackName, string? snackPictureUrl, decimal boughtPrice, DateTimeOffset? boughtAt, string? boughtBy)
     {
         MachineId = machineId;
         Position = position;
