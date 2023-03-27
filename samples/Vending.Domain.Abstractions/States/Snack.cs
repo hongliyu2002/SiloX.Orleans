@@ -46,7 +46,7 @@ public sealed class Snack
     public bool IsDeleted { get; set; }
 
     [Id(8)]
-    public string Name { get; set; } = string.Empty;
+    public string Name { get; set; } = null!;
 
     [Id(9)]
     public string? PictureUrl { get; set; }

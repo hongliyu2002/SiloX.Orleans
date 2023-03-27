@@ -10,13 +10,13 @@ using Vending.Domain.Abstractions.States;
 
 namespace Vending.Domain.Grains;
 
-[LogConsistencyProvider(ProviderName = Constants.LogConsistency1Name)]
-[StorageProvider(ProviderName = Constants.GrainStorage1Name)]
+[LogConsistencyProvider(ProviderName = Constants.LogConsistencyName1)]
+[StorageProvider(ProviderName = Constants.GrainStorageName1)]
 public sealed class SnackGrain : EventSourcingGrain<Snack, SnackEvent, SnackErrorEvent>, ISnackGrain
 {
     /// <inheritdoc />
     public SnackGrain()
-        : base(Constants.StreamProvider1Name)
+        : base(Constants.StreamProviderName1)
     {
     }
 
@@ -36,7 +36,7 @@ public sealed class SnackGrain : EventSourcingGrain<Snack, SnackEvent, SnackErro
     public Task<Result<Snack>> GetAsync()
     {
         var id = this.GetPrimaryKey();
-        return Task.FromResult(Result.Ok(State).Ensure(State == null || State.IsCreated, $"Snack {id} is not initialized."));
+        return Task.FromResult(Result.Ok(State).Ensure(State.IsCreated, $"Snack {id} is not initialized."));
     }
 
     private Result ValidateInitialize(SnackInitializeCommand command)

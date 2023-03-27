@@ -32,7 +32,7 @@ public sealed record Money(int Yuan1, int Yuan2, int Yuan5, int Yuan10, int Yuan
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"Money ￥1:{Yuan1} ￥2:{Yuan2} ￥5:{Yuan5} ￥10:{Yuan10} ￥20:{Yuan20} ￥50:{Yuan50} ￥100:{Yuan100}";
+        return $"Money ￥1:{Yuan1} ￥2:{Yuan2} ￥5:{Yuan5} ￥10:{Yuan10} ￥20:{Yuan20} ￥50:{Yuan50} ￥100:{Yuan100} Amount:{Amount}";
     }
 
     #region Create

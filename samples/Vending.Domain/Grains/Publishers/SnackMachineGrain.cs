@@ -11,13 +11,13 @@ using Vending.Domain.Abstractions.States;
 
 namespace Vending.Domain.Grains;
 
-[LogConsistencyProvider(ProviderName = Constants.LogConsistency2Name)]
-[StorageProvider(ProviderName = Constants.GrainStorage2Name)]
+[LogConsistencyProvider(ProviderName = Constants.LogConsistencyName2)]
+[StorageProvider(ProviderName = Constants.GrainStorageName2)]
 public sealed class SnackMachineGrain : EventSourcingGrain<SnackMachine, SnackMachineEvent, SnackMachineErrorEvent>, ISnackMachineGrain
 {
     /// <inheritdoc />
     public SnackMachineGrain()
-        : base(Constants.StreamProvider2Name)
+        : base(Constants.StreamProviderName2)
     {
     }
 

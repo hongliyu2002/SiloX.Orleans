@@ -2,6 +2,7 @@
 
 namespace Vending.Domain.Abstractions.States;
 
+[Serializable]
 [GenerateSerializer]
 public sealed class Slot
 {

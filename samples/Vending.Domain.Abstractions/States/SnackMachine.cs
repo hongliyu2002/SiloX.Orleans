@@ -56,7 +56,11 @@ public sealed class SnackMachine
 
     public int SlotsCount => Slots.Count;
 
-    public decimal TotalPrice => Slots.Where(s => s.SnackPile != null).Select(s => s.SnackPile!).Sum(sp => sp.TotalPrice);
+    public int SnackCount => Slots.Where(s => s.SnackPile != null).Select(s => s.SnackPile!.SnackId).Distinct().Count();
+    
+    public int SnackQuantity => Slots.Where(s => s.SnackPile != null).Select(s => s.SnackPile!.Quantity).Sum();
+
+    public decimal SnackAmount => Slots.Where(s => s.SnackPile != null).Select(s => s.SnackPile!.TotalPrice).Sum();
 
     public override string ToString()
     {
