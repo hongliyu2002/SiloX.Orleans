@@ -2,26 +2,26 @@
 using Fluxera.Extensions.Hosting.Modules;
 using Fluxera.Extensions.Hosting.Modules.Configuration;
 using JetBrains.Annotations;
-using Vending.Domain.Contributors;
+using Vending.Projection.EntityFrameworkCore.Contributors;
 
-namespace Vending.Domain;
+namespace Vending.Projection.EntityFrameworkCore;
 
 /// <summary>
 /// </summary>
 [PublicAPI]
 [DependsOn<ConfigurationModule>]
-public class DomainModule : ConfigureServicesModule
+public class ProjectionEFCoreModule : ConfigureServicesModule
 {
     /// <inheritdoc />
     public override void PreConfigureServices(IServiceConfigurationContext context)
     {
-        context.Services.AddConfigureOptionsContributor<ConfigureDomainOptionsContributor>();
+        context.Services.AddConfigureOptionsContributor<ConfigureProjectionEFCoreOptionsContributor>();
     }
 
     /// <inheritdoc />
     public override void PostConfigureServices(IServiceConfigurationContext context)
     {
-        var options = context.Services.GetOptions<DomainOptions>();
-        context.Log("AddDomain", services => services.AddDomain(options));
+        var options = context.Services.GetOptions<ProjectionEFCoreOptions>();
+        context.Log("AddProjectionEFCore", services => services.AddProjectionEFCore(options));
     }
 }

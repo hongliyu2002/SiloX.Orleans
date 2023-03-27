@@ -7,6 +7,7 @@ using SiloX.Orleans.EventSourcing.InMemory;
 using SiloX.Orleans.Persistence.InMemory;
 using SiloX.Orleans.Reminders.InMemory;
 using SiloX.Orleans.Streaming.InMemory;
+using Vending.Domain;
 
 namespace Vending.Hosting;
 

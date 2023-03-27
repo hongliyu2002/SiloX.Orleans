@@ -2,26 +2,26 @@
 using Fluxera.Extensions.Hosting.Modules;
 using Fluxera.Extensions.Hosting.Modules.Configuration;
 using JetBrains.Annotations;
-using Vending.Domain.Contributors;
+using Vending.Projection.Contributors;
 
-namespace Vending.Domain;
+namespace Vending.Projection;
 
 /// <summary>
 /// </summary>
 [PublicAPI]
 [DependsOn<ConfigurationModule>]
-public class DomainModule : ConfigureServicesModule
+public class ProjectionModule : ConfigureServicesModule
 {
     /// <inheritdoc />
     public override void PreConfigureServices(IServiceConfigurationContext context)
     {
-        context.Services.AddConfigureOptionsContributor<ConfigureDomainOptionsContributor>();
+        context.Services.AddConfigureOptionsContributor<ConfigureProjectionOptionsContributor>();
     }
 
     /// <inheritdoc />
     public override void PostConfigureServices(IServiceConfigurationContext context)
     {
-        var options = context.Services.GetOptions<DomainOptions>();
-        context.Log("AddDomain", services => services.AddDomain(options));
+        var options = context.Services.GetOptions<ProjectionOptions>();
+        context.Log("AddProjection", services => services.AddProjection(options));
     }
 }
