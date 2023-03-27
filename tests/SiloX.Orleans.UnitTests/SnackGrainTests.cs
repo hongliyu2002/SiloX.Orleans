@@ -16,23 +16,23 @@ public class SnackGrainTests
     [OneTimeSetUp]
     public async Task Initialize()
     {
-        _testServer = await TestApplicationHost.RunAsync<UnitTestsApplicationHost>();
     }
 
     [OneTimeTearDown]
     public void Close()
     {
-        _testServer.Dispose();
     }
 
     [SetUp]
-    public void SetUp()
+    public async Task SetUp()
     {
+        _testServer = await TestApplicationHost.RunAsync<UnitTestsApplicationHost>();
     }
 
     [TearDown]
     public void TearDown()
     {
+        // _testServer.Dispose();
     }
 
     [Test]

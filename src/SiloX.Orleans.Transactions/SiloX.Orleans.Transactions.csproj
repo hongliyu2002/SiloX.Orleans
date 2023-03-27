@@ -4,9 +4,9 @@
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <PackageId>SiloX.Orleans.Clustering.InMemory</PackageId>
-        <Title>InMemory clustering module</Title>
-        <Description>InMemory clustering module that for Microsoft Orleans.</Description>
+        <PackageId>SiloX.Orleans.Transactions</PackageId>
+        <Title>Transactions module</Title>
+        <Description>Transactions module that for Microsoft Orleans.</Description>
         <Version>7.1.0</Version>
         <AssemblyVersion>7.1.0.0</AssemblyVersion>
         <FileVersion>7.1.0.0</FileVersion>
@@ -15,7 +15,7 @@
         <RepositoryUrl>https://github.com/hongliyu2002/SiloX.Orleans</RepositoryUrl>
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageTags>library;extensions;hosting;modular;orleans;clustering;orleans-clustering</PackageTags>
+        <PackageTags>library;extensions;hosting;modular;orleans;transactions;orleans-transactions</PackageTags>
         <PackageProjectUrl>https://github.com/hongliyu2002/SiloX.Orleans</PackageProjectUrl>
         <PackageIcon>logo_128.png</PackageIcon>
         <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -27,17 +27,14 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <OrleansBuildTimeCodeGen>false</OrleansBuildTimeCodeGen>
-        <RootNamespace>SiloX.Orleans.Clustering.InMemory</RootNamespace>
+        <RootNamespace>SiloX.Orleans.Transactions</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.DataManagement" Version="7.1.5" />
-        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.HealthChecks" Version="7.1.5" />
-        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.OpenTelemetry" Version="7.1.5" />
-    </ItemGroup>
-    
-    <ItemGroup>
-        <ProjectReference Include="..\SiloX.Orleans.Clustering\SiloX.Orleans.Clustering.csproj" />
+        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.Configuration" Version="7.1.5" />
+        <PackageReference Include="Microsoft.Orleans.Runtime" Version="7.1.1" />
+        <PackageReference Include="Microsoft.Orleans.Transactions" Version="7.1.1" />
+        <PackageReference Include="Microsoft.Orleans.Sdk" Version="7.1.1" />
     </ItemGroup>
 
     <ItemGroup>

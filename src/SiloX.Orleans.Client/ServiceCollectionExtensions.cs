@@ -14,8 +14,9 @@ public static class ServiceCollectionExtensions
     /// <returns></returns>
     public static IServiceCollection AddOrleansClient(this IServiceCollection services, OrleansClientOptions options)
     {
-        return services.AddOrleansClient(clientBuilder =>
-                                         {
-                                         });
+        // return services.AddOrleansClient(clientBuilder =>
+        //                                  {
+        //                                  });
+        return services;
     }
 }

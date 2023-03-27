@@ -32,7 +32,6 @@
 
     <ItemGroup>
         <PackageReference Include="AspNetCore.HealthChecks.Redis" Version="6.0.4" />
-        <PackageReference Include="Fluxera.Extensions.DataManagement" Version="7.1.2" />
         <PackageReference Include="Fluxera.Extensions.Hosting.Modules.DataManagement" Version="7.1.5" />
         <PackageReference Include="Fluxera.Extensions.Hosting.Modules.HealthChecks" Version="7.1.5" />
         <PackageReference Include="Fluxera.Extensions.Hosting.Modules.OpenTelemetry" Version="7.1.5" />

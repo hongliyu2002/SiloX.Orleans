@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 using Fluxera.Extensions.Hosting;
-using Fluxera.Extensions.Hosting.Modules.AspNetCore.HealthChecks;
 using Fluxera.Extensions.Hosting.Modules.Serilog;
 using Fluxera.Extensions.Hosting.Plugins;
 using Serilog;
@@ -13,8 +12,8 @@ public class ServiceHost : WebApplicationHost<ServiceHostingModule>
     /// <inheritdoc />
     protected override void ConfigureApplicationPlugins(IPluginConfigurationContext context)
     {
-        context.AddPlugin<SerilogModule>();
-        context.AddPlugin<HealthChecksEndpointsModule>();
+        // context.AddPlugin<SerilogModule>();
+        // context.AddPlugin<HealthChecksEndpointsModule>();
     }
 
     /// <inheritdoc />
@@ -25,7 +24,6 @@ public class ServiceHost : WebApplicationHost<ServiceHostingModule>
                                           {
                                               configurationBuilder.AddUserSecrets(Assembly.GetExecutingAssembly());
                                           });
-
         // Add Serilog logging
         builder.AddSerilogLogging((hostBuilderContext, loggerConfiguration) =>
                                   {

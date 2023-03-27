@@ -31,6 +31,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.DataManagement" Version="7.1.5" />
+        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.HealthChecks" Version="7.1.5" />
+        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.OpenTelemetry" Version="7.1.5" />
+    </ItemGroup>
+    
+    <ItemGroup>
         <ProjectReference Include="..\SiloX.Orleans.EventSourcing\SiloX.Orleans.EventSourcing.csproj" />
     </ItemGroup>
 

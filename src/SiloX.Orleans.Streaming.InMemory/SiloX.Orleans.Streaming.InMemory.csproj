@@ -31,7 +31,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.Orleans.Streaming" Version="7.1.1" />
+        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.DataManagement" Version="7.1.5" />
+        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.HealthChecks" Version="7.1.5" />
+        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.OpenTelemetry" Version="7.1.5" />
     </ItemGroup>
 
     <ItemGroup>
