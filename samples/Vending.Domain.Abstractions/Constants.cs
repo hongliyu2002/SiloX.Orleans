@@ -1,4 +1,4 @@
-﻿namespace Vending.Domain;
+﻿namespace Vending.Domain.Abstractions;
 
 public static class Constants
 {

@@ -3,6 +3,7 @@ using Orleans.FluentResults;
 using Orleans.Providers;
 using SiloX.Domain.Abstractions;
 using SiloX.Domain.Abstractions.Extensions;
+using Vending.Domain.Abstractions;
 using Vending.Domain.Abstractions.Commands;
 using Vending.Domain.Abstractions.Events;
 using Vending.Domain.Abstractions.Grains;
@@ -12,7 +13,9 @@ namespace Vending.Domain.Grains;
 
 [LogConsistencyProvider(ProviderName = Constants.LogConsistencyName1)]
 [StorageProvider(ProviderName = Constants.GrainStorageName1)]
-public sealed class SnackGrain : EventSourcingGrain<Snack, SnackEvent, SnackErrorEvent>, ISnackGrain
+public sealed class SnackGrain
+    : EventSourcingGrain<Snack, SnackEvent, SnackErrorEvent>,
+      ISnackGrain
 {
     /// <inheritdoc />
     public SnackGrain()
@@ -33,10 +36,15 @@ public sealed class SnackGrain : EventSourcingGrain<Snack, SnackEvent, SnackErro
     }
 
     /// <inheritdoc />
-    public Task<Result<Snack>> GetAsync()
+    public Task<Snack> GetStateAsync()
     {
-        var id = this.GetPrimaryKey();
-        return Task.FromResult(Result.Ok(State).Ensure(State.IsCreated, $"Snack {id} is not initialized."));
+        return Task.FromResult(State);
+    }
+
+    /// <inheritdoc />
+    public Task<int> GetVersionAsync()
+    {
+        return Task.FromResult(Version);
     }
 
     private Result ValidateInitialize(SnackInitializeCommand command)

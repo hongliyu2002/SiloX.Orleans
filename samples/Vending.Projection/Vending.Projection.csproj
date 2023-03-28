@@ -13,10 +13,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\SiloX.Orleans.EventSourcing\SiloX.Orleans.EventSourcing.csproj" />
-        <ProjectReference Include="..\..\src\SiloX.Orleans.Persistence\SiloX.Orleans.Persistence.csproj" />
+        <ProjectReference Include="..\..\src\SiloX.Orleans.Streaming\SiloX.Orleans.Streaming.csproj" />
         <ProjectReference Include="..\Vending.Domain.Abstractions\Vending.Domain.Abstractions.csproj" />
-        <ProjectReference Include="..\Vending.Domain\Vending.Domain.csproj" />
         <ProjectReference Include="..\Vending.Projection.Abstractions\Vending.Projection.Abstractions.csproj" />
         <ProjectReference Include="..\Vending.Projection.EntityFrameworkCore\Vending.Projection.EntityFrameworkCore.csproj" />
     </ItemGroup>

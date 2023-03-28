@@ -1,20 +1,26 @@
 ﻿using Fluxera.Guards;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SiloX.Domain.Abstractions;
-using Vending.Domain;
+using Vending.Domain.Abstractions;
 using Vending.Domain.Abstractions.Events;
+using Vending.Domain.Abstractions.Grains;
+using Vending.Projection.Abstractions.Entities;
+using Vending.Projection.EntityFrameworkCore;
 
 namespace Vending.Projection.Grains;
 
 [ImplicitStreamSubscription(Constants.SnacksNamespace)]
 public class SnackProjectionGrain : EventSubscriberGrain<SnackEvent, SnackErrorEvent>
 {
+    private readonly ProjectionDbContext _dbContext;
     private readonly ILogger<SnackProjectionGrain> _logger;
 
     /// <inheritdoc />
-    public SnackProjectionGrain(ILogger<SnackProjectionGrain> logger)
+    public SnackProjectionGrain(ProjectionDbContext dbContext, ILogger<SnackProjectionGrain> logger)
         : base(Constants.StreamProviderName1)
     {
+        _dbContext = Guard.Against.Null(dbContext, nameof(dbContext));
         _logger = Guard.Against.Null(logger, nameof(logger));
     }
 
@@ -45,7 +51,8 @@ public class SnackProjectionGrain : EventSubscriberGrain<SnackEvent, SnackErrorE
     /// <inheritdoc />
     protected override Task HandLeErrorEventAsync(SnackErrorEvent errorEvent)
     {
-        return null;
+        _logger.LogWarning($"SnackErrorEvent received: {string.Join(';', errorEvent.Reasons)}");
+        return Task.CompletedTask;
     }
 
     /// <inheritdoc />
@@ -62,23 +69,188 @@ public class SnackProjectionGrain : EventSubscriberGrain<SnackEvent, SnackErrorE
         return Task.CompletedTask;
     }
 
-    private Task ApplyEventAsync(SnackInitializedEvent snackEvent)
+    private async Task ApplyEventAsync(SnackInitializedEvent snackEvent)
     {
-        return null;
+        try
+        {
+            var snack = await _dbContext.Snacks.FindAsync(snackEvent.Id);
+            if (snack == null)
+            {
+                snack = new Snack
+                        {
+                            Id = snackEvent.Id,
+                            Name = snackEvent.Name,
+                            PictureUrl = snackEvent.PictureUrl,
+                            CreatedAt = snackEvent.OperatedAt,
+                            CreatedBy = snackEvent.OperatedBy,
+                            Version = snackEvent.Version
+                        };
+                _dbContext.Snacks.Add(snack);
+            }
+            if (_dbContext.Entry(snack).State != EntityState.Added)
+            {
+                _logger.LogWarning($"Apply SnackInitializedEvent: Snack {snackEvent.Id} is already in the database. Try to execute full update...");
+                await ApplyFullUpdateAsync(snackEvent);
+                return;
+            }
+            await _dbContext.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Apply SnackInitializedEvent: Exception is occurred when try to write data to the database. Try to execute full update...");
+            await ApplyFullUpdateAsync(snackEvent);
+        }
     }
 
-    private Task ApplyEventAsync(SnackRemovedEvent snackEvent)
+    private async Task ApplyEventAsync(SnackRemovedEvent snackEvent)
     {
-        return null;
+        try
+        {
+            var snack = await _dbContext.Snacks.FindAsync(snackEvent.Id);
+            if (snack == null)
+            {
+                _logger.LogWarning($"Apply SnackRemovedEvent: Snack {snackEvent.Id} does not exist in the database. Try to execute full update...");
+                await ApplyFullUpdateAsync(snackEvent);
+                return;
+            }
+            if (snack.Version != snackEvent.Version - 1)
+            {
+                _logger.LogWarning($"Apply SnackRemovedEvent: Snack {snackEvent.Id} version {snack.Version}) in the database should be {snackEvent.Version - 1}. Try to execute full update...");
+                await ApplyFullUpdateAsync(snackEvent);
+                return;
+            }
+            snack.DeletedAt = snackEvent.OperatedAt;
+            snack.DeletedBy = snackEvent.OperatedBy;
+            snack.IsDeleted = true;
+            snack.Version = snackEvent.Version;
+            await _dbContext.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Apply SnackRemovedEvent: Exception is occurred when try to write data to the database. Try to execute full update...");
+            await ApplyFullUpdateAsync(snackEvent);
+        }
     }
 
-    private Task ApplyEventAsync(SnackNameChangedEvent snackEvent)
+    private async Task ApplyEventAsync(SnackNameChangedEvent snackEvent)
     {
-        return null;
+        try
+        {
+            var snack = await _dbContext.Snacks.FindAsync(snackEvent.Id);
+            if (snack == null)
+            {
+                _logger.LogWarning($"Apply SnackNameChangedEvent: Snack {snackEvent.Id} does not exist in the database. Try to execute full update...");
+                await ApplyFullUpdateAsync(snackEvent);
+                return;
+            }
+            if (snack.Version != snackEvent.Version - 1)
+            {
+                _logger.LogWarning($"Apply SnackNameChangedEvent: Snack {snackEvent.Id} version {snack.Version}) in the database should be {snackEvent.Version - 1}. Try to execute full update...");
+                await ApplyFullUpdateAsync(snackEvent);
+                return;
+            }
+            snack.Name = snackEvent.Name;
+            snack.LastModifiedAt = snackEvent.OperatedAt;
+            snack.LastModifiedBy = snackEvent.OperatedBy;
+            snack.Version = snackEvent.Version;
+            await _dbContext.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Apply SnackNameChangedEvent: Exception is occurred when try to write data to the database. Try to execute full update...");
+            await ApplyFullUpdateAsync(snackEvent);
+        }
     }
 
-    private Task ApplyEventAsync(SnackPictureUrlChangedEvent snackEvent)
+    private async Task ApplyEventAsync(SnackPictureUrlChangedEvent snackEvent)
     {
-        return null;
+        try
+        {
+            var snack = await _dbContext.Snacks.FindAsync(snackEvent.Id);
+            if (snack == null)
+            {
+                _logger.LogWarning($"Apply SnackPictureUrlChangedEvent: Snack {snackEvent.Id} does not exist in the database. Try to execute full update...");
+                await ApplyFullUpdateAsync(snackEvent);
+                return;
+            }
+            if (snack.Version != snackEvent.Version - 1)
+            {
+                _logger.LogWarning($"Apply SnackPictureUrlChangedEvent: Snack {snackEvent.Id} version {snack.Version}) in the database should be {snackEvent.Version - 1}. Try to execute full update...");
+                await ApplyFullUpdateAsync(snackEvent);
+                return;
+            }
+            snack.PictureUrl = snackEvent.PictureUrl;
+            snack.LastModifiedAt = snackEvent.OperatedAt;
+            snack.LastModifiedBy = snackEvent.OperatedBy;
+            snack.Version = snackEvent.Version;
+            await _dbContext.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Apply SnackPictureUrlChangedEvent: Exception is occurred when try to write data to the database. Try to execute full update...");
+            await ApplyFullUpdateAsync(snackEvent);
+        }
+    }
+
+    private async Task ApplyFullUpdateAsync(SnackEvent snackEvent)
+    {
+        var attempts = 0;
+        bool retryNeeded;
+        do
+        {
+            try
+            {
+                var id = snackEvent.Id;
+                var snackGrain = GrainFactory.GetGrain<ISnackGrain>(id);
+                var snackInGrain = await snackGrain.GetStateAsync();
+                var snack = await _dbContext.Snacks.FindAsync(id);
+                if (snackInGrain == null)
+                {
+                    if (snack == null)
+                    {
+                        return;
+                    }
+                    _dbContext.Remove(snack);
+                    await _dbContext.SaveChangesAsync();
+                    return;
+                }
+                if (snack == null)
+                {
+                    snack = new Snack();
+                    _dbContext.Snacks.Add(snack);
+                }
+                snack.Id = id;
+                snack.Name = snackInGrain.Name;
+                snack.PictureUrl = snackInGrain.PictureUrl;
+                snack.CreatedAt = snackInGrain.CreatedAt;
+                snack.LastModifiedAt = snackInGrain.LastModifiedAt;
+                snack.DeletedAt = snackInGrain.DeletedAt;
+                snack.CreatedBy = snackInGrain.CreatedBy;
+                snack.LastModifiedBy = snackInGrain.LastModifiedBy;
+                snack.DeletedBy = snackInGrain.DeletedBy;
+                snack.IsDeleted = snackInGrain.IsDeleted;
+                snack.Version = await snackGrain.GetVersionAsync();
+                // snack.MachineCount = await _dbContext.SnackMachines.CountAsync(sm => sm.Slots.Any(sl => sl.SnackPile != null && sl.SnackPile.SnackId == id));
+                // snack.BoughtCount = await _dbContext.SnacksBoughts.CountAsync(sb => sb.SnackId == id);
+                // snack.BoughtAmount = await _dbContext.SnacksBoughts.Where(sb => sb.SnackId == id).SumAsync(sb => sb.BoughtPrice);
+                await _dbContext.SaveChangesAsync();
+                return;
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                retryNeeded = ++attempts <= 3;
+                if (retryNeeded)
+                {
+                    _logger.LogWarning($"Apply FullUpdate: DbUpdateConcurrencyException is occurred when try to write data to the database. Retrying {attempts}...");
+                    await Task.Delay(TimeSpan.FromSeconds(attempts));
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Apply FullUpdate: Exception is occurred when try to write data to the database.");
+                retryNeeded = false;
+            }
+        }
+        while (retryNeeded);
     }
 }
