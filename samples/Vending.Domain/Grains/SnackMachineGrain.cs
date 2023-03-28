@@ -49,27 +49,21 @@ public sealed class SnackMachineGrain
     }
 
     /// <inheritdoc />
-    public Task<Result<Money>> GetMoneyInsideAsync()
+    public Task<Money> GetMoneyInsideAsync()
     {
-        var id = this.GetPrimaryKey();
-        return Task.FromResult(Result.Ok(State.MoneyInside)
-                                     .Ensure(State.IsCreated, $"Snack machine {id} is not initialized."));
+        return Task.FromResult(State.MoneyInside);
     }
 
     /// <inheritdoc />
-    public Task<Result<decimal>> GetAmountInTransactionAsync()
+    public Task<decimal> GetAmountInTransactionAsync()
     {
-        var id = this.GetPrimaryKey();
-        return Task.FromResult(Result.Ok(State.AmountInTransaction)
-                                     .Ensure(State.IsCreated, $"Snack machine {id} is not initialized."));
+        return Task.FromResult(State.AmountInTransaction);
     }
 
     /// <inheritdoc />
-    public Task<Result<ImmutableList<Slot>>> GetSlotsAsync()
+    public Task<ImmutableList<Slot>> GetSlotsAsync()
     {
-        var id = this.GetPrimaryKey();
-        return Task.FromResult(Result.Ok(State.Slots.ToImmutableList())
-                                     .Ensure(State.IsCreated, $"Snack machine {id} is not initialized."));
+        return Task.FromResult(State.Slots.ToImmutableList());
     }
 
     private Result ValidateInitialize(SnackMachineInitializeCommand command)
@@ -175,7 +169,7 @@ public sealed class SnackMachineGrain
         var id = this.GetPrimaryKey();
         return ValidateUnloadMoney(command)
               .TapErrorTryAsync(errors => PublishOnErrorAsync(new SnackMachineErrorEvent(id, Version, 204, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
-              .TapTryAsync(() => PublishOnPersistedAsync(new SnackMachineMoneyUnloadedEvent(id, Version, command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
+              .TapTryAsync(() => PublishOnPersistedAsync(new SnackMachineMoneyUnloadedEvent(id, Version, Money.Zero, command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
     private Result ValidateInsertMoney(SnackMachineInsertMoneyCommand command)
@@ -236,7 +230,7 @@ public sealed class SnackMachineGrain
               .TapTryIfAsync(() => State.MoneyInside.CanAllocate(State.AmountInTransaction, out moneyReturned), () =>
                                                                                                                 {
                                                                                                                     var moneyInside = State.MoneyInside - moneyReturned;
-                                                                                                                    return PublishOnPersistedAsync(new SnackMachineMoneyReturnedEvent(id, Version, moneyReturned, moneyInside, command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy));
+                                                                                                                    return PublishOnPersistedAsync(new SnackMachineMoneyReturnedEvent(id, Version, moneyInside, 0, command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy));
                                                                                                                 });
     }
 
@@ -261,14 +255,13 @@ public sealed class SnackMachineGrain
     public Task<Result> LoadSnacksAsync(SnackMachineLoadSnacksCommand command)
     {
         var id = this.GetPrimaryKey();
-        Slot? slot = null;
         return ValidateLoadSnacks(command)
               .TapErrorTryAsync(errors => PublishOnErrorAsync(new SnackMachineErrorEvent(id, Version, 207, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
-              .TapTryIfAsync(() => State.TryGetSlot(command.Position, out slot), () =>
-                                                                                 {
-                                                                                     slot!.SnackPile = command.SnackPile;
-                                                                                     return PublishOnPersistedAsync(new SnackMachineSnacksLoadedEvent(id, Version, slot, command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy));
-                                                                                 });
+              .TapTryAsync(() =>
+                           {
+                               var slot = new Slot(State.Id, command.Position, command.SnackPile);
+                               return PublishOnPersistedAsync(new SnackMachineSnacksLoadedEvent(id, Version,slot, command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy));
+                           });
     }
 
     private Result ValidateBuySnack(SnackMachineBuySnackCommand command)

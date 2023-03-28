@@ -56,11 +56,14 @@ public sealed class SnackMachine
 
     public int SlotsCount => Slots.Count;
 
+    [Id(12)]
     public int SnackCount => Slots.Where(s => s.SnackPile != null).Select(s => s.SnackPile!.SnackId).Distinct().Count();
 
-    public int SnackQuantity => Slots.Where(s => s.SnackPile != null).Select(s => s.SnackPile!.Quantity).Sum();
+    [Id(13)]
+    public int SnackQuantity =>Slots.Where(s => s.SnackPile != null).Select(s => s.SnackPile!.Quantity).Sum();
 
-    public decimal SnackAmount => Slots.Where(s => s.SnackPile != null).Select(s => s.SnackPile!.TotalPrice).Sum();
+    [Id(14)]
+    public decimal SnackAmount =>Slots.Where(s => s.SnackPile != null).Select(s => s.SnackPile!.TotalPrice).Sum();
 
     public override string ToString()
     {
@@ -104,7 +107,7 @@ public sealed class SnackMachine
 
     public void Apply(SnackMachineMoneyUnloadedEvent evt)
     {
-        MoneyInside = Money.Zero;
+        MoneyInside = evt.MoneyInside;
         LastModifiedAt = evt.OperatedAt;
         LastModifiedBy = evt.OperatedBy;
     }
@@ -120,7 +123,7 @@ public sealed class SnackMachine
     public void Apply(SnackMachineMoneyReturnedEvent evt)
     {
         MoneyInside = evt.MoneyInside;
-        AmountInTransaction = 0;
+        AmountInTransaction = evt.AmountInTransaction;
         LastModifiedAt = evt.OperatedAt;
         LastModifiedBy = evt.OperatedBy;
     }
@@ -128,7 +131,11 @@ public sealed class SnackMachine
     public void Apply(SnackMachineSnacksLoadedEvent evt)
     {
         var slot = Slots.FirstOrDefault(sl => sl == evt.Slot || (sl.MachineId == evt.Slot.MachineId && sl.Position == evt.Slot.Position));
-        if (slot != null)
+        if (slot == null)
+        {
+            Slots.Add(evt.Slot);
+        }
+        else
         {
             slot.SnackPile = evt.Slot.SnackPile;
         }
@@ -139,7 +146,11 @@ public sealed class SnackMachine
     public void Apply(SnackMachineSnackBoughtEvent evt)
     {
         var slot = Slots.FirstOrDefault(sl => sl == evt.Slot || (sl.MachineId == evt.Slot.MachineId && sl.Position == evt.Slot.Position));
-        if (slot != null)
+        if (slot == null)
+        {
+            Slots.Add(evt.Slot);
+        }
+        else
         {
             slot.SnackPile = evt.Slot.SnackPile;
         }

@@ -27,19 +27,19 @@ public interface ISnackMachineGrain : IGrainWithGuidKey
     ///     Asynchronously retrieves the current amount of money inside the SnackMachine
     /// </summary>
     [AlwaysInterleave]
-    Task<Result<Money>> GetMoneyInsideAsync();
+    Task<Money> GetMoneyInsideAsync();
 
     /// <summary>
     ///     Asynchronously retrieves the current amount of money in transaction
     /// </summary>
     [AlwaysInterleave]
-    Task<Result<decimal>> GetAmountInTransactionAsync();
+    Task<decimal> GetAmountInTransactionAsync();
 
     /// <summary>
     ///     Asynchronously retrieves the current list of slots in the SnackMachine
     /// </summary>
     [AlwaysInterleave]
-    Task<Result<ImmutableList<Slot>>> GetSlotsAsync();
+    Task<ImmutableList<Slot>> GetSlotsAsync();
 
     /// <summary>
     ///     Asynchronously checks whether the SnackMachine can be initialized with the given command

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Fluxera.Utilities.Extensions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SiloX.Domain.Abstractions;
 using Vending.Domain.Abstractions;
@@ -84,16 +85,7 @@ public sealed class SnackMachineProjectionGrain : EventSubscriberGrain<SnackMach
             var snackMachine = await _dbContext.SnackMachines.FindAsync(machineEvent.Id);
             if (snackMachine == null)
             {
-                snackMachine = new SnackMachine
-                               {
-                                   Id = machineEvent.Id,
-                                   MoneyInside = machineEvent.MoneyInside.ToProjection(),
-                                   Slots = machineEvent.Slots.Select(slot => slot.ToProjection()).ToList(),
-                                   SlotsCount = machineEvent.Slots.Count,
-                                   CreatedAt = machineEvent.OperatedAt,
-                                   CreatedBy = machineEvent.OperatedBy,
-                                   Version = machineEvent.Version
-                               };
+                snackMachine = machineEvent.Machine.ToProjection();
                 _dbContext.SnackMachines.Add(snackMachine);
             }
             if (_dbContext.Entry(snackMachine).State != EntityState.Added)
@@ -102,6 +94,7 @@ public sealed class SnackMachineProjectionGrain : EventSubscriberGrain<SnackMach
                 await ApplyFullUpdateAsync(machineEvent);
                 return;
             }
+            await UpdateSnackPilesNameAndPictureUrl(snackMachine);
             await _dbContext.SaveChangesAsync();
         }
         catch (Exception ex)
@@ -284,7 +277,6 @@ public sealed class SnackMachineProjectionGrain : EventSubscriberGrain<SnackMach
             {
                 slot = machineEvent.Slot.ToProjection();
                 snackMachine.Slots.Add(slot);
-                snackMachine.SlotsCount = snackMachine.Slots.Count;
             }
             else
             {
@@ -293,9 +285,11 @@ public sealed class SnackMachineProjectionGrain : EventSubscriberGrain<SnackMach
             snackMachine.LastModifiedAt = machineEvent.OperatedAt;
             snackMachine.LastModifiedBy = machineEvent.OperatedBy;
             snackMachine.Version = machineEvent.Version;
+            snackMachine.SlotsCount = snackMachine.Slots.Count;
             snackMachine.SnackCount = snackMachine.Slots.Where(s => s.SnackPile != null).Select(s => s.SnackPile!.SnackId).Distinct().Count();
             snackMachine.SnackQuantity = snackMachine.Slots.Where(s => s.SnackPile != null).Select(s => s.SnackPile!.Quantity).Sum();
             snackMachine.SnackAmount = snackMachine.Slots.Where(s => s.SnackPile != null).Select(s => s.SnackPile!.TotalPrice).Sum();
+            await UpdateSnackPilesNameAndPictureUrl(snackMachine);
             await _dbContext.SaveChangesAsync();
         }
         catch (Exception ex)
@@ -327,7 +321,6 @@ public sealed class SnackMachineProjectionGrain : EventSubscriberGrain<SnackMach
             {
                 slot = machineEvent.Slot.ToProjection();
                 snackMachine.Slots.Add(slot);
-                snackMachine.SlotsCount = snackMachine.Slots.Count;
             }
             else
             {
@@ -337,6 +330,7 @@ public sealed class SnackMachineProjectionGrain : EventSubscriberGrain<SnackMach
             snackMachine.LastModifiedAt = machineEvent.OperatedAt;
             snackMachine.LastModifiedBy = machineEvent.OperatedBy;
             snackMachine.Version = machineEvent.Version;
+            snackMachine.SlotsCount = snackMachine.Slots.Count;
             snackMachine.SnackCount = snackMachine.Slots.Where(s => s.SnackPile != null).Select(s => s.SnackPile!.SnackId).Distinct().Count();
             snackMachine.SnackQuantity = snackMachine.Slots.Where(s => s.SnackPile != null).Select(s => s.SnackPile!.Quantity).Sum();
             snackMachine.SnackAmount = snackMachine.Slots.Where(s => s.SnackPile != null).Select(s => s.SnackPile!.TotalPrice).Sum();
@@ -380,6 +374,7 @@ public sealed class SnackMachineProjectionGrain : EventSubscriberGrain<SnackMach
                 snackMachine.Version = await snackMachineGrain.GetVersionAsync();
                 snackMachine.BoughtCount = await _dbContext.SnacksBoughts.CountAsync(sb => sb.MachineId == id);
                 snackMachine.BoughtAmount = await _dbContext.SnacksBoughts.Where(sb => sb.MachineId == id).SumAsync(sb => sb.BoughtPrice);
+                await UpdateSnackPilesNameAndPictureUrl(snackMachine);
                 await _dbContext.SaveChangesAsync();
                 return;
             }
@@ -399,5 +394,31 @@ public sealed class SnackMachineProjectionGrain : EventSubscriberGrain<SnackMach
             }
         }
         while (retryNeeded);
+    }
+
+    private async Task UpdateSnackPilesNameAndPictureUrl(SnackMachine snackMachine)
+    {
+        var snackIds = snackMachine.Slots.Select(sl => sl.SnackPile).Where(sp => sp != null).Select(sp => sp!.SnackId).Distinct();
+        var snacks = await GetSnacksNameAndPictureUrlAsync(snackIds);
+        foreach (var slot in snackMachine.Slots)
+        {
+            if (slot.SnackPile != null && snacks.TryGetValue(slot.SnackPile.SnackId, out var snack))
+            {
+                slot.SnackPile.SnackName = snack.SnackName;
+                slot.SnackPile.SnackPictureUrl = snack.SnackPictureUrl;
+            }
+        }
+    }
+
+    private Task<Dictionary<Guid, (string SnackName, string? SnackPictureUrl)>> GetSnacksNameAndPictureUrlAsync(IEnumerable<Guid> snackIds)
+    {
+        return _dbContext.Snacks.Where(s => snackIds.Contains(s.Id))
+                         .Select(s => new
+                                      {
+                                          s.Id,
+                                          s.Name,
+                                          s.PictureUrl
+                                      })
+                         .ToDictionaryAsync(s => s.Id, s => (s.Name, s.PictureUrl));
     }
 }
