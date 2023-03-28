@@ -6,12 +6,13 @@ using Vending.Domain.Abstractions;
 using Vending.Domain.Abstractions.Events;
 using Vending.Domain.Abstractions.Grains;
 using Vending.Projection.Abstractions.Entities;
+using Vending.Projection.Abstractions.Mappers;
 using Vending.Projection.EntityFrameworkCore;
 
 namespace Vending.Projection.Grains;
 
 [ImplicitStreamSubscription(Constants.SnacksNamespace)]
-public class SnackProjectionGrain : EventSubscriberGrain<SnackEvent, SnackErrorEvent>
+public sealed class SnackProjectionGrain : EventSubscriberGrain<SnackEvent, SnackErrorEvent>
 {
     private readonly ProjectionDbContext _dbContext;
     private readonly ILogger<SnackProjectionGrain> _logger;
@@ -219,20 +220,11 @@ public class SnackProjectionGrain : EventSubscriberGrain<SnackEvent, SnackErrorE
                     snack = new Snack();
                     _dbContext.Snacks.Add(snack);
                 }
-                snack.Id = id;
-                snack.Name = snackInGrain.Name;
-                snack.PictureUrl = snackInGrain.PictureUrl;
-                snack.CreatedAt = snackInGrain.CreatedAt;
-                snack.LastModifiedAt = snackInGrain.LastModifiedAt;
-                snack.DeletedAt = snackInGrain.DeletedAt;
-                snack.CreatedBy = snackInGrain.CreatedBy;
-                snack.LastModifiedBy = snackInGrain.LastModifiedBy;
-                snack.DeletedBy = snackInGrain.DeletedBy;
-                snack.IsDeleted = snackInGrain.IsDeleted;
+                snack = snackInGrain.ToProjection(snack);
                 snack.Version = await snackGrain.GetVersionAsync();
-                // snack.MachineCount = await _dbContext.SnackMachines.CountAsync(sm => sm.Slots.Any(sl => sl.SnackPile != null && sl.SnackPile.SnackId == id));
-                // snack.BoughtCount = await _dbContext.SnacksBoughts.CountAsync(sb => sb.SnackId == id);
-                // snack.BoughtAmount = await _dbContext.SnacksBoughts.Where(sb => sb.SnackId == id).SumAsync(sb => sb.BoughtPrice);
+                snack.MachineCount = await _dbContext.SnackMachines.CountAsync(sm => sm.IsDeleted == false && sm.Slots.Any(sl => sl.SnackPile != null && sl.SnackPile.SnackId == id));
+                snack.BoughtCount = await _dbContext.SnacksBoughts.CountAsync(sb => sb.SnackId == id);
+                snack.BoughtAmount = await _dbContext.SnacksBoughts.Where(sb => sb.SnackId == id).SumAsync(sb => sb.BoughtPrice);
                 await _dbContext.SaveChangesAsync();
                 return;
             }

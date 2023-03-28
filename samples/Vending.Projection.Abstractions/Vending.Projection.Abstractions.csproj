@@ -14,6 +14,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\src\SiloX.Domain.Abstractions\SiloX.Domain.Abstractions.csproj" />
+        <ProjectReference Include="..\Vending.Domain.Abstractions\Vending.Domain.Abstractions.csproj" />
     </ItemGroup>
 
 </Project>

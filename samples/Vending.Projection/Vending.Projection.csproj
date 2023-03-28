@@ -14,7 +14,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\src\SiloX.Orleans.Streaming\SiloX.Orleans.Streaming.csproj" />
-        <ProjectReference Include="..\Vending.Domain.Abstractions\Vending.Domain.Abstractions.csproj" />
         <ProjectReference Include="..\Vending.Projection.Abstractions\Vending.Projection.Abstractions.csproj" />
         <ProjectReference Include="..\Vending.Projection.EntityFrameworkCore\Vending.Projection.EntityFrameworkCore.csproj" />
     </ItemGroup>

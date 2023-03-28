@@ -12,7 +12,9 @@ namespace SiloX.Domain.Abstractions;
 /// <typeparam name="TState">The type of state used by the grain.</typeparam>
 /// <typeparam name="TEvent">The type of domain event used by the grain.</typeparam>
 /// <typeparam name="TErrorEvent">The type of domain error event used by the grain.</typeparam>
-public abstract class EventSourcingGrain<TState, TEvent, TErrorEvent> : JournaledGrain<TState, TEvent>, IGrainWithGuidKey
+public abstract class EventSourcingGrain<TState, TEvent, TErrorEvent>
+    : JournaledGrain<TState, TEvent>,
+      IGrainWithGuidKey
     where TState : class, new()
     where TEvent : DomainEvent
     where TErrorEvent : TEvent, IDomainErrorEvent
@@ -54,7 +56,7 @@ public abstract class EventSourcingGrain<TState, TEvent, TErrorEvent> : Journale
     {
         return Result.Ok()
                      .MapTryAsync(() => RaiseConditionalEvent(domainEvent))
-                     .MapTryIfAsync(raised => raised, _ => PersistAsync(domainEvent))
+                     .MapTryIfAsync(raised => raised, _ => PersistAsync(domainEvent with { Version = Version }))
                      .TapTryIfAsync(persisted => persisted, () => GetStream().OnNextAsync(domainEvent with { Version = Version }));
     }
 
