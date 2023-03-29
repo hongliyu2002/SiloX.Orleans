@@ -354,10 +354,10 @@ public sealed class SnackMachineProjectionGrain : SubscriberGrain<SnackMachineEv
         {
             try
             {
-                var id = machineEvent.MachineId;
-                var snackMachineGrain = GrainFactory.GetGrain<ISnackMachineGrain>(id);
+                var machineId = machineEvent.MachineId;
+                var snackMachineGrain = GrainFactory.GetGrain<ISnackMachineGrain>(machineId);
                 var snackMachineInGrain = await snackMachineGrain.GetStateAsync();
-                var snackMachine = await _dbContext.SnackMachines.FindAsync(id);
+                var snackMachine = await _dbContext.SnackMachines.FindAsync(machineId);
                 if (snackMachineInGrain == null)
                 {
                     if (snackMachine == null)
@@ -375,9 +375,9 @@ public sealed class SnackMachineProjectionGrain : SubscriberGrain<SnackMachineEv
                 }
                 snackMachine = await snackMachineInGrain.ToProjection(GetSnackNameAndPictureUrlAsync, snackMachine);
                 snackMachine.Version = await snackMachineGrain.GetVersionAsync();
-                // TODO: Get the following data from the grain
-                // snackMachine.BoughtCount = await _dbContext.Purchases.CountAsync(sb => sb.MachineId == id);
-                // snackMachine.BoughtAmount = await _dbContext.Purchases.Where(sb => sb.MachineId == id).SumAsync(sb => sb.BoughtPrice);
+                var purchaseStatsBySnackMachineGrain = GrainFactory.GetGrain<IPurchaseStatsBySnackMachineGrain>(machineId);
+                snackMachine.BoughtCount = await purchaseStatsBySnackMachineGrain.GetCountAsync();
+                snackMachine.BoughtAmount = await purchaseStatsBySnackMachineGrain.GetAmountAsync();
                 await _dbContext.SaveChangesAsync();
                 return;
             }
