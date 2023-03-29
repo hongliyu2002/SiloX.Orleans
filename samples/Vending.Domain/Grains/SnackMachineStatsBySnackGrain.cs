@@ -30,7 +30,7 @@ public class SnackMachineStatsBySnackGrain : Grain, ISnackMachineStatsBySnackGra
     public override async Task OnActivateAsync(CancellationToken cancellationToken)
     {
         await base.OnActivateAsync(cancellationToken);
-        await UpdateStatsAsync();
+        await UpdateCountAsync();
     }
 
     /// <inheritdoc />
@@ -60,12 +60,14 @@ public class SnackMachineStatsBySnackGrain : Grain, ISnackMachineStatsBySnackGra
         return _stats.WriteStateAsync();
     }
 
-    private async Task UpdateStatsAsync()
+    #region Update From DB
+
+    private async Task UpdateCountAsync()
     {
         try
         {
-            var id = this.GetPrimaryKey();
-            var countInDb = await _dbContext.SnackMachines.CountAsync(sm => sm.IsDeleted == false && sm.Slots.Any(sl => sl.SnackPile != null && sl.SnackPile.SnackId == id));
+            var snackId = this.GetPrimaryKey();
+            var countInDb = await _dbContext.SnackMachines.CountAsync(sm => sm.IsDeleted == false && sm.Slots.Any(sl => sl.SnackPile != null && sl.SnackPile.SnackId == snackId));
             if (_stats.State.Count != countInDb)
             {
                 _logger.LogInformation("Updated count of machines that have this snack from {OldCount} to {NewCount}", _stats.State.Count, countInDb);
@@ -75,7 +77,10 @@ public class SnackMachineStatsBySnackGrain : Grain, ISnackMachineStatsBySnackGra
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to update stats for snack {SnackId}", this.GetPrimaryKey());
+            _logger.LogError(ex, "Failed to update count for snack {SnackId}", this.GetPrimaryKey());
         }
     }
+
+    #endregion
+
 }
