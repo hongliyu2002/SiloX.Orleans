@@ -100,7 +100,7 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SnackMachineSnackBoughts",
+                name: "SnackMachineSnackPurchases",
                 columns: table => new
                 {
                     MachineId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -114,15 +114,15 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SnackMachineSnackBoughts", x => new { x.MachineId, x.Position, x.SnackId });
+                    table.PrimaryKey("PK_SnackMachineSnackPurchases", x => new { x.MachineId, x.Position, x.SnackId });
                     table.ForeignKey(
-                        name: "FK_SnackMachineSnackBoughts_SnackMachines_MachineId",
+                        name: "FK_SnackMachineSnackPurchases_SnackMachines_MachineId",
                         column: x => x.MachineId,
                         principalTable: "SnackMachines",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_SnackMachineSnackBoughts_Snacks_SnackId",
+                        name: "FK_SnackMachineSnackPurchases_Snacks_SnackId",
                         column: x => x.SnackId,
                         principalTable: "Snacks",
                         principalColumn: "Id",
@@ -135,8 +135,8 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
                 column: "SnackPile_SnackId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SnackMachineSnackBoughts_SnackId",
-                table: "SnackMachineSnackBoughts",
+                name: "IX_SnackMachineSnackPurchases_SnackId",
+                table: "SnackMachineSnackPurchases",
                 column: "SnackId");
         }
 
@@ -147,7 +147,7 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
                 name: "Slots");
 
             migrationBuilder.DropTable(
-                name: "SnackMachineSnackBoughts");
+                name: "SnackMachineSnackPurchases");
 
             migrationBuilder.DropTable(
                 name: "SnackMachines");

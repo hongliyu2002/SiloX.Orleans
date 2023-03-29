@@ -154,7 +154,7 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
                     b.ToTable("SnackMachines", (string)null);
                 });
 
-            modelBuilder.Entity("Vending.Projection.Abstractions.Entities.SnackMachineSnackBought", b =>
+            modelBuilder.Entity("Vending.Projection.Abstractions.Entities.SnackMachineSnackPurchase", b =>
                 {
                     b.Property<Guid>("MachineId")
                         .HasColumnType("uniqueidentifier");
@@ -190,7 +190,7 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
 
                     b.HasIndex("SnackId");
 
-                    b.ToTable("SnackMachineSnackBoughts", (string)null);
+                    b.ToTable("SnackMachineSnackPurchases", (string)null);
                 });
 
             modelBuilder.Entity("Vending.Projection.Abstractions.Entities.Slot", b =>
@@ -295,7 +295,7 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Vending.Projection.Abstractions.Entities.SnackMachineSnackBought", b =>
+            modelBuilder.Entity("Vending.Projection.Abstractions.Entities.SnackMachineSnackPurchase", b =>
                 {
                     b.HasOne("Vending.Projection.Abstractions.Entities.SnackMachine", null)
                         .WithMany()
