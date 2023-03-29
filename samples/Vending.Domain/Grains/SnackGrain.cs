@@ -150,7 +150,7 @@ public sealed class SnackGrain : EventSourcingGrain<Snack, SnackCommand, SnackEv
               .MapTryIfAsync(persisted => persisted, () => PublishAsync(new SnackPictureUrlChangedEvent(State.Id, Version, State.PictureUrl, command.TraceId, State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? command.OperatedBy)));
     }
 
-    #region Custom Persistence
+    #region Persistence
 
     private async Task<bool> ApplyFullUpdateAsync()
     {
@@ -161,17 +161,7 @@ public sealed class SnackGrain : EventSourcingGrain<Snack, SnackCommand, SnackEv
             try
             {
                 var snackInGrain = State;
-                var snack = await _dbContext.Snacks.FindAsync(State.Id);
-                if (snackInGrain == null)
-                {
-                    if (snack == null)
-                    {
-                        return true;
-                    }
-                    _dbContext.Remove(snack);
-                    await _dbContext.SaveChangesAsync();
-                    return true;
-                }
+                var snack = await _dbContext.Snacks.FindAsync(snackInGrain.Id);
                 if (snack == null)
                 {
                     snack = new Snack();
@@ -190,12 +180,12 @@ public sealed class SnackGrain : EventSourcingGrain<Snack, SnackCommand, SnackEv
                 await _dbContext.SaveChangesAsync();
                 return true;
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException ex)
             {
                 retryNeeded = ++attempts <= 3;
                 if (retryNeeded)
                 {
-                    _logger.LogWarning($"ApplyFullUpdateAsync: DbUpdateConcurrencyException is occurred when try to write data to the database. Retrying {attempts}...");
+                    _logger.LogWarning(ex, $"ApplyFullUpdateAsync: DbUpdateConcurrencyException is occurred when try to write data to the database. Retrying {attempts}...");
                     await Task.Delay(TimeSpan.FromSeconds(attempts));
                 }
             }

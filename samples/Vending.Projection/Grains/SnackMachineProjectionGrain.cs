@@ -74,7 +74,7 @@ public sealed class SnackMachineProjectionGrain : SubscriberGrain<SnackMachineEv
     /// <inheritdoc />
     protected override Task HandleCompleteAsync()
     {
-        _logger.LogInformation($"Stream {Constants.SnacksNamespace} is completed.");
+        _logger.LogInformation($"Stream {Constants.SnackMachinesNamespace} is completed.");
         return Task.CompletedTask;
     }
 
@@ -381,12 +381,12 @@ public sealed class SnackMachineProjectionGrain : SubscriberGrain<SnackMachineEv
                 await _dbContext.SaveChangesAsync();
                 return;
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException ex)
             {
                 retryNeeded = ++attempts <= 3;
                 if (retryNeeded)
                 {
-                    _logger.LogWarning($"ApplyFullUpdateAsync: DbUpdateConcurrencyException is occurred when try to write data to the database. Retrying {attempts}...");
+                    _logger.LogWarning(ex, $"ApplyFullUpdateAsync: DbUpdateConcurrencyException is occurred when try to write data to the database. Retrying {attempts}...");
                     await Task.Delay(TimeSpan.FromSeconds(attempts));
                 }
             }

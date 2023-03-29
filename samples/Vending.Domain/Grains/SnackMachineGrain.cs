@@ -297,17 +297,7 @@ public sealed class SnackMachineGrain : EventSourcingGrain<SnackMachine, SnackMa
             try
             {
                 var snackMachineInGrain = State;
-                var snackMachine = await _dbContext.SnackMachines.FindAsync(State.Id);
-                if (snackMachineInGrain == null)
-                {
-                    if (snackMachine == null)
-                    {
-                        return true;
-                    }
-                    _dbContext.Remove(snackMachine);
-                    await _dbContext.SaveChangesAsync();
-                    return true;
-                }
+                var snackMachine = await _dbContext.SnackMachines.FindAsync(snackMachineInGrain.Id);
                 if (snackMachine == null)
                 {
                     snackMachine = new SnackMachine();
@@ -327,12 +317,12 @@ public sealed class SnackMachineGrain : EventSourcingGrain<SnackMachine, SnackMa
                 await _dbContext.SaveChangesAsync();
                 return true;
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException ex)
             {
                 retryNeeded = ++attempts <= 3;
                 if (retryNeeded)
                 {
-                    _logger.LogWarning($"ApplyFullUpdateAsync: DbUpdateConcurrencyException is occurred when try to write data to the database. Retrying {attempts}...");
+                    _logger.LogWarning(ex, $"ApplyFullUpdateAsync: DbUpdateConcurrencyException is occurred when try to write data to the database. Retrying {attempts}...");
                     await Task.Delay(TimeSpan.FromSeconds(attempts));
                 }
             }

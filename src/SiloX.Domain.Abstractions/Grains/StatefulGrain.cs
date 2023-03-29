@@ -63,19 +63,4 @@ public abstract class StatefulGrain<TState, TEvent, TErrorEvent> : Grain<TState>
     {
         return GetPublishStream().OnNextAsync(errorEvent);
     }
-
-    /// <inheritdoc />
-    protected override async Task WriteStateAsync()
-    {
-        await base.WriteStateAsync();
-        await PersistAsync();
-    }
-
-    /// <summary>
-    ///     Customizes the behavior of the grain when a domain event is received.
-    /// </summary>
-    protected virtual Task PersistAsync()
-    {
-        return Task.CompletedTask;
-    }
 }

@@ -1,5 +1,6 @@
 ﻿using Fluxera.Guards;
 using Fluxera.Utilities.Extensions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Orleans.FluentResults;
 using Orleans.Providers;
@@ -33,7 +34,7 @@ public sealed class PurchaseGrain : StatefulGrain<Purchase, PurchaseEvent, Purch
     /// <inheritdoc />
     protected override string GetPublishStreamNamespace()
     {
-        return Constants.SnackMachineSnackPurchasesNamespace;
+        return Constants.PurchasesNamespace;
     }
 
     /// <inheritdoc />
@@ -62,10 +63,14 @@ public sealed class PurchaseGrain : StatefulGrain<Purchase, PurchaseEvent, Purch
     {
         var id = this.GetPrimaryKeyString();
         return ValidateInitialize(command)
-              .TapErrorTryAsync(errors => PublishErrorAsync(new PurchaseErrorEvent(id, 0, 1001, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
+              .TapErrorTryAsync(errors => PublishErrorAsync(new PurchaseErrorEvent(id, command.MachineId, command.Position, command.SnackId, 1001, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
               .MapTryAsync(() => ApplyAsync(command))
-              .MapTryAsync(() => PublishAsync(new PurchaseInitializedEvent(id, 0, State.MachineId, State.Position, State.SnackId, State.BoughtPrice, command.TraceId, State.BoughtAt ?? DateTimeOffset.UtcNow, State.BoughtBy ?? command.OperatedBy)));
+              .MapTryAsync(ApplyFullUpdateAsync)
+              .MapTryIfAsync(persisted => persisted,
+                             () => PublishAsync(new PurchaseInitializedEvent(id, State.MachineId, State.Position, State.SnackId, State.BoughtPrice, command.TraceId, State.BoughtAt ?? DateTimeOffset.UtcNow, State.BoughtBy ?? command.OperatedBy)));
     }
+
+    #region Persistence
 
     private Task ApplyAsync(PurchaseInitializeCommand command)
     {
@@ -77,4 +82,50 @@ public sealed class PurchaseGrain : StatefulGrain<Purchase, PurchaseEvent, Purch
         State.BoughtBy = command.OperatedBy;
         return WriteStateAsync();
     }
+
+    private async Task<bool> ApplyFullUpdateAsync()
+    {
+        var attempts = 0;
+        bool retryNeeded;
+        do
+        {
+            try
+            {
+                var purchaseInGrain = State;
+                var purchase = await _dbContext.Purchases.FindAsync(purchaseInGrain.MachineId, purchaseInGrain.Position, purchaseInGrain.SnackId);
+                if (purchase == null)
+                {
+                    purchase = new Purchase();
+                    _dbContext.Purchases.Add(purchase);
+                }
+                purchase.MachineId = purchaseInGrain.MachineId;
+                purchase.Position = purchaseInGrain.Position;
+                purchase.SnackId = purchaseInGrain.SnackId;
+                purchase.BoughtPrice = purchaseInGrain.BoughtPrice;
+                purchase.BoughtAt = purchaseInGrain.BoughtAt;
+                purchase.BoughtBy = purchaseInGrain.BoughtBy;
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                retryNeeded = ++attempts <= 3;
+                if (retryNeeded)
+                {
+                    _logger.LogWarning(ex, $"ApplyFullUpdateAsync: DbUpdateConcurrencyException is occurred when try to write data to the database. Retrying {attempts}...");
+                    await Task.Delay(TimeSpan.FromSeconds(attempts));
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "ApplyFullUpdateAsync: Exception is occurred when try to write data to the database.");
+                retryNeeded = false;
+            }
+        }
+        while (retryNeeded);
+        return false;
+    }
+
+    #endregion
+
 }

@@ -298,12 +298,12 @@ public sealed class SnackProjectionGrain : SubscriberGrain<SnackEvent, SnackErro
                 await _dbContext.SaveChangesAsync();
                 return;
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException ex)
             {
                 retryNeeded = ++attempts <= 3;
                 if (retryNeeded)
                 {
-                    _logger.LogWarning($"ApplyFullUpdateAsync: DbUpdateConcurrencyException is occurred when try to write data to the database. Retrying {attempts}...");
+                    _logger.LogWarning(ex, $"ApplyFullUpdateAsync: DbUpdateConcurrencyException is occurred when try to write data to the database. Retrying {attempts}...");
                     await Task.Delay(TimeSpan.FromSeconds(attempts));
                 }
             }
