@@ -1,4 +1,7 @@
-﻿using Fluxera.Utilities.Extensions;
+﻿using Fluxera.Guards;
+using Fluxera.Utilities.Extensions;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Orleans.FluentResults;
 using Orleans.Providers;
 using SiloX.Domain.Abstractions;
@@ -8,6 +11,7 @@ using Vending.Domain.Abstractions.Commands;
 using Vending.Domain.Abstractions.Events;
 using Vending.Domain.Abstractions.Grains;
 using Vending.Domain.Abstractions.States;
+using Vending.Domain.EntityFrameworkCore;
 
 namespace Vending.Domain.Grains;
 
@@ -15,9 +19,14 @@ namespace Vending.Domain.Grains;
 [StorageProvider(ProviderName = Constants.GrainStorageName1)]
 public sealed class SnackGrain : EventSourcingGrain<Snack, SnackCommand, SnackEvent, SnackErrorEvent>, ISnackGrain
 {
+    private readonly DomainDbContext _dbContext;
+    private readonly ILogger<SnackGrain> _logger;
+
     /// <inheritdoc />
-    public SnackGrain() : base(Constants.StreamProviderName1)
+    public SnackGrain(DomainDbContext dbContext, ILogger<SnackGrain> logger) : base(Constants.StreamProviderName1)
     {
+        _dbContext = Guard.Against.Null(dbContext, nameof(dbContext));
+        _logger = Guard.Against.Null(logger, nameof(logger));
     }
 
     /// <inheritdoc />
@@ -62,6 +71,7 @@ public sealed class SnackGrain : EventSourcingGrain<Snack, SnackCommand, SnackEv
         return ValidateInitialize(command)
               .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(this.GetPrimaryKey(), Version, 101, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
               .MapTryAsync(() => RaiseConditionalEvent(command))
+              .MapTryIfAsync(persisted => persisted, ApplyFullUpdateAsync)
               .MapTryIfAsync(persisted => persisted, () => PublishAsync(new SnackInitializedEvent(State.Id, Version, State.Name, State.PictureUrl, command.TraceId, State.CreatedAt ?? DateTimeOffset.UtcNow, State.CreatedBy ?? command.OperatedBy)));
     }
 
@@ -83,6 +93,7 @@ public sealed class SnackGrain : EventSourcingGrain<Snack, SnackCommand, SnackEv
         return ValidateRemove(command)
               .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(this.GetPrimaryKey(), Version, 102, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
               .MapTryAsync(() => RaiseConditionalEvent(command))
+              .MapTryIfAsync(persisted => persisted, ApplyFullUpdateAsync)
               .MapTryIfAsync(persisted => persisted, () => PublishAsync(new SnackRemovedEvent(State.Id, Version, command.TraceId, State.DeletedAt ?? DateTimeOffset.UtcNow, State.DeletedBy ?? command.OperatedBy)));
     }
 
@@ -109,6 +120,7 @@ public sealed class SnackGrain : EventSourcingGrain<Snack, SnackCommand, SnackEv
         return ValidateChangeName(command)
               .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(this.GetPrimaryKey(), Version, 103, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
               .MapTryAsync(() => RaiseConditionalEvent(command))
+              .MapTryIfAsync(persisted => persisted, ApplyFullUpdateAsync)
               .MapTryIfAsync(persisted => persisted, () => PublishAsync(new SnackNameChangedEvent(State.Id, Version, State.Name, command.TraceId, State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? command.OperatedBy)));
     }
 
@@ -134,6 +146,69 @@ public sealed class SnackGrain : EventSourcingGrain<Snack, SnackCommand, SnackEv
         return ValidateChangePictureUrl(command)
               .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(this.GetPrimaryKey(), Version, 104, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
               .MapTryAsync(() => RaiseConditionalEvent(command))
+              .MapTryIfAsync(persisted => persisted, ApplyFullUpdateAsync)
               .MapTryIfAsync(persisted => persisted, () => PublishAsync(new SnackPictureUrlChangedEvent(State.Id, Version, State.PictureUrl, command.TraceId, State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? command.OperatedBy)));
     }
+
+    #region Custom Persistence
+
+    private async Task<bool> ApplyFullUpdateAsync()
+    {
+        var attempts = 0;
+        bool retryNeeded;
+        do
+        {
+            try
+            {
+                var snackInGrain = State;
+                var snack = await _dbContext.Snacks.FindAsync(State.Id);
+                if (snackInGrain == null)
+                {
+                    if (snack == null)
+                    {
+                        return true;
+                    }
+                    _dbContext.Remove(snack);
+                    await _dbContext.SaveChangesAsync();
+                    return true;
+                }
+                if (snack == null)
+                {
+                    snack = new Snack();
+                    _dbContext.Snacks.Add(snack);
+                }
+                snack.Id = snackInGrain.Id;
+                snack.Name = snackInGrain.Name;
+                snack.PictureUrl = snackInGrain.PictureUrl;
+                snack.CreatedAt = snackInGrain.CreatedAt;
+                snack.LastModifiedAt = snackInGrain.LastModifiedAt;
+                snack.DeletedAt = snackInGrain.DeletedAt;
+                snack.CreatedBy = snackInGrain.CreatedBy;
+                snack.LastModifiedBy = snackInGrain.LastModifiedBy;
+                snack.DeletedBy = snackInGrain.DeletedBy;
+                snack.IsDeleted = snackInGrain.IsDeleted;
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                retryNeeded = ++attempts <= 3;
+                if (retryNeeded)
+                {
+                    _logger.LogWarning($"ApplyFullUpdateAsync: DbUpdateConcurrencyException is occurred when try to write data to the database. Retrying {attempts}...");
+                    await Task.Delay(TimeSpan.FromSeconds(attempts));
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "ApplyFullUpdateAsync: Exception is occurred when try to write data to the database.");
+                retryNeeded = false;
+            }
+        }
+        while (retryNeeded);
+        return false;
+    }
+
+    #endregion
+
 }

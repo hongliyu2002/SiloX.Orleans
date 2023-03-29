@@ -386,13 +386,13 @@ public sealed class SnackMachineProjectionGrain : SubscriberGrain<SnackMachineEv
                 retryNeeded = ++attempts <= 3;
                 if (retryNeeded)
                 {
-                    _logger.LogWarning($"Apply FullUpdate: DbUpdateConcurrencyException is occurred when try to write data to the database. Retrying {attempts}...");
+                    _logger.LogWarning($"ApplyFullUpdateAsync: DbUpdateConcurrencyException is occurred when try to write data to the database. Retrying {attempts}...");
                     await Task.Delay(TimeSpan.FromSeconds(attempts));
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Apply FullUpdate: Exception is occurred when try to write data to the database.");
+                _logger.LogError(ex, "ApplyFullUpdateAsync: Exception is occurred when try to write data to the database.");
                 retryNeeded = false;
             }
         }

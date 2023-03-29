@@ -1,4 +1,6 @@
-﻿using Fluxera.Utilities.Extensions;
+﻿using Fluxera.Guards;
+using Fluxera.Utilities.Extensions;
+using Microsoft.Extensions.Logging;
 using Orleans.FluentResults;
 using Orleans.Providers;
 using SiloX.Domain.Abstractions;
@@ -8,6 +10,7 @@ using Vending.Domain.Abstractions.Commands;
 using Vending.Domain.Abstractions.Events;
 using Vending.Domain.Abstractions.Grains;
 using Vending.Domain.Abstractions.States;
+using Vending.Domain.EntityFrameworkCore;
 
 namespace Vending.Domain.Grains;
 
@@ -17,9 +20,14 @@ namespace Vending.Domain.Grains;
 [StorageProvider(ProviderName = Constants.GrainStorageName2)]
 public sealed class PurchaseGrain : StatefulGrain<Purchase, PurchaseEvent, PurchaseErrorEvent>, IPurchaseGrain
 {
+    private readonly DomainDbContext _dbContext;
+    private readonly ILogger<PurchaseGrain> _logger;
+
     /// <inheritdoc />
-    public PurchaseGrain() : base(Constants.StreamProviderName2)
+    public PurchaseGrain(DomainDbContext dbContext, ILogger<PurchaseGrain> logger) : base(Constants.StreamProviderName2)
     {
+        _dbContext = Guard.Against.Null(dbContext, nameof(dbContext));
+        _logger = Guard.Against.Null(logger, nameof(logger));
     }
 
     /// <inheritdoc />

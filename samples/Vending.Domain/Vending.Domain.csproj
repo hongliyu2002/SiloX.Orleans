@@ -11,11 +11,13 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.Orleans.Sdk" Version="7.1.1" />
     </ItemGroup>
-    
+
     <ItemGroup>
         <ProjectReference Include="..\..\src\SiloX.Orleans.EventSourcing\SiloX.Orleans.EventSourcing.csproj" />
         <ProjectReference Include="..\..\src\SiloX.Orleans.Persistence\SiloX.Orleans.Persistence.csproj" />
+        <ProjectReference Include="..\..\src\SiloX.Orleans.Streaming\SiloX.Orleans.Streaming.csproj" />
         <ProjectReference Include="..\Vending.Domain.Abstractions\Vending.Domain.Abstractions.csproj" />
+        <ProjectReference Include="..\Vending.Domain.EntityFrameworkCore\Vending.Domain.EntityFrameworkCore.csproj" />
     </ItemGroup>
 
 </Project>

@@ -1,5 +1,8 @@
 ﻿using System.Collections.Immutable;
+using Fluxera.Guards;
 using Fluxera.Utilities.Extensions;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Orleans.FluentResults;
 using Orleans.Providers;
 using SiloX.Domain.Abstractions;
@@ -9,6 +12,7 @@ using Vending.Domain.Abstractions.Commands;
 using Vending.Domain.Abstractions.Events;
 using Vending.Domain.Abstractions.Grains;
 using Vending.Domain.Abstractions.States;
+using Vending.Domain.EntityFrameworkCore;
 
 namespace Vending.Domain.Grains;
 
@@ -16,9 +20,14 @@ namespace Vending.Domain.Grains;
 [StorageProvider(ProviderName = Constants.GrainStorageName2)]
 public sealed class SnackMachineGrain : EventSourcingGrain<SnackMachine, SnackMachineCommand, SnackMachineEvent, SnackMachineErrorEvent>, ISnackMachineGrain
 {
+    private readonly DomainDbContext _dbContext;
+    private readonly ILogger<SnackMachineGrain> _logger;
+
     /// <inheritdoc />
-    public SnackMachineGrain() : base(Constants.StreamProviderName2)
+    public SnackMachineGrain(DomainDbContext dbContext, ILogger<SnackMachineGrain> logger) : base(Constants.StreamProviderName2)
     {
+        _dbContext = Guard.Against.Null(dbContext, nameof(dbContext));
+        _logger = Guard.Against.Null(logger, nameof(logger));
     }
 
     /// <inheritdoc />
@@ -82,6 +91,7 @@ public sealed class SnackMachineGrain : EventSourcingGrain<SnackMachine, SnackMa
         return ValidateInitialize(command)
               .TapErrorTryAsync(errors => PublishErrorAsync(new SnackMachineErrorEvent(this.GetPrimaryKey(), Version, 201, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
               .MapTryAsync(() => RaiseConditionalEvent(command))
+              .MapTryIfAsync(persisted => persisted, ApplyFullUpdateAsync)
               .MapTryIfAsync(persisted => persisted,
                              () => PublishAsync(new SnackMachineInitializedEvent(State.Id, Version, State.MoneyInside, State.Slots.ToImmutableList(), State.SlotsCount, State.SnackCount, State.SnackQuantity, State.SnackAmount, command.TraceId,
                                                                                  DateTimeOffset.UtcNow, command.OperatedBy)));
@@ -109,6 +119,7 @@ public sealed class SnackMachineGrain : EventSourcingGrain<SnackMachine, SnackMa
         return ValidateRemove(command)
               .TapErrorTryAsync(errors => PublishErrorAsync(new SnackMachineErrorEvent(this.GetPrimaryKey(), Version, 202, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
               .MapTryAsync(() => RaiseConditionalEvent(command))
+              .MapTryIfAsync(persisted => persisted, ApplyFullUpdateAsync)
               .MapTryIfAsync(persisted => persisted, () => PublishAsync(new SnackMachineRemovedEvent(State.Id, Version, command.TraceId, State.DeletedAt ?? DateTimeOffset.UtcNow, State.DeletedBy ?? command.OperatedBy)));
     }
 
@@ -134,16 +145,14 @@ public sealed class SnackMachineGrain : EventSourcingGrain<SnackMachine, SnackMa
         return ValidateLoadMoney(command)
               .TapErrorTryAsync(errors => PublishErrorAsync(new SnackMachineErrorEvent(this.GetPrimaryKey(), Version, 203, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
               .MapTryAsync(() => RaiseConditionalEvent(command))
+              .MapTryIfAsync(persisted => persisted, ApplyFullUpdateAsync)
               .MapTryIfAsync(persisted => persisted, () => PublishAsync(new SnackMachineMoneyLoadedEvent(State.Id, Version, State.MoneyInside, command.TraceId, State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? command.OperatedBy)));
     }
 
     private Result ValidateUnloadMoney(SnackMachineUnloadMoneyCommand command)
     {
         var id = this.GetPrimaryKey();
-        return Result.Ok()
-                     .Verify(State.IsDeleted == false, $"Snack machine {id} has already been removed.")
-                     .Verify(State.IsCreated, $"Snack machine {id} is not initialized.")
-                     .Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
+        return Result.Ok().Verify(State.IsDeleted == false, $"Snack machine {id} has already been removed.").Verify(State.IsCreated, $"Snack machine {id} is not initialized.").Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
     }
 
     /// <inheritdoc />
@@ -158,6 +167,7 @@ public sealed class SnackMachineGrain : EventSourcingGrain<SnackMachine, SnackMa
         return ValidateUnloadMoney(command)
               .TapErrorTryAsync(errors => PublishErrorAsync(new SnackMachineErrorEvent(this.GetPrimaryKey(), Version, 204, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
               .MapTryAsync(() => RaiseConditionalEvent(command))
+              .MapTryIfAsync(persisted => persisted, ApplyFullUpdateAsync)
               .MapTryIfAsync(persisted => persisted, () => PublishAsync(new SnackMachineMoneyUnloadedEvent(State.Id, Version, State.MoneyInside, command.TraceId, State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? command.OperatedBy)));
     }
 
@@ -183,6 +193,7 @@ public sealed class SnackMachineGrain : EventSourcingGrain<SnackMachine, SnackMa
         return ValidateInsertMoney(command)
               .TapErrorTryAsync(errors => PublishErrorAsync(new SnackMachineErrorEvent(this.GetPrimaryKey(), Version, 205, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
               .MapTryAsync(() => RaiseConditionalEvent(command))
+              .MapTryIfAsync(persisted => persisted, ApplyFullUpdateAsync)
               .MapTryIfAsync(persisted => persisted,
                              () => PublishAsync(new SnackMachineMoneyInsertedEvent(State.Id, Version, State.MoneyInside, State.AmountInTransaction, command.TraceId, State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? command.OperatedBy)));
     }
@@ -209,6 +220,7 @@ public sealed class SnackMachineGrain : EventSourcingGrain<SnackMachine, SnackMa
         return ValidateReturnMoney(command)
               .TapErrorTryAsync(errors => PublishErrorAsync(new SnackMachineErrorEvent(this.GetPrimaryKey(), Version, 206, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
               .MapTryAsync(() => RaiseConditionalEvent(command))
+              .MapTryIfAsync(persisted => persisted, ApplyFullUpdateAsync)
               .MapTryIfAsync(persisted => persisted,
                              () => PublishAsync(new SnackMachineMoneyReturnedEvent(State.Id, Version, State.MoneyInside, State.AmountInTransaction, command.TraceId, State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? command.OperatedBy)));
     }
@@ -236,6 +248,7 @@ public sealed class SnackMachineGrain : EventSourcingGrain<SnackMachine, SnackMa
         return ValidateLoadSnacks(command)
               .TapErrorTryAsync(errors => PublishErrorAsync(new SnackMachineErrorEvent(this.GetPrimaryKey(), Version, 207, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
               .MapTryAsync(() => RaiseConditionalEvent(command))
+              .MapTryIfAsync(persisted => persisted, ApplyFullUpdateAsync)
               .MapTryIfAsync(persisted => persisted,
                              () => PublishAsync(new SnackMachineSnacksLoadedEvent(State.Id, Version, State.Slots.Single(sl => sl.Position == command.Position), State.SlotsCount, State.SnackCount, State.SnackQuantity, State.SnackAmount, command.TraceId,
                                                                                   State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? command.OperatedBy)));
@@ -267,8 +280,72 @@ public sealed class SnackMachineGrain : EventSourcingGrain<SnackMachine, SnackMa
         return ValidateBuySnack(command)
               .TapErrorTryAsync(errors => PublishErrorAsync(new SnackMachineErrorEvent(this.GetPrimaryKey(), Version, 208, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
               .MapTryAsync(() => RaiseConditionalEvent(command))
+              .MapTryIfAsync(persisted => persisted, ApplyFullUpdateAsync)
               .MapTryIfAsync(persisted => persisted,
                              () => PublishAsync(new SnackMachineSnackBoughtEvent(State.Id, Version, State.AmountInTransaction, State.Slots.Single(sl => sl.Position == command.Position), State.SnackQuantity, State.SnackAmount, command.TraceId,
                                                                                  State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? command.OperatedBy)));
     }
+
+    #region Custom Persistence
+
+    private async Task<bool> ApplyFullUpdateAsync()
+    {
+        var attempts = 0;
+        bool retryNeeded;
+        do
+        {
+            try
+            {
+                var snackMachineInGrain = State;
+                var snackMachine = await _dbContext.SnackMachines.FindAsync(State.Id);
+                if (snackMachineInGrain == null)
+                {
+                    if (snackMachine == null)
+                    {
+                        return true;
+                    }
+                    _dbContext.Remove(snackMachine);
+                    await _dbContext.SaveChangesAsync();
+                    return true;
+                }
+                if (snackMachine == null)
+                {
+                    snackMachine = new SnackMachine();
+                    _dbContext.SnackMachines.Add(snackMachine);
+                }
+                snackMachine.Id = snackMachineInGrain.Id;
+                snackMachine.CreatedAt = snackMachineInGrain.CreatedAt;
+                snackMachine.LastModifiedAt = snackMachineInGrain.LastModifiedAt;
+                snackMachine.DeletedAt = snackMachineInGrain.DeletedAt;
+                snackMachine.CreatedBy = snackMachineInGrain.CreatedBy;
+                snackMachine.LastModifiedBy = snackMachineInGrain.LastModifiedBy;
+                snackMachine.DeletedBy = snackMachineInGrain.DeletedBy;
+                snackMachine.IsDeleted = snackMachineInGrain.IsDeleted;
+                snackMachine.MoneyInside = snackMachineInGrain.MoneyInside;
+                snackMachine.AmountInTransaction = snackMachineInGrain.AmountInTransaction;
+                snackMachine.Slots = snackMachineInGrain.Slots;
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                retryNeeded = ++attempts <= 3;
+                if (retryNeeded)
+                {
+                    _logger.LogWarning($"ApplyFullUpdateAsync: DbUpdateConcurrencyException is occurred when try to write data to the database. Retrying {attempts}...");
+                    await Task.Delay(TimeSpan.FromSeconds(attempts));
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "ApplyFullUpdateAsync: Exception is occurred when try to write data to the database.");
+                retryNeeded = false;
+            }
+        }
+        while (retryNeeded);
+        return false;
+    }
+
+    #endregion
+
 }
