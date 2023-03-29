@@ -10,4 +10,5 @@ public static class Constants
     public const string StreamProviderName2 = "EventStore-Streaming-2";
     public const string SnacksNamespace = "Snacks";
     public const string SnackMachinesNamespace = "SnackMachines";
+    public const string SnackMachineSnackPurchasesNamespace = "SnackMachineSnackPurchases";
 }

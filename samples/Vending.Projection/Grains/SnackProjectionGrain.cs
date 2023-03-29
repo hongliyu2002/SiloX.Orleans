@@ -84,7 +84,7 @@ public sealed class SnackProjectionGrain : SubscriberGrain<SnackEvent, SnackErro
             {
                 snack = new Snack
                         {
-                            Id = snackEvent.Id,
+                            Id = snackEvent.SnackId,
                             Name = snackEvent.Name,
                             PictureUrl = snackEvent.PictureUrl,
                             CreatedAt = snackEvent.OperatedAt,
@@ -269,7 +269,7 @@ public sealed class SnackProjectionGrain : SubscriberGrain<SnackEvent, SnackErro
         {
             try
             {
-                var id = snackEvent.Id;
+                var id = snackEvent.SnackId;
                 var snackGrain = GrainFactory.GetGrain<ISnackGrain>(id);
                 var snackInGrain = await snackGrain.GetStateAsync();
                 var snack = await _dbContext.Snacks.FindAsync(id);

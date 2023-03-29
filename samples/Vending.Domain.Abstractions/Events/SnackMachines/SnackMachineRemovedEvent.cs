@@ -3,5 +3,5 @@
 [Immutable]
 [Serializable]
 [GenerateSerializer]
-public sealed record SnackMachineRemovedEvent(Guid Id, int Version, Guid TraceId, DateTimeOffset OperatedAt, string OperatedBy) 
-    : SnackMachineEvent(Id, Version, TraceId, OperatedAt, OperatedBy);
+public sealed record SnackMachineRemovedEvent(Guid MachineId, int Version, Guid TraceId, DateTimeOffset OperatedAt, string OperatedBy) 
+    : SnackMachineEvent(MachineId, Version, TraceId, OperatedAt, OperatedBy);

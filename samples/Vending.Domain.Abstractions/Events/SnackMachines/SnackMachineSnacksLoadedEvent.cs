@@ -5,5 +5,5 @@ namespace Vending.Domain.Abstractions.Events;
 [Immutable]
 [Serializable]
 [GenerateSerializer]
-public sealed record SnackMachineSnacksLoadedEvent(Guid Id, int Version, Slot Slot, int SlotsCount, int SnackCount, int SnackQuantity, decimal SnackAmount, Guid TraceId, DateTimeOffset OperatedAt, string OperatedBy) 
-    : SnackMachineEvent(Id, Version, TraceId, OperatedAt, OperatedBy);
+public sealed record SnackMachineSnacksLoadedEvent(Guid MachineId, int Version, Slot Slot, int SlotsCount, int SnackCount, int SnackQuantity, decimal SnackAmount, Guid TraceId, DateTimeOffset OperatedAt, string OperatedBy) 
+    : SnackMachineEvent(MachineId, Version, TraceId, OperatedAt, OperatedBy);

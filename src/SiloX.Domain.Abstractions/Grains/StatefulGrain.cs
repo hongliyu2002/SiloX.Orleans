@@ -8,9 +8,11 @@ namespace SiloX.Domain.Abstractions;
 /// <summary>
 ///     Provides a base class for grains that use grain storage for persistence.
 /// </summary>
+/// <typeparam name="TState">The type of state used by the grain.</typeparam>
 /// <typeparam name="TEvent">The type of domain event used by the grain.</typeparam>
 /// <typeparam name="TErrorEvent">The type of domain error event used by the grain.</typeparam>
-public abstract class StatefulGrain<TEvent, TErrorEvent> : Grain, IGrainWithGuidKey
+public abstract class StatefulGrain<TState, TEvent, TErrorEvent> : Grain<TState>, IGrainWithGuidKey
+    where TState : class, new()
     where TEvent : DomainEvent
     where TErrorEvent : TEvent, IDomainErrorEvent
 {
@@ -18,7 +20,7 @@ public abstract class StatefulGrain<TEvent, TErrorEvent> : Grain, IGrainWithGuid
     private IAsyncStream<TEvent>? _publishStream;
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="StatefulGrain{TEvent, TErrorEvent}" /> class.
+    ///     Initializes a new instance of the <see cref="StatefulGrain{TState, TEvent, TErrorEvent}" /> class.
     /// </summary>
     /// <param name="streamProviderName">The name of the stream provider.</param>
     protected StatefulGrain(string streamProviderName)
@@ -43,14 +45,6 @@ public abstract class StatefulGrain<TEvent, TErrorEvent> : Grain, IGrainWithGuid
     }
 
     /// <summary>
-    ///     Customizes the behavior of the grain when a domain event is received.
-    /// </summary>
-    protected virtual Task PersistAsync()
-    {
-        return Task.CompletedTask;
-    }
-
-    /// <summary>
     ///     Publishes a domain event to the stream after domain command has been successfully persisted.
     /// </summary>
     /// <param name="event">The domain event to publish.</param>
@@ -70,4 +64,18 @@ public abstract class StatefulGrain<TEvent, TErrorEvent> : Grain, IGrainWithGuid
         return GetPublishStream().OnNextAsync(errorEvent);
     }
 
+    /// <inheritdoc />
+    protected override async Task WriteStateAsync()
+    {
+        await base.WriteStateAsync();
+        await PersistAsync();
+    }
+
+    /// <summary>
+    ///     Customizes the behavior of the grain when a domain event is received.
+    /// </summary>
+    protected virtual Task PersistAsync()
+    {
+        return Task.CompletedTask;
+    }
 }

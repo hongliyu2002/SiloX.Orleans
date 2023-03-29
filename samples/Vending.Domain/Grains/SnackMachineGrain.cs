@@ -67,7 +67,7 @@ public sealed class SnackMachineGrain : EventSourcingGrain<SnackMachine, SnackMa
                      .Verify(command.Slots.IsNotNullOrEmpty(), "Slots should not be empty.")
                      .Verify(command.Slots.All(slot => slot.MachineId == id), "Slots should be owned by the same snack machine {id}.")
                      .Verify(command.Slots.GroupBy(slot => new { slot.MachineId, slot.Position }).Any(group => group.Count() == 1), "Slots should not contain duplicate positions.")
-                     .Verify(command.OperatedBy.IsNotNullOrWhiteSpace, "Operator should not be empty.");
+                     .Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
     }
 
     /// <inheritdoc />
@@ -94,7 +94,7 @@ public sealed class SnackMachineGrain : EventSourcingGrain<SnackMachine, SnackMa
                      .Verify(State.IsDeleted == false, $"Snack machine {id} has already been removed.")
                      .Verify(State.IsCreated, $"Snack machine {id} is not initialized.")
                      .Verify(State.AmountInTransaction == 0m, $"Snack machine {id} still in transaction with amount {State.AmountInTransaction}.")
-                     .Verify(command.OperatedBy.IsNotNullOrWhiteSpace, "Operator should not be empty.");
+                     .Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
     }
 
     /// <inheritdoc />
@@ -119,7 +119,7 @@ public sealed class SnackMachineGrain : EventSourcingGrain<SnackMachine, SnackMa
                      .Verify(State.IsDeleted == false, $"Snack machine {id} has already been removed.")
                      .Verify(State.IsCreated, $"Snack machine {id} is not initialized.")
                      .Verify(command.Money != Money.Zero, "Loading money should not be zero.")
-                     .Verify(command.OperatedBy.IsNotNullOrWhiteSpace, "Operator should not be empty.");
+                     .Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
     }
 
     /// <inheritdoc />
@@ -144,7 +144,7 @@ public sealed class SnackMachineGrain : EventSourcingGrain<SnackMachine, SnackMa
         return Result.Ok()
                      .Verify(State.IsDeleted == false, $"Snack machine {id} has already been removed.")
                      .Verify(State.IsCreated, $"Snack machine {id} is not initialized.")
-                     .Verify(command.OperatedBy.IsNotNullOrWhiteSpace, "Operator should not be empty.");
+                     .Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
     }
 
     /// <inheritdoc />
@@ -170,7 +170,7 @@ public sealed class SnackMachineGrain : EventSourcingGrain<SnackMachine, SnackMa
                      .Verify(State.IsDeleted == false, $"Snack machine {id} has already been removed.")
                      .Verify(State.IsCreated, $"Snack machine {id} is not initialized.")
                      .Verify(Money.CoinsAndNotes.Contains(command.Money), $"Only single coin or note should be inserted into the snack machine {id}.")
-                     .Verify(command.OperatedBy.IsNotNullOrWhiteSpace, "Operator should not be empty.");
+                     .Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
     }
 
     /// <inheritdoc />
@@ -197,7 +197,7 @@ public sealed class SnackMachineGrain : EventSourcingGrain<SnackMachine, SnackMa
                      .Verify(State.IsDeleted == false, $"Snack machine {id} has already been removed.")
                      .Verify(State.IsCreated, $"Snack machine {id} is not initialized.")
                      .Verify(State.MoneyInside.CanAllocate(State.AmountInTransaction, out _), $"Not enough change in the snack machine {id}.")
-                     .Verify(command.OperatedBy.IsNotNullOrWhiteSpace, "Operator should not be empty.");
+                     .Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
     }
 
     /// <inheritdoc />
@@ -225,7 +225,7 @@ public sealed class SnackMachineGrain : EventSourcingGrain<SnackMachine, SnackMa
                      .Verify(State.IsCreated, $"Snack machine {id} is not initialized.")
                      .Verify(State.TryGetSlot(command.Position, out _), $"Slot at position {command.Position} in the snack machine {id} does not exist.")
                      .Verify(command.SnackPile != null, "SnackPile should not be empty.")
-                     .Verify(command.OperatedBy.IsNotNullOrWhiteSpace, "Operator should not be empty.");
+                     .Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
     }
 
     /// <inheritdoc />
@@ -256,7 +256,7 @@ public sealed class SnackMachineGrain : EventSourcingGrain<SnackMachine, SnackMa
                      .Verify(slot?.SnackPile != null && slot.SnackPile.CanPopOne(), $"Not enough snack in the snack pile of the slot at position {command.Position} in the snack machine {id}.")
                      .Verify(State.AmountInTransaction >= (slot?.SnackPile?.Price ?? 0), $"Not enough money (￥{State.AmountInTransaction}) to buy the snack {slot?.SnackPile?.SnackId} (￥{slot?.SnackPile?.Price}) in the snack machine {id}.")
                      .Verify(State.MoneyInside.CanAllocate(State.AmountInTransaction - (slot?.SnackPile?.Price ?? 0), out _), $"Not enough change in the snack machine {id} after purchase.")
-                     .Verify(command.OperatedBy.IsNotNullOrWhiteSpace, "Operator should not be empty.");
+                     .Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
     }
 
     /// <inheritdoc />

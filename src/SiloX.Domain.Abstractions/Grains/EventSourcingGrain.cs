@@ -48,14 +48,6 @@ public abstract class EventSourcingGrain<TState, TCommand, TEvent, TErrorEvent> 
     }
 
     /// <summary>
-    ///     Customizes the behavior of the grain when a domain event is received.
-    /// </summary>
-    protected virtual Task PersistAsync()
-    {
-        return Task.CompletedTask;
-    }
-
-    /// <summary>
     ///     Publishes a domain event to the stream after domain command has been successfully persisted.
     /// </summary>
     /// <param name="event">The domain event to publish.</param>
@@ -74,5 +66,4 @@ public abstract class EventSourcingGrain<TState, TCommand, TEvent, TErrorEvent> 
     {
         return GetPublishStream().OnNextAsync(errorEvent);
     }
-
 }

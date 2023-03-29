@@ -47,7 +47,7 @@ public sealed class SnackGrain : EventSourcingGrain<Snack, SnackCommand, SnackEv
                      .Verify(command.Name.IsNotNullOrWhiteSpace(), $"The name of snack {id} should not be empty.")
                      .Verify(command.Name.Length <= 100, $"The name of snack {id} is too long.")
                      .Verify(command.PictureUrl == null || command.PictureUrl!.Length <= 500, $"The picture url of snack {id} is too long.")
-                     .Verify(command.OperatedBy.IsNotNullOrWhiteSpace, "Operator should not be empty.");
+                     .Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
     }
 
     /// <inheritdoc />
@@ -72,7 +72,7 @@ public sealed class SnackGrain : EventSourcingGrain<Snack, SnackCommand, SnackEv
         return Result.Ok()
                      .Verify(State.IsDeleted == false, $"Snack {id} has already been removed.")
                      .Verify(State.IsCreated, $"Snack {id} is not initialized.")
-                     .Verify(command.OperatedBy.IsNotNullOrWhiteSpace, "Operator should not be empty.");
+                     .Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
     }
 
     /// <inheritdoc />
@@ -98,7 +98,7 @@ public sealed class SnackGrain : EventSourcingGrain<Snack, SnackCommand, SnackEv
                      .Verify(State.IsCreated, $"Snack {id} is not initialized.")
                      .Verify(command.Name.IsNotNullOrWhiteSpace(), $"The name of snack {id} should not be empty.")
                      .Verify(command.Name.Length <= 100, $"The name of snack {id} is too long.")
-                     .Verify(command.OperatedBy.IsNotNullOrWhiteSpace, "Operator should not be empty.");
+                     .Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
     }
 
     /// <inheritdoc />
@@ -123,7 +123,7 @@ public sealed class SnackGrain : EventSourcingGrain<Snack, SnackCommand, SnackEv
                      .Verify(State.IsDeleted == false, $"Snack {id} has already been removed.")
                      .Verify(State.IsCreated, $"Snack {id} is not initialized.")
                      .Verify(command.PictureUrl.IsNullOrWhiteSpace() || command.PictureUrl!.Length <= 500, $"The picture url of snack {id} is too long.")
-                     .Verify(command.OperatedBy.IsNotNullOrWhiteSpace, "Operator should not be empty.");
+                     .Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
     }
 
     /// <inheritdoc />

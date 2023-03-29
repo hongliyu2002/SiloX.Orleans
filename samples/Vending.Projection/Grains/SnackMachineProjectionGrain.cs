@@ -87,7 +87,7 @@ public sealed class SnackMachineProjectionGrain : SubscriberGrain<SnackMachineEv
             {
                 snackMachine = new SnackMachine
                                {
-                                   Id = machineEvent.Id,
+                                   Id = machineEvent.MachineId,
                                    MoneyInside = machineEvent.MoneyInside.ToProjection(),
                                    Slots = await Task.WhenAll(machineEvent.Slots.Select(slot => slot.ToProjection(GetSnackNameAndPictureUrlAsync))),
                                    SlotsCount = machineEvent.SlotsCount,
@@ -271,7 +271,7 @@ public sealed class SnackMachineProjectionGrain : SubscriberGrain<SnackMachineEv
     {
         try
         {
-            var snackMachine = await _dbContext.SnackMachines.Include(sm => sm.Slots).FirstOrDefaultAsync(sm => sm.Id == machineEvent.Id);
+            var snackMachine = await _dbContext.SnackMachines.Include(sm => sm.Slots).FirstOrDefaultAsync(sm => sm.Id == machineEvent.MachineId);
             if (snackMachine == null)
             {
                 _logger.LogWarning($"Apply SnackMachineSnacksLoadedEvent: Snack machine {machineEvent.Id} does not exist in the database. Try to execute full update...");
@@ -311,7 +311,7 @@ public sealed class SnackMachineProjectionGrain : SubscriberGrain<SnackMachineEv
     {
         try
         {
-            var snackMachine = await _dbContext.SnackMachines.Include(sm => sm.Slots).FirstOrDefaultAsync(sm => sm.Id == machineEvent.Id);
+            var snackMachine = await _dbContext.SnackMachines.Include(sm => sm.Slots).FirstOrDefaultAsync(sm => sm.Id == machineEvent.MachineId);
             if (snackMachine == null)
             {
                 _logger.LogWarning($"Apply SnackMachineSnackBoughtEvent: Snack machine {machineEvent.Id} does not exist in the database. Try to execute full update...");
@@ -354,7 +354,7 @@ public sealed class SnackMachineProjectionGrain : SubscriberGrain<SnackMachineEv
         {
             try
             {
-                var id = machineEvent.Id;
+                var id = machineEvent.MachineId;
                 var snackMachineGrain = GrainFactory.GetGrain<ISnackMachineGrain>(id);
                 var snackMachineInGrain = await snackMachineGrain.GetStateAsync();
                 var snackMachine = await _dbContext.SnackMachines.FindAsync(id);

@@ -3,6 +3,16 @@ using Orleans.FluentResults;
 
 namespace Vending.Domain.Abstractions.States;
 
+/// <summary>
+///     Represents money in the vending machine.
+/// </summary>
+/// <param name="Yuan1">The number of ￥1 coins. </param>
+/// <param name="Yuan2">The number of ￥2 coins. </param>
+/// <param name="Yuan5">The number of ￥5 coins. </param>
+/// <param name="Yuan10">The number of ￥10 notes. </param>
+/// <param name="Yuan20">The number of ￥20 notes. </param>
+/// <param name="Yuan50">The number of ￥50 notes. </param>
+/// <param name="Yuan100">The number of ￥100 notes. </param>
 [Immutable]
 [Serializable]
 [GenerateSerializer]
@@ -27,6 +37,9 @@ public sealed record Money(int Yuan1, int Yuan2, int Yuan5, int Yuan10, int Yuan
         OneHundredYuan
     };
 
+    /// <summary>
+    ///     The total amount of money.
+    /// </summary>
     public decimal Amount => Yuan1 * 1m + Yuan2 * 2m + Yuan5 * 5m + Yuan10 * 10m + Yuan20 * 20m + Yuan50 * 50m + Yuan100 * 100m;
 
     /// <inheritdoc />
@@ -37,6 +50,9 @@ public sealed record Money(int Yuan1, int Yuan2, int Yuan5, int Yuan10, int Yuan
 
     #region Create
 
+    /// <summary>
+    ///     Creates a new instance of <see cref="Money" />.
+    /// </summary>
     public static Result<Money> Create(int yuan1, int yuan2, int yuan5, int yuan10, int yuan20, int yuan50, int yuan100)
     {
         return Result.Ok()
@@ -54,6 +70,12 @@ public sealed record Money(int Yuan1, int Yuan2, int Yuan5, int Yuan10, int Yuan
 
     #region Allocate
 
+    /// <summary>
+    ///     Allocates the specified amount of money.
+    /// </summary>
+    /// <param name="amount">The amount of money to allocate. </param>
+    /// <param name="moneyToReturn">The money to return. </param>
+    /// <returns><see langword="true" /> if the money can be allocated; otherwise, <see langword="false" />.</returns>
     public bool CanAllocate(decimal amount, out Money moneyToReturn)
     {
         if (amount < 0)
@@ -65,6 +87,9 @@ public sealed record Money(int Yuan1, int Yuan2, int Yuan5, int Yuan10, int Yuan
         return moneyToReturn.Amount == amount;
     }
 
+    /// <summary>
+    ///     Allocates the specified amount of money.
+    /// </summary>
     private Money AllocateCore(decimal amount)
     {
         var yuan100 = Math.Min((int)(amount / 100m), Yuan100);
