@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿using Fluxera.Guards;
+using JetBrains.Annotations;
 
 namespace Vending.Projection.Abstractions.Entities;
 
@@ -13,14 +14,14 @@ public sealed class SnackPile
     {
     }
 
-    public SnackPile(Guid snackId, string snackName, string? snackPictureUrl, int quantity, decimal price, decimal totalPrice)
+    public SnackPile(Guid snackId, string snackName, string? snackPictureUrl, int quantity, decimal price, decimal totalAmount)
     {
         SnackId = snackId;
         SnackName = snackName;
         SnackPictureUrl = snackPictureUrl;
         Quantity = quantity;
         Price = price;
-        TotalPrice = totalPrice;
+        TotalAmount = totalAmount;
     }
 
     /// <summary>
@@ -51,5 +52,17 @@ public sealed class SnackPile
     /// <summary>
     ///     Gets or sets the total price of all snacks in the pile.
     /// </summary>
-    public decimal TotalPrice { get; set; }
+    public decimal TotalAmount { get; set; }
+
+    /// <summary>
+    ///     Updates the name and picture URL of the snack.
+    /// </summary>
+    /// <param name="getNamePicture">A function that returns the name and picture URL of the snack. </param>
+    public async Task UpdateSnackNameAndPictureUrlAsync(Func<Guid, Task<(string, string?)>> getNamePicture)
+    {
+        Guard.Against.Null(getNamePicture, nameof(getNamePicture));
+        var (name, pictureUrl) = await getNamePicture(SnackId);
+        SnackName = name;
+        SnackPictureUrl = pictureUrl;
+    }
 }

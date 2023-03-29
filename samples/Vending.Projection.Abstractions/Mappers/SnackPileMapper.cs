@@ -4,18 +4,14 @@ namespace Vending.Projection.Abstractions.Mappers;
 
 public static class SnackPileMapper
 {
-    public static SnackPile ToProjection(this Domain.Abstractions.States.SnackPile source, SnackPile? snackPile = null)
+    public static async Task<SnackPile> ToProjection(this Domain.Abstractions.States.SnackPile snackPileInGrain, Func<Guid, Task<(string, string?)>> getNamePicture, SnackPile? snackPile = null)
     {
         snackPile ??= new SnackPile();
-        snackPile.SnackId = source.SnackId;
-        snackPile.Quantity = source.Quantity;
-        snackPile.Price = source.Price;
-        snackPile.TotalPrice = source.TotalPrice;
+        snackPile.SnackId = snackPileInGrain.SnackId;
+        snackPile.Quantity = snackPileInGrain.Quantity;
+        snackPile.Price = snackPileInGrain.Price;
+        snackPile.TotalAmount = snackPileInGrain.TotalAmount;
+        await snackPile.UpdateSnackNameAndPictureUrlAsync(getNamePicture);
         return snackPile;
-    }
-
-    public static Domain.Abstractions.States.SnackPile ToDomain(this SnackPile source)
-    {
-        return new Domain.Abstractions.States.SnackPile(source.SnackId, source.Quantity, source.Price);
     }
 }

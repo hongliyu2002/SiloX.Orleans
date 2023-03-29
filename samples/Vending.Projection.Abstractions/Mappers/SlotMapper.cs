@@ -4,21 +4,15 @@ namespace Vending.Projection.Abstractions.Mappers;
 
 public static class SlotMapper
 {
-    public static Slot ToProjection(this Domain.Abstractions.States.Slot source, Slot? slot = null)
+    public static async Task<Slot> ToProjection(this Domain.Abstractions.States.Slot slotInGrain, Func<Guid, Task<(string, string?)>> getSnackNamePicture, Slot? slot = null)
     {
         slot ??= new Slot();
-        slot.MachineId = source.MachineId;
-        slot.Position = source.Position;
-        slot.SnackPile = source.SnackPile?.ToProjection(slot.SnackPile);
-        return slot;
-    }
-
-    public static Domain.Abstractions.States.Slot ToDomain(this Slot source, Domain.Abstractions.States.Slot? slot = null)
-    {
-        slot ??= new Domain.Abstractions.States.Slot();
-        slot.MachineId = source.MachineId;
-        slot.Position = source.Position;
-        slot.SnackPile = source.SnackPile?.ToDomain();
+        slot.MachineId = slotInGrain.MachineId;
+        slot.Position = slotInGrain.Position;
+        if (slotInGrain.SnackPile != null)
+        {
+            slot.SnackPile = await slotInGrain.SnackPile.ToProjection(getSnackNamePicture, slot.SnackPile);
+        }
         return slot;
     }
 }

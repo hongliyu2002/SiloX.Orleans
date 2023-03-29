@@ -68,7 +68,7 @@ public class ProjectionDbContext : DbContext
                                                           navigationBuilder.Property(sp => sp.SnackName).HasMaxLength(256);
                                                           navigationBuilder.Property(sp => sp.SnackPictureUrl).HasMaxLength(512);
                                                           navigationBuilder.Property(sp => sp.Price).HasPrecision(10, 2);
-                                                          navigationBuilder.Property(sp => sp.TotalPrice).HasPrecision(10, 2);
+                                                          navigationBuilder.Property(sp => sp.TotalAmount).HasPrecision(10, 2);
                                                       });
                                   });
         // Configures the SnackBought entity

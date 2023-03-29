@@ -65,6 +65,8 @@ public sealed class SnackMachineGrain : EventSourcingGrain<SnackMachine, SnackMa
                      .Verify(State.IsCreated == false, $"Snack machine {id} already exists.")
                      .Verify(command.MoneyInside != null, "Money inside should not be empty.")
                      .Verify(command.Slots.IsNotNullOrEmpty(), "Slots should not be empty.")
+                     .Verify(command.Slots.All(slot => slot.MachineId == id), "Slots should be owned by the same snack machine {id}.")
+                     .Verify(command.Slots.GroupBy(slot => new { slot.MachineId, slot.Position }).Any(group => group.Count() == 1), "Slots should not contain duplicate positions.")
                      .Verify(command.OperatedBy.IsNotNullOrWhiteSpace, "Operator should not be empty.");
     }
 

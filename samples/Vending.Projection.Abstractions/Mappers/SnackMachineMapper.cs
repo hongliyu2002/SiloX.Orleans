@@ -4,41 +4,24 @@ namespace Vending.Projection.Abstractions.Mappers;
 
 public static class SnackMachineMapper
 {
-    public static SnackMachine ToProjection(this Domain.Abstractions.States.SnackMachine source, SnackMachine? snackMachine = null)
+    public static async Task<SnackMachine> ToProjection(this Domain.Abstractions.States.SnackMachine snackMachineInGrain, Func<Guid, Task<(string, string?)>> getSnackNamePicture, SnackMachine? snackMachine = null)
     {
         snackMachine ??= new SnackMachine();
-        snackMachine.Id = source.Id;
-        snackMachine.CreatedAt = source.CreatedAt;
-        snackMachine.LastModifiedAt = source.LastModifiedAt;
-        snackMachine.DeletedAt = source.DeletedAt;
-        snackMachine.CreatedBy = source.CreatedBy;
-        snackMachine.LastModifiedBy = source.LastModifiedBy;
-        snackMachine.DeletedBy = source.DeletedBy;
-        snackMachine.IsDeleted = source.IsDeleted;
-        snackMachine.MoneyInside = source.MoneyInside.ToProjection(snackMachine.MoneyInside);
-        snackMachine.AmountInTransaction = source.AmountInTransaction;
-        snackMachine.Slots = source.Slots.Select(slot => slot.ToProjection(snackMachine.Slots.FirstOrDefault(sl => sl.MachineId == slot.MachineId && sl.Position == slot.Position))).ToList();
-        snackMachine.SlotsCount = source.SlotsCount;
-        snackMachine.SnackCount = source.SnackCount;
-        snackMachine.SnackQuantity = source.SnackQuantity;
-        snackMachine.SnackAmount = source.SnackAmount;
-        return snackMachine;
-    }
-
-    public static Domain.Abstractions.States.SnackMachine ToDomain(this SnackMachine source, Domain.Abstractions.States.SnackMachine? snackMachine = null)
-    {
-        snackMachine ??= new Domain.Abstractions.States.SnackMachine();
-        snackMachine.Id = source.Id;
-        snackMachine.CreatedAt = source.CreatedAt;
-        snackMachine.LastModifiedAt = source.LastModifiedAt;
-        snackMachine.DeletedAt = source.DeletedAt;
-        snackMachine.CreatedBy = source.CreatedBy;
-        snackMachine.LastModifiedBy = source.LastModifiedBy;
-        snackMachine.DeletedBy = source.DeletedBy;
-        snackMachine.IsDeleted = source.IsDeleted;
-        snackMachine.MoneyInside = source.MoneyInside.ToDomain();
-        snackMachine.AmountInTransaction = source.AmountInTransaction;
-        snackMachine.Slots = source.Slots.Select(slot => slot.ToDomain(snackMachine.Slots.FirstOrDefault(sl => sl.MachineId == slot.MachineId && sl.Position == slot.Position))).ToList();
+        snackMachine.Id = snackMachineInGrain.Id;
+        snackMachine.CreatedAt = snackMachineInGrain.CreatedAt;
+        snackMachine.LastModifiedAt = snackMachineInGrain.LastModifiedAt;
+        snackMachine.DeletedAt = snackMachineInGrain.DeletedAt;
+        snackMachine.CreatedBy = snackMachineInGrain.CreatedBy;
+        snackMachine.LastModifiedBy = snackMachineInGrain.LastModifiedBy;
+        snackMachine.DeletedBy = snackMachineInGrain.DeletedBy;
+        snackMachine.IsDeleted = snackMachineInGrain.IsDeleted;
+        snackMachine.MoneyInside = snackMachineInGrain.MoneyInside.ToProjection(snackMachine.MoneyInside);
+        snackMachine.AmountInTransaction = snackMachineInGrain.AmountInTransaction;
+        snackMachine.Slots = await Task.WhenAll(snackMachineInGrain.Slots.Select(slot => slot.ToProjection(getSnackNamePicture, snackMachine.Slots.FirstOrDefault(sl => sl.MachineId == slot.MachineId && sl.Position == slot.Position))));
+        snackMachine.SlotsCount = snackMachineInGrain.SlotsCount;
+        snackMachine.SnackCount = snackMachineInGrain.SnackCount;
+        snackMachine.SnackQuantity = snackMachineInGrain.SnackQuantity;
+        snackMachine.SnackAmount = snackMachineInGrain.SnackAmount;
         return snackMachine;
     }
 }

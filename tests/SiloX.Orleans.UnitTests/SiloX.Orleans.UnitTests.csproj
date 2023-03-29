@@ -81,8 +81,10 @@
     </ItemGroup>
 
     <ItemGroup>
+        <Folder Include="EventSourcing\Grains" />
         <Folder Include="Persistence\Grains" />
         <Folder Include="Reminders" />
+        <Folder Include="Shared" />
     </ItemGroup>
 
 </Project>
