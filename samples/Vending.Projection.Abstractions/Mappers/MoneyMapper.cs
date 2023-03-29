@@ -4,6 +4,12 @@ namespace Vending.Projection.Abstractions.Mappers;
 
 public static class MoneyMapper
 {
+    /// <summary>
+    ///     Converts a MoneyInGrain to a Money projection.
+    /// </summary>
+    /// <param name="moneyInGrain">The MoneyInGrain to convert. </param>
+    /// <param name="money">The Money projection to convert to. </param>
+    /// <returns>The Money projection. </returns>
     public static Money ToProjection(this Domain.Abstractions.States.Money moneyInGrain, Money? money = null)
     {
         money ??= new Money();
