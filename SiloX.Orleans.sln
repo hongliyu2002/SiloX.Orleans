@@ -73,6 +73,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vending.Projection.Abstract
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vending.Projection.EntityFrameworkCore", "samples\Vending.Projection.EntityFrameworkCore\Vending.Projection.EntityFrameworkCore.csproj", "{54546472-072E-4ADB-AABD-927B37E29DDE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vending.Domain.EntityFrameworkCore", "samples\Vending.Domain.EntityFrameworkCore\Vending.Domain.EntityFrameworkCore.csproj", "{ABC13703-065A-4DDC-AF35-1D6CEC623F5E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -110,6 +112,7 @@ Global
 		{156DF2DA-D331-4BB9-A4A2-51294C40FA69} = {A8D7B044-04CC-49E9-9568-F5CA4A253AFC}
 		{FFA68C78-C3A4-4B21-AED9-88ACC8A7AE86} = {A8D7B044-04CC-49E9-9568-F5CA4A253AFC}
 		{54546472-072E-4ADB-AABD-927B37E29DDE} = {A8D7B044-04CC-49E9-9568-F5CA4A253AFC}
+		{ABC13703-065A-4DDC-AF35-1D6CEC623F5E} = {A8D7B044-04CC-49E9-9568-F5CA4A253AFC}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{98333171-E519-467A-AA23-70D4C10F34F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -232,5 +235,9 @@ Global
 		{54546472-072E-4ADB-AABD-927B37E29DDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{54546472-072E-4ADB-AABD-927B37E29DDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{54546472-072E-4ADB-AABD-927B37E29DDE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ABC13703-065A-4DDC-AF35-1D6CEC623F5E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABC13703-065A-4DDC-AF35-1D6CEC623F5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABC13703-065A-4DDC-AF35-1D6CEC623F5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABC13703-065A-4DDC-AF35-1D6CEC623F5E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

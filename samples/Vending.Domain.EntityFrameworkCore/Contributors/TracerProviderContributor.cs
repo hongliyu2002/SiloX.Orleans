@@ -2,14 +2,14 @@
 using Fluxera.Extensions.Hosting.Modules.OpenTelemetry;
 using OpenTelemetry.Trace;
 
-namespace Vending.Projection.EntityFrameworkCore.Contributors;
+namespace Vending.Domain.EntityFrameworkCore.Contributors;
 
 internal sealed class TracerProviderContributor : ITracerProviderContributor
 {
     /// <inheritdoc />
     public void Configure(TracerProviderBuilder builder, IServiceConfigurationContext context)
     {
-        // var options = context.Services.GetOptions<ProjectionEFCoreOptions>();
+        // var options = context.Services.GetOptions<DomainEFCoreOptions>();
         // builder.AddSqlClientInstrumentation();
     }
 }
