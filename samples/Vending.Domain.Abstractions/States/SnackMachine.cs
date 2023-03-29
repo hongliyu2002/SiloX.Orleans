@@ -1,5 +1,4 @@
-﻿using Fluxera.Guards;
-using Vending.Domain.Abstractions.Events;
+﻿using Vending.Domain.Abstractions.Commands;
 
 namespace Vending.Domain.Abstractions.States;
 
@@ -7,18 +6,6 @@ namespace Vending.Domain.Abstractions.States;
 [GenerateSerializer]
 public sealed class SnackMachine
 {
-    public SnackMachine()
-    {
-    }
-
-    public SnackMachine(Guid id, Money moneyInside, decimal amountInTransaction, IList<Slot> slots)
-    {
-        Id = Guard.Against.Empty(id, nameof(id));
-        MoneyInside = Guard.Against.Null(moneyInside, nameof(moneyInside));
-        AmountInTransaction = Guard.Against.Negative(amountInTransaction, nameof(amountInTransaction));
-        Slots = Guard.Against.Null(slots, nameof(slots));
-    }
-
     [Id(0)]
     public Guid Id { get; set; }
 
@@ -56,14 +43,11 @@ public sealed class SnackMachine
 
     public int SlotsCount => Slots.Count;
 
-    [Id(12)]
     public int SnackCount => Slots.Where(s => s.SnackPile != null).Select(s => s.SnackPile!.SnackId).Distinct().Count();
 
-    [Id(13)]
-    public int SnackQuantity =>Slots.Where(s => s.SnackPile != null).Select(s => s.SnackPile!.Quantity).Sum();
+    public int SnackQuantity => Slots.Where(s => s.SnackPile != null).Sum(s => s.SnackPile!.Quantity);
 
-    [Id(14)]
-    public decimal SnackAmount =>Slots.Where(s => s.SnackPile != null).Select(s => s.SnackPile!.TotalPrice).Sum();
+    public decimal SnackAmount => Slots.Where(s => s.SnackPile != null).Sum(s => s.SnackPile!.TotalAmount);
 
     public override string ToString()
     {
@@ -74,7 +58,7 @@ public sealed class SnackMachine
 
     public bool TryGetSlot(int position, out Slot? slot)
     {
-        slot = Slots.FirstOrDefault(x => x.Position == position);
+        slot = Slots.FirstOrDefault(sl => sl.Position == position);
         return slot != null;
     }
 
@@ -82,81 +66,80 @@ public sealed class SnackMachine
 
     #region Apply
 
-    public void Apply(SnackMachineInitializedEvent evt)
+    public void Apply(SnackMachineInitializeCommand command)
     {
-        Id = evt.Id;
-        MoneyInside = evt.MoneyInside;
-        Slots = evt.Slots.ToList();
-        CreatedAt = evt.OperatedAt;
-        CreatedBy = evt.OperatedBy;
+        Id = command.Id;
+        MoneyInside = command.MoneyInside;
+        Slots = command.Slots.ToList();
+        CreatedAt = command.OperatedAt;
+        CreatedBy = command.OperatedBy;
     }
 
-    public void Apply(SnackMachineRemovedEvent evt)
+    public void Apply(SnackMachineRemoveCommand command)
     {
-        DeletedAt = evt.OperatedAt;
-        DeletedBy = evt.OperatedBy;
+        DeletedAt = command.OperatedAt;
+        DeletedBy = command.OperatedBy;
         IsDeleted = true;
     }
 
-    public void Apply(SnackMachineMoneyLoadedEvent evt)
+    public void Apply(SnackMachineLoadMoneyCommand command)
     {
-        MoneyInside = evt.MoneyInside;
-        LastModifiedAt = evt.OperatedAt;
-        LastModifiedBy = evt.OperatedBy;
+        MoneyInside += command.Money;
+        LastModifiedAt = command.OperatedAt;
+        LastModifiedBy = command.OperatedBy;
     }
 
-    public void Apply(SnackMachineMoneyUnloadedEvent evt)
+    public void Apply(SnackMachineUnloadMoneyCommand command)
     {
-        MoneyInside = evt.MoneyInside;
-        LastModifiedAt = evt.OperatedAt;
-        LastModifiedBy = evt.OperatedBy;
+        MoneyInside = Money.Zero;
+        LastModifiedAt = command.OperatedAt;
+        LastModifiedBy = command.OperatedBy;
     }
 
-    public void Apply(SnackMachineMoneyInsertedEvent evt)
+    public void Apply(SnackMachineInsertMoneyCommand command)
     {
-        MoneyInside = evt.MoneyInside;
-        AmountInTransaction = evt.AmountInTransaction;
-        LastModifiedAt = evt.OperatedAt;
-        LastModifiedBy = evt.OperatedBy;
+        MoneyInside += command.Money;
+        AmountInTransaction += command.Money.Amount;
+        LastModifiedAt = command.OperatedAt;
+        LastModifiedBy = command.OperatedBy;
     }
 
-    public void Apply(SnackMachineMoneyReturnedEvent evt)
+    public void Apply(SnackMachineReturnMoneyCommand command)
     {
-        MoneyInside = evt.MoneyInside;
-        AmountInTransaction = evt.AmountInTransaction;
-        LastModifiedAt = evt.OperatedAt;
-        LastModifiedBy = evt.OperatedBy;
-    }
-
-    public void Apply(SnackMachineSnacksLoadedEvent evt)
-    {
-        var slot = Slots.FirstOrDefault(sl => sl == evt.Slot || (sl.MachineId == evt.Slot.MachineId && sl.Position == evt.Slot.Position));
-        if (slot == null)
+        if (MoneyInside.CanAllocate(AmountInTransaction, out var moneyToReturn))
         {
-            Slots.Add(evt.Slot);
+            MoneyInside -= moneyToReturn;
+            AmountInTransaction = 0;
+            LastModifiedAt = command.OperatedAt;
+            LastModifiedBy = command.OperatedBy;
+        }
+    }
+
+    public void Apply(SnackMachineLoadSnacksCommand command)
+    {
+        var slot = Slots.FirstOrDefault(sl => sl.Position == command.Position);
+        if (slot != null)
+        {
+            slot.SnackPile = command.SnackPile;
         }
         else
         {
-            slot.SnackPile = evt.Slot.SnackPile;
+            Slots.Add(new Slot { Position = command.Position, SnackPile = command.SnackPile });
         }
-        LastModifiedAt = evt.OperatedAt;
-        LastModifiedBy = evt.OperatedBy;
+        LastModifiedAt = command.OperatedAt;
+        LastModifiedBy = command.OperatedBy;
     }
 
-    public void Apply(SnackMachineSnackBoughtEvent evt)
+    public void Apply(SnackMachineBuySnackCommand command)
     {
-        var slot = Slots.FirstOrDefault(sl => sl == evt.Slot || (sl.MachineId == evt.Slot.MachineId && sl.Position == evt.Slot.Position));
-        if (slot == null)
+        var slot = Slots.FirstOrDefault(sl => sl.Position == command.Position);
+        if (slot is { SnackPile: { } })
         {
-            Slots.Add(evt.Slot);
+            slot.SnackPile -= 1;
+            AmountInTransaction -= slot.SnackPile.Price;
+            LastModifiedAt = command.OperatedAt;
+            LastModifiedBy = command.OperatedBy;
         }
-        else
-        {
-            slot.SnackPile = evt.Slot.SnackPile;
-        }
-        AmountInTransaction = evt.AmountInTransaction;
-        LastModifiedAt = evt.OperatedAt;
-        LastModifiedBy = evt.OperatedBy;
     }
 
     #endregion

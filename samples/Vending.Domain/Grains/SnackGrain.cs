@@ -13,13 +13,10 @@ namespace Vending.Domain.Grains;
 
 [LogConsistencyProvider(ProviderName = Constants.LogConsistencyName1)]
 [StorageProvider(ProviderName = Constants.GrainStorageName1)]
-public sealed class SnackGrain
-    : EventSourcingGrain<Snack, SnackEvent, SnackErrorEvent>,
-      ISnackGrain
+public sealed class SnackGrain : EventSourcingGrain<Snack, SnackCommand, SnackEvent, SnackErrorEvent>, ISnackGrain
 {
     /// <inheritdoc />
-    public SnackGrain()
-        : base(Constants.StreamProviderName1)
+    public SnackGrain() : base(Constants.StreamProviderName1)
     {
     }
 
@@ -27,12 +24,6 @@ public sealed class SnackGrain
     protected override string GetStreamNamespace()
     {
         return Constants.SnacksNamespace;
-    }
-
-    /// <inheritdoc />
-    protected override Task<bool> PersistAsync(SnackEvent domainEvent)
-    {
-        return Task.FromResult(true);
     }
 
     /// <inheritdoc />
@@ -68,10 +59,11 @@ public sealed class SnackGrain
     /// <inheritdoc />
     public Task<Result> InitializeAsync(SnackInitializeCommand command)
     {
-        var id = this.GetPrimaryKey();
         return ValidateInitialize(command)
-              .TapErrorTryAsync(errors => PublishOnErrorAsync(new SnackErrorEvent(id, Version, 101, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
-              .TapTryAsync(() => PublishOnPersistedAsync(new SnackInitializedEvent(id, Version, command.Name, command.PictureUrl, command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
+              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(this.GetPrimaryKey(), Version, 101, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
+              .MapTryAsync(() => RaiseConditionalEvent(command))
+              .MapTryIfAsync(persisted => persisted,
+                             () => PublishAsync(new SnackInitializedEvent(State.Id, Version, State.Name, State.PictureUrl, command.TraceId, State.CreatedAt ?? DateTimeOffset.UtcNow, State.CreatedBy ?? command.OperatedBy)));
     }
 
     private Result ValidateRemove(SnackRemoveCommand command)
@@ -92,10 +84,10 @@ public sealed class SnackGrain
     /// <inheritdoc />
     public Task<Result> RemoveAsync(SnackRemoveCommand command)
     {
-        var id = this.GetPrimaryKey();
         return ValidateRemove(command)
-              .TapErrorTryAsync(errors => PublishOnErrorAsync(new SnackErrorEvent(id, Version, 102, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
-              .TapTryAsync(() => PublishOnPersistedAsync(new SnackRemovedEvent(id, Version, command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
+              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(this.GetPrimaryKey(), Version, 102, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
+              .MapTryAsync(() => RaiseConditionalEvent(command))
+              .MapTryIfAsync(persisted => persisted, () => PublishAsync(new SnackRemovedEvent(State.Id, Version, command.TraceId, State.DeletedAt ?? DateTimeOffset.UtcNow, State.DeletedBy ?? command.OperatedBy)));
     }
 
     private Result ValidateChangeName(SnackChangeNameCommand command)
@@ -118,10 +110,10 @@ public sealed class SnackGrain
     /// <inheritdoc />
     public Task<Result> ChangeNameAsync(SnackChangeNameCommand command)
     {
-        var id = this.GetPrimaryKey();
         return ValidateChangeName(command)
-              .TapErrorTryAsync(errors => PublishOnErrorAsync(new SnackErrorEvent(id, Version, 103, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
-              .TapTryAsync(() => PublishOnPersistedAsync(new SnackNameChangedEvent(id, Version, command.Name, command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
+              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(this.GetPrimaryKey(), Version, 103, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
+              .MapTryAsync(() => RaiseConditionalEvent(command))
+              .MapTryIfAsync(persisted => persisted, () => PublishAsync(new SnackNameChangedEvent(State.Id, Version, State.Name, command.TraceId, State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? command.OperatedBy)));
     }
 
     private Result ValidateChangePictureUrl(SnackChangePictureUrlCommand command)
@@ -143,9 +135,10 @@ public sealed class SnackGrain
     /// <inheritdoc />
     public Task<Result> ChangePictureUrlAsync(SnackChangePictureUrlCommand command)
     {
-        var id = this.GetPrimaryKey();
         return ValidateChangePictureUrl(command)
-              .TapErrorTryAsync(errors => PublishOnErrorAsync(new SnackErrorEvent(id, Version, 104, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
-              .TapTryAsync(() => PublishOnPersistedAsync(new SnackPictureUrlChangedEvent(id, Version, command.PictureUrl, command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
+              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(this.GetPrimaryKey(), Version, 104, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
+              .MapTryAsync(() => RaiseConditionalEvent(command))
+              .MapTryIfAsync(persisted => persisted,
+                             () => PublishAsync(new SnackPictureUrlChangedEvent(State.Id, Version, State.PictureUrl, command.TraceId, State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? command.OperatedBy)));
     }
 }

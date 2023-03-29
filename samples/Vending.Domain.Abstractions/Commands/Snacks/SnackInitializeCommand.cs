@@ -1,9 +1,6 @@
-﻿using SiloX.Domain.Abstractions;
-
-namespace Vending.Domain.Abstractions.Commands;
+﻿namespace Vending.Domain.Abstractions.Commands;
 
 [Immutable]
 [Serializable]
 [GenerateSerializer]
-public sealed record SnackInitializeCommand(string Name, string? PictureUrl, Guid TraceId, DateTimeOffset OperatedAt, string OperatedBy)
-    : DomainCommand(TraceId, OperatedAt, OperatedBy);
+public sealed record SnackInitializeCommand(Guid Id, string Name, string? PictureUrl, Guid TraceId, DateTimeOffset OperatedAt, string OperatedBy) : SnackCommand(TraceId, OperatedAt, OperatedBy);

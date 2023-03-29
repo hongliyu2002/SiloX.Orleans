@@ -88,27 +88,27 @@ public sealed record Money(int Yuan1, int Yuan2, int Yuan5, int Yuan10, int Yuan
 
     #region Operator
 
-    public static Money operator +(Money money1, Money money2)
+    public static Money operator +(Money money, Money money2)
     {
-        money1 = Guard.Against.Null(money1);
-        money2 = Guard.Against.Null(money2);
-        var result = Create(money1.Yuan1 + money2.Yuan1, money1.Yuan2 + money2.Yuan2, money1.Yuan5 + money2.Yuan5, money1.Yuan10 + money2.Yuan10, money1.Yuan20 + money2.Yuan20, money1.Yuan50 + money2.Yuan50, money1.Yuan100 + money2.Yuan100);
+        money = Guard.Against.Null(money, nameof(money));
+        money2 = Guard.Against.Null(money2, nameof(money2));
+        var result = Create(money.Yuan1 + money2.Yuan1, money.Yuan2 + money2.Yuan2, money.Yuan5 + money2.Yuan5, money.Yuan10 + money2.Yuan10, money.Yuan20 + money2.Yuan20, money.Yuan50 + money2.Yuan50, money.Yuan100 + money2.Yuan100);
         return result.IsSuccess ? result.Value : throw new InvalidOperationException(result.ToString());
     }
 
-    public static Money operator -(Money money1, Money money2)
+    public static Money operator -(Money money, Money money2)
     {
-        money1 = Guard.Against.Null(money1);
-        money2 = Guard.Against.Null(money2);
-        var result = Create(money1.Yuan1 - money2.Yuan1, money1.Yuan2 - money2.Yuan2, money1.Yuan5 - money2.Yuan5, money1.Yuan10 - money2.Yuan10, money1.Yuan20 - money2.Yuan20, money1.Yuan50 - money2.Yuan50, money1.Yuan100 - money2.Yuan100);
+        money = Guard.Against.Null(money, nameof(money));
+        money2 = Guard.Against.Null(money2, nameof(money2));
+        var result = Create(money.Yuan1 - money2.Yuan1, money.Yuan2 - money2.Yuan2, money.Yuan5 - money2.Yuan5, money.Yuan10 - money2.Yuan10, money.Yuan20 - money2.Yuan20, money.Yuan50 - money2.Yuan50, money.Yuan100 - money2.Yuan100);
         return result.IsSuccess ? result.Value : throw new InvalidOperationException(result.ToString());
     }
 
-    public static Money operator *(Money money1, int multiplier)
+    public static Money operator *(Money money, int multiplier)
     {
-        money1 = Guard.Against.Null(money1);
+        money = Guard.Against.Null(money, nameof(money));
         multiplier = Guard.Against.Negative(multiplier, nameof(multiplier));
-        var result = Create(money1.Yuan1 * multiplier, money1.Yuan2 * multiplier, money1.Yuan5 * multiplier, money1.Yuan10 * multiplier, money1.Yuan20 * multiplier, money1.Yuan50 * multiplier, money1.Yuan100 * multiplier);
+        var result = Create(money.Yuan1 * multiplier, money.Yuan2 * multiplier, money.Yuan5 * multiplier, money.Yuan10 * multiplier, money.Yuan20 * multiplier, money.Yuan50 * multiplier, money.Yuan100 * multiplier);
         return result.IsSuccess ? result.Value : throw new InvalidOperationException(result.ToString());
     }
 

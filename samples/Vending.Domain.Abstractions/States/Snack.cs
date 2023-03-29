@@ -1,5 +1,4 @@
-﻿using Fluxera.Guards;
-using Vending.Domain.Abstractions.Events;
+﻿using Vending.Domain.Abstractions.Commands;
 
 namespace Vending.Domain.Abstractions.States;
 
@@ -7,18 +6,6 @@ namespace Vending.Domain.Abstractions.States;
 [GenerateSerializer]
 public sealed class Snack
 {
-    public Snack()
-    {
-    }
-
-    public Snack(Guid id, string name, string? pictureUrl = null)
-        : this()
-    {
-        Id = Guard.Against.Empty(id, nameof(id));
-        Name = Guard.Against.NullOrEmpty(name, nameof(name));
-        PictureUrl = pictureUrl;
-    }
-
     [Id(0)]
     public Guid Id { get; set; }
 
@@ -58,34 +45,34 @@ public sealed class Snack
 
     #region Apply
 
-    public void Apply(SnackInitializedEvent evt)
+    public void Apply(SnackInitializeCommand command)
     {
-        Id = evt.Id;
-        Name = evt.Name;
-        PictureUrl = evt.PictureUrl;
-        CreatedAt = evt.OperatedAt;
-        CreatedBy = evt.OperatedBy;
+        Id = command.Id;
+        Name = command.Name;
+        PictureUrl = command.PictureUrl;
+        CreatedAt = command.OperatedAt;
+        CreatedBy = command.OperatedBy;
     }
 
-    public void Apply(SnackRemovedEvent evt)
+    public void Apply(SnackRemoveCommand command)
     {
-        DeletedAt = evt.OperatedAt;
-        DeletedBy = evt.OperatedBy;
+        DeletedAt = command.OperatedAt;
+        DeletedBy = command.OperatedBy;
         IsDeleted = true;
     }
 
-    public void Apply(SnackNameChangedEvent evt)
+    public void Apply(SnackChangeNameCommand command)
     {
-        Name = evt.Name;
-        LastModifiedAt = evt.OperatedAt;
-        LastModifiedBy = evt.OperatedBy;
+        Name = command.Name;
+        LastModifiedAt = command.OperatedAt;
+        LastModifiedBy = command.OperatedBy;
     }
 
-    public void Apply(SnackPictureUrlChangedEvent evt)
+    public void Apply(SnackChangePictureUrlCommand command)
     {
-        PictureUrl = evt.PictureUrl;
-        LastModifiedAt = evt.OperatedAt;
-        LastModifiedBy = evt.OperatedBy;
+        PictureUrl = command.PictureUrl;
+        LastModifiedAt = command.OperatedAt;
+        LastModifiedBy = command.OperatedBy;
     }
 
     #endregion
