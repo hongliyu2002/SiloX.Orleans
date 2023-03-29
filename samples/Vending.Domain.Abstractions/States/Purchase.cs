@@ -5,7 +5,7 @@
 /// </summary>
 [Serializable]
 [GenerateSerializer]
-public sealed class SnackMachineSnackPurchase
+public sealed class Purchase
 {
     /// <summary>
     ///     The snack machine id.
@@ -51,6 +51,6 @@ public sealed class SnackMachineSnackPurchase
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"SnackMachineSnackPurchase with MachineId:'{MachineId}' Position:'{Position}' SnackId:'{SnackId}' BoughtPrice:'{BoughtPrice}' BoughtAt:'{BoughtAt}' BoughtBy:'{BoughtBy}'";
+        return $"Purchase with MachineId:'{MachineId}' Position:'{Position}' SnackId:'{SnackId}' BoughtPrice:'{BoughtPrice}' BoughtAt:'{BoughtAt}' BoughtBy:'{BoughtBy}'";
     }
 }

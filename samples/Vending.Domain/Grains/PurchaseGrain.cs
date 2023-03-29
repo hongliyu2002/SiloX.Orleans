@@ -12,13 +12,13 @@ using Vending.Domain.Abstractions.States;
 namespace Vending.Domain.Grains;
 
 /// <summary>
-///     Represents a grain that manages the state of a snack machine snack bought.
+///     Represents a grain that manages the state of a snack purchase of a snack machine.
 /// </summary>
 [StorageProvider(ProviderName = Constants.GrainStorageName2)]
-public sealed class SnackMachineSnackPurchaseGrain : StatefulGrain<SnackMachineSnackPurchase, SnackMachineSnackPurchaseEvent, SnackMachineSnackPurchaseErrorEvent>, ISnackMachineSnackPurchaseGrain
+public sealed class PurchaseGrain : StatefulGrain<Purchase, PurchaseEvent, PurchaseErrorEvent>, IPurchaseGrain
 {
     /// <inheritdoc />
-    public SnackMachineSnackPurchaseGrain() : base(Constants.StreamProviderName2)
+    public PurchaseGrain() : base(Constants.StreamProviderName2)
     {
     }
 
@@ -29,12 +29,12 @@ public sealed class SnackMachineSnackPurchaseGrain : StatefulGrain<SnackMachineS
     }
 
     /// <inheritdoc />
-    public Task<SnackMachineSnackPurchase> GetStateAsync()
+    public Task<Purchase> GetStateAsync()
     {
         return Task.FromResult(State);
     }
 
-    private Result ValidateInitialize(SnackMachineSnackPurchaseInitializeCommand command)
+    private Result ValidateInitialize(PurchaseInitializeCommand command)
     {
         var id = this.GetPrimaryKeyString();
         return Result.Ok()
@@ -44,23 +44,22 @@ public sealed class SnackMachineSnackPurchaseGrain : StatefulGrain<SnackMachineS
     }
 
     /// <inheritdoc />
-    public Task<bool> CanInitializeAsync(SnackMachineSnackPurchaseInitializeCommand command)
+    public Task<bool> CanInitializeAsync(PurchaseInitializeCommand command)
     {
         return Task.FromResult(ValidateInitialize(command).IsSuccess);
     }
 
     /// <inheritdoc />
-    public Task<Result> InitializeAsync(SnackMachineSnackPurchaseInitializeCommand command)
+    public Task<Result> InitializeAsync(PurchaseInitializeCommand command)
     {
         var id = this.GetPrimaryKeyString();
         return ValidateInitialize(command)
-              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackMachineSnackPurchaseErrorEvent(id, 0, 1001, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
+              .TapErrorTryAsync(errors => PublishErrorAsync(new PurchaseErrorEvent(id, 0, 1001, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
               .MapTryAsync(() => ApplyAsync(command))
-              .MapTryAsync(() => PublishAsync(new SnackMachineSnackPurchaseInitializedEvent(id, 0, State.MachineId, State.Position, State.SnackId, State.BoughtPrice, command.TraceId, State.BoughtAt ?? DateTimeOffset.UtcNow,
-                                                                                            State.BoughtBy ?? command.OperatedBy)));
+              .MapTryAsync(() => PublishAsync(new PurchaseInitializedEvent(id, 0, State.MachineId, State.Position, State.SnackId, State.BoughtPrice, command.TraceId, State.BoughtAt ?? DateTimeOffset.UtcNow, State.BoughtBy ?? command.OperatedBy)));
     }
 
-    private Task ApplyAsync(SnackMachineSnackPurchaseInitializeCommand command)
+    private Task ApplyAsync(PurchaseInitializeCommand command)
     {
         State.MachineId = command.MachineId;
         State.Position = command.Position;

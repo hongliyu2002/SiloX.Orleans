@@ -8,7 +8,7 @@ namespace Vending.Projection.Abstractions.Entities;
 /// </summary>
 [PublicAPI]
 [Serializable]
-public sealed class SnackMachineSnackPurchase
+public sealed class Purchase
 {
     /// <summary>
     ///     Gets or sets the ID of the vending machine where the snack was bought.

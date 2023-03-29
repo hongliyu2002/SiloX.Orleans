@@ -376,8 +376,8 @@ public sealed class SnackMachineProjectionGrain : SubscriberGrain<SnackMachineEv
                 snackMachine = await snackMachineInGrain.ToProjection(GetSnackNameAndPictureUrlAsync, snackMachine);
                 snackMachine.Version = await snackMachineGrain.GetVersionAsync();
                 // TODO: Get the following data from the grain
-                // snackMachine.BoughtCount = await _dbContext.SnackMachineSnackPurchases.CountAsync(sb => sb.MachineId == id);
-                // snackMachine.BoughtAmount = await _dbContext.SnackMachineSnackPurchases.Where(sb => sb.MachineId == id).SumAsync(sb => sb.BoughtPrice);
+                // snackMachine.BoughtCount = await _dbContext.Purchases.CountAsync(sb => sb.MachineId == id);
+                // snackMachine.BoughtAmount = await _dbContext.Purchases.Where(sb => sb.MachineId == id).SumAsync(sb => sb.BoughtPrice);
                 await _dbContext.SaveChangesAsync();
                 return;
             }

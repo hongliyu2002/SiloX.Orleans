@@ -62,17 +62,13 @@ public sealed class SnackGrain : EventSourcingGrain<Snack, SnackCommand, SnackEv
         return ValidateInitialize(command)
               .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(this.GetPrimaryKey(), Version, 101, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
               .MapTryAsync(() => RaiseConditionalEvent(command))
-              .MapTryIfAsync(persisted => persisted,
-                             () => PublishAsync(new SnackInitializedEvent(State.Id, Version, State.Name, State.PictureUrl, command.TraceId, State.CreatedAt ?? DateTimeOffset.UtcNow, State.CreatedBy ?? command.OperatedBy)));
+              .MapTryIfAsync(persisted => persisted, () => PublishAsync(new SnackInitializedEvent(State.Id, Version, State.Name, State.PictureUrl, command.TraceId, State.CreatedAt ?? DateTimeOffset.UtcNow, State.CreatedBy ?? command.OperatedBy)));
     }
 
     private Result ValidateRemove(SnackRemoveCommand command)
     {
         var id = this.GetPrimaryKey();
-        return Result.Ok()
-                     .Verify(State.IsDeleted == false, $"Snack {id} has already been removed.")
-                     .Verify(State.IsCreated, $"Snack {id} is not initialized.")
-                     .Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
+        return Result.Ok().Verify(State.IsDeleted == false, $"Snack {id} has already been removed.").Verify(State.IsCreated, $"Snack {id} is not initialized.").Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
     }
 
     /// <inheritdoc />
@@ -138,7 +134,6 @@ public sealed class SnackGrain : EventSourcingGrain<Snack, SnackCommand, SnackEv
         return ValidateChangePictureUrl(command)
               .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(this.GetPrimaryKey(), Version, 104, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
               .MapTryAsync(() => RaiseConditionalEvent(command))
-              .MapTryIfAsync(persisted => persisted,
-                             () => PublishAsync(new SnackPictureUrlChangedEvent(State.Id, Version, State.PictureUrl, command.TraceId, State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? command.OperatedBy)));
+              .MapTryIfAsync(persisted => persisted, () => PublishAsync(new SnackPictureUrlChangedEvent(State.Id, Version, State.PictureUrl, command.TraceId, State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? command.OperatedBy)));
     }
 }
