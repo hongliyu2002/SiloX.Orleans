@@ -1,15 +1,15 @@
 ﻿namespace Vending.Domain.Abstractions.States;
 
 /// <summary>
-///     The snack machine stats by snack.
+///     The snack machine stats.
 /// </summary>
 [Serializable]
 [GenerateSerializer]
-public sealed class SnackMachineStatsBySnack
+public sealed class SnackMachineStats
 {
     /// <summary>
-    ///     The machine count.
+    ///     Count of snacks machines.
     /// </summary>
-    [Id(1)]
+    [Id(0)]
     public int Count { get; set; }
 }

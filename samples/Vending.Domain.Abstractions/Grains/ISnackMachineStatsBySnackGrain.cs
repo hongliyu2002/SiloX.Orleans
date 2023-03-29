@@ -4,7 +4,7 @@ using Vending.Domain.Abstractions.States;
 namespace Vending.Domain.Abstractions.Grains;
 
 /// <summary>
-///    Grain interface ISnackMachineStatsBySnackGrain
+///     Grain interface ISnackMachineStatsBySnackGrain
 /// </summary>
 public interface ISnackMachineStatsBySnackGrain : IGrainWithGuidKey
 {
@@ -12,23 +12,24 @@ public interface ISnackMachineStatsBySnackGrain : IGrainWithGuidKey
     ///     Asynchronously retrieves the current state of the Snack
     /// </summary>
     [AlwaysInterleave]
-    Task<SnackMachineStatsBySnack> GetStateAsync();
+    Task<SnackMachineStats> GetStateAsync();
 
     /// <summary>
     ///     Asynchronously retrieves the count of machines that have this snack.
     /// </summary>
     /// <returns>The count of machines that have this snack.</returns>
-    Task<int> GetMachineCountAsync();
+    [AlwaysInterleave]
+    Task<int> GetCountAsync();
 
     /// <summary>
     ///     Asynchronously increments the count of machines that have this snack
     /// </summary>
-    /// <param name="numOfMachines">The number of machines that have this snack </param>
-    Task IncrementCountAsync(int numOfMachines);
+    /// <param name="number">The number of machines that have this snack </param>
+    Task IncrementCountAsync(int number);
 
     /// <summary>
     ///     Asynchronously decrements the count of machines that have this snack
     /// </summary>
-    /// <param name="numOfMachines">The number of machines that have this snack </param>
-    Task DecrementCountAsync(int numOfMachines);
+    /// <param name="number">The number of machines that have this snack </param>
+    Task DecrementCountAsync(int number);
 }
