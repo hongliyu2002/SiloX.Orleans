@@ -40,7 +40,7 @@ public sealed class Snack
 
     public override string ToString()
     {
-        return $"Snack with Id:{Id} Name:'{Name}' PictureUrl:'{PictureUrl}'";
+        return $"Snack with Id:'{Id}' Name:'{Name}' PictureUrl:'{PictureUrl}'";
     }
 
     #region Apply

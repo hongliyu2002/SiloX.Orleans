@@ -293,8 +293,8 @@ public sealed class SnackProjectionGrain : EventSubscriberGrain<SnackEvent, Snac
                 var snackMachineStatsBySnackGrain = GrainFactory.GetGrain<ISnackMachineStatsBySnackGrain>(id);
                 snack.MachineCount = await snackMachineStatsBySnackGrain.GetMachineCountAsync();
                 // TODO
-                // snack.BoughtCount = await _dbContext.SnacksBoughts.CountAsync(sb => sb.SnackId == id);
-                // snack.BoughtAmount = await _dbContext.SnacksBoughts.Where(sb => sb.SnackId == id).SumAsync(sb => sb.BoughtPrice);
+                // snack.BoughtCount = await _dbContext.SnackMachineSnackBoughts.CountAsync(sb => sb.SnackId == id);
+                // snack.BoughtAmount = await _dbContext.SnackMachineSnackBoughts.Where(sb => sb.SnackId == id).SumAsync(sb => sb.BoughtPrice);
                 await _dbContext.SaveChangesAsync();
                 return;
             }

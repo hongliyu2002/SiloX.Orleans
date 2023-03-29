@@ -16,7 +16,7 @@ public class ProjectionDbContext : DbContext
 
     public DbSet<SnackMachine> SnackMachines { get; set; } = null!;
 
-    public DbSet<SnackBought> SnacksBoughts { get; set; } = null!;
+    public DbSet<SnackMachineSnackBought> SnackMachineSnackBoughts { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -71,10 +71,10 @@ public class ProjectionDbContext : DbContext
                                                           navigationBuilder.Property(sp => sp.TotalAmount).HasPrecision(10, 2);
                                                       });
                                   });
-        // Configures the SnackBought entity
-        modelBuilder.Entity<SnackBought>(builder =>
+        // Configures the SnackMachineSnackBought entity
+        modelBuilder.Entity<SnackMachineSnackBought>(builder =>
                                          {
-                                             builder.ToTable("SnackBoughts");
+                                             builder.ToTable("SnackMachineSnackBoughts");
                                              builder.HasKey(sb => new
                                                                   {
                                                                       sb.MachineId,

@@ -9,31 +9,6 @@ namespace Vending.Projection.Abstractions.Entities;
 [Serializable]
 public sealed class SnackMachine
 {
-    public SnackMachine()
-    {
-    }
-
-    public SnackMachine(Guid id, int version, DateTimeOffset? createdAt, string? createdBy, DateTimeOffset? lastModifiedAt, string? lastModifiedBy, DateTimeOffset? deletedAt, string? deletedBy, bool isDeleted, decimal amountInTransaction,
-                        int slotsCount, int snackCount, int snackQuantity, decimal snackAmount, int boughtCount, decimal boughtAmount)
-    {
-        Id = id;
-        Version = version;
-        CreatedAt = createdAt;
-        CreatedBy = createdBy;
-        LastModifiedAt = lastModifiedAt;
-        LastModifiedBy = lastModifiedBy;
-        DeletedAt = deletedAt;
-        DeletedBy = deletedBy;
-        IsDeleted = isDeleted;
-        AmountInTransaction = amountInTransaction;
-        SlotsCount = slotsCount;
-        SnackCount = snackCount;
-        SnackQuantity = snackQuantity;
-        SnackAmount = snackAmount;
-        BoughtCount = boughtCount;
-        BoughtAmount = boughtAmount;
-    }
-
     /// <summary>
     ///     Gets or sets the ID of the snack machine.
     /// </summary>

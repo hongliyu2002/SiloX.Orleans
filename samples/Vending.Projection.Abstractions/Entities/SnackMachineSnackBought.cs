@@ -7,24 +7,8 @@ namespace Vending.Projection.Abstractions.Entities;
 /// </summary>
 [PublicAPI]
 [Serializable]
-public sealed class SnackBought
+public sealed class SnackMachineSnackBought
 {
-    public SnackBought()
-    {
-    }
-
-    public SnackBought(Guid machineId, int position, Guid snackId, string snackName, string? snackPictureUrl, decimal boughtPrice, DateTimeOffset? boughtAt, string? boughtBy)
-    {
-        MachineId = machineId;
-        Position = position;
-        SnackId = snackId;
-        SnackName = snackName;
-        SnackPictureUrl = snackPictureUrl;
-        BoughtPrice = boughtPrice;
-        BoughtAt = boughtAt;
-        BoughtBy = boughtBy;
-    }
-
     /// <summary>
     ///     Gets or sets the ID of the vending machine where the snack was bought.
     /// </summary>
@@ -58,10 +42,10 @@ public sealed class SnackBought
     /// <summary>
     ///     Gets or sets the date and time when the snack was bought.
     /// </summary>
-    public DateTimeOffset? BoughtAt { get; set; }
+    public DateTimeOffset BoughtAt { get; set; } = DateTimeOffset.UtcNow;
 
     /// <summary>
     ///     Gets or sets the name of the user who bought the snack.
     /// </summary>
-    public string? BoughtBy { get; set; }
+    public string BoughtBy { get; set; } = null!;
 }

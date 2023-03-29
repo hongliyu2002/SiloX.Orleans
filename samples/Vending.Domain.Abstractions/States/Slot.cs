@@ -28,6 +28,6 @@ public sealed class Slot
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"Slot with Position:{Position} SnackPile:'{SnackPile}'";
+        return $"Slot with MachineId:'{MachineId}' Position:'{Position}' SnackPile:'{SnackPile}'";
     }
 }

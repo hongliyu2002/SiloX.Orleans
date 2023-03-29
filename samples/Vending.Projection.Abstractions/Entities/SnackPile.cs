@@ -10,20 +10,6 @@ namespace Vending.Projection.Abstractions.Entities;
 [Serializable]
 public sealed class SnackPile
 {
-    public SnackPile()
-    {
-    }
-
-    public SnackPile(Guid snackId, string snackName, string? snackPictureUrl, int quantity, decimal price, decimal totalAmount)
-    {
-        SnackId = snackId;
-        SnackName = snackName;
-        SnackPictureUrl = snackPictureUrl;
-        Quantity = quantity;
-        Price = price;
-        TotalAmount = totalAmount;
-    }
-
     /// <summary>
     ///     Gets or sets the unique identifier of the snack.
     /// </summary>
