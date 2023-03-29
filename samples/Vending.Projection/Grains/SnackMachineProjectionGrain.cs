@@ -13,7 +13,7 @@ using Vending.Projection.EntityFrameworkCore;
 namespace Vending.Projection.Grains;
 
 [ImplicitStreamSubscription(Constants.SnackMachinesNamespace)]
-public sealed class SnackMachineProjectionGrain : EventSubscriberGrain<SnackMachineEvent, SnackMachineErrorEvent>
+public sealed class SnackMachineProjectionGrain : SubscriberGrain<SnackMachineEvent, SnackMachineErrorEvent>
 {
     private readonly ProjectionDbContext _dbContext;
     private readonly ILogger<SnackMachineProjectionGrain> _logger;
@@ -26,7 +26,7 @@ public sealed class SnackMachineProjectionGrain : EventSubscriberGrain<SnackMach
     }
 
     /// <inheritdoc />
-    protected override string GetStreamNamespace()
+    protected override string GetSubscribeStreamNamespace()
     {
         return Constants.SnackMachinesNamespace;
     }

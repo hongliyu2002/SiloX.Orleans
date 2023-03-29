@@ -22,7 +22,7 @@ public sealed class SnackMachineGrain : EventSourcingGrain<SnackMachine, SnackMa
     }
 
     /// <inheritdoc />
-    protected override string GetStreamNamespace()
+    protected override string GetPublishStreamNamespace()
     {
         return Constants.SnackMachinesNamespace;
     }

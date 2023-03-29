@@ -7,28 +7,28 @@ namespace SiloX.Domain.Abstractions;
 /// <summary>
 ///     Represents a base class for Orleans event subscribers that can subscribe to a stream of TEvent.
 /// </summary>
-public abstract class EventSubscriberGrain<TEvent, TErrorEvent> : Grain, IGrainWithGuidKey
+public abstract class SubscriberGrain<TEvent, TErrorEvent> : Grain, IGrainWithGuidKey
     where TEvent : DomainEvent
 {
-    private readonly IStreamProvider _streamProvider;
-    private IAsyncStream<TEvent>? _stream;
+    private readonly IStreamProvider _subscribeStreamProvider;
+    private IAsyncStream<TEvent>? _subscribeStream;
     private StreamSubscriptionHandle<TEvent>? _subscription;
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="EventSubscriberGrain{TEvent, TErrorEvent}" /> class with the specified stream provider name and stream namespace.
+    ///     Initializes a new instance of the <see cref="SubscriberGrain{TEvent,TErrorEvent}" /> class with the specified stream provider name and stream namespace.
     /// </summary>
     /// <param name="streamProviderName">The name of the stream provider.</param>
-    protected EventSubscriberGrain(string streamProviderName)
+    protected SubscriberGrain(string streamProviderName)
     {
         streamProviderName = Guard.Against.NullOrWhiteSpace(streamProviderName, nameof(streamProviderName));
-        _streamProvider = this.GetStreamProvider(streamProviderName);
+        _subscribeStreamProvider = this.GetStreamProvider(streamProviderName);
     }
 
     /// <inheritdoc />
     public override async Task OnActivateAsync(CancellationToken cancellationToken)
     {
         await base.OnActivateAsync(cancellationToken);
-        _subscription = await GetStream().SubscribeAsync(HandleNextAsync, HandleExceptionAsync, HandleCompleteAsync);
+        _subscription = await GetSubscribeStream().SubscribeAsync(HandleNextAsync, HandleExceptionAsync, HandleCompleteAsync);
     }
 
     /// <inheritdoc />
@@ -38,7 +38,7 @@ public abstract class EventSubscriberGrain<TEvent, TErrorEvent> : Grain, IGrainW
         {
             await _subscription.UnsubscribeAsync();
         }
-        var subscriptions = await GetStream().GetAllSubscriptionHandles();
+        var subscriptions = await GetSubscribeStream().GetAllSubscriptionHandles();
         if (subscriptions is { Count: > 0 })
         {
             await Task.WhenAll(subscriptions.Select(subscription => subscription.UnsubscribeAsync()));
@@ -50,15 +50,15 @@ public abstract class EventSubscriberGrain<TEvent, TErrorEvent> : Grain, IGrainW
     ///     Gets the stream namespace.
     /// </summary>
     /// <returns>The stream namespace.</returns>
-    protected abstract string GetStreamNamespace();
+    protected abstract string GetSubscribeStreamNamespace();
 
     /// <summary>
     ///     Gets the stream for the grain.
     /// </summary>
     /// <returns>The stream.</returns>
-    private IAsyncStream<TEvent> GetStream()
+    private IAsyncStream<TEvent> GetSubscribeStream()
     {
-        return _stream ??= _streamProvider.GetStream<TEvent>(StreamId.Create(GetStreamNamespace(), this.GetPrimaryKey()));
+        return _subscribeStream ??= _subscribeStreamProvider.GetStream<TEvent>(StreamId.Create(GetSubscribeStreamNamespace(), this.GetPrimaryKey()));
     }
 
     /// <summary>

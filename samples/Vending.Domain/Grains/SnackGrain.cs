@@ -21,7 +21,7 @@ public sealed class SnackGrain : EventSourcingGrain<Snack, SnackCommand, SnackEv
     }
 
     /// <inheritdoc />
-    protected override string GetStreamNamespace()
+    protected override string GetPublishStreamNamespace()
     {
         return Constants.SnacksNamespace;
     }
