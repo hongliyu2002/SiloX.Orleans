@@ -1,7 +1,6 @@
 ﻿using System.Collections.Immutable;
 using Fluxera.Guards;
 using Fluxera.Utilities.Extensions;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Orleans.FluentResults;
 using Orleans.Providers;
@@ -322,6 +321,7 @@ public sealed class SnackMachineGrain : EventSourcingGrainWithGuidKey<SnackMachi
               .TapErrorTryAsync(errors => PublishErrorAsync(new SnackMachineErrorEvent(State.Id, Version, 209, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
               .MapTryAsync(() => RaiseConditionalEvent(command))
               .MapTryIfAsync(persisted => persisted, PersistAsync)
+              .MapTryIfAsync(persisted => persisted, () => InitializePurchaseAsync(command))
               .MapTryIfAsync(persisted => persisted,
                              () => PublishAsync(new SnackMachineSnackBoughtEvent(State.Id, Version, State.AmountInTransaction, State.Slots.Single(sl => sl.Position == command.Position), State.SnackQuantity, State.SnackAmount, command.TraceId,
                                                                                  State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? command.OperatedBy)));
@@ -331,49 +331,48 @@ public sealed class SnackMachineGrain : EventSourcingGrainWithGuidKey<SnackMachi
 
     private async Task<bool> PersistAsync()
     {
-        var attempts = 0;
-        bool retryNeeded;
-        do
+        try
         {
-            try
+            var snackMachineInGrain = State;
+            var snackMachine = await _dbContext.SnackMachines.FindAsync(snackMachineInGrain.Id);
+            if (snackMachine == null)
             {
-                var snackMachineInGrain = State;
-                var snackMachine = await _dbContext.SnackMachines.FindAsync(snackMachineInGrain.Id);
-                if (snackMachine == null)
-                {
-                    snackMachine = new SnackMachine();
-                    _dbContext.SnackMachines.Add(snackMachine);
-                }
-                snackMachine.Id = snackMachineInGrain.Id;
-                snackMachine.CreatedAt = snackMachineInGrain.CreatedAt;
-                snackMachine.LastModifiedAt = snackMachineInGrain.LastModifiedAt;
-                snackMachine.DeletedAt = snackMachineInGrain.DeletedAt;
-                snackMachine.CreatedBy = snackMachineInGrain.CreatedBy;
-                snackMachine.LastModifiedBy = snackMachineInGrain.LastModifiedBy;
-                snackMachine.DeletedBy = snackMachineInGrain.DeletedBy;
-                snackMachine.IsDeleted = snackMachineInGrain.IsDeleted;
-                snackMachine.MoneyInside = snackMachineInGrain.MoneyInside;
-                snackMachine.AmountInTransaction = snackMachineInGrain.AmountInTransaction;
-                snackMachine.Slots = snackMachineInGrain.Slots;
-                await _dbContext.SaveChangesAsync();
-                return true;
+                snackMachine = new SnackMachine();
+                _dbContext.SnackMachines.Add(snackMachine);
             }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                retryNeeded = ++attempts <= 3;
-                if (retryNeeded)
-                {
-                    _logger.LogWarning(ex, $"PersistAsync: DbUpdateConcurrencyException is occurred when try to write data to the database. Retrying {attempts}...");
-                    await Task.Delay(TimeSpan.FromSeconds(attempts));
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "PersistAsync: Exception is occurred when try to write data to the database.");
-                retryNeeded = false;
-            }
+            snackMachine.Id = snackMachineInGrain.Id;
+            snackMachine.CreatedAt = snackMachineInGrain.CreatedAt;
+            snackMachine.LastModifiedAt = snackMachineInGrain.LastModifiedAt;
+            snackMachine.DeletedAt = snackMachineInGrain.DeletedAt;
+            snackMachine.CreatedBy = snackMachineInGrain.CreatedBy;
+            snackMachine.LastModifiedBy = snackMachineInGrain.LastModifiedBy;
+            snackMachine.DeletedBy = snackMachineInGrain.DeletedBy;
+            snackMachine.IsDeleted = snackMachineInGrain.IsDeleted;
+            snackMachine.MoneyInside = snackMachineInGrain.MoneyInside;
+            snackMachine.AmountInTransaction = snackMachineInGrain.AmountInTransaction;
+            snackMachine.Slots = snackMachineInGrain.Slots;
+            await _dbContext.SaveChangesAsync();
+            return true;
         }
-        while (retryNeeded);
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "PersistAsync: Exception is occurred when try to write data to the database.");
+            return false;
+        }
+    }
+
+    #endregion
+
+    #region External Calls
+
+    private async Task<bool> InitializePurchaseAsync(SnackMachineBuySnackCommand command)
+    {
+        if (State.TryGetSlot(command.Position, out var slot) && slot?.SnackPile != null)
+        {
+            var purchaseGrain = GrainFactory.GetGrain<IPurchaseGrain>($"{State.Id}/{slot.Position}/{slot.SnackPile.SnackId}");
+            var result = await purchaseGrain.InitializeAsync(new PurchaseInitializeCommand(State.Id, slot.Position, slot.SnackPile.SnackId, slot.SnackPile.Price, command.TraceId, command.OperatedAt, command.OperatedBy));
+            return result.IsSuccess;
+        }
         return false;
     }
 

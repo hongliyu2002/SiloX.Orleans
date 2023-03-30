@@ -1,6 +1,5 @@
 ﻿using Fluxera.Guards;
 using Fluxera.Utilities.Extensions;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Orleans.FluentResults;
 using Orleans.Providers;
@@ -160,49 +159,33 @@ public sealed class SnackGrain : EventSourcingGrainWithGuidKey<Snack, SnackComma
 
     private async Task<bool> PersistAsync()
     {
-        var attempts = 0;
-        bool retryNeeded;
-        do
+        try
         {
-            try
+            var snackInGrain = State;
+            var snack = await _dbContext.Snacks.FindAsync(snackInGrain.Id);
+            if (snack == null)
             {
-                var snackInGrain = State;
-                var snack = await _dbContext.Snacks.FindAsync(snackInGrain.Id);
-                if (snack == null)
-                {
-                    snack = new Snack();
-                    _dbContext.Snacks.Add(snack);
-                }
-                snack.Id = snackInGrain.Id;
-                snack.Name = snackInGrain.Name;
-                snack.PictureUrl = snackInGrain.PictureUrl;
-                snack.CreatedAt = snackInGrain.CreatedAt;
-                snack.LastModifiedAt = snackInGrain.LastModifiedAt;
-                snack.DeletedAt = snackInGrain.DeletedAt;
-                snack.CreatedBy = snackInGrain.CreatedBy;
-                snack.LastModifiedBy = snackInGrain.LastModifiedBy;
-                snack.DeletedBy = snackInGrain.DeletedBy;
-                snack.IsDeleted = snackInGrain.IsDeleted;
-                await _dbContext.SaveChangesAsync();
-                return true;
+                snack = new Snack();
+                _dbContext.Snacks.Add(snack);
             }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                retryNeeded = ++attempts <= 3;
-                if (retryNeeded)
-                {
-                    _logger.LogWarning(ex, $"PersistAsync: DbUpdateConcurrencyException is occurred when try to write data to the database. Retrying {attempts}...");
-                    await Task.Delay(TimeSpan.FromSeconds(attempts));
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "PersistAsync: Exception is occurred when try to write data to the database.");
-                retryNeeded = false;
-            }
+            snack.Id = snackInGrain.Id;
+            snack.Name = snackInGrain.Name;
+            snack.PictureUrl = snackInGrain.PictureUrl;
+            snack.CreatedAt = snackInGrain.CreatedAt;
+            snack.LastModifiedAt = snackInGrain.LastModifiedAt;
+            snack.DeletedAt = snackInGrain.DeletedAt;
+            snack.CreatedBy = snackInGrain.CreatedBy;
+            snack.LastModifiedBy = snackInGrain.LastModifiedBy;
+            snack.DeletedBy = snackInGrain.DeletedBy;
+            snack.IsDeleted = snackInGrain.IsDeleted;
+            await _dbContext.SaveChangesAsync();
+            return true;
         }
-        while (retryNeeded);
-        return false;
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "PersistAsync: Exception is occurred when try to write data to the database.");
+            return false;
+        }
     }
 
     #endregion
