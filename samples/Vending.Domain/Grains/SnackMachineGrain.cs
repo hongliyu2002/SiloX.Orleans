@@ -126,7 +126,9 @@ public sealed class SnackMachineGrain : EventSourcingGrainWithGuidKey<SnackMachi
               .TapErrorTryAsync(errors => PublishErrorAsync(new SnackMachineErrorEvent(State.Id, Version, 202, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
               .MapTryAsync(() => RaiseConditionalEvent(command))
               .MapTryIfAsync(persisted => persisted, PersistAsync)
-              .MapTryIfAsync(persisted => persisted, () => PublishAsync(new SnackMachineRemovedEvent(State.Id, Version, command.TraceId, State.DeletedAt ?? DateTimeOffset.UtcNow, State.DeletedBy ?? command.OperatedBy)));
+              .MapTryIfAsync(persisted => persisted,
+                             () => PublishAsync(new SnackMachineRemovedEvent(State.Id, Version, State.MoneyInside, State.AmountInTransaction, State.Slots.ToImmutableList(), State.SlotsCount, State.SnackCount, State.SnackQuantity, State.SnackAmount,
+                                                                             command.TraceId, State.DeletedAt ?? DateTimeOffset.UtcNow, State.DeletedBy ?? command.OperatedBy)));
     }
 
     private Result ValidateLoadMoney(SnackMachineLoadMoneyCommand command)

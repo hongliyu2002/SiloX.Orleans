@@ -1,5 +1,6 @@
 ﻿using Fluxera.Guards;
 using Microsoft.Extensions.Logging;
+using Orleans.FluentResults;
 using SiloX.Domain.Abstractions;
 using Vending.Domain.Abstractions;
 using Vending.Domain.Abstractions.Commands;
@@ -36,7 +37,7 @@ public class SnackMachineStatsDispatcherGrain : BroadcastSubscriberGrainWithStri
                 return DispatchEventAsync(machineEvent);
             case SnackMachineSnacksLoadedEvent machineEvent:
                 return DispatchEventAsync(machineEvent);
-            case SnackMachineSnackBoughtEvent machineEvent:
+            case SnackMachineSnacksUnloadedEvent machineEvent:
                 return DispatchEventAsync(machineEvent);
             default:
                 return Task.CompletedTask;
@@ -72,16 +73,17 @@ public class SnackMachineStatsDispatcherGrain : BroadcastSubscriberGrainWithStri
             var operatedAt = DateTimeOffset.UtcNow;
             var operatedBy = $"System/{GetType().Name}";
             // Update SnackSnackMachineStatsGrain
-            var snackSnackMachineStatsGrain = GrainFactory.GetGrain<ISnackSnackMachineStatsGrain>(machineEvent.MachineId);
-            await snackSnackMachineStatsGrain.IncrementCountAsync(new SnackIncrementMachineCountCommand(1, traceId, operatedAt, operatedBy));
-            // _logger.LogInformation("Dispatch SnackMachineInitializedEvent: {SnackMachineId} is dispatched.", this.GetPrimaryKeyString());
+            var snackIds = machineEvent.Slots.Where(sl => sl.SnackPile != null).Select(x => x.SnackPile!.SnackId).Distinct().ToArray();
+            var tasks = snackIds.Select(snackId => GrainFactory.GetGrain<ISnackSnackMachineStatsGrain>(snackId)).Select(statsGrain => statsGrain.IncrementCountAsync(new SnackIncrementMachineCountCommand(1, traceId, operatedAt, operatedBy)));
+            var results = await Task.WhenAll(tasks);
+            _logger.LogInformation("Dispatch SnackMachineInitializedEvent: {SnackMachineId} is dispatched. With success： {SuccessCount} failed： {FailedCount}", this.GetPrimaryKey(), results.Count(r => r.IsSuccess), results.Count(r => r.IsFailed));
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Dispatch SnackMachineInitializedEvent: Exception is occurred when try to write data to the database. Try to execute full update...");
+            _logger.LogError(ex, "Dispatch SnackMachineInitializedEvent: Exception is occurred when dispatching.");
         }
     }
-    
+
     private async Task DispatchEventAsync(SnackMachineRemovedEvent machineEvent)
     {
         try
@@ -90,16 +92,17 @@ public class SnackMachineStatsDispatcherGrain : BroadcastSubscriberGrainWithStri
             var operatedAt = DateTimeOffset.UtcNow;
             var operatedBy = $"System/{GetType().Name}";
             // Update SnackSnackMachineStatsGrain
-            var snackSnackMachineStatsGrain = GrainFactory.GetGrain<ISnackSnackMachineStatsGrain>(machineEvent.MachineId);
-            await snackSnackMachineStatsGrain.IncrementCountAsync(new SnackIncrementMachineCountCommand(1, traceId, operatedAt, operatedBy));
-            // _logger.LogInformation("Dispatch SnackMachineInitializedEvent: {SnackMachineId} is dispatched.", this.GetPrimaryKeyString());
+            var snackIds = machineEvent.Slots.Where(sl => sl.SnackPile != null).Select(x => x.SnackPile!.SnackId).Distinct().ToArray();
+            var tasks = snackIds.Select(snackId => GrainFactory.GetGrain<ISnackSnackMachineStatsGrain>(snackId)).Select(statsGrain => statsGrain.DecrementCountAsync(new SnackDecrementMachineCountCommand(1, traceId, operatedAt, operatedBy)));
+            var results = await Task.WhenAll(tasks);
+            _logger.LogInformation("Dispatch SnackMachineRemovedEvent: {SnackMachineId} is dispatched. With success： {SuccessCount} failed： {FailedCount}", this.GetPrimaryKey(), results.Count(r => r.IsSuccess), results.Count(r => r.IsFailed));
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Dispatch SnackMachineInitializedEvent: Exception is occurred when try to write data to the database. Try to execute full update...");
+            _logger.LogError(ex, "Dispatch SnackMachineRemovedEvent: Exception is occurred when dispatching.");
         }
     }
-    
+
     private async Task DispatchEventAsync(SnackMachineSnacksLoadedEvent machineEvent)
     {
         try
@@ -108,17 +111,20 @@ public class SnackMachineStatsDispatcherGrain : BroadcastSubscriberGrainWithStri
             var operatedAt = DateTimeOffset.UtcNow;
             var operatedBy = $"System/{GetType().Name}";
             // Update SnackSnackMachineStatsGrain
-            var snackSnackMachineStatsGrain = GrainFactory.GetGrain<ISnackSnackMachineStatsGrain>(machineEvent.MachineId);
-            await snackSnackMachineStatsGrain.IncrementCountAsync(new SnackIncrementMachineCountCommand(1, traceId, operatedAt, operatedBy));
-            // _logger.LogInformation("Dispatch SnackMachineInitializedEvent: {SnackMachineId} is dispatched.", this.GetPrimaryKeyString());
+            if (machineEvent.Slot is { SnackPile: { } })
+            {
+                var statsGrain = GrainFactory.GetGrain<ISnackSnackMachineStatsGrain>(machineEvent.Slot.SnackPile.SnackId);
+                var result = await statsGrain.IncrementCountAsync(new SnackIncrementMachineCountCommand(1, traceId, operatedAt, operatedBy));
+                _logger.LogInformation("Dispatch SnackMachineSnacksLoadedEvent: {SnackMachineId} is dispatched. With success {IsSuccess}", this.GetPrimaryKeyString(), result.IsSuccess);
+            }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Dispatch SnackMachineInitializedEvent: Exception is occurred when try to write data to the database. Try to execute full update...");
+            _logger.LogError(ex, "Dispatch SnackMachineSnacksLoadedEvent: Exception is occurred when dispatching.");
         }
     }
-    
-    private async Task DispatchEventAsync(SnackMachineSnackBoughtEvent machineEvent)
+
+    private async Task DispatchEventAsync(SnackMachineSnacksUnloadedEvent machineEvent)
     {
         try
         {
@@ -126,13 +132,16 @@ public class SnackMachineStatsDispatcherGrain : BroadcastSubscriberGrainWithStri
             var operatedAt = DateTimeOffset.UtcNow;
             var operatedBy = $"System/{GetType().Name}";
             // Update SnackSnackMachineStatsGrain
-            var snackSnackMachineStatsGrain = GrainFactory.GetGrain<ISnackSnackMachineStatsGrain>(machineEvent.MachineId);
-            await snackSnackMachineStatsGrain.IncrementCountAsync(new SnackIncrementMachineCountCommand(1, traceId, operatedAt, operatedBy));
-            // _logger.LogInformation("Dispatch SnackMachineInitializedEvent: {SnackMachineId} is dispatched.", this.GetPrimaryKeyString());
+            if (machineEvent.Slot is { SnackPile: { } })
+            {
+                var statsGrain = GrainFactory.GetGrain<ISnackSnackMachineStatsGrain>(machineEvent.Slot.SnackPile.SnackId);
+                Result result = await statsGrain.DecrementCountAsync(new SnackDecrementMachineCountCommand(1, traceId, operatedAt, operatedBy));
+                _logger.LogInformation("Dispatch SnackMachineSnacksUnloadedEvent: {SnackMachineId} is dispatched. With success {IsSuccess}", this.GetPrimaryKeyString(), result.IsSuccess);
+            }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Dispatch SnackMachineInitializedEvent: Exception is occurred when try to write data to the database. Try to execute full update...");
+            _logger.LogError(ex, "Dispatch SnackMachineSnacksUnloadedEvent: Exception is occurred when dispatching.");
         }
     }
 }

@@ -66,18 +66,18 @@ public class PurchaseStatsDispatcherGrain : BroadcastSubscriberGrainWithStringKe
             var operatedAt = DateTimeOffset.UtcNow;
             var operatedBy = $"System/{GetType().Name}";
             // Update SnackMachinePurchaseStatsGrain
-            var snackMachinePurchaseStatsGrain = GrainFactory.GetGrain<ISnackMachinePurchaseStatsGrain>(purchaseEvent.MachineId);
-            await snackMachinePurchaseStatsGrain.IncrementCountAsync(new SnackMachineIncrementBoughtCountCommand(1, traceId, operatedAt, operatedBy));
-            await snackMachinePurchaseStatsGrain.IncrementAmountAsync(new SnackMachineIncrementBoughtAmountCommand(purchaseEvent.BoughtPrice, traceId, operatedAt, operatedBy));
+            var machineStatsGrain = GrainFactory.GetGrain<ISnackMachinePurchaseStatsGrain>(purchaseEvent.MachineId);
+            await machineStatsGrain.IncrementCountAsync(new SnackMachineIncrementBoughtCountCommand(1, traceId, operatedAt, operatedBy));
+            await machineStatsGrain.IncrementAmountAsync(new SnackMachineIncrementBoughtAmountCommand(purchaseEvent.BoughtPrice, traceId, operatedAt, operatedBy));
             // Update SnackPurchaseStatsGrain
-            var snackPurchaseStatsGrain = GrainFactory.GetGrain<ISnackPurchaseStatsGrain>(purchaseEvent.SnackId);
-            await snackPurchaseStatsGrain.IncrementCountAsync(new SnackIncrementBoughtCountCommand(1, traceId, operatedAt, operatedBy));
-            await snackPurchaseStatsGrain.IncrementAmountAsync(new SnackIncrementBoughtAmountCommand(purchaseEvent.BoughtPrice, traceId, operatedAt, operatedBy));
+            var snackStatsGrain = GrainFactory.GetGrain<ISnackPurchaseStatsGrain>(purchaseEvent.SnackId);
+            await snackStatsGrain.IncrementCountAsync(new SnackIncrementBoughtCountCommand(1, traceId, operatedAt, operatedBy));
+            await snackStatsGrain.IncrementAmountAsync(new SnackIncrementBoughtAmountCommand(purchaseEvent.BoughtPrice, traceId, operatedAt, operatedBy));
             // _logger.LogInformation("Dispatch PurchaseInitializedEvent: {PurchaseId} is dispatched.", this.GetPrimaryKeyString());
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Dispatch PurchaseInitializedEvent: Exception is occurred when try to write data to the database. Try to execute full update...");
+            _logger.LogError(ex, "Dispatch PurchaseInitializedEvent: Exception is occurred when dispatching.");
         }
     }
 }

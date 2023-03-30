@@ -135,6 +135,13 @@ public sealed class SnackMachineProjectionGrain : SubscriberGrainWithGuidKey<Sna
                 await ApplyFullUpdateAsync(machineEvent);
                 return;
             }
+            snackMachine.MoneyInside = machineEvent.MoneyInside.ToProjection(snackMachine.MoneyInside);
+            snackMachine.AmountInTransaction = machineEvent.AmountInTransaction;
+            snackMachine.Slots = await Task.WhenAll(machineEvent.Slots.Select(slot => slot.ToProjection(GetSnackNameAndPictureUrlAsync, snackMachine.Slots.FirstOrDefault(sl => sl.MachineId == slot.MachineId && sl.Position == slot.Position))));
+            snackMachine.SlotsCount = machineEvent.SlotsCount;
+            snackMachine.SnackCount = machineEvent.SnackCount;
+            snackMachine.SnackQuantity = machineEvent.SnackQuantity;
+            snackMachine.SnackAmount = machineEvent.SnackAmount;
             snackMachine.DeletedAt = machineEvent.OperatedAt;
             snackMachine.DeletedBy = machineEvent.OperatedBy;
             snackMachine.IsDeleted = true;
