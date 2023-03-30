@@ -3,7 +3,7 @@
 /// <summary>
 ///     An abstract record represents a domain event.
 /// </summary>
-/// <param name="Id">The unique identifier of the original object who raises this event.</param>
+/// <param name="DomainId">The unique identifier of the original object who raises this event.</param>
 /// <param name="Version">The version of the domain event.</param>
 /// <param name="TraceId">The trace ID associated with this traceable object.</param>
 /// <param name="OperatedAt">The timestamp when the operation is performed.</param>
@@ -11,4 +11,4 @@
 [Immutable]
 [Serializable]
 [GenerateSerializer]
-public abstract record DomainEvent(string Id, int Version, Guid TraceId, DateTimeOffset OperatedAt, string OperatedBy) : IDomainEvent;
+public abstract record DomainEvent(string DomainId, int Version, Guid TraceId, DateTimeOffset OperatedAt, string OperatedBy) : IDomainEvent;

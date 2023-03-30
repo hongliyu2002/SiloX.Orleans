@@ -5,21 +5,21 @@ using Orleans.Streams;
 namespace SiloX.Domain.Abstractions;
 
 /// <summary>
-///     Represents a base class for Orleans event subscribers that can subscribe to a stream of TEvent.
+///     Represents a base class for Orleans event subscribers that can subscribe to a stream of TEvent from Broadcast.
 /// </summary>
-public abstract class SubscriberGrain<TEvent, TErrorEvent> : Grain, IGrainWithStringKey
+public abstract class BroadcastSubscriberGrain<TEvent, TErrorEvent> : Grain, IGrainWithStringKey
     where TEvent : DomainEvent
     where TErrorEvent : TEvent, IDomainErrorEvent
 {
     private readonly IStreamProvider _streamProvider;
-    private IAsyncStream<TEvent>? _stream;
-    private StreamSubscriptionHandle<TEvent>? _subscription;
+    private IAsyncStream<TEvent>? _broadcastStream;
+    private StreamSubscriptionHandle<TEvent>? _broadcastSubscription;
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="SubscriberGrain{TEvent,TErrorEvent}" /> class with the specified stream provider name and stream namespace.
     /// </summary>
     /// <param name="streamProviderName">The name of the stream provider.</param>
-    protected SubscriberGrain(string streamProviderName)
+    protected BroadcastSubscriberGrain(string streamProviderName)
     {
         streamProviderName = Guard.Against.NullOrWhiteSpace(streamProviderName, nameof(streamProviderName));
         _streamProvider = this.GetStreamProvider(streamProviderName);
@@ -29,32 +29,32 @@ public abstract class SubscriberGrain<TEvent, TErrorEvent> : Grain, IGrainWithSt
     public override async Task OnActivateAsync(CancellationToken cancellationToken)
     {
         await base.OnActivateAsync(cancellationToken);
-        _subscription = await GetStream().SubscribeAsync(HandleNextAsync, HandleExceptionAsync, HandleCompleteAsync);
+        _broadcastSubscription = await GetBroadcastStream().SubscribeAsync(HandleNextAsync, HandleExceptionAsync, HandleCompleteAsync);
     }
 
     /// <inheritdoc />
     public override async Task OnDeactivateAsync(DeactivationReason reason, CancellationToken cancellationToken)
     {
-        if (_subscription != null)
+        if (_broadcastSubscription != null)
         {
-            await _subscription.UnsubscribeAsync();
+            await _broadcastSubscription.UnsubscribeAsync();
         }
         await base.OnDeactivateAsync(reason, cancellationToken);
     }
 
     /// <summary>
-    ///     Gets the stream namespace.
+    ///     Gets the broadcast stream namespace.
     /// </summary>
     /// <returns>The stream namespace.</returns>
-    protected abstract string GetStreamNamespace();
+    protected abstract string GetBroadcastStreamNamespace();
 
     /// <summary>
-    ///     Gets the stream for the grain.
+    ///     Gets the broadcast stream for the grain.
     /// </summary>
     /// <returns>The stream.</returns>
-    private IAsyncStream<TEvent> GetStream()
+    private IAsyncStream<TEvent> GetBroadcastStream()
     {
-        return _stream ??= _streamProvider.GetStream<TEvent>(StreamId.Create(GetStreamNamespace(), this.GetPrimaryKeyString()));
+        return _broadcastStream ??= _streamProvider.GetStream<TEvent>(StreamId.Create(GetBroadcastStreamNamespace(), string.Empty));
     }
 
     /// <summary>

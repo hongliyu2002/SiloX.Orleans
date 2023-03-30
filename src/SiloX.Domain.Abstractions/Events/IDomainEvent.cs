@@ -8,7 +8,7 @@ public interface IDomainEvent : ITraceable
     /// <summary>
     ///     The unique identifier of the original object who raises this event.
     /// </summary>
-    string Id { get; init; }
+    string DomainId { get; init; }
 
     /// <summary>
     ///     The version of the domain event.
