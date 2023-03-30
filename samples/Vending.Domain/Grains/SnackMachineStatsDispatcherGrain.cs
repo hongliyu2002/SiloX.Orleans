@@ -115,7 +115,7 @@ public class SnackMachineStatsDispatcherGrain : BroadcastSubscriberGrainWithStri
             {
                 var statsGrain = GrainFactory.GetGrain<ISnackSnackMachineStatsGrain>(machineEvent.Slot.SnackPile.SnackId);
                 var result = await statsGrain.IncrementCountAsync(new SnackIncrementMachineCountCommand(1, traceId, operatedAt, operatedBy));
-                _logger.LogInformation("Dispatch SnackMachineSnacksLoadedEvent: {SnackMachineId} is dispatched. With success {IsSuccess}", this.GetPrimaryKeyString(), result.IsSuccess);
+                _logger.LogInformation("Dispatch SnackMachineSnacksLoadedEvent: {SnackMachineId} is dispatched. With success {IsSuccess}", this.GetPrimaryKey(), result.IsSuccess);
             }
         }
         catch (Exception ex)
@@ -136,7 +136,7 @@ public class SnackMachineStatsDispatcherGrain : BroadcastSubscriberGrainWithStri
             {
                 var statsGrain = GrainFactory.GetGrain<ISnackSnackMachineStatsGrain>(machineEvent.Slot.SnackPile.SnackId);
                 Result result = await statsGrain.DecrementCountAsync(new SnackDecrementMachineCountCommand(1, traceId, operatedAt, operatedBy));
-                _logger.LogInformation("Dispatch SnackMachineSnacksUnloadedEvent: {SnackMachineId} is dispatched. With success {IsSuccess}", this.GetPrimaryKeyString(), result.IsSuccess);
+                _logger.LogInformation("Dispatch SnackMachineSnacksUnloadedEvent: {SnackMachineId} is dispatched. With success {IsSuccess}", this.GetPrimaryKey(), result.IsSuccess);
             }
         }
         catch (Exception ex)

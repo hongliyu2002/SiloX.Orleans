@@ -1,5 +1,5 @@
 ﻿namespace Vending.Domain.Abstractions.Grains;
 
-public interface IPurchaseStatsDispatcherGrain : IGrainWithStringKey
+public interface IPurchaseStatsDispatcherGrain : IGrainWithGuidKey
 {
 }

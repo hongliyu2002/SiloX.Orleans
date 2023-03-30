@@ -50,10 +50,9 @@ public sealed class PurchaseGrain : StatefulGrainWithStringKey<Purchase, Purchas
 
     private Result ValidateInitialize(PurchaseInitializeCommand command)
     {
-        var purchaseId = this.GetPrimaryKeyString();
+        var purchaseId = this.GetPrimaryKey();
         return Result.Ok()
                      .Verify(State.IsInitialized == false, $"Purchase {purchaseId} is already initialized.")
-                     .Verify($"{command.MachineId}/{command.Position}/{command.SnackId}" == purchaseId, $"Purchase {purchaseId} is not owned by the same snack machine {command.MachineId} and slot {command.Position} and snack {command.SnackId}.")
                      .Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
     }
 
@@ -67,17 +66,18 @@ public sealed class PurchaseGrain : StatefulGrainWithStringKey<Purchase, Purchas
     public Task<Result> InitializeAsync(PurchaseInitializeCommand command)
     {
         return ValidateInitialize(command)
-              .TapErrorTryAsync(errors => PublishErrorAsync(new PurchaseErrorEvent(command.MachineId, command.Position, command.SnackId, 1001, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
+              .TapErrorTryAsync(errors => PublishErrorAsync(new PurchaseErrorEvent(this.GetPrimaryKey(), command.MachineId, command.Position, command.SnackId, 1001, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
               .MapTryAsync(() => ApplyAsync(command))
               .MapTryAsync(PersistAsync)
               .MapTryIfAsync(persisted => persisted,
-                             () => PublishAsync(new PurchaseInitializedEvent(State.MachineId, State.Position, State.SnackId, State.BoughtPrice, command.TraceId, State.BoughtAt ?? DateTimeOffset.UtcNow, State.BoughtBy ?? command.OperatedBy)));
+                             () => PublishAsync(new PurchaseInitializedEvent(State.Id, State.MachineId, State.Position, State.SnackId, State.BoughtPrice, command.TraceId, State.BoughtAt ?? DateTimeOffset.UtcNow, State.BoughtBy ?? command.OperatedBy)));
     }
 
     #region Persistence
 
     private Task ApplyAsync(PurchaseInitializeCommand command)
     {
+        State.Id = command.PurchaseId;
         State.MachineId = command.MachineId;
         State.Position = command.Position;
         State.SnackId = command.SnackId;
@@ -92,12 +92,13 @@ public sealed class PurchaseGrain : StatefulGrainWithStringKey<Purchase, Purchas
         try
         {
             var purchaseInGrain = State;
-            var purchase = await _dbContext.Purchases.FindAsync(purchaseInGrain.MachineId, purchaseInGrain.Position, purchaseInGrain.SnackId);
+            var purchase = await _dbContext.Purchases.FindAsync(purchaseInGrain.Id);
             if (purchase == null)
             {
                 purchase = new Purchase();
                 _dbContext.Purchases.Add(purchase);
             }
+            purchase.Id = purchaseInGrain.Id;
             purchase.MachineId = purchaseInGrain.MachineId;
             purchase.Position = purchaseInGrain.Position;
             purchase.SnackId = purchaseInGrain.SnackId;

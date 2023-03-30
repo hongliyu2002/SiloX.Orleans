@@ -69,11 +69,12 @@ public sealed class PurchaseProjectionGrain : SubscriberGrainWithStringKey<Purch
     {
         try
         {
-            var purchase = await _dbContext.Purchases.FindAsync(purchaseEvent.MachineId, purchaseEvent.Position, purchaseEvent.SnackId);
+            var purchase = await _dbContext.Purchases.FindAsync(purchaseEvent.PurchaseId);
             if (purchase == null)
             {
                 purchase = new Purchase
                            {
+                               Id = purchaseEvent.PurchaseId,
                                MachineId = purchaseEvent.MachineId,
                                Position = purchaseEvent.Position,
                                SnackId = purchaseEvent.SnackId,
@@ -85,7 +86,7 @@ public sealed class PurchaseProjectionGrain : SubscriberGrainWithStringKey<Purch
             }
             if (_dbContext.Entry(purchase).State != EntityState.Added)
             {
-                _logger.LogWarning($"Apply PurchaseInitializedEvent: Purchase {purchaseEvent.MachineId}/{purchaseEvent.Position}/{purchaseEvent.SnackId} is already in the database. Try to execute full update...");
+                _logger.LogWarning($"Apply PurchaseInitializedEvent: Purchase {purchaseEvent.PurchaseId} is already in the database. Try to execute full update...");
                 await ApplyFullUpdateAsync(purchaseEvent);
                 return;
             }
@@ -106,10 +107,9 @@ public sealed class PurchaseProjectionGrain : SubscriberGrainWithStringKey<Purch
         {
             try
             {
-                var purchaseId = $"{purchaseEvent.MachineId}/{purchaseEvent.Position}/{purchaseEvent.SnackId}";
-                var purchaseGrain = GrainFactory.GetGrain<IPurchaseGrain>(purchaseId);
+                var purchaseGrain = GrainFactory.GetGrain<IPurchaseGrain>(purchaseEvent.PurchaseId);
                 var purchaseInGrain = await purchaseGrain.GetStateAsync();
-                var purchase = await _dbContext.Purchases.FindAsync(purchaseEvent.MachineId, purchaseEvent.Position, purchaseEvent.SnackId);
+                var purchase = await _dbContext.Purchases.FindAsync(purchaseEvent.PurchaseId);
                 if (purchaseInGrain == null)
                 {
                     if (purchase == null)

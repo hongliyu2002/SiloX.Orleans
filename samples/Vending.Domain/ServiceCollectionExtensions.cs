@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Fluxera.Extensions.Common;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Vending.Domain;
 
@@ -13,6 +14,6 @@ public static class ServiceCollectionExtensions
     /// <returns></returns>
     public static IServiceCollection AddDomain(this IServiceCollection services, DomainOptions options)
     {
-        return services;
+        return services.AddGuidGenerator(generator => generator.DefaultSequentialGuidType = SequentialGuidType.SequentialAtEnd);
     }
 }

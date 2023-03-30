@@ -14,6 +14,7 @@ public static class PurchaseMapper
     public static async Task<Purchase> ToProjection(this Domain.Abstractions.States.Purchase purchaseInGrain, Func<Guid, Task<(string, string?)>> getSnackNamePicture, Purchase? purchase = null)
     {
         purchase ??= new Purchase();
+        purchase.Id = purchaseInGrain.Id;
         purchase.MachineId = purchaseInGrain.MachineId;
         purchase.Position = purchaseInGrain.Position;
         purchase.SnackId = purchaseInGrain.SnackId;

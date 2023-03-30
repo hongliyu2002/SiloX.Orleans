@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using Fluxera.Extensions.Common;
 using Fluxera.Guards;
 using Fluxera.Utilities.Extensions;
 using Microsoft.Extensions.Logging;
@@ -20,12 +21,14 @@ namespace Vending.Domain.Grains;
 public sealed class SnackMachineGrain : EventSourcingGrainWithGuidKey<SnackMachine, SnackMachineCommand, SnackMachineEvent, SnackMachineErrorEvent>, ISnackMachineGrain
 {
     private readonly DomainDbContext _dbContext;
+    private readonly IGuidGenerator _guidGenerator;
     private readonly ILogger<SnackMachineGrain> _logger;
 
     /// <inheritdoc />
-    public SnackMachineGrain(DomainDbContext dbContext, ILogger<SnackMachineGrain> logger) : base(Constants.StreamProviderName)
+    public SnackMachineGrain(DomainDbContext dbContext, IGuidGenerator guidGenerator, ILogger<SnackMachineGrain> logger) : base(Constants.StreamProviderName)
     {
         _dbContext = Guard.Against.Null(dbContext, nameof(dbContext));
+        _guidGenerator = Guard.Against.Null(guidGenerator, nameof(guidGenerator));
         _logger = Guard.Against.Null(logger, nameof(logger));
     }
 
@@ -327,7 +330,7 @@ public sealed class SnackMachineGrain : EventSourcingGrainWithGuidKey<SnackMachi
                                                                                  State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? command.OperatedBy)));
     }
 
-    #region Custom Persistence
+    #region Persistence
 
     private async Task<bool> PersistAsync()
     {
@@ -369,8 +372,9 @@ public sealed class SnackMachineGrain : EventSourcingGrainWithGuidKey<SnackMachi
     {
         if (State.TryGetSlot(command.Position, out var slot) && slot?.SnackPile != null)
         {
-            var purchaseGrain = GrainFactory.GetGrain<IPurchaseGrain>($"{State.Id}/{slot.Position}/{slot.SnackPile.SnackId}");
-            var result = await purchaseGrain.InitializeAsync(new PurchaseInitializeCommand(State.Id, slot.Position, slot.SnackPile.SnackId, slot.SnackPile.Price, command.TraceId, command.OperatedAt, command.OperatedBy));
+            var purchaseId = _guidGenerator.Create();
+            var purchaseGrain = GrainFactory.GetGrain<IPurchaseGrain>(purchaseId);
+            var result = await purchaseGrain.InitializeAsync(new PurchaseInitializeCommand(purchaseId, State.Id, slot.Position, slot.SnackPile.SnackId, slot.SnackPile.Price, command.TraceId, command.OperatedAt, command.OperatedBy));
             return result.IsSuccess;
         }
         return false;
