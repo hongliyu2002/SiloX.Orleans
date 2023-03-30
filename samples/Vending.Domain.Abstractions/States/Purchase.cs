@@ -8,39 +8,45 @@
 public sealed class Purchase
 {
     /// <summary>
-    ///     The snack machine id.
+    ///     The unique identifier of the purchase.
     /// </summary>
     [Id(0)]
+    public Guid Id { get; set; }
+
+    /// <summary>
+    ///     The snack machine id.
+    /// </summary>
+    [Id(1)]
     public Guid MachineId { get; set; }
 
     /// <summary>
     ///     The position of slot.
     /// </summary>
-    [Id(1)]
+    [Id(2)]
     public int Position { get; set; }
 
     /// <summary>
     ///     The snack id.
     /// </summary>
-    [Id(2)]
+    [Id(3)]
     public Guid SnackId { get; set; }
 
     /// <summary>
     ///     The purchase price.
     /// </summary>
-    [Id(3)]
+    [Id(4)]
     public decimal BoughtPrice { get; set; }
 
     /// <summary>
     ///     The date and time when the snack was purchase.
     /// </summary>
-    [Id(4)]
+    [Id(5)]
     public DateTimeOffset? BoughtAt { get; set; }
 
     /// <summary>
     ///     The user who purchase the snack.
     /// </summary>
-    [Id(5)]
+    [Id(6)]
     public string? BoughtBy { get; set; }
 
     /// <summary>
@@ -51,6 +57,6 @@ public sealed class Purchase
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"Purchase with MachineId:'{MachineId}' Position:'{Position}' SnackId:'{SnackId}' BoughtPrice:'{BoughtPrice}' BoughtAt:'{BoughtAt}' BoughtBy:'{BoughtBy}'";
+        return $"Purchase with Id:'{Id}' MachineId:'{MachineId}' Position:'{Position}' SnackId:'{SnackId}' BoughtPrice:'{BoughtPrice}' BoughtAt:'{BoughtAt}' BoughtBy:'{BoughtBy}'";
     }
 }

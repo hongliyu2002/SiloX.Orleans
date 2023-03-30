@@ -24,13 +24,8 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
 
             modelBuilder.Entity("Vending.Projection.Abstractions.Entities.Purchase", b =>
                 {
-                    b.Property<Guid>("MachineId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Position")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("SnackId")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset?>("BoughtAt")
@@ -44,6 +39,15 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
                         .HasPrecision(10, 2)
                         .HasColumnType("decimal(10,2)");
 
+                    b.Property<Guid>("MachineId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("SnackId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("SnackName")
                         .IsRequired()
                         .HasMaxLength(256)
@@ -53,7 +57,9 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
                         .HasMaxLength(512)
                         .HasColumnType("nvarchar(512)");
 
-                    b.HasKey("MachineId", "Position", "SnackId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("MachineId");
 
                     b.HasIndex("SnackId");
 

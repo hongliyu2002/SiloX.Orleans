@@ -11,6 +11,11 @@ namespace Vending.Projection.Abstractions.Entities;
 public sealed class Purchase
 {
     /// <summary>
+    ///     Gets or sets the ID of the purchase.
+    /// </summary>
+    public Guid Id { get; set; }
+
+    /// <summary>
     ///     Gets or sets the ID of the vending machine where the snack was bought.
     /// </summary>
     public Guid MachineId { get; set; }

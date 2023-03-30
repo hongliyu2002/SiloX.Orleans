@@ -24,13 +24,8 @@ namespace Vending.Domain.EntityFrameworkCore.Migrations
 
             modelBuilder.Entity("Vending.Domain.Abstractions.States.Purchase", b =>
                 {
-                    b.Property<Guid>("MachineId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Position")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("SnackId")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset?>("BoughtAt")
@@ -44,7 +39,18 @@ namespace Vending.Domain.EntityFrameworkCore.Migrations
                         .HasPrecision(10, 2)
                         .HasColumnType("decimal(10,2)");
 
-                    b.HasKey("MachineId", "Position", "SnackId");
+                    b.Property<Guid>("MachineId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("SnackId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MachineId");
 
                     b.HasIndex("SnackId");
 

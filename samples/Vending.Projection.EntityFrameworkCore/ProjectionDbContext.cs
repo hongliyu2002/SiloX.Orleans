@@ -65,18 +65,13 @@ public class ProjectionDbContext : DbContext
         modelBuilder.Entity<Purchase>(builder =>
                                       {
                                           builder.ToTable("Purchases");
-                                          builder.HasKey(sb => new
-                                                               {
-                                                                   sb.MachineId,
-                                                                   sb.Position,
-                                                                   sb.SnackId
-                                                               });
+                                          builder.HasKey(p => p.Id);
                                           builder.HasOne<SnackMachine>().WithMany().HasForeignKey(p => p.MachineId).OnDelete(DeleteBehavior.Cascade);
                                           builder.HasOne<Snack>().WithMany().HasForeignKey(p => p.SnackId).OnDelete(DeleteBehavior.Cascade);
-                                          builder.Property(sb => sb.SnackName).HasMaxLength(256);
-                                          builder.Property(sb => sb.SnackPictureUrl).HasMaxLength(512);
-                                          builder.Property(sb => sb.BoughtPrice).HasPrecision(10, 2);
-                                          builder.Property(sb => sb.BoughtBy).HasMaxLength(256);
+                                          builder.Property(p => p.SnackName).HasMaxLength(256);
+                                          builder.Property(p => p.SnackPictureUrl).HasMaxLength(512);
+                                          builder.Property(p => p.BoughtPrice).HasPrecision(10, 2);
+                                          builder.Property(p => p.BoughtBy).HasMaxLength(256);
                                       });
         base.OnModelCreating(modelBuilder);
     }
