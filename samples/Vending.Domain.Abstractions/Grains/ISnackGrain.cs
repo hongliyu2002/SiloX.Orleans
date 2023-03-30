@@ -8,7 +8,7 @@ namespace Vending.Domain.Abstractions.Grains;
 /// <summary>
 ///     This interface defines the contract for the SnackGrain
 /// </summary>
-public interface ISnackGrain
+public interface ISnackGrain : IGrainWithGuidKey
 {
     /// <summary>
     ///     Asynchronously retrieves the current state of the Snack

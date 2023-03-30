@@ -3,5 +3,5 @@
 [Immutable]
 [Serializable]
 [GenerateSerializer]
-public sealed record SnackMachineStatsBoughtCountUpdatedEvent(Guid MachineId, int Version, int Count, Guid TraceId, DateTimeOffset OperatedAt, string OperatedBy) 
+public sealed record SnackMachineBoughtCountUpdatedEvent(Guid MachineId, int Version, int Count, Guid TraceId, DateTimeOffset OperatedAt, string OperatedBy) 
     : SnackMachineEvent(MachineId, Version, TraceId, OperatedAt, OperatedBy);

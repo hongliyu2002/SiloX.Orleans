@@ -13,20 +13,20 @@ using Vending.Projection.EntityFrameworkCore;
 namespace Vending.Projection.Grains;
 
 [ImplicitStreamSubscription(Constants.PurchasesNamespace)]
-public sealed class PurchaseProjectionGrain : SubscriberGrain<PurchaseEvent, PurchaseErrorEvent>
+public sealed class PurchaseProjectionGrain : SubscriberGrainWithStringKey<PurchaseEvent, PurchaseErrorEvent>
 {
     private readonly ProjectionDbContext _dbContext;
     private readonly ILogger<PurchaseProjectionGrain> _logger;
 
     /// <inheritdoc />
-    public PurchaseProjectionGrain(ProjectionDbContext dbContext, ILogger<PurchaseProjectionGrain> logger) : base(Constants.StreamProviderName2)
+    public PurchaseProjectionGrain(ProjectionDbContext dbContext, ILogger<PurchaseProjectionGrain> logger) : base(Constants.StreamProviderName)
     {
         _dbContext = Guard.Against.Null(dbContext, nameof(dbContext));
         _logger = Guard.Against.Null(logger, nameof(logger));
     }
 
     /// <inheritdoc />
-    protected override string GetSubscribeStreamNamespace()
+    protected override string GetStreamNamespace()
     {
         return Constants.PurchasesNamespace;
     }
@@ -84,7 +84,7 @@ public sealed class PurchaseProjectionGrain : SubscriberGrain<PurchaseEvent, Pur
             }
             if (_dbContext.Entry(purchase).State != EntityState.Added)
             {
-                _logger.LogWarning($"Apply PurchaseInitializedEvent: Purchase {purchaseEvent.Id} is already in the database. Try to execute full update...");
+                _logger.LogWarning($"Apply PurchaseInitializedEvent: Purchase {purchaseEvent.MachineId}/{purchaseEvent.Position}/{purchaseEvent.SnackId} is already in the database. Try to execute full update...");
                 await ApplyFullUpdateAsync(purchaseEvent);
                 return;
             }
@@ -105,8 +105,8 @@ public sealed class PurchaseProjectionGrain : SubscriberGrain<PurchaseEvent, Pur
         {
             try
             {
-                var id = purchaseEvent.PurchaseId;
-                var purchaseGrain = GrainFactory.GetGrain<IPurchaseGrain>(id);
+                var purchaseId = $"{purchaseEvent.MachineId}/{purchaseEvent.Position}/{purchaseEvent.SnackId}";
+                var purchaseGrain = GrainFactory.GetGrain<IPurchaseGrain>(purchaseId);
                 var purchaseInGrain = await purchaseGrain.GetStateAsync();
                 var purchase = await _dbContext.Purchases.FindAsync(purchaseEvent.MachineId, purchaseEvent.Position, purchaseEvent.SnackId);
                 if (purchaseInGrain == null)

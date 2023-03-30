@@ -12,16 +12,16 @@ using Vending.Domain.EntityFrameworkCore;
 namespace Vending.Domain.Grains;
 
 /// <summary>
-///     Grain implementation class SnackMachineStatsBySnackGrain.
+///     Grain implementation class SnackSnackMachineStatsGrain.
 /// </summary>
 [StorageProvider(ProviderName = Constants.GrainStorageName)]
-public class SnackMachineStatsBySnackGrain : StatefulGrainWithGuidKey<SnackMachineStats, SnackEvent, SnackErrorEvent>, ISnackMachineStatsBySnackGrain
+public class SnackSnackMachineStatsGrain : StatefulGrainWithGuidKey<SnackMachineStats, SnackEvent, SnackErrorEvent>, ISnackSnackMachineStatsGrain
 {
     private readonly DomainDbContext _dbContext;
-    private readonly ILogger<SnackMachineStatsBySnackGrain> _logger;
+    private readonly ILogger<SnackSnackMachineStatsGrain> _logger;
 
     /// <inheritdoc />
-    public SnackMachineStatsBySnackGrain(DomainDbContext dbContext, ILogger<SnackMachineStatsBySnackGrain> logger) : base(Constants.StreamProviderName)
+    public SnackSnackMachineStatsGrain(DomainDbContext dbContext, ILogger<SnackSnackMachineStatsGrain> logger) : base(Constants.StreamProviderName)
     {
         _dbContext = Guard.Against.Null(dbContext, nameof(dbContext));
         _logger = Guard.Against.Null(logger, nameof(logger));

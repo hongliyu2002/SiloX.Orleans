@@ -4,9 +4,9 @@ using Vending.Domain.Abstractions.States;
 namespace Vending.Domain.Abstractions.Grains;
 
 /// <summary>
-///     Grain interface IPurchaseStatsBySnackGrain
+///     Grain interface ISnackPurchaseStatsGrain
 /// </summary>
-public interface IPurchaseStatsBySnackGrain
+public interface ISnackPurchaseStatsGrain : IGrainWithGuidKey
 {
     /// <summary>
     ///     Asynchronously retrieves the current state of the snack.
