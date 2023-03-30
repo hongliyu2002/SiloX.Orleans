@@ -51,6 +51,8 @@ public sealed class SnackMachineProjectionGrain : SubscriberGrainWithGuidKey<Sna
                 return ApplyEventAsync(machineEvent);
             case SnackMachineSnacksLoadedEvent machineEvent:
                 return ApplyEventAsync(machineEvent);
+            case SnackMachineSnacksUnloadedEvent machineEvent:
+                return ApplyEventAsync(machineEvent);
             case SnackMachineSnackBoughtEvent machineEvent:
                 return ApplyEventAsync(machineEvent);
             default:
@@ -308,6 +310,46 @@ public sealed class SnackMachineProjectionGrain : SubscriberGrainWithGuidKey<Sna
         }
     }
 
+    private async Task ApplyEventAsync(SnackMachineSnacksUnloadedEvent machineEvent)
+    {
+        try
+        {
+            var snackMachine = await _dbContext.SnackMachines.Include(sm => sm.Slots).FirstOrDefaultAsync(sm => sm.Id == machineEvent.MachineId);
+            if (snackMachine == null)
+            {
+                _logger.LogWarning($"Apply SnackMachineSnacksUnloadedEvent: Snack machine {machineEvent.MachineId} does not exist in the database. Try to execute full update...");
+                await ApplyFullUpdateAsync(machineEvent);
+                return;
+            }
+            if (snackMachine.Version != machineEvent.Version - 1)
+            {
+                _logger.LogWarning($"Apply SnackMachineSnacksUnloadedEvent: Snack machine {machineEvent.MachineId} version {snackMachine.Version}) in the database should be {machineEvent.Version - 1}. Try to execute full update...");
+                await ApplyFullUpdateAsync(machineEvent);
+                return;
+            }
+            var slot = snackMachine.Slots.FirstOrDefault(sl => sl.MachineId == machineEvent.Slot.MachineId && sl.Position == machineEvent.Slot.Position);
+            if (slot == null)
+            {
+                slot = new Slot();
+                snackMachine.Slots.Add(slot);
+            }
+            await machineEvent.Slot.ToProjection(GetSnackNameAndPictureUrlAsync, slot);
+            snackMachine.SlotsCount = machineEvent.SlotsCount;
+            snackMachine.SnackCount = machineEvent.SnackCount;
+            snackMachine.SnackQuantity = machineEvent.SnackQuantity;
+            snackMachine.SnackAmount = machineEvent.SnackAmount;
+            snackMachine.LastModifiedAt = machineEvent.OperatedAt;
+            snackMachine.LastModifiedBy = machineEvent.OperatedBy;
+            snackMachine.Version = machineEvent.Version;
+            await _dbContext.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Apply SnackMachineSnacksUnloadedEvent: Exception is occurred when try to write data to the database. Try to execute full update...");
+            await ApplyFullUpdateAsync(machineEvent);
+        }
+    }
+
     private async Task ApplyEventAsync(SnackMachineSnackBoughtEvent machineEvent)
     {
         try
@@ -376,9 +418,9 @@ public sealed class SnackMachineProjectionGrain : SubscriberGrainWithGuidKey<Sna
                 }
                 snackMachine = await snackMachineInGrain.ToProjection(GetSnackNameAndPictureUrlAsync, snackMachine);
                 snackMachine.Version = await snackMachineGrain.GetVersionAsync();
-                var purchaseStatsBySnackMachineGrain = GrainFactory.GetGrain<ISnackMachinePurchaseStatsGrain>(machineId);
-                snackMachine.BoughtCount = await purchaseStatsBySnackMachineGrain.GetCountAsync();
-                snackMachine.BoughtAmount = await purchaseStatsBySnackMachineGrain.GetAmountAsync();
+                var snackMachinePurchaseStatsGrain = GrainFactory.GetGrain<ISnackMachinePurchaseStatsGrain>(machineId);
+                snackMachine.BoughtCount = await snackMachinePurchaseStatsGrain.GetCountAsync();
+                snackMachine.BoughtAmount = await snackMachinePurchaseStatsGrain.GetAmountAsync();
                 await _dbContext.SaveChangesAsync();
                 return;
             }

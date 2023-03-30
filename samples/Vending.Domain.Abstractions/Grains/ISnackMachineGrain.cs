@@ -119,6 +119,17 @@ public interface ISnackMachineGrain : IGrainWithGuidKey
     Task<Result> LoadSnacksAsync(SnackMachineLoadSnacksCommand command);
 
     /// <summary>
+    ///     Asynchronously checks whether the SnackMachine can have snacks unloaded with the given command.
+    /// </summary>
+    [AlwaysInterleave]
+    Task<bool> CanUnloadSnacksAsync(SnackMachineUnloadSnacksCommand command);
+
+    /// <summary>
+    ///     Asynchronously unloads snacks from the SnackMachine with the given command.
+    /// </summary>
+    Task<Result> UnloadSnacksAsync(SnackMachineUnloadSnacksCommand command);
+
+    /// <summary>
     ///     Asynchronously checks whether the SnackMachine can have a snack bought with the given command.
     /// </summary>
     [AlwaysInterleave]

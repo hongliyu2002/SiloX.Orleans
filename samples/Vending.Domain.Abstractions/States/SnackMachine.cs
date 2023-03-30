@@ -178,11 +178,33 @@ public sealed class SnackMachine
         var slot = Slots.FirstOrDefault(sl => sl.Position == command.Position);
         if (slot != null)
         {
-            slot.SnackPile = command.SnackPile;
+            if (slot.SnackPile != null && slot.SnackPile.SnackId == command.SnackPile.SnackId)
+            {
+                slot.SnackPile += command.SnackPile.Quantity;
+            }
+            else
+            {
+                slot.SnackPile = command.SnackPile;
+            }
         }
         else
         {
             Slots.Add(new Slot { Position = command.Position, SnackPile = command.SnackPile });
+        }
+        LastModifiedAt = command.OperatedAt;
+        LastModifiedBy = command.OperatedBy;
+    }
+
+    public void Apply(SnackMachineUnloadSnacksCommand command)
+    {
+        var slot = Slots.FirstOrDefault(sl => sl.Position == command.Position);
+        if (slot != null)
+        {
+            slot.SnackPile = null;
+        }
+        else
+        {
+            Slots.Add(new Slot { Position = command.Position, SnackPile = null });
         }
         LastModifiedAt = command.OperatedAt;
         LastModifiedBy = command.OperatedBy;
