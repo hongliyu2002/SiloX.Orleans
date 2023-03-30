@@ -18,23 +18,29 @@ namespace Vending.Domain.Grains;
 /// <summary>
 ///     Represents a grain that manages the state of a snack purchase of a snack machine.
 /// </summary>
-[StorageProvider(ProviderName = Constants.GrainStorageName2)]
-public sealed class PurchaseGrain : StatefulGrain<Purchase, PurchaseEvent, PurchaseErrorEvent>, IPurchaseGrain
+[StorageProvider(ProviderName = Constants.GrainStorageName)]
+public sealed class PurchaseGrain : StatefulGrainWithStringKey<Purchase, PurchaseEvent, PurchaseErrorEvent>, IPurchaseGrain
 {
     private readonly DomainDbContext _dbContext;
     private readonly ILogger<PurchaseGrain> _logger;
 
     /// <inheritdoc />
-    public PurchaseGrain(DomainDbContext dbContext, ILogger<PurchaseGrain> logger) : base(Constants.StreamProviderName2)
+    public PurchaseGrain(DomainDbContext dbContext, ILogger<PurchaseGrain> logger) : base(Constants.StreamProviderName)
     {
         _dbContext = Guard.Against.Null(dbContext, nameof(dbContext));
         _logger = Guard.Against.Null(logger, nameof(logger));
     }
 
     /// <inheritdoc />
-    protected override string GetPublishStreamNamespace()
+    protected override string GetStreamNamespace()
     {
         return Constants.PurchasesNamespace;
+    }
+
+    /// <inheritdoc />
+    protected override string GetBroadcastStreamNamespace()
+    {
+        return Constants.PurchasesBroadcastNamespace;
     }
 
     /// <inheritdoc />
@@ -45,10 +51,10 @@ public sealed class PurchaseGrain : StatefulGrain<Purchase, PurchaseEvent, Purch
 
     private Result ValidateInitialize(PurchaseInitializeCommand command)
     {
-        var id = this.GetPrimaryKeyString();
+        var purchaseId = this.GetPrimaryKeyString();
         return Result.Ok()
-                     .Verify(State.IsInitialized == false, $"Bought {id} is already initialized.")
-                     .Verify($"{command.MachineId}:{command.Position}:{command.SnackId}" == id, $"Bought {id} is not owned by the same snack machine {command.MachineId} and slot {command.Position} and snack {command.SnackId}.")
+                     .Verify(State.IsInitialized == false, $"Purchase {purchaseId} is already initialized.")
+                     .Verify($"{command.MachineId}/{command.Position}/{command.SnackId}" == purchaseId, $"Purchase {purchaseId} is not owned by the same snack machine {command.MachineId} and slot {command.Position} and snack {command.SnackId}.")
                      .Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
     }
 
@@ -61,13 +67,12 @@ public sealed class PurchaseGrain : StatefulGrain<Purchase, PurchaseEvent, Purch
     /// <inheritdoc />
     public Task<Result> InitializeAsync(PurchaseInitializeCommand command)
     {
-        var id = this.GetPrimaryKeyString();
         return ValidateInitialize(command)
-              .TapErrorTryAsync(errors => PublishErrorAsync(new PurchaseErrorEvent(id, command.MachineId, command.Position, command.SnackId, 1001, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
+              .TapErrorTryAsync(errors => PublishErrorAsync(new PurchaseErrorEvent(command.MachineId, command.Position, command.SnackId, 1001, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
               .MapTryAsync(() => ApplyAsync(command))
-              .MapTryAsync(ApplyFullUpdateAsync)
+              .MapTryAsync(PersistAsync)
               .MapTryIfAsync(persisted => persisted,
-                             () => PublishAsync(new PurchaseInitializedEvent(id, State.MachineId, State.Position, State.SnackId, State.BoughtPrice, command.TraceId, State.BoughtAt ?? DateTimeOffset.UtcNow, State.BoughtBy ?? command.OperatedBy)));
+                             () => PublishAsync(new PurchaseInitializedEvent(State.MachineId, State.Position, State.SnackId, State.BoughtPrice, command.TraceId, State.BoughtAt ?? DateTimeOffset.UtcNow, State.BoughtBy ?? command.OperatedBy)));
     }
 
     #region Persistence
@@ -83,7 +88,7 @@ public sealed class PurchaseGrain : StatefulGrain<Purchase, PurchaseEvent, Purch
         return WriteStateAsync();
     }
 
-    private async Task<bool> ApplyFullUpdateAsync()
+    private async Task<bool> PersistAsync()
     {
         var attempts = 0;
         bool retryNeeded;
@@ -112,13 +117,13 @@ public sealed class PurchaseGrain : StatefulGrain<Purchase, PurchaseEvent, Purch
                 retryNeeded = ++attempts <= 3;
                 if (retryNeeded)
                 {
-                    _logger.LogWarning(ex, $"ApplyFullUpdateAsync: DbUpdateConcurrencyException is occurred when try to write data to the database. Retrying {attempts}...");
+                    _logger.LogWarning(ex, $"PersistAsync: DbUpdateConcurrencyException is occurred when try to write data to the database. Retrying {attempts}...");
                     await Task.Delay(TimeSpan.FromSeconds(attempts));
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "ApplyFullUpdateAsync: Exception is occurred when try to write data to the database.");
+                _logger.LogError(ex, "PersistAsync: Exception is occurred when try to write data to the database.");
                 retryNeeded = false;
             }
         }

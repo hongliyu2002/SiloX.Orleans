@@ -1,8 +1,10 @@
 ﻿using Fluxera.Guards;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Orleans.Runtime;
+using Orleans.Providers;
+using SiloX.Domain.Abstractions;
 using Vending.Domain.Abstractions;
+using Vending.Domain.Abstractions.Events;
 using Vending.Domain.Abstractions.Grains;
 using Vending.Domain.Abstractions.States;
 using Vending.Domain.EntityFrameworkCore;
@@ -12,16 +14,15 @@ namespace Vending.Domain.Grains;
 /// <summary>
 ///     Grain implementation class PurchaseStatsBySnackMachineGrain.
 /// </summary>
-public class PurchaseStatsBySnackMachineGrain : Grain, IPurchaseStatsBySnackMachineGrain
+[StorageProvider(ProviderName = Constants.GrainStorageName)]
+public class PurchaseStatsBySnackMachineGrain : StatefulGrainWithGuidKey<PurchaseStats, SnackMachineEvent, SnackMachineErrorEvent>, IPurchaseStatsBySnackMachineGrain
 {
-    private readonly IPersistentState<PurchaseStats> _stats;
     private readonly DomainDbContext _dbContext;
     private readonly ILogger<PurchaseStatsBySnackMachineGrain> _logger;
 
     /// <inheritdoc />
-    public PurchaseStatsBySnackMachineGrain([PersistentState(nameof(PurchaseStats), Constants.GrainStorageName2)] IPersistentState<PurchaseStats> stats, DomainDbContext dbContext, ILogger<PurchaseStatsBySnackMachineGrain> logger)
+    public PurchaseStatsBySnackMachineGrain(DomainDbContext dbContext, ILogger<PurchaseStatsBySnackMachineGrain> logger) : base(Constants.StreamProviderName)
     {
-        _stats = Guard.Against.Null(stats, nameof(stats));
         _dbContext = Guard.Against.Null(dbContext, nameof(dbContext));
         _logger = Guard.Against.Null(logger, nameof(logger));
     }
@@ -29,97 +30,109 @@ public class PurchaseStatsBySnackMachineGrain : Grain, IPurchaseStatsBySnackMach
     /// <inheritdoc />
     public override async Task OnActivateAsync(CancellationToken cancellationToken)
     {
-        await base.OnActivateAsync(cancellationToken);
         await UpdateCountAsync();
         await UpdateAmountAsync();
+        await base.OnActivateAsync(cancellationToken);
+    }
+
+    /// <inheritdoc />
+    protected override string GetStreamNamespace()
+    {
+        return Constants.SnackMachinesNamespace;
+    }
+
+    /// <inheritdoc />
+    protected override string GetBroadcastStreamNamespace()
+    {
+        return Constants.SnackMachinesBroadcastNamespace;
     }
 
     /// <inheritdoc />
     public Task<PurchaseStats> GetStateAsync()
     {
-        return Task.FromResult(_stats.State);
+        return Task.FromResult(State);
     }
 
     /// <inheritdoc />
     public Task<int> GetCountAsync()
     {
-        return Task.FromResult(_stats.State.Count);
+        return Task.FromResult(State.Count);
     }
 
     /// <inheritdoc />
     public Task IncrementCountAsync(int number)
     {
-        _stats.State.Count += number;
-        _logger.LogInformation("Incremented count of purchases that have this snack machine to {Count}", _stats.State.Count);
-        return _stats.WriteStateAsync();
+        State.Count += number;
+        _logger.LogInformation("Incremented count of purchases that have this snack machine to {Count}", State.Count);
+        return WriteStateAsync();
     }
 
     public Task DecrementCountAsync(int number)
     {
-        _stats.State.Count -= number;
-        _logger.LogInformation("Decremented count of purchases that have this snack machine to {Count}", _stats.State.Count);
-        return _stats.WriteStateAsync();
+        State.Count -= number;
+        _logger.LogInformation("Decremented count of purchases that have this snack machine to {Count}", State.Count);
+        return WriteStateAsync();
     }
 
     /// <inheritdoc />
     public Task<decimal> GetAmountAsync()
     {
-        return Task.FromResult(_stats.State.Amount);
+        return Task.FromResult(State.Amount);
     }
 
     /// <inheritdoc />
     public Task IncrementAmountAsync(decimal amount)
     {
-        _stats.State.Amount += amount;
-        _logger.LogInformation("Incremented amount of purchases that have this snack machine to {Amount}", _stats.State.Amount);
-        return _stats.WriteStateAsync();
+        State.Amount += amount;
+        _logger.LogInformation("Incremented amount of purchases that have this snack machine to {Amount}", State.Amount);
+        return WriteStateAsync();
     }
 
     /// <inheritdoc />
     public Task DecrementAmountAsync(decimal amount)
     {
-        _stats.State.Amount -= amount;
-        _logger.LogInformation("Decremented amount of purchases that have this snack machine to {Amount}", _stats.State.Amount);
-        return _stats.WriteStateAsync();
+        State.Amount -= amount;
+        _logger.LogInformation("Decremented amount of purchases that have this snack machine to {Amount}", State.Amount);
+        return WriteStateAsync();
     }
 
     #region Update From DB
 
     private async Task UpdateCountAsync()
     {
+        var machineId = this.GetPrimaryKey();
         try
         {
-            var machineId = this.GetPrimaryKey();
-            var countInDb = await _dbContext.Purchases.Where(p => p.MachineId == machineId).CountAsync();
-            if (_stats.State.Count != countInDb)
+            var count = await _dbContext.Purchases.Where(p => p.MachineId == machineId).CountAsync();
+            if (State.Count != count)
             {
-                _logger.LogInformation("Updated count of purchases that have this snack machine from {OldCount} to {NewCount}", _stats.State.Count, countInDb);
-                _stats.State.Count = countInDb;
-                await _stats.WriteStateAsync();
+                State.Count = count;
+                _logger.LogInformation("Updated count of purchases that have this snack machine from {OldCount} to {NewCount}", State.Count, count);
+                await WriteStateAsync();
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to update count for snack machine {MachineId}", this.GetPrimaryKey());
+            _logger.LogError(ex, "Failed to update count for snack machine {MachineId}", machineId);
         }
     }
 
     private async Task UpdateAmountAsync()
     {
+        var machineId = this.GetPrimaryKey();
         try
         {
-            var machineId = this.GetPrimaryKey();
-            var amountInDb = await _dbContext.Purchases.Where(p => p.MachineId == machineId).SumAsync(p => p.BoughtPrice);
-            if (_stats.State.Amount != amountInDb)
+            var amount = await _dbContext.Purchases.Where(p => p.MachineId == machineId).SumAsync(p => p.BoughtPrice);
+            if (State.Amount != amount)
             {
-                _logger.LogInformation("Updated amount of purchases that have this snack machine from {OldAmount} to {NewAmount}", _stats.State.Amount, amountInDb);
-                _stats.State.Amount = amountInDb;
-                await _stats.WriteStateAsync();
+                State.Amount = amount;
+                _logger.LogInformation("Updated amount of purchases that have this snack machine from {OldAmount} to {NewAmount}", State.Amount, amount);
+                await WriteStateAsync();
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to update amount for snack machine {MachineId}", this.GetPrimaryKey());
+            _logger.LogError(ex, "Failed to update amount for snack machine {MachineId}", machineId);
         }
     }
 
