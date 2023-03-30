@@ -6,4 +6,4 @@ namespace Vending.Domain.Abstractions.Events;
 [Serializable]
 [GenerateSerializer]
 public abstract record SnackEvent(Guid SnackId, int Version, Guid TraceId, DateTimeOffset OperatedAt, string OperatedBy) 
-    : DomainEvent(SnackId.ToString(), Version, TraceId, OperatedAt, OperatedBy);
+    : DomainEvent(Version, TraceId, OperatedAt, OperatedBy);

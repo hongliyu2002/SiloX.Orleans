@@ -9,7 +9,7 @@ namespace Vending.Domain.Abstractions.Grains;
 /// <summary>
 ///     This interface defines the contract for the SnackMachineGrain
 /// </summary>
-public interface ISnackMachineGrain : IGrainWithGuidKey
+public interface ISnackMachineGrain
 {
     /// <summary>
     ///     Asynchronously retrieves the current state of the SnackMachine.

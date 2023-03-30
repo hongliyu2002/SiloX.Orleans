@@ -6,7 +6,7 @@ namespace Vending.Domain.Abstractions.Grains;
 /// <summary>
 ///     Grain interface ISnackMachineStatsBySnackGrain
 /// </summary>
-public interface ISnackMachineStatsBySnackGrain : IGrainWithGuidKey
+public interface ISnackMachineStatsBySnackGrain
 {
     /// <summary>
     ///     Asynchronously retrieves the current state of the Snack

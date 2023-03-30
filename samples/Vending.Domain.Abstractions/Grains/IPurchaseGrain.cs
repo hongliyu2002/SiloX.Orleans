@@ -8,7 +8,7 @@ namespace Vending.Domain.Abstractions.Grains;
 /// <summary>
 ///     This interface defines the contract for the snack machine snack purchase grain.
 /// </summary>
-public interface IPurchaseGrain : IGrainWithStringKey
+public interface IPurchaseGrain
 {
     /// <summary>
     ///     Asynchronously retrieves the current state of the snack machine snack purchase grain.
