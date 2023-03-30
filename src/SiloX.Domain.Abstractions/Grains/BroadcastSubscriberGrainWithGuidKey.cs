@@ -7,7 +7,7 @@ namespace SiloX.Domain.Abstractions;
 /// <summary>
 ///     Represents a base class for Orleans event subscribers that can subscribe to a stream of TEvent from Broadcast.
 /// </summary>
-public abstract class BroadcastSubscriberGrain<TEvent, TErrorEvent> : Grain, IGrainWithStringKey
+public abstract class BroadcastSubscriberGrainWithGuidKey<TEvent, TErrorEvent> : Grain, IGrainWithGuidKey
     where TEvent : DomainEvent
     where TErrorEvent : TEvent, IDomainErrorEvent
 {
@@ -16,10 +16,11 @@ public abstract class BroadcastSubscriberGrain<TEvent, TErrorEvent> : Grain, IGr
     private StreamSubscriptionHandle<TEvent>? _broadcastSubscription;
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="SubscriberGrain{TEvent,TErrorEvent}" /> class with the specified stream provider name and stream namespace.
+    ///     Initializes a new instance of the <see cref="BroadcastSubscriberGrainWithGuidKey{TEvent,TErrorEvent}" /> class with
+    ///     the specified stream provider name and stream namespace.
     /// </summary>
     /// <param name="streamProviderName">The name of the stream provider.</param>
-    protected BroadcastSubscriberGrain(string streamProviderName)
+    protected BroadcastSubscriberGrainWithGuidKey(string streamProviderName)
     {
         streamProviderName = Guard.Against.NullOrWhiteSpace(streamProviderName, nameof(streamProviderName));
         _streamProvider = this.GetStreamProvider(streamProviderName);
@@ -54,7 +55,7 @@ public abstract class BroadcastSubscriberGrain<TEvent, TErrorEvent> : Grain, IGr
     /// <returns>The stream.</returns>
     private IAsyncStream<TEvent> GetBroadcastStream()
     {
-        return _broadcastStream ??= _streamProvider.GetStream<TEvent>(StreamId.Create(GetBroadcastStreamNamespace(), string.Empty));
+        return _broadcastStream ??= _streamProvider.GetStream<TEvent>(StreamId.Create(GetBroadcastStreamNamespace(), Guid.Empty));
     }
 
     /// <summary>

@@ -13,7 +13,7 @@ namespace SiloX.Domain.Abstractions;
 /// <typeparam name="TCommand">The type of domain command used by the grain.</typeparam>
 /// <typeparam name="TEvent">The type of domain event used by the grain.</typeparam>
 /// <typeparam name="TErrorEvent">The type of domain error event used by the grain.</typeparam>
-public abstract class EventSourcingGrain<TState, TCommand, TEvent, TErrorEvent> : JournaledGrain<TState, TCommand>, IGrainWithStringKey
+public abstract class EventSourcingGrainWithStringKey<TState, TCommand, TEvent, TErrorEvent> : JournaledGrain<TState, TCommand>, IGrainWithStringKey
     where TState : class, new()
     where TCommand : DomainCommand
     where TEvent : DomainEvent
@@ -24,10 +24,10 @@ public abstract class EventSourcingGrain<TState, TCommand, TEvent, TErrorEvent> 
     private IAsyncStream<TEvent>? _broadcastStream;
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="EventSourcingGrain{TState, TCommand, TEvent, TErrorEvent}" /> class.
+    ///     Initializes a new instance of the <see cref="EventSourcingGrainWithStringKey{TState, TCommand, TEvent, TErrorEvent}" /> class.
     /// </summary>
     /// <param name="streamProviderName">The name of the stream provider.</param>
-    protected EventSourcingGrain(string streamProviderName)
+    protected EventSourcingGrainWithStringKey(string streamProviderName)
     {
         streamProviderName = Guard.Against.NullOrWhiteSpace(streamProviderName, nameof(streamProviderName));
         _streamProvider = this.GetStreamProvider(streamProviderName);

@@ -7,7 +7,7 @@ namespace SiloX.Domain.Abstractions;
 /// <summary>
 ///     Represents a base class for Orleans event subscribers that can subscribe to a stream of TEvent.
 /// </summary>
-public abstract class SubscriberGrain<TEvent, TErrorEvent> : Grain, IGrainWithStringKey
+public abstract class SubscriberGrainWithStringKey<TEvent, TErrorEvent> : Grain, IGrainWithStringKey
     where TEvent : DomainEvent
     where TErrorEvent : TEvent, IDomainErrorEvent
 {
@@ -16,10 +16,11 @@ public abstract class SubscriberGrain<TEvent, TErrorEvent> : Grain, IGrainWithSt
     private StreamSubscriptionHandle<TEvent>? _subscription;
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="SubscriberGrain{TEvent,TErrorEvent}" /> class with the specified stream provider name and stream namespace.
+    ///     Initializes a new instance of the <see cref="SubscriberGrainWithStringKey{TEvent,TErrorEvent}" /> class with
+    ///     the specified stream provider name and stream namespace.
     /// </summary>
     /// <param name="streamProviderName">The name of the stream provider.</param>
-    protected SubscriberGrain(string streamProviderName)
+    protected SubscriberGrainWithStringKey(string streamProviderName)
     {
         streamProviderName = Guard.Against.NullOrWhiteSpace(streamProviderName, nameof(streamProviderName));
         _streamProvider = this.GetStreamProvider(streamProviderName);
