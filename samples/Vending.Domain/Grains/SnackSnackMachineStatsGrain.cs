@@ -1,9 +1,13 @@
 ﻿using Fluxera.Guards;
+using Fluxera.Utilities.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Orleans.FluentResults;
 using Orleans.Providers;
 using SiloX.Domain.Abstractions;
+using SiloX.Domain.Abstractions.Extensions;
 using Vending.Domain.Abstractions;
+using Vending.Domain.Abstractions.Commands;
 using Vending.Domain.Abstractions.Events;
 using Vending.Domain.Abstractions.Grains;
 using Vending.Domain.Abstractions.States;
@@ -58,19 +62,50 @@ public class SnackSnackMachineStatsGrain : StatefulGrainWithGuidKey<SnackMachine
         return Task.FromResult(State.Count);
     }
 
-    /// <inheritdoc />
-    public Task IncrementCountAsync(int number)
+    private Result ValidateIncrementCount(SnackIncrementMachineCountCommand command)
+    {
+        var snackId = this.GetPrimaryKey();
+        return Result.Ok().Verify(command.Number > 0, $"The number of machines to increment for {snackId} should be greater than 0.").Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
+    }
+
+    private Task IncrementCountAsync(int number)
     {
         State.Count += number;
         _logger.LogInformation("Incremented count of machines that have this snack to {Count}", State.Count);
         return WriteStateAsync();
     }
 
-    public Task DecrementCountAsync(int number)
+    /// <inheritdoc />
+    public Task<Result> IncrementCountAsync(SnackIncrementMachineCountCommand command)
+    {
+        var snackId = this.GetPrimaryKey();
+        return ValidateIncrementCount(command)
+              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(snackId, 0, 131, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
+              .MapTryAsync(() => IncrementCountAsync(command.Number))
+              .MapTryAsync(() => PublishAsync(new SnackMachineCountUpdatedEvent(snackId, State.Count, command.TraceId, command.OperatedAt, command.OperatedBy)));
+    }
+
+    private Result ValidateDecrementCount(SnackDecrementMachineCountCommand command)
+    {
+        var snackId = this.GetPrimaryKey();
+        return Result.Ok().Verify(command.Number > 0, $"The number of machines to decrement for {snackId} should be greater than 0.").Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
+    }
+
+    private Task DecrementCountAsync(int number)
     {
         State.Count -= number;
         _logger.LogInformation("Decremented count of machines that have this snack to {Count}", State.Count);
         return WriteStateAsync();
+    }
+
+    /// <inheritdoc />
+    public Task<Result> DecrementCountAsync(SnackDecrementMachineCountCommand command)
+    {
+        var snackId = this.GetPrimaryKey();
+        return ValidateDecrementCount(command)
+              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(snackId, 0, 132, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
+              .MapTryAsync(() => DecrementCountAsync(command.Number))
+              .MapTryAsync(() => PublishAsync(new SnackMachineCountUpdatedEvent(snackId, State.Count, command.TraceId, command.OperatedAt, command.OperatedBy)));
     }
 
     #region Update From DB
@@ -80,7 +115,7 @@ public class SnackSnackMachineStatsGrain : StatefulGrainWithGuidKey<SnackMachine
         var snackId = this.GetPrimaryKey();
         try
         {
-            var count = await _dbContext.SnackMachines.CountAsync(sm => sm.IsDeleted == false && sm.Slots.Any(sl => sl.SnackPile != null && sl.SnackPile.SnackId == snackId));
+            var count = await _dbContext.SnackMachines.Where(sm => sm.IsDeleted == false && sm.Slots.Any(sl => sl.SnackPile != null && sl.SnackPile.SnackId == snackId)).CountAsync();
             if (State.Count != count)
             {
                 State.Count = count;

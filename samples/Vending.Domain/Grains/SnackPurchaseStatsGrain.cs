@@ -1,9 +1,13 @@
 ﻿using Fluxera.Guards;
+using Fluxera.Utilities.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Orleans.FluentResults;
 using Orleans.Providers;
 using SiloX.Domain.Abstractions;
+using SiloX.Domain.Abstractions.Extensions;
 using Vending.Domain.Abstractions;
+using Vending.Domain.Abstractions.Commands;
 using Vending.Domain.Abstractions.Events;
 using Vending.Domain.Abstractions.Grains;
 using Vending.Domain.Abstractions.States;
@@ -59,19 +63,50 @@ public class SnackPurchaseStatsGrain : StatefulGrainWithGuidKey<PurchaseStats, S
         return Task.FromResult(State.Count);
     }
 
-    /// <inheritdoc />
-    public Task IncrementCountAsync(int number)
+    private Result ValidateIncrementCount(SnackIncrementBoughtCountCommand command)
+    {
+        var snackId = this.GetPrimaryKey();
+        return Result.Ok().Verify(command.Number > 0, $"The number of boughts to increment for {snackId} should be greater than 0.").Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
+    }
+
+    private Task IncrementCountAsync(int number)
     {
         State.Count += number;
-        _logger.LogInformation("Incremented count of purchases that have this snack to {Count}", State.Count);
+        _logger.LogInformation("Incremented count of boughts that have this snack to {Count}", State.Count);
         return WriteStateAsync();
     }
 
-    public Task DecrementCountAsync(int number)
+    /// <inheritdoc />
+    public Task<Result> IncrementCountAsync(SnackIncrementBoughtCountCommand command)
+    {
+        var snackId = this.GetPrimaryKey();
+        return ValidateIncrementCount(command)
+              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(snackId, 0, 121, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
+              .MapTryAsync(() => IncrementCountAsync(command.Number))
+              .MapTryAsync(() => PublishAsync(new SnackBoughtCountUpdatedEvent(snackId, State.Count, command.TraceId, command.OperatedAt, command.OperatedBy)));
+    }
+
+    private Result ValidateDecrementCount(SnackDecrementBoughtCountCommand command)
+    {
+        var snackId = this.GetPrimaryKey();
+        return Result.Ok().Verify(command.Number > 0, $"The number of boughts to decrement for {snackId} should be greater than 0.").Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
+    }
+
+    private Task DecrementCountAsync(int number)
     {
         State.Count -= number;
-        _logger.LogInformation("Decremented count of purchases that have this snack to {Count}", State.Count);
+        _logger.LogInformation("Decremented count of boughts that have this snack to {Count}", State.Count);
         return WriteStateAsync();
+    }
+
+    /// <inheritdoc />
+    public Task<Result> DecrementCountAsync(SnackDecrementBoughtCountCommand command)
+    {
+        var snackId = this.GetPrimaryKey();
+        return ValidateDecrementCount(command)
+              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(snackId, 0, 122, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
+              .MapTryAsync(() => DecrementCountAsync(command.Number))
+              .MapTryAsync(() => PublishAsync(new SnackBoughtCountUpdatedEvent(snackId, State.Count, command.TraceId, command.OperatedAt, command.OperatedBy)));
     }
 
     /// <inheritdoc />
@@ -80,20 +115,50 @@ public class SnackPurchaseStatsGrain : StatefulGrainWithGuidKey<PurchaseStats, S
         return Task.FromResult(State.Amount);
     }
 
-    /// <inheritdoc />
-    public Task IncrementAmountAsync(decimal amount)
+    private Result ValidateIncrementAmount(SnackIncrementBoughtAmountCommand command)
+    {
+        var snackId = this.GetPrimaryKey();
+        return Result.Ok().Verify(command.Amount >= 0, $"The amount of boughts to increment for {snackId} should be greater than or equals 0.").Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
+    }
+
+    private Task IncrementAmountAsync(decimal amount)
     {
         State.Amount += amount;
-        _logger.LogInformation("Incremented amount of purchases that have this snack to {Amount}", State.Amount);
+        _logger.LogInformation("Incremented amount of boughts that have this snack to {Amount}", State.Amount);
         return WriteStateAsync();
     }
 
     /// <inheritdoc />
-    public Task DecrementAmountAsync(decimal amount)
+    public Task<Result> IncrementAmountAsync(SnackIncrementBoughtAmountCommand command)
+    {
+        var snackId = this.GetPrimaryKey();
+        return ValidateIncrementAmount(command)
+              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(snackId, 0, 123, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
+              .MapTryAsync(() => IncrementAmountAsync(command.Amount))
+              .MapTryAsync(() => PublishAsync(new SnackBoughtAmountUpdatedEvent(snackId, State.Amount, command.TraceId, command.OperatedAt, command.OperatedBy)));
+    }
+
+    private Result ValidateDecrementAmount(SnackDecrementBoughtAmountCommand command)
+    {
+        var snackId = this.GetPrimaryKey();
+        return Result.Ok().Verify(command.Amount >= 0, $"The amount of boughts to decrement for {snackId} should be greater than or equals 0.").Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
+    }
+
+    private Task DecrementAmountAsync(decimal amount)
     {
         State.Amount -= amount;
-        _logger.LogInformation("Decremented amount of purchases that have this snack to {Amount}", State.Amount);
+        _logger.LogInformation("Decremented amount of boughts that have this snack to {Amount}", State.Amount);
         return WriteStateAsync();
+    }
+
+    /// <inheritdoc />
+    public Task<Result> DecrementAmountAsync(SnackDecrementBoughtAmountCommand command)
+    {
+        var snackId = this.GetPrimaryKey();
+        return ValidateDecrementAmount(command)
+              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(snackId, 0, 124, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
+              .MapTryAsync(() => DecrementAmountAsync(command.Amount))
+              .MapTryAsync(() => PublishAsync(new SnackBoughtAmountUpdatedEvent(snackId, State.Amount, command.TraceId, command.OperatedAt, command.OperatedBy)));
     }
 
     #region Update From DB
@@ -107,7 +172,7 @@ public class SnackPurchaseStatsGrain : StatefulGrainWithGuidKey<PurchaseStats, S
             if (State.Count != count)
             {
                 State.Count = count;
-                _logger.LogInformation("Updated count of purchases that have this snack from {OldCount} to {NewCount}", State.Count, count);
+                _logger.LogInformation("Updated count of boughts that have this snack from {OldCount} to {NewCount}", State.Count, count);
                 await WriteStateAsync();
             }
         }
@@ -126,7 +191,7 @@ public class SnackPurchaseStatsGrain : StatefulGrainWithGuidKey<PurchaseStats, S
             if (State.Amount != amount)
             {
                 State.Amount = amount;
-                _logger.LogInformation("Updated amount of purchases that have this snack from {OldAmount} to {NewAmount}", State.Amount, amount);
+                _logger.LogInformation("Updated amount of boughts that have this snack from {OldAmount} to {NewAmount}", State.Amount, amount);
                 await WriteStateAsync();
             }
         }

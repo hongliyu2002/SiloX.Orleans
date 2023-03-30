@@ -3,5 +3,5 @@
 [Immutable]
 [Serializable]
 [GenerateSerializer]
-public sealed record SnackIncrementPurchaseCountCommand(int Number, Guid TraceId, DateTimeOffset OperatedAt, string OperatedBy) 
+public sealed record SnackIncrementBoughtAmountCommand(decimal Amount, Guid TraceId, DateTimeOffset OperatedAt, string OperatedBy) 
     : SnackCommand(TraceId, OperatedAt, OperatedBy);

@@ -1,4 +1,6 @@
 ﻿using Orleans.Concurrency;
+using Orleans.FluentResults;
+using Vending.Domain.Abstractions.Commands;
 using Vending.Domain.Abstractions.States;
 
 namespace Vending.Domain.Abstractions.Grains;
@@ -24,14 +26,14 @@ public interface ISnackPurchaseStatsGrain : IGrainWithGuidKey
     /// <summary>
     ///     Asynchronously increments the count of purchases that have this snack.
     /// </summary>
-    /// <param name="number">The number of purchases that have this snack </param>
-    Task IncrementCountAsync(int number);
+    /// <param name="command">The number of purchases that have this snack </param>
+    Task<Result> IncrementCountAsync(SnackIncrementBoughtCountCommand command);
 
     /// <summary>
     ///     Asynchronously decrements the count of purchases that have this snack.
     /// </summary>
-    /// <param name="number">The number of purchases that have this snack </param>
-    Task DecrementCountAsync(int number);
+    /// <param name="command">The number of purchases that have this snack </param>
+    Task<Result> DecrementCountAsync(SnackDecrementBoughtCountCommand command);
 
     /// <summary>
     ///     Asynchronously retrieves the amount of purchase that have this snack.
@@ -43,12 +45,12 @@ public interface ISnackPurchaseStatsGrain : IGrainWithGuidKey
     /// <summary>
     ///     Asynchronously increments the amount of purchases that have this snack.
     /// </summary>
-    /// <param name="amount">The number of purchases made for this snack</param>
-    Task IncrementAmountAsync(decimal amount);
+    /// <param name="command">The number of purchases made for this snack</param>
+    Task<Result> IncrementAmountAsync(SnackIncrementBoughtAmountCommand command);
 
     /// <summary>
     ///     Asynchronously decrements the amount of purchases that have this snack.
     /// </summary>
-    /// <param name="amount">The number of purchases made for this snack</param>
-    Task DecrementAmountAsync(decimal amount);
+    /// <param name="command">The number of purchases made for this snack</param>
+    Task<Result> DecrementAmountAsync(SnackDecrementBoughtAmountCommand command);
 }

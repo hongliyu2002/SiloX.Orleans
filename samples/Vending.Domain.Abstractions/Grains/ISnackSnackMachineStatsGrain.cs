@@ -1,4 +1,6 @@
 ﻿using Orleans.Concurrency;
+using Orleans.FluentResults;
+using Vending.Domain.Abstractions.Commands;
 using Vending.Domain.Abstractions.States;
 
 namespace Vending.Domain.Abstractions.Grains;
@@ -24,12 +26,12 @@ public interface ISnackSnackMachineStatsGrain : IGrainWithGuidKey
     /// <summary>
     ///     Asynchronously increments the count of machines that have this snack
     /// </summary>
-    /// <param name="number">The number of machines that have this snack </param>
-    Task IncrementCountAsync(int number);
+    /// <param name="command">The number of machines that have this snack </param>
+    Task<Result> IncrementCountAsync(SnackIncrementMachineCountCommand command);
 
     /// <summary>
     ///     Asynchronously decrements the count of machines that have this snack
     /// </summary>
-    /// <param name="number">The number of machines that have this snack </param>
-    Task DecrementCountAsync(int number);
+    /// <param name="command">The number of machines that have this snack </param>
+    Task<Result> DecrementCountAsync(SnackDecrementMachineCountCommand command);
 }
