@@ -6,13 +6,14 @@ using Vending.Domain.Abstractions;
 using Vending.Domain.Abstractions.Events;
 using Vending.Domain.Abstractions.Grains;
 using Vending.Projection.Abstractions.Entities;
+using Vending.Projection.Abstractions.Grains;
 using Vending.Projection.Abstractions.Mappers;
 using Vending.Projection.EntityFrameworkCore;
 
 namespace Vending.Projection.Grains;
 
 [ImplicitStreamSubscription(Constants.SnacksNamespace)]
-public sealed class SnackProjectionGrain : SubscriberGrainWithGuidKey<SnackEvent, SnackErrorEvent>
+public sealed class SnackProjectionGrain : SubscriberGrainWithGuidKey<SnackEvent, SnackErrorEvent>, ISnackProjectionGrain
 {
     private readonly ProjectionDbContext _dbContext;
     private readonly ILogger<SnackProjectionGrain> _logger;

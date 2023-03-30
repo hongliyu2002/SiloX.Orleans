@@ -1,5 +1,5 @@
 ﻿namespace Vending.Projection.Abstractions.Grains;
 
-public interface ISnackProjectionGrain : IGrainWithStringKey
+public interface ISnackProjectionGrain : IGrainWithGuidKey
 {
 }

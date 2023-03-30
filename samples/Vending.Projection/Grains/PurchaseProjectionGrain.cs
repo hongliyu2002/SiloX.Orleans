@@ -7,13 +7,14 @@ using Vending.Domain.Abstractions;
 using Vending.Domain.Abstractions.Events;
 using Vending.Domain.Abstractions.Grains;
 using Vending.Projection.Abstractions.Entities;
+using Vending.Projection.Abstractions.Grains;
 using Vending.Projection.Abstractions.Mappers;
 using Vending.Projection.EntityFrameworkCore;
 
 namespace Vending.Projection.Grains;
 
 [ImplicitStreamSubscription(Constants.PurchasesNamespace)]
-public sealed class PurchaseProjectionGrain : SubscriberGrainWithStringKey<PurchaseEvent, PurchaseErrorEvent>
+public sealed class PurchaseProjectionGrain : SubscriberGrainWithStringKey<PurchaseEvent, PurchaseErrorEvent>, IPurchaseProjectionGrain
 {
     private readonly ProjectionDbContext _dbContext;
     private readonly ILogger<PurchaseProjectionGrain> _logger;
