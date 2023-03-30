@@ -1,6 +1,5 @@
 ﻿using Fluxera.Guards;
 using Fluxera.Utilities.Extensions;
-using Microsoft.Extensions.Logging;
 using Orleans.FluentResults;
 using Orleans.Providers;
 using SiloX.Domain.Abstractions;
@@ -21,13 +20,11 @@ namespace Vending.Domain.Grains;
 public sealed class PurchaseGrain : StatefulGrainWithStringKey<Purchase, PurchaseEvent, PurchaseErrorEvent>, IPurchaseGrain
 {
     private readonly DomainDbContext _dbContext;
-    private readonly ILogger<PurchaseGrain> _logger;
 
     /// <inheritdoc />
-    public PurchaseGrain(DomainDbContext dbContext, ILogger<PurchaseGrain> logger) : base(Constants.StreamProviderName)
+    public PurchaseGrain(DomainDbContext dbContext) : base(Constants.StreamProviderName)
     {
         _dbContext = Guard.Against.Null(dbContext, nameof(dbContext));
-        _logger = Guard.Against.Null(logger, nameof(logger));
     }
 
     /// <inheritdoc />
@@ -53,6 +50,7 @@ public sealed class PurchaseGrain : StatefulGrainWithStringKey<Purchase, Purchas
         var purchaseId = this.GetPrimaryKey();
         return Result.Ok()
                      .Verify(State.IsInitialized == false, $"Purchase {purchaseId} is already initialized.")
+                     .Verify(command.BoughtPrice >= 0, "Bought price should be greater than or equals to zero.")
                      .Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
     }
 
@@ -66,11 +64,10 @@ public sealed class PurchaseGrain : StatefulGrainWithStringKey<Purchase, Purchas
     public Task<Result> InitializeAsync(PurchaseInitializeCommand command)
     {
         return ValidateInitialize(command)
-              .TapErrorTryAsync(errors => PublishErrorAsync(new PurchaseErrorEvent(this.GetPrimaryKey(), command.MachineId, command.Position, command.SnackId, 1001, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
               .MapTryAsync(() => ApplyAsync(command))
               .MapTryAsync(PersistAsync)
-              .MapTryIfAsync(persisted => persisted,
-                             () => PublishAsync(new PurchaseInitializedEvent(State.Id, State.MachineId, State.Position, State.SnackId, State.BoughtPrice, command.TraceId, State.BoughtAt ?? DateTimeOffset.UtcNow, State.BoughtBy ?? command.OperatedBy)));
+              .MapTryAsync(() => PublishAsync(new PurchaseInitializedEvent(State.Id, State.MachineId, State.Position, State.SnackId, State.BoughtPrice, command.TraceId, State.BoughtAt ?? DateTimeOffset.UtcNow, State.BoughtBy ?? command.OperatedBy)))
+              .TapErrorTryAsync(errors => PublishErrorAsync(new PurchaseErrorEvent(this.GetPrimaryKey(), command.MachineId, command.Position, command.SnackId, 301, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
     #region Persistence
@@ -87,32 +84,23 @@ public sealed class PurchaseGrain : StatefulGrainWithStringKey<Purchase, Purchas
         return WriteStateAsync();
     }
 
-    private async Task<bool> PersistAsync()
+    private async Task PersistAsync()
     {
-        try
+        var purchaseInGrain = State;
+        var purchase = await _dbContext.Purchases.FindAsync(purchaseInGrain.Id);
+        if (purchase == null)
         {
-            var purchaseInGrain = State;
-            var purchase = await _dbContext.Purchases.FindAsync(purchaseInGrain.Id);
-            if (purchase == null)
-            {
-                purchase = new Purchase();
-                _dbContext.Purchases.Add(purchase);
-            }
-            purchase.Id = purchaseInGrain.Id;
-            purchase.MachineId = purchaseInGrain.MachineId;
-            purchase.Position = purchaseInGrain.Position;
-            purchase.SnackId = purchaseInGrain.SnackId;
-            purchase.BoughtPrice = purchaseInGrain.BoughtPrice;
-            purchase.BoughtAt = purchaseInGrain.BoughtAt;
-            purchase.BoughtBy = purchaseInGrain.BoughtBy;
-            await _dbContext.SaveChangesAsync();
-            return true;
+            purchase = new Purchase();
+            _dbContext.Purchases.Add(purchase);
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "PersistAsync: Exception is occurred when try to write data to the database.");
-            return false;
-        }
+        purchase.Id = purchaseInGrain.Id;
+        purchase.MachineId = purchaseInGrain.MachineId;
+        purchase.Position = purchaseInGrain.Position;
+        purchase.SnackId = purchaseInGrain.SnackId;
+        purchase.BoughtPrice = purchaseInGrain.BoughtPrice;
+        purchase.BoughtAt = purchaseInGrain.BoughtAt;
+        purchase.BoughtBy = purchaseInGrain.BoughtBy;
+        await _dbContext.SaveChangesAsync();
     }
 
     #endregion

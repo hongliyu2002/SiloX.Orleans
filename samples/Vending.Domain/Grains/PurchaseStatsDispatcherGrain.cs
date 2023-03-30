@@ -1,5 +1,6 @@
 ﻿using Fluxera.Guards;
 using Microsoft.Extensions.Logging;
+using Orleans.FluentResults;
 using SiloX.Domain.Abstractions;
 using Vending.Domain.Abstractions;
 using Vending.Domain.Abstractions.Commands;
@@ -65,15 +66,17 @@ public class PurchaseStatsDispatcherGrain : BroadcastSubscriberGrainWithStringKe
             var traceId = Guid.NewGuid();
             var operatedAt = DateTimeOffset.UtcNow;
             var operatedBy = $"System/{GetType().Name}";
+            var tasks = new List<Task<Result>>(4);
             // Update SnackMachinePurchaseStatsGrain
-            var machineStatsGrain = GrainFactory.GetGrain<ISnackMachinePurchaseStatsGrain>(purchaseEvent.MachineId);
-            await machineStatsGrain.IncrementCountAsync(new SnackMachineIncrementBoughtCountCommand(1, traceId, operatedAt, operatedBy));
-            await machineStatsGrain.IncrementAmountAsync(new SnackMachineIncrementBoughtAmountCommand(purchaseEvent.BoughtPrice, traceId, operatedAt, operatedBy));
+            var machineGrain = GrainFactory.GetGrain<ISnackMachinePurchaseStatsGrain>(purchaseEvent.MachineId);
+            tasks.Add(machineGrain.IncrementCountAsync(new SnackMachineIncrementBoughtCountCommand(1, traceId, operatedAt, operatedBy)));
+            tasks.Add(machineGrain.IncrementAmountAsync(new SnackMachineIncrementBoughtAmountCommand(purchaseEvent.BoughtPrice, traceId, operatedAt, operatedBy)));
             // Update SnackPurchaseStatsGrain
-            var snackStatsGrain = GrainFactory.GetGrain<ISnackPurchaseStatsGrain>(purchaseEvent.SnackId);
-            await snackStatsGrain.IncrementCountAsync(new SnackIncrementBoughtCountCommand(1, traceId, operatedAt, operatedBy));
-            await snackStatsGrain.IncrementAmountAsync(new SnackIncrementBoughtAmountCommand(purchaseEvent.BoughtPrice, traceId, operatedAt, operatedBy));
-            // _logger.LogInformation("Dispatch PurchaseInitializedEvent: {PurchaseId} is dispatched.", this.GetPrimaryKeyString());
+            var snackGrain = GrainFactory.GetGrain<ISnackPurchaseStatsGrain>(purchaseEvent.SnackId);
+            tasks.Add(snackGrain.IncrementCountAsync(new SnackIncrementBoughtCountCommand(1, traceId, operatedAt, operatedBy)));
+            tasks.Add(snackGrain.IncrementAmountAsync(new SnackIncrementBoughtAmountCommand(purchaseEvent.BoughtPrice, traceId, operatedAt, operatedBy)));
+            var results = await Task.WhenAll(tasks);
+            _logger.LogInformation("Dispatch PurchaseInitializedEvent: {PurchaseId} is dispatched. With success： {SuccessCount} failed： {FailedCount}", this.GetPrimaryKey(), results.Count(r => r.IsSuccess), results.Count(r => r.IsFailed));
         }
         catch (Exception ex)
         {

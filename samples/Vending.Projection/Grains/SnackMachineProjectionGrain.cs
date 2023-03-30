@@ -85,10 +85,10 @@ public sealed class SnackMachineProjectionGrain : SubscriberGrainWithGuidKey<Sna
     {
         try
         {
-            var snackMachine = await _dbContext.SnackMachines.FindAsync(machineEvent.MachineId);
-            if (snackMachine == null)
+            var machine = await _dbContext.SnackMachines.FindAsync(machineEvent.MachineId);
+            if (machine == null)
             {
-                snackMachine = new SnackMachine
+                machine = new SnackMachine
                                {
                                    Id = machineEvent.MachineId,
                                    MoneyInside = machineEvent.MoneyInside.ToProjection(),
@@ -101,9 +101,9 @@ public sealed class SnackMachineProjectionGrain : SubscriberGrainWithGuidKey<Sna
                                    CreatedBy = machineEvent.OperatedBy,
                                    Version = machineEvent.Version
                                };
-                _dbContext.SnackMachines.Add(snackMachine);
+                _dbContext.SnackMachines.Add(machine);
             }
-            if (_dbContext.Entry(snackMachine).State != EntityState.Added)
+            if (_dbContext.Entry(machine).State != EntityState.Added)
             {
                 _logger.LogWarning($"Apply SnackMachineInitializedEvent: Snack machine {machineEvent.MachineId} is already in the database. Try to execute full update...");
                 await ApplyFullUpdateAsync(machineEvent);
@@ -122,30 +122,30 @@ public sealed class SnackMachineProjectionGrain : SubscriberGrainWithGuidKey<Sna
     {
         try
         {
-            var snackMachine = await _dbContext.SnackMachines.FindAsync(machineEvent.MachineId);
-            if (snackMachine == null)
+            var machine = await _dbContext.SnackMachines.FindAsync(machineEvent.MachineId);
+            if (machine == null)
             {
                 _logger.LogWarning($"Apply SnackMachineRemovedEvent: Snack machine {machineEvent.MachineId} does not exist in the database. Try to execute full update...");
                 await ApplyFullUpdateAsync(machineEvent);
                 return;
             }
-            if (snackMachine.Version != machineEvent.Version - 1)
+            if (machine.Version != machineEvent.Version - 1)
             {
-                _logger.LogWarning($"Apply SnackMachineRemovedEvent: Snack machine {machineEvent.MachineId} version {snackMachine.Version}) in the database should be {machineEvent.Version - 1}. Try to execute full update...");
+                _logger.LogWarning($"Apply SnackMachineRemovedEvent: Snack machine {machineEvent.MachineId} version {machine.Version}) in the database should be {machineEvent.Version - 1}. Try to execute full update...");
                 await ApplyFullUpdateAsync(machineEvent);
                 return;
             }
-            snackMachine.MoneyInside = machineEvent.MoneyInside.ToProjection(snackMachine.MoneyInside);
-            snackMachine.AmountInTransaction = machineEvent.AmountInTransaction;
-            snackMachine.Slots = await Task.WhenAll(machineEvent.Slots.Select(slot => slot.ToProjection(GetSnackNameAndPictureUrlAsync, snackMachine.Slots.FirstOrDefault(sl => sl.MachineId == slot.MachineId && sl.Position == slot.Position))));
-            snackMachine.SlotsCount = machineEvent.SlotsCount;
-            snackMachine.SnackCount = machineEvent.SnackCount;
-            snackMachine.SnackQuantity = machineEvent.SnackQuantity;
-            snackMachine.SnackAmount = machineEvent.SnackAmount;
-            snackMachine.DeletedAt = machineEvent.OperatedAt;
-            snackMachine.DeletedBy = machineEvent.OperatedBy;
-            snackMachine.IsDeleted = true;
-            snackMachine.Version = machineEvent.Version;
+            machine.MoneyInside = machineEvent.MoneyInside.ToProjection(machine.MoneyInside);
+            machine.AmountInTransaction = machineEvent.AmountInTransaction;
+            machine.Slots = await Task.WhenAll(machineEvent.Slots.Select(slot => slot.ToProjection(GetSnackNameAndPictureUrlAsync, machine.Slots.FirstOrDefault(sl => sl.MachineId == slot.MachineId && sl.Position == slot.Position))));
+            machine.SlotsCount = machineEvent.SlotsCount;
+            machine.SnackCount = machineEvent.SnackCount;
+            machine.SnackQuantity = machineEvent.SnackQuantity;
+            machine.SnackAmount = machineEvent.SnackAmount;
+            machine.DeletedAt = machineEvent.OperatedAt;
+            machine.DeletedBy = machineEvent.OperatedBy;
+            machine.IsDeleted = true;
+            machine.Version = machineEvent.Version;
             await _dbContext.SaveChangesAsync();
         }
         catch (Exception ex)
@@ -159,23 +159,23 @@ public sealed class SnackMachineProjectionGrain : SubscriberGrainWithGuidKey<Sna
     {
         try
         {
-            var snackMachine = await _dbContext.SnackMachines.FindAsync(machineEvent.MachineId);
-            if (snackMachine == null)
+            var machine = await _dbContext.SnackMachines.FindAsync(machineEvent.MachineId);
+            if (machine == null)
             {
                 _logger.LogWarning($"Apply SnackMachineMoneyLoadedEvent: Snack machine {machineEvent.MachineId} does not exist in the database. Try to execute full update...");
                 await ApplyFullUpdateAsync(machineEvent);
                 return;
             }
-            if (snackMachine.Version != machineEvent.Version - 1)
+            if (machine.Version != machineEvent.Version - 1)
             {
-                _logger.LogWarning($"Apply SnackMachineMoneyLoadedEvent: Snack machine {machineEvent.MachineId} version {snackMachine.Version}) in the database should be {machineEvent.Version - 1}. Try to execute full update...");
+                _logger.LogWarning($"Apply SnackMachineMoneyLoadedEvent: Snack machine {machineEvent.MachineId} version {machine.Version}) in the database should be {machineEvent.Version - 1}. Try to execute full update...");
                 await ApplyFullUpdateAsync(machineEvent);
                 return;
             }
-            snackMachine.MoneyInside = machineEvent.MoneyInside.ToProjection(snackMachine.MoneyInside);
-            snackMachine.LastModifiedAt = machineEvent.OperatedAt;
-            snackMachine.LastModifiedBy = machineEvent.OperatedBy;
-            snackMachine.Version = machineEvent.Version;
+            machine.MoneyInside = machineEvent.MoneyInside.ToProjection(machine.MoneyInside);
+            machine.LastModifiedAt = machineEvent.OperatedAt;
+            machine.LastModifiedBy = machineEvent.OperatedBy;
+            machine.Version = machineEvent.Version;
             await _dbContext.SaveChangesAsync();
         }
         catch (Exception ex)
@@ -189,23 +189,23 @@ public sealed class SnackMachineProjectionGrain : SubscriberGrainWithGuidKey<Sna
     {
         try
         {
-            var snackMachine = await _dbContext.SnackMachines.FindAsync(machineEvent.MachineId);
-            if (snackMachine == null)
+            var machine = await _dbContext.SnackMachines.FindAsync(machineEvent.MachineId);
+            if (machine == null)
             {
                 _logger.LogWarning($"Apply SnackMachineMoneyUnloadedEvent: Snack machine {machineEvent.MachineId} does not exist in the database. Try to execute full update...");
                 await ApplyFullUpdateAsync(machineEvent);
                 return;
             }
-            if (snackMachine.Version != machineEvent.Version - 1)
+            if (machine.Version != machineEvent.Version - 1)
             {
-                _logger.LogWarning($"Apply SnackMachineMoneyUnloadedEvent: Snack machine {machineEvent.MachineId} version {snackMachine.Version}) in the database should be {machineEvent.Version - 1}. Try to execute full update...");
+                _logger.LogWarning($"Apply SnackMachineMoneyUnloadedEvent: Snack machine {machineEvent.MachineId} version {machine.Version}) in the database should be {machineEvent.Version - 1}. Try to execute full update...");
                 await ApplyFullUpdateAsync(machineEvent);
                 return;
             }
-            snackMachine.MoneyInside = machineEvent.MoneyInside.ToProjection(snackMachine.MoneyInside);
-            snackMachine.LastModifiedAt = machineEvent.OperatedAt;
-            snackMachine.LastModifiedBy = machineEvent.OperatedBy;
-            snackMachine.Version = machineEvent.Version;
+            machine.MoneyInside = machineEvent.MoneyInside.ToProjection(machine.MoneyInside);
+            machine.LastModifiedAt = machineEvent.OperatedAt;
+            machine.LastModifiedBy = machineEvent.OperatedBy;
+            machine.Version = machineEvent.Version;
             await _dbContext.SaveChangesAsync();
         }
         catch (Exception ex)
@@ -219,24 +219,24 @@ public sealed class SnackMachineProjectionGrain : SubscriberGrainWithGuidKey<Sna
     {
         try
         {
-            var snackMachine = await _dbContext.SnackMachines.FindAsync(machineEvent.MachineId);
-            if (snackMachine == null)
+            var machine = await _dbContext.SnackMachines.FindAsync(machineEvent.MachineId);
+            if (machine == null)
             {
                 _logger.LogWarning($"Apply SnackMachineMoneyInsertedEvent: Snack machine {machineEvent.MachineId} does not exist in the database. Try to execute full update...");
                 await ApplyFullUpdateAsync(machineEvent);
                 return;
             }
-            if (snackMachine.Version != machineEvent.Version - 1)
+            if (machine.Version != machineEvent.Version - 1)
             {
-                _logger.LogWarning($"Apply SnackMachineMoneyInsertedEvent: Snack machine {machineEvent.MachineId} version {snackMachine.Version}) in the database should be {machineEvent.Version - 1}. Try to execute full update...");
+                _logger.LogWarning($"Apply SnackMachineMoneyInsertedEvent: Snack machine {machineEvent.MachineId} version {machine.Version}) in the database should be {machineEvent.Version - 1}. Try to execute full update...");
                 await ApplyFullUpdateAsync(machineEvent);
                 return;
             }
-            snackMachine.MoneyInside = machineEvent.MoneyInside.ToProjection(snackMachine.MoneyInside);
-            snackMachine.AmountInTransaction = machineEvent.AmountInTransaction;
-            snackMachine.LastModifiedAt = machineEvent.OperatedAt;
-            snackMachine.LastModifiedBy = machineEvent.OperatedBy;
-            snackMachine.Version = machineEvent.Version;
+            machine.MoneyInside = machineEvent.MoneyInside.ToProjection(machine.MoneyInside);
+            machine.AmountInTransaction = machineEvent.AmountInTransaction;
+            machine.LastModifiedAt = machineEvent.OperatedAt;
+            machine.LastModifiedBy = machineEvent.OperatedBy;
+            machine.Version = machineEvent.Version;
             await _dbContext.SaveChangesAsync();
         }
         catch (Exception ex)
@@ -250,24 +250,24 @@ public sealed class SnackMachineProjectionGrain : SubscriberGrainWithGuidKey<Sna
     {
         try
         {
-            var snackMachine = await _dbContext.SnackMachines.FindAsync(machineEvent.MachineId);
-            if (snackMachine == null)
+            var machine = await _dbContext.SnackMachines.FindAsync(machineEvent.MachineId);
+            if (machine == null)
             {
                 _logger.LogWarning($"Apply SnackMachineMoneyReturnedEvent: Snack machine {machineEvent.MachineId} does not exist in the database. Try to execute full update...");
                 await ApplyFullUpdateAsync(machineEvent);
                 return;
             }
-            if (snackMachine.Version != machineEvent.Version - 1)
+            if (machine.Version != machineEvent.Version - 1)
             {
-                _logger.LogWarning($"Apply SnackMachineMoneyReturnedEvent: Snack machine {machineEvent.MachineId} version {snackMachine.Version}) in the database should be {machineEvent.Version - 1}. Try to execute full update...");
+                _logger.LogWarning($"Apply SnackMachineMoneyReturnedEvent: Snack machine {machineEvent.MachineId} version {machine.Version}) in the database should be {machineEvent.Version - 1}. Try to execute full update...");
                 await ApplyFullUpdateAsync(machineEvent);
                 return;
             }
-            snackMachine.MoneyInside = machineEvent.MoneyInside.ToProjection(snackMachine.MoneyInside);
-            snackMachine.AmountInTransaction = machineEvent.AmountInTransaction;
-            snackMachine.LastModifiedAt = machineEvent.OperatedAt;
-            snackMachine.LastModifiedBy = machineEvent.OperatedBy;
-            snackMachine.Version = machineEvent.Version;
+            machine.MoneyInside = machineEvent.MoneyInside.ToProjection(machine.MoneyInside);
+            machine.AmountInTransaction = machineEvent.AmountInTransaction;
+            machine.LastModifiedAt = machineEvent.OperatedAt;
+            machine.LastModifiedBy = machineEvent.OperatedBy;
+            machine.Version = machineEvent.Version;
             await _dbContext.SaveChangesAsync();
         }
         catch (Exception ex)
@@ -281,33 +281,33 @@ public sealed class SnackMachineProjectionGrain : SubscriberGrainWithGuidKey<Sna
     {
         try
         {
-            var snackMachine = await _dbContext.SnackMachines.Include(sm => sm.Slots).FirstOrDefaultAsync(sm => sm.Id == machineEvent.MachineId);
-            if (snackMachine == null)
+            var machine = await _dbContext.SnackMachines.Include(sm => sm.Slots).FirstOrDefaultAsync(sm => sm.Id == machineEvent.MachineId);
+            if (machine == null)
             {
                 _logger.LogWarning($"Apply SnackMachineSnacksLoadedEvent: Snack machine {machineEvent.MachineId} does not exist in the database. Try to execute full update...");
                 await ApplyFullUpdateAsync(machineEvent);
                 return;
             }
-            if (snackMachine.Version != machineEvent.Version - 1)
+            if (machine.Version != machineEvent.Version - 1)
             {
-                _logger.LogWarning($"Apply SnackMachineSnacksLoadedEvent: Snack machine {machineEvent.MachineId} version {snackMachine.Version}) in the database should be {machineEvent.Version - 1}. Try to execute full update...");
+                _logger.LogWarning($"Apply SnackMachineSnacksLoadedEvent: Snack machine {machineEvent.MachineId} version {machine.Version}) in the database should be {machineEvent.Version - 1}. Try to execute full update...");
                 await ApplyFullUpdateAsync(machineEvent);
                 return;
             }
-            var slot = snackMachine.Slots.FirstOrDefault(sl => sl.MachineId == machineEvent.Slot.MachineId && sl.Position == machineEvent.Slot.Position);
+            var slot = machine.Slots.FirstOrDefault(sl => sl.MachineId == machineEvent.Slot.MachineId && sl.Position == machineEvent.Slot.Position);
             if (slot == null)
             {
                 slot = new Slot();
-                snackMachine.Slots.Add(slot);
+                machine.Slots.Add(slot);
             }
             await machineEvent.Slot.ToProjection(GetSnackNameAndPictureUrlAsync, slot);
-            snackMachine.SlotsCount = machineEvent.SlotsCount;
-            snackMachine.SnackCount = machineEvent.SnackCount;
-            snackMachine.SnackQuantity = machineEvent.SnackQuantity;
-            snackMachine.SnackAmount = machineEvent.SnackAmount;
-            snackMachine.LastModifiedAt = machineEvent.OperatedAt;
-            snackMachine.LastModifiedBy = machineEvent.OperatedBy;
-            snackMachine.Version = machineEvent.Version;
+            machine.SlotsCount = machineEvent.SlotsCount;
+            machine.SnackCount = machineEvent.SnackCount;
+            machine.SnackQuantity = machineEvent.SnackQuantity;
+            machine.SnackAmount = machineEvent.SnackAmount;
+            machine.LastModifiedAt = machineEvent.OperatedAt;
+            machine.LastModifiedBy = machineEvent.OperatedBy;
+            machine.Version = machineEvent.Version;
             await _dbContext.SaveChangesAsync();
         }
         catch (Exception ex)
@@ -321,33 +321,33 @@ public sealed class SnackMachineProjectionGrain : SubscriberGrainWithGuidKey<Sna
     {
         try
         {
-            var snackMachine = await _dbContext.SnackMachines.Include(sm => sm.Slots).FirstOrDefaultAsync(sm => sm.Id == machineEvent.MachineId);
-            if (snackMachine == null)
+            var machine = await _dbContext.SnackMachines.Include(sm => sm.Slots).FirstOrDefaultAsync(sm => sm.Id == machineEvent.MachineId);
+            if (machine == null)
             {
                 _logger.LogWarning($"Apply SnackMachineSnacksUnloadedEvent: Snack machine {machineEvent.MachineId} does not exist in the database. Try to execute full update...");
                 await ApplyFullUpdateAsync(machineEvent);
                 return;
             }
-            if (snackMachine.Version != machineEvent.Version - 1)
+            if (machine.Version != machineEvent.Version - 1)
             {
-                _logger.LogWarning($"Apply SnackMachineSnacksUnloadedEvent: Snack machine {machineEvent.MachineId} version {snackMachine.Version}) in the database should be {machineEvent.Version - 1}. Try to execute full update...");
+                _logger.LogWarning($"Apply SnackMachineSnacksUnloadedEvent: Snack machine {machineEvent.MachineId} version {machine.Version}) in the database should be {machineEvent.Version - 1}. Try to execute full update...");
                 await ApplyFullUpdateAsync(machineEvent);
                 return;
             }
-            var slot = snackMachine.Slots.FirstOrDefault(sl => sl.MachineId == machineEvent.Slot.MachineId && sl.Position == machineEvent.Slot.Position);
+            var slot = machine.Slots.FirstOrDefault(sl => sl.MachineId == machineEvent.Slot.MachineId && sl.Position == machineEvent.Slot.Position);
             if (slot == null)
             {
                 slot = new Slot();
-                snackMachine.Slots.Add(slot);
+                machine.Slots.Add(slot);
             }
             await machineEvent.Slot.ToProjection(GetSnackNameAndPictureUrlAsync, slot);
-            snackMachine.SlotsCount = machineEvent.SlotsCount;
-            snackMachine.SnackCount = machineEvent.SnackCount;
-            snackMachine.SnackQuantity = machineEvent.SnackQuantity;
-            snackMachine.SnackAmount = machineEvent.SnackAmount;
-            snackMachine.LastModifiedAt = machineEvent.OperatedAt;
-            snackMachine.LastModifiedBy = machineEvent.OperatedBy;
-            snackMachine.Version = machineEvent.Version;
+            machine.SlotsCount = machineEvent.SlotsCount;
+            machine.SnackCount = machineEvent.SnackCount;
+            machine.SnackQuantity = machineEvent.SnackQuantity;
+            machine.SnackAmount = machineEvent.SnackAmount;
+            machine.LastModifiedAt = machineEvent.OperatedAt;
+            machine.LastModifiedBy = machineEvent.OperatedBy;
+            machine.Version = machineEvent.Version;
             await _dbContext.SaveChangesAsync();
         }
         catch (Exception ex)
@@ -361,32 +361,32 @@ public sealed class SnackMachineProjectionGrain : SubscriberGrainWithGuidKey<Sna
     {
         try
         {
-            var snackMachine = await _dbContext.SnackMachines.Include(sm => sm.Slots).FirstOrDefaultAsync(sm => sm.Id == machineEvent.MachineId);
-            if (snackMachine == null)
+            var machine = await _dbContext.SnackMachines.Include(sm => sm.Slots).FirstOrDefaultAsync(sm => sm.Id == machineEvent.MachineId);
+            if (machine == null)
             {
                 _logger.LogWarning($"Apply SnackMachineSnackBoughtEvent: Snack machine {machineEvent.MachineId} does not exist in the database. Try to execute full update...");
                 await ApplyFullUpdateAsync(machineEvent);
                 return;
             }
-            if (snackMachine.Version != machineEvent.Version - 1)
+            if (machine.Version != machineEvent.Version - 1)
             {
-                _logger.LogWarning($"Apply SnackMachineSnackBoughtEvent: Snack machine {machineEvent.MachineId} version {snackMachine.Version}) in the database should be {machineEvent.Version - 1}. Try to execute full update...");
+                _logger.LogWarning($"Apply SnackMachineSnackBoughtEvent: Snack machine {machineEvent.MachineId} version {machine.Version}) in the database should be {machineEvent.Version - 1}. Try to execute full update...");
                 await ApplyFullUpdateAsync(machineEvent);
                 return;
             }
-            snackMachine.AmountInTransaction = machineEvent.AmountInTransaction;
-            var slot = snackMachine.Slots.FirstOrDefault(sl => sl.MachineId == machineEvent.Slot.MachineId && sl.Position == machineEvent.Slot.Position);
+            machine.AmountInTransaction = machineEvent.AmountInTransaction;
+            var slot = machine.Slots.FirstOrDefault(sl => sl.MachineId == machineEvent.Slot.MachineId && sl.Position == machineEvent.Slot.Position);
             if (slot == null)
             {
                 slot = new Slot();
-                snackMachine.Slots.Add(slot);
+                machine.Slots.Add(slot);
             }
             await machineEvent.Slot.ToProjection(GetSnackNameAndPictureUrlAsync, slot);
-            snackMachine.SnackQuantity = machineEvent.SnackQuantity;
-            snackMachine.SnackAmount = machineEvent.SnackAmount;
-            snackMachine.LastModifiedAt = machineEvent.OperatedAt;
-            snackMachine.LastModifiedBy = machineEvent.OperatedBy;
-            snackMachine.Version = machineEvent.Version;
+            machine.SnackQuantity = machineEvent.SnackQuantity;
+            machine.SnackAmount = machineEvent.SnackAmount;
+            machine.LastModifiedAt = machineEvent.OperatedAt;
+            machine.LastModifiedBy = machineEvent.OperatedBy;
+            machine.Version = machineEvent.Version;
             await _dbContext.SaveChangesAsync();
         }
         catch (Exception ex)
@@ -405,29 +405,29 @@ public sealed class SnackMachineProjectionGrain : SubscriberGrainWithGuidKey<Sna
             try
             {
                 var machineId = machineEvent.MachineId;
-                var snackMachineGrain = GrainFactory.GetGrain<ISnackMachineGrain>(machineId);
-                var snackMachineInGrain = await snackMachineGrain.GetStateAsync();
-                var snackMachine = await _dbContext.SnackMachines.FindAsync(machineId);
-                if (snackMachineInGrain == null)
+                var machineGrain = GrainFactory.GetGrain<ISnackMachineGrain>(machineId);
+                var machineInGrain = await machineGrain.GetStateAsync();
+                var machine = await _dbContext.SnackMachines.FindAsync(machineId);
+                if (machineInGrain == null)
                 {
-                    if (snackMachine == null)
+                    if (machine == null)
                     {
                         return;
                     }
-                    _dbContext.Remove(snackMachine);
+                    _dbContext.Remove(machine);
                     await _dbContext.SaveChangesAsync();
                     return;
                 }
-                if (snackMachine == null)
+                if (machine == null)
                 {
-                    snackMachine = new SnackMachine();
-                    _dbContext.SnackMachines.Add(snackMachine);
+                    machine = new SnackMachine();
+                    _dbContext.SnackMachines.Add(machine);
                 }
-                snackMachine = await snackMachineInGrain.ToProjection(GetSnackNameAndPictureUrlAsync, snackMachine);
-                snackMachine.Version = await snackMachineGrain.GetVersionAsync();
-                var snackMachinePurchaseStatsGrain = GrainFactory.GetGrain<ISnackMachinePurchaseStatsGrain>(machineId);
-                snackMachine.BoughtCount = await snackMachinePurchaseStatsGrain.GetCountAsync();
-                snackMachine.BoughtAmount = await snackMachinePurchaseStatsGrain.GetAmountAsync();
+                machine = await machineInGrain.ToProjection(GetSnackNameAndPictureUrlAsync, machine);
+                machine.Version = await machineGrain.GetVersionAsync();
+                var purchaseStatsGrain = GrainFactory.GetGrain<ISnackMachinePurchaseStatsGrain>(machineId);
+                machine.BoughtCount = await purchaseStatsGrain.GetCountAsync();
+                machine.BoughtAmount = await purchaseStatsGrain.GetAmountAsync();
                 await _dbContext.SaveChangesAsync();
                 return;
             }

@@ -81,9 +81,9 @@ public class SnackPurchaseStatsGrain : StatefulGrainWithGuidKey<PurchaseStats, S
     {
         var snackId = this.GetPrimaryKey();
         return ValidateIncrementCount(command)
-              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(snackId, 0, 121, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
               .MapTryAsync(() => IncrementCountAsync(command.Number))
-              .MapTryAsync(() => PublishAsync(new SnackBoughtCountUpdatedEvent(snackId, State.Count, command.TraceId, command.OperatedAt, command.OperatedBy)));
+              .MapTryAsync(() => PublishAsync(new SnackBoughtCountUpdatedEvent(snackId, State.Count, command.TraceId, command.OperatedAt, command.OperatedBy)))
+              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(snackId, 0, 121, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
     private Result ValidateDecrementCount(SnackDecrementBoughtCountCommand command)
@@ -104,9 +104,9 @@ public class SnackPurchaseStatsGrain : StatefulGrainWithGuidKey<PurchaseStats, S
     {
         var snackId = this.GetPrimaryKey();
         return ValidateDecrementCount(command)
-              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(snackId, 0, 122, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
               .MapTryAsync(() => DecrementCountAsync(command.Number))
-              .MapTryAsync(() => PublishAsync(new SnackBoughtCountUpdatedEvent(snackId, State.Count, command.TraceId, command.OperatedAt, command.OperatedBy)));
+              .MapTryAsync(() => PublishAsync(new SnackBoughtCountUpdatedEvent(snackId, State.Count, command.TraceId, command.OperatedAt, command.OperatedBy)))
+              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(snackId, 0, 122, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
     /// <inheritdoc />
@@ -133,9 +133,9 @@ public class SnackPurchaseStatsGrain : StatefulGrainWithGuidKey<PurchaseStats, S
     {
         var snackId = this.GetPrimaryKey();
         return ValidateIncrementAmount(command)
-              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(snackId, 0, 123, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
               .MapTryAsync(() => IncrementAmountAsync(command.Amount))
-              .MapTryAsync(() => PublishAsync(new SnackBoughtAmountUpdatedEvent(snackId, State.Amount, command.TraceId, command.OperatedAt, command.OperatedBy)));
+              .MapTryAsync(() => PublishAsync(new SnackBoughtAmountUpdatedEvent(snackId, State.Amount, command.TraceId, command.OperatedAt, command.OperatedBy)))
+              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(snackId, 0, 123, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
     private Result ValidateDecrementAmount(SnackDecrementBoughtAmountCommand command)
@@ -156,9 +156,9 @@ public class SnackPurchaseStatsGrain : StatefulGrainWithGuidKey<PurchaseStats, S
     {
         var snackId = this.GetPrimaryKey();
         return ValidateDecrementAmount(command)
-              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(snackId, 0, 124, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
               .MapTryAsync(() => DecrementAmountAsync(command.Amount))
-              .MapTryAsync(() => PublishAsync(new SnackBoughtAmountUpdatedEvent(snackId, State.Amount, command.TraceId, command.OperatedAt, command.OperatedBy)));
+              .MapTryAsync(() => PublishAsync(new SnackBoughtAmountUpdatedEvent(snackId, State.Amount, command.TraceId, command.OperatedAt, command.OperatedBy)))
+              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(snackId, 0, 124, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
     #region Update From DB

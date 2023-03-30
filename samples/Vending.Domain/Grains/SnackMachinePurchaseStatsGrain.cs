@@ -66,7 +66,9 @@ public class SnackMachinePurchaseStatsGrain : StatefulGrainWithGuidKey<PurchaseS
     private Result ValidateIncrementCount(SnackMachineIncrementBoughtCountCommand command)
     {
         var machineId = this.GetPrimaryKey();
-        return Result.Ok().Verify(command.Number > 0, $"The number of purchases to increment for {machineId} should be greater than 0.").Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
+        return Result.Ok()
+                     .Verify(command.Number > 0, $"The number of purchases to increment for {machineId} should be greater than 0.")
+                     .Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
     }
 
     private Task IncrementCountAsync(int number)
@@ -81,15 +83,17 @@ public class SnackMachinePurchaseStatsGrain : StatefulGrainWithGuidKey<PurchaseS
     {
         var machineId = this.GetPrimaryKey();
         return ValidateIncrementCount(command)
-              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackMachineErrorEvent(machineId, 0, 221, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
               .MapTryAsync(() => IncrementCountAsync(command.Number))
-              .MapTryAsync(() => PublishAsync(new SnackMachineBoughtCountUpdatedEvent(machineId, State.Count, command.TraceId, command.OperatedAt, command.OperatedBy)));
+              .MapTryAsync(() => PublishAsync(new SnackMachineBoughtCountUpdatedEvent(machineId, State.Count, command.TraceId, command.OperatedAt, command.OperatedBy)))
+              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackMachineErrorEvent(machineId, 0, 221, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
     private Result ValidateDecrementCount(SnackMachineDecrementBoughtCountCommand command)
     {
         var machineId = this.GetPrimaryKey();
-        return Result.Ok().Verify(command.Number > 0, $"The number of purchases to decrement for {machineId} should be greater than 0.").Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
+        return Result.Ok()
+                     .Verify(command.Number > 0, $"The number of purchases to decrement for {machineId} should be greater than 0.")
+                     .Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
     }
 
     private Task DecrementCountAsync(int number)
@@ -104,9 +108,9 @@ public class SnackMachinePurchaseStatsGrain : StatefulGrainWithGuidKey<PurchaseS
     {
         var machineId = this.GetPrimaryKey();
         return ValidateDecrementCount(command)
-              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackMachineErrorEvent(machineId, 0, 222, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
               .MapTryAsync(() => DecrementCountAsync(command.Number))
-              .MapTryAsync(() => PublishAsync(new SnackMachineBoughtCountUpdatedEvent(machineId, State.Count, command.TraceId, command.OperatedAt, command.OperatedBy)));
+              .MapTryAsync(() => PublishAsync(new SnackMachineBoughtCountUpdatedEvent(machineId, State.Count, command.TraceId, command.OperatedAt, command.OperatedBy)))
+              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackMachineErrorEvent(machineId, 0, 222, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
     /// <inheritdoc />
@@ -118,7 +122,9 @@ public class SnackMachinePurchaseStatsGrain : StatefulGrainWithGuidKey<PurchaseS
     private Result ValidateIncrementAmount(SnackMachineIncrementBoughtAmountCommand command)
     {
         var machineId = this.GetPrimaryKey();
-        return Result.Ok().Verify(command.Amount >= 0, $"The amount of purchases to increment for {machineId} should be greater than or equals 0.").Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
+        return Result.Ok()
+                     .Verify(command.Amount >= 0, $"The amount of purchases to increment for {machineId} should be greater than or equals 0.")
+                     .Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
     }
 
     private Task IncrementAmountAsync(decimal amount)
@@ -133,15 +139,17 @@ public class SnackMachinePurchaseStatsGrain : StatefulGrainWithGuidKey<PurchaseS
     {
         var machineId = this.GetPrimaryKey();
         return ValidateIncrementAmount(command)
-              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackMachineErrorEvent(machineId, 0, 223, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
               .MapTryAsync(() => IncrementAmountAsync(command.Amount))
-              .MapTryAsync(() => PublishAsync(new SnackMachineBoughtAmountUpdatedEvent(machineId, State.Amount, command.TraceId, command.OperatedAt, command.OperatedBy)));
+              .MapTryAsync(() => PublishAsync(new SnackMachineBoughtAmountUpdatedEvent(machineId, State.Amount, command.TraceId, command.OperatedAt, command.OperatedBy)))
+              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackMachineErrorEvent(machineId, 0, 223, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
     private Result ValidateDecrementAmount(SnackMachineDecrementBoughtAmountCommand command)
     {
         var machineId = this.GetPrimaryKey();
-        return Result.Ok().Verify(command.Amount >= 0, $"The amount of purchases to decrement for {machineId} should be greater than or equals 0.").Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
+        return Result.Ok()
+                     .Verify(command.Amount >= 0, $"The amount of purchases to decrement for {machineId} should be greater than or equals 0.")
+                     .Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
     }
 
     private Task DecrementAmountAsync(decimal amount)
@@ -156,9 +164,9 @@ public class SnackMachinePurchaseStatsGrain : StatefulGrainWithGuidKey<PurchaseS
     {
         var machineId = this.GetPrimaryKey();
         return ValidateDecrementAmount(command)
-              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackMachineErrorEvent(machineId, 0, 224, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
               .MapTryAsync(() => DecrementAmountAsync(command.Amount))
-              .MapTryAsync(() => PublishAsync(new SnackMachineBoughtAmountUpdatedEvent(machineId, State.Amount, command.TraceId, command.OperatedAt, command.OperatedBy)));
+              .MapTryAsync(() => PublishAsync(new SnackMachineBoughtAmountUpdatedEvent(machineId, State.Amount, command.TraceId, command.OperatedAt, command.OperatedBy)))
+              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackMachineErrorEvent(machineId, 0, 224, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
     #region Update From DB

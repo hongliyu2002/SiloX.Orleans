@@ -1,6 +1,5 @@
 ﻿using Fluxera.Guards;
 using Fluxera.Utilities.Extensions;
-using Microsoft.Extensions.Logging;
 using Orleans.FluentResults;
 using Orleans.Providers;
 using SiloX.Domain.Abstractions;
@@ -19,13 +18,11 @@ namespace Vending.Domain.Grains;
 public sealed class SnackGrain : EventSourcingGrainWithGuidKey<Snack, SnackCommand, SnackEvent, SnackErrorEvent>, ISnackGrain
 {
     private readonly DomainDbContext _dbContext;
-    private readonly ILogger<SnackGrain> _logger;
 
     /// <inheritdoc />
-    public SnackGrain(DomainDbContext dbContext, ILogger<SnackGrain> logger) : base(Constants.StreamProviderName)
+    public SnackGrain(DomainDbContext dbContext) : base(Constants.StreamProviderName)
     {
         _dbContext = Guard.Against.Null(dbContext, nameof(dbContext));
-        _logger = Guard.Against.Null(logger, nameof(logger));
     }
 
     /// <inheritdoc />
@@ -74,16 +71,19 @@ public sealed class SnackGrain : EventSourcingGrainWithGuidKey<Snack, SnackComma
     public Task<Result> InitializeAsync(SnackInitializeCommand command)
     {
         return ValidateInitialize(command)
-              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(this.GetPrimaryKey(), Version, 101, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
               .MapTryAsync(() => RaiseConditionalEvent(command))
               .MapTryIfAsync(persisted => persisted, PersistAsync)
-              .MapTryIfAsync(persisted => persisted, () => PublishAsync(new SnackInitializedEvent(State.Id, Version, State.Name, State.PictureUrl, command.TraceId, State.CreatedAt ?? DateTimeOffset.UtcNow, State.CreatedBy ?? command.OperatedBy)));
+              .MapTryAsync(() => PublishAsync(new SnackInitializedEvent(State.Id, Version, State.Name, State.PictureUrl, command.TraceId, State.CreatedAt ?? DateTimeOffset.UtcNow, State.CreatedBy ?? command.OperatedBy)))
+              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(this.GetPrimaryKey(), Version, 101, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
     private Result ValidateRemove(SnackRemoveCommand command)
     {
         var snackId = this.GetPrimaryKey();
-        return Result.Ok().Verify(State.IsDeleted == false, $"Snack {snackId} has already been removed.").Verify(State.IsCreated, $"Snack {snackId} is not initialized.").Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
+        return Result.Ok()
+                     .Verify(State.IsDeleted == false, $"Snack {snackId} has already been removed.")
+                     .Verify(State.IsCreated, $"Snack {snackId} is not initialized.")
+                     .Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
     }
 
     /// <inheritdoc />
@@ -96,10 +96,10 @@ public sealed class SnackGrain : EventSourcingGrainWithGuidKey<Snack, SnackComma
     public Task<Result> RemoveAsync(SnackRemoveCommand command)
     {
         return ValidateRemove(command)
-              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(State.Id, Version, 102, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
               .MapTryAsync(() => RaiseConditionalEvent(command))
               .MapTryIfAsync(persisted => persisted, PersistAsync)
-              .MapTryIfAsync(persisted => persisted, () => PublishAsync(new SnackRemovedEvent(State.Id, Version, command.TraceId, State.DeletedAt ?? DateTimeOffset.UtcNow, State.DeletedBy ?? command.OperatedBy)));
+              .MapTryAsync(() => PublishAsync(new SnackRemovedEvent(State.Id, Version, command.TraceId, State.DeletedAt ?? DateTimeOffset.UtcNow, State.DeletedBy ?? command.OperatedBy)))
+              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(this.GetPrimaryKey(), Version, 102, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
     private Result ValidateChangeName(SnackChangeNameCommand command)
@@ -123,10 +123,10 @@ public sealed class SnackGrain : EventSourcingGrainWithGuidKey<Snack, SnackComma
     public Task<Result> ChangeNameAsync(SnackChangeNameCommand command)
     {
         return ValidateChangeName(command)
-              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(State.Id, Version, 103, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
               .MapTryAsync(() => RaiseConditionalEvent(command))
               .MapTryIfAsync(persisted => persisted, PersistAsync)
-              .MapTryIfAsync(persisted => persisted, () => PublishAsync(new SnackNameChangedEvent(State.Id, Version, State.Name, command.TraceId, State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? command.OperatedBy)));
+              .MapTryAsync(() => PublishAsync(new SnackNameChangedEvent(State.Id, Version, State.Name, command.TraceId, State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? command.OperatedBy)))
+              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(this.GetPrimaryKey(), Version, 103, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
     private Result ValidateChangePictureUrl(SnackChangePictureUrlCommand command)
@@ -149,43 +149,34 @@ public sealed class SnackGrain : EventSourcingGrainWithGuidKey<Snack, SnackComma
     public Task<Result> ChangePictureUrlAsync(SnackChangePictureUrlCommand command)
     {
         return ValidateChangePictureUrl(command)
-              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(State.Id, Version, 104, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
               .MapTryAsync(() => RaiseConditionalEvent(command))
               .MapTryIfAsync(persisted => persisted, PersistAsync)
-              .MapTryIfAsync(persisted => persisted, () => PublishAsync(new SnackPictureUrlChangedEvent(State.Id, Version, State.PictureUrl, command.TraceId, State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? command.OperatedBy)));
+              .MapTryAsync(() => PublishAsync(new SnackPictureUrlChangedEvent(State.Id, Version, State.PictureUrl, command.TraceId, State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? command.OperatedBy)))
+              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(this.GetPrimaryKey(), Version, 104, errors.ToReasons(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
     #region Persistence
 
-    private async Task<bool> PersistAsync()
+    private async Task PersistAsync()
     {
-        try
+        var snackInGrain = State;
+        var snack = await _dbContext.Snacks.FindAsync(snackInGrain.Id);
+        if (snack == null)
         {
-            var snackInGrain = State;
-            var snack = await _dbContext.Snacks.FindAsync(snackInGrain.Id);
-            if (snack == null)
-            {
-                snack = new Snack();
-                _dbContext.Snacks.Add(snack);
-            }
-            snack.Id = snackInGrain.Id;
-            snack.Name = snackInGrain.Name;
-            snack.PictureUrl = snackInGrain.PictureUrl;
-            snack.CreatedAt = snackInGrain.CreatedAt;
-            snack.LastModifiedAt = snackInGrain.LastModifiedAt;
-            snack.DeletedAt = snackInGrain.DeletedAt;
-            snack.CreatedBy = snackInGrain.CreatedBy;
-            snack.LastModifiedBy = snackInGrain.LastModifiedBy;
-            snack.DeletedBy = snackInGrain.DeletedBy;
-            snack.IsDeleted = snackInGrain.IsDeleted;
-            await _dbContext.SaveChangesAsync();
-            return true;
+            snack = new Snack();
+            _dbContext.Snacks.Add(snack);
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "PersistAsync: Exception is occurred when try to write data to the database.");
-            return false;
-        }
+        snack.Id = snackInGrain.Id;
+        snack.Name = snackInGrain.Name;
+        snack.PictureUrl = snackInGrain.PictureUrl;
+        snack.CreatedAt = snackInGrain.CreatedAt;
+        snack.LastModifiedAt = snackInGrain.LastModifiedAt;
+        snack.DeletedAt = snackInGrain.DeletedAt;
+        snack.CreatedBy = snackInGrain.CreatedBy;
+        snack.LastModifiedBy = snackInGrain.LastModifiedBy;
+        snack.DeletedBy = snackInGrain.DeletedBy;
+        snack.IsDeleted = snackInGrain.IsDeleted;
+        await _dbContext.SaveChangesAsync();
     }
 
     #endregion
