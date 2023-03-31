@@ -10,6 +10,11 @@ namespace SiloX.Orleans.Transactions;
 public sealed class TransactionsOptions
 {
     /// <summary>
+    ///     Is this configuration intended for client-side use?
+    /// </summary>
+    public bool UsedByClient { get; set; }
+    
+    /// <summary>
     ///     Max time a group can occupy the lock.
     /// </summary>
     public TimeSpan LockTimeout { get; set; } = TransactionalStateOptions.DefaultLockTimeout;

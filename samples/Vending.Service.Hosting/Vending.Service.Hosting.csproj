@@ -35,8 +35,11 @@
         <ProjectReference Include="..\..\src\SiloX.Orleans.Server\SiloX.Orleans.Server.csproj" />
         <ProjectReference Include="..\..\src\SiloX.Orleans.Streaming.EventStore\SiloX.Orleans.Streaming.EventStore.csproj" />
         <ProjectReference Include="..\..\src\SiloX.Orleans.Streaming.InMemory\SiloX.Orleans.Streaming.InMemory.csproj" />
+        <ProjectReference Include="..\..\src\SiloX.Orleans.Transactions\SiloX.Orleans.Transactions.csproj" />
         <ProjectReference Include="..\Vending.Domain.Abstractions\Vending.Domain.Abstractions.csproj" />
         <ProjectReference Include="..\Vending.Domain\Vending.Domain.csproj" />
+        <ProjectReference Include="..\Vending.Projection.Abstractions\Vending.Projection.Abstractions.csproj" />
+        <ProjectReference Include="..\Vending.Projection\Vending.Projection.csproj" />
     </ItemGroup>
 
 </Project>

@@ -11,7 +11,7 @@ using SiloX.Orleans.Streaming.EventStore;
 namespace SiloX.Orleans.UnitTests;
 
 [PublicAPI]
-[DependsOn<OrleansServerModule>]
+[DependsOn<OrleansClientModule>]
 [DependsOn<OrleansRedisClusteringModule>]
 [DependsOn<OrleansRedisRemindersModule>]
 [DependsOn<OrleansEventStoreEventSourcingModule>]

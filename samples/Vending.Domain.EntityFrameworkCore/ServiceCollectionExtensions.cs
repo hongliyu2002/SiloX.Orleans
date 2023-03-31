@@ -18,26 +18,26 @@ public static class ServiceCollectionExtensions
     {
         if (efCoreOptions.ConnectionStrings.TryGetValue(efCoreOptions.ProviderName, out var connectionString))
         {
-            return services.AddDbContextPool<DomainDbContext>(optionsBuilder =>
+            return services.AddDbContextPool<DomainDbContext>(builder =>
                                                               {
-                                                                  optionsBuilder.UseSqlServer(connectionString, dbContext =>
-                                                                                                                {
-                                                                                                                    if (efCoreOptions.MigrationsHistoryTable.IsNotNullOrEmpty())
-                                                                                                                    {
-                                                                                                                        var schemaAndName = efCoreOptions.MigrationsHistoryTable!.Trim().Split(".");
-                                                                                                                        switch (schemaAndName.Length)
-                                                                                                                        {
-                                                                                                                            case >= 1:
-                                                                                                                                dbContext.MigrationsHistoryTable(schemaAndName[1], schemaAndName[0]);
-                                                                                                                                break;
-                                                                                                                            default:
-                                                                                                                                dbContext.MigrationsHistoryTable(schemaAndName[0]);
-                                                                                                                                break;
-                                                                                                                        }
-                                                                                                                    }
-                                                                                                                    dbContext.EnableRetryOnFailure(efCoreOptions.MaxRetry, efCoreOptions.MaxRetryDelay, new[] { -999 });
-                                                                                                                    dbContext.UseQuerySplittingBehavior(efCoreOptions.QuerySplittingBehavior);
-                                                                                                                });
+                                                                  builder.UseSqlServer(connectionString, dbContext =>
+                                                                                                         {
+                                                                                                             if (efCoreOptions.MigrationsHistoryTable.IsNotNullOrEmpty())
+                                                                                                             {
+                                                                                                                 var schemaAndName = efCoreOptions.MigrationsHistoryTable!.Trim().Split(".");
+                                                                                                                 switch (schemaAndName.Length)
+                                                                                                                 {
+                                                                                                                     case >= 1:
+                                                                                                                         dbContext.MigrationsHistoryTable(schemaAndName[1], schemaAndName[0]);
+                                                                                                                         break;
+                                                                                                                     default:
+                                                                                                                         dbContext.MigrationsHistoryTable(schemaAndName[0]);
+                                                                                                                         break;
+                                                                                                                 }
+                                                                                                             }
+                                                                                                             dbContext.EnableRetryOnFailure(efCoreOptions.MaxRetry, efCoreOptions.MaxRetryDelay, new[] { -999 });
+                                                                                                             dbContext.UseQuerySplittingBehavior(efCoreOptions.QuerySplittingBehavior);
+                                                                                                         });
                                                               });
         }
         return services;
