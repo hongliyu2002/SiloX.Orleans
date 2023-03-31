@@ -1,5 +1,6 @@
 ﻿using Fluxera.Extensions.Hosting;
 using Fluxera.Extensions.Hosting.Modules;
+using Fluxera.Extensions.Hosting.Modules.Configuration;
 using JetBrains.Annotations;
 using SiloX.Orleans;
 using SiloX.Orleans.Clustering.InMemory;
@@ -14,6 +15,7 @@ using SiloX.Orleans.Reminders.Redis;
 using SiloX.Orleans.Streaming.EventStore;
 using SiloX.Orleans.Streaming.InMemory;
 using Vending.Domain;
+using Vending.Hosting.Contributors;
 using Vending.Projection;
 
 namespace Vending.Hosting;
@@ -33,6 +35,18 @@ namespace Vending.Hosting;
 [DependsOn<EventStoreStreamingModule>]
 [DependsOn<DomainModule>]
 [DependsOn<ProjectionModule>]
-public sealed class ServiceHostingModule : ConfigureApplicationModule
+public sealed class HostingModule : ConfigureApplicationModule
 {
+    /// <inheritdoc />
+    public override void PreConfigureServices(IServiceConfigurationContext context)
+    {
+        context.Services.AddConfigureOptionsContributor<ConfigureHostingOptionsContributor>();
+    }
+
+    /// <inheritdoc />
+    public override void PostConfigureServices(IServiceConfigurationContext context)
+    {
+        var options = context.Services.GetOptions<HostingOptions>();
+        context.Log("AddVendingHosting", services => services.AddVendingHosting(options));
+    }
 }

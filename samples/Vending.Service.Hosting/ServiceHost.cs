@@ -7,7 +7,7 @@ using Serilog.Extensions.Logging;
 
 namespace Vending.Hosting;
 
-public class ServiceHost : WebApplicationHost<ServiceHostingModule>
+public class ServiceHost : WebApplicationHost<HostingModule>
 {
     /// <inheritdoc />
     protected override void ConfigureApplicationPlugins(IPluginConfigurationContext context)
@@ -20,9 +20,15 @@ public class ServiceHost : WebApplicationHost<ServiceHostingModule>
     protected override void ConfigureHostBuilder(IHostBuilder builder)
     {
         // Add user secrets configuration source.
-        builder.ConfigureAppConfiguration(configurationBuilder => { configurationBuilder.AddUserSecrets(Assembly.GetExecutingAssembly()); });
+        builder.ConfigureAppConfiguration(configurationBuilder =>
+                                          {
+                                              configurationBuilder.AddUserSecrets(Assembly.GetExecutingAssembly());
+                                          });
         // Add Serilog logging
-        builder.AddSerilogLogging((hostBuilderContext, loggerConfiguration) => { loggerConfiguration.ReadFrom.Configuration(hostBuilderContext.Configuration).Enrich.FromLogContext(); });
+        builder.AddSerilogLogging((hostBuilderContext, loggerConfiguration) =>
+                                  {
+                                      loggerConfiguration.ReadFrom.Configuration(hostBuilderContext.Configuration).Enrich.FromLogContext();
+                                  });
     }
 
     /// <inheritdoc />
