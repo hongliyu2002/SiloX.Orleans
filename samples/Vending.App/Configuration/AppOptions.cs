@@ -1,10 +1,10 @@
 ﻿using JetBrains.Annotations;
 
-namespace Vending.Client;
+namespace Vending.App;
 
 /// <summary>
 /// </summary>
 [PublicAPI]
-public sealed class ClientOptions
+public sealed class AppOptions
 {
 }

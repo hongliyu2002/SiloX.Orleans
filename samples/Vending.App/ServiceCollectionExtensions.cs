@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace Vending.Client;
+namespace Vending.App;
 
 /// <summary>
 /// </summary>
@@ -11,7 +11,7 @@ public static class ServiceCollectionExtensions
     /// <param name="services"></param>
     /// <param name="options"></param>
     /// <returns></returns>
-    public static IServiceCollection AddVendingClient(this IServiceCollection services, ClientOptions options)
+    public static IServiceCollection AddVendingApp(this IServiceCollection services, AppOptions options)
     {
         return services;
     }
