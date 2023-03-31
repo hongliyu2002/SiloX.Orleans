@@ -17,4 +17,8 @@
         <ProjectReference Include="..\..\src\SiloX.Domain.Abstractions\SiloX.Domain.Abstractions.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <Folder Include="Queries\Purchases" />
+    </ItemGroup>
+
 </Project>
