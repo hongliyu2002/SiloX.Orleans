@@ -1,4 +1,5 @@
-﻿using Vending.Domain.Abstractions.Commands;
+﻿using Fluxera.Extensions.Hosting.Modules.Domain.Shared.Model;
+using Vending.Domain.Abstractions.Commands;
 
 namespace Vending.Domain.Abstractions.States;
 
@@ -7,7 +8,7 @@ namespace Vending.Domain.Abstractions.States;
 /// </summary>
 [Serializable]
 [GenerateSerializer]
-public sealed class SnackMachine
+public sealed class SnackMachine : IAuditedObject, ISoftDeleteObject
 {
     /// <summary>
     ///     The unique identifier of the Snack Machine.

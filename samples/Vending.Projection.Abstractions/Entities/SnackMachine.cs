@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿using Fluxera.Extensions.Hosting.Modules.Domain.Shared.Model;
+using JetBrains.Annotations;
 
 namespace Vending.Projection.Abstractions.Entities;
 
@@ -7,7 +8,7 @@ namespace Vending.Projection.Abstractions.Entities;
 /// </summary>
 [PublicAPI]
 [Serializable]
-public sealed class SnackMachine
+public sealed class SnackMachine : IAuditedObject, ISoftDeleteObject
 {
     /// <summary>
     ///     Gets or sets the ID of the snack machine.

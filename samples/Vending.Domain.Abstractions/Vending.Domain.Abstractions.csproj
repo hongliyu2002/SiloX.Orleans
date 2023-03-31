@@ -9,6 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.Domain.Shared" Version="7.1.5" />
         <PackageReference Include="Microsoft.Orleans.Sdk" Version="7.1.1" />
     </ItemGroup>
 
