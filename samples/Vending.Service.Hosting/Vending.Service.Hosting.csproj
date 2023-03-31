@@ -42,4 +42,8 @@
         <ProjectReference Include="..\Vending.Projection\Vending.Projection.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Logs" />
+    </ItemGroup>
+
 </Project>

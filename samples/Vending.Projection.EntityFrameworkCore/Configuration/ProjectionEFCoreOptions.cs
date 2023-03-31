@@ -14,7 +14,7 @@ public sealed class ProjectionEFCoreOptions
     /// <summary>
     ///     The name of the provider (also used as connection string name).
     /// </summary>
-    public string ProviderName { get; set; } = "Vending-Projection";
+    public string ProviderName { get; set; } = "VendingProjection";
 
     /// <summary>
     ///     The table name for the migrations history table.
