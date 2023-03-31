@@ -13,7 +13,7 @@ public static class EnumerableExtensions
     /// </summary>
     /// <param name="errors">The collection of <see cref="IError" /> objects to convert.</param>
     /// <returns>A concatenated string of error messages.</returns>
-    public static string ToReason(this IEnumerable<IError> errors)
+    public static string ToReasonString(this IEnumerable<IError> errors)
     {
         return string.Join(';', errors.OfType<Error>().Select(error => error.ToString()));
     }
@@ -23,7 +23,7 @@ public static class EnumerableExtensions
     /// </summary>
     /// <param name="errors">The collection of <see cref="IError" /> objects to convert.</param>
     /// <returns>An immutable list of error messages.</returns>
-    public static IImmutableList<string> ToReasons(this IEnumerable<IError> errors)
+    public static IImmutableList<string> ToReasonStrings(this IEnumerable<IError> errors)
     {
         return errors.OfType<Error>().Select(error => error.ToString()).ToImmutableList();
     }

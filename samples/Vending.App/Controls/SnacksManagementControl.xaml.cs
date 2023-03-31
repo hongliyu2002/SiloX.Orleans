@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.Windows;
 using Orleans;
+using SiloX.Domain.Abstractions.Extensions;
 using Vending.Domain.Abstractions.Commands;
 using Vending.Domain.Abstractions.Grains;
 
@@ -63,7 +64,7 @@ public partial class SnacksManagementControl
             }
             else
             {
-                MessageBox.Show(result.Reasons[0].Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(result.Errors.ToReasonString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         catch (Exception ex)
@@ -85,7 +86,7 @@ public partial class SnacksManagementControl
             }
             else
             {
-                MessageBox.Show(result.Reasons[0].Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(result.Errors.ToReasonString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         catch (Exception ex)
@@ -107,7 +108,7 @@ public partial class SnacksManagementControl
             }
             else
             {
-                MessageBox.Show(result.Reasons[0].Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(result.Errors.ToReasonString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         catch (Exception ex)
@@ -129,7 +130,7 @@ public partial class SnacksManagementControl
             }
             else
             {
-                MessageBox.Show(result.Reasons[0].Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(result.Errors.ToReasonString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         catch (Exception ex)
