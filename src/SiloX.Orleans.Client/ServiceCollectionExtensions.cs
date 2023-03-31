@@ -12,7 +12,7 @@ public static class ServiceCollectionExtensions
     /// <param name="services"></param>
     /// <param name="options"></param>
     /// <returns></returns>
-    public static IServiceCollection AddOrleansClient(this IServiceCollection services, OrleansClientOptions options)
+    public static IServiceCollection AddOrleansClient(this IServiceCollection services, ClientOptions options)
     {
         // return services.AddOrleansClient(clientBuilder =>
         //                                  {

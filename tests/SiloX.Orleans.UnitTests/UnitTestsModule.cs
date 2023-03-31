@@ -11,12 +11,12 @@ using SiloX.Orleans.Streaming.EventStore;
 namespace SiloX.Orleans.UnitTests;
 
 [PublicAPI]
-[DependsOn<OrleansClientModule>]
-[DependsOn<OrleansRedisClusteringModule>]
-[DependsOn<OrleansRedisRemindersModule>]
-[DependsOn<OrleansEventStoreEventSourcingModule>]
-[DependsOn<OrleansEventStorePersistenceModule>]
-[DependsOn<OrleansEventStoreStreamingModule>]
+[DependsOn<ClientModule>]
+[DependsOn<RedisClusteringModule>]
+[DependsOn<RedisRemindersModule>]
+[DependsOn<EventStoreEventSourcingModule>]
+[DependsOn<EventStorePersistenceModule>]
+[DependsOn<EventStoreStreamingModule>]
 [DependsOn<ConfigurationModule>]
 public class UnitTestsModule : ConfigureApplicationModule
 {

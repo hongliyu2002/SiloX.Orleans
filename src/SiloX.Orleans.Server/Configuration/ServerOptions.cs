@@ -5,7 +5,7 @@ namespace SiloX.Orleans;
 /// <summary>
 /// </summary>
 [PublicAPI]
-public sealed class OrleansServerOptions
+public sealed class ServerOptions
 {
     /// <summary>
     ///     The IP address used for clustering.

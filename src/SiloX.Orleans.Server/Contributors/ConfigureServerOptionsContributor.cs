@@ -2,7 +2,7 @@
 
 namespace SiloX.Orleans.Contributors;
 
-internal sealed class ConfigureOrleansServerOptionsContributor : ConfigureOptionsContributorBase<OrleansServerOptions>
+internal sealed class ConfigureServerOptionsContributor : ConfigureOptionsContributorBase<ServerOptions>
 {
     /// <inheritdoc />
     public override string SectionName => "Orleans:Server";

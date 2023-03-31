@@ -11,7 +11,7 @@ namespace Vending.Domain;
 /// <summary>
 /// </summary>
 [PublicAPI]
-[DependsOn<OrleansStreamingModule>]
+[DependsOn<StreamingModule>]
 [DependsOn<DomainEFCoreModule>]
 [DependsOn<ConfigurationModule>]
 public class DomainModule : ConfigureServicesModule

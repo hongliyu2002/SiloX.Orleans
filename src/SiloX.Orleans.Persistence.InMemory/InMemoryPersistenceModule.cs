@@ -9,9 +9,9 @@ namespace SiloX.Orleans.Persistence.InMemory;
 /// <summary>
 /// </summary>
 [PublicAPI]
-[DependsOn<OrleansPersistenceModule>]
+[DependsOn<PersistenceModule>]
 [DependsOn<ConfigurationModule>]
-public class OrleansInMemoryPersistenceModule : ConfigureServicesModule
+public class InMemoryPersistenceModule : ConfigureServicesModule
 {
     /// <inheritdoc />
     public override void PreConfigureServices(IServiceConfigurationContext context)

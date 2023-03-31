@@ -5,32 +5,33 @@ using Fluxera.Extensions.Hosting.Modules.DataManagement;
 using Fluxera.Extensions.Hosting.Modules.HealthChecks;
 using Fluxera.Extensions.Hosting.Modules.OpenTelemetry;
 using JetBrains.Annotations;
-using SiloX.Orleans.Persistence.EventStore.Contributors;
+using SiloX.Orleans.Streaming.EventStore.Contributors;
 
-namespace SiloX.Orleans.Persistence.EventStore;
+namespace SiloX.Orleans.Streaming.EventStore;
 
 /// <summary>
 /// </summary>
 [PublicAPI]
-[DependsOn<OrleansPersistenceModule>]
+[DependsOn<StreamingModule>]
 [DependsOn<HealthChecksModule>]
 [DependsOn<DataManagementModule>]
 [DependsOn<OpenTelemetryModule>]
 [DependsOn<ConfigurationModule>]
-public class OrleansEventStorePersistenceModule : ConfigureServicesModule
+public class EventStoreStreamingModule : ConfigureServicesModule
 {
     /// <inheritdoc />
     public override void PreConfigureServices(IServiceConfigurationContext context)
     {
-        context.Services.AddConfigureOptionsContributor<ConfigureEventStorePersistenceOptionsContributor>();
-        context.Services.AddHealthCheckContributor<EventStorePersistenceHealthChecksContributor>();
+        context.Services.AddConfigureOptionsContributor<ConfigureEventStoreStreamingOptionsContributor>();
+        context.Services.AddHealthCheckContributor<EventStoreStreamingHealthChecksContributor>();
         context.Services.AddTracerProviderContributor<TracerProviderContributor>();
     }
 
     /// <inheritdoc />
     public override void PostConfigureServices(IServiceConfigurationContext context)
     {
-        var eventStoreOptions = context.Services.GetOptions<EventStorePersistenceOptions>();
-        context.Log("AddOrleansEventStorePersistence", services => services.AddOrleansEventStorePersistence(eventStoreOptions));
+        var options = context.Services.GetOptions<StreamingOptions>();
+        var eventStoreOptions = context.Services.GetOptions<EventStoreStreamingOptions>();
+        context.Log("AddOrleansEventStoreStreaming", services => services.AddOrleansEventStoreStreaming(options, eventStoreOptions));
     }
 }

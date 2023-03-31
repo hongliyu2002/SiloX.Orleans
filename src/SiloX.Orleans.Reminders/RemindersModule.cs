@@ -2,26 +2,26 @@
 using Fluxera.Extensions.Hosting.Modules;
 using Fluxera.Extensions.Hosting.Modules.Configuration;
 using JetBrains.Annotations;
-using SiloX.Orleans.Persistence.Contributors;
+using SiloX.Orleans.Reminders.Contributors;
 
-namespace SiloX.Orleans.Persistence;
+namespace SiloX.Orleans.Reminders;
 
 /// <summary>
 /// </summary>
 [PublicAPI]
 [DependsOn<ConfigurationModule>]
-public class OrleansPersistenceModule : ConfigureServicesModule
+public class RemindersModule : ConfigureServicesModule
 {
     /// <inheritdoc />
     public override void PreConfigureServices(IServiceConfigurationContext context)
     {
-        context.Services.AddConfigureOptionsContributor<ConfigurePersistenceOptionsContributor>();
+        context.Services.AddConfigureOptionsContributor<ConfigureRemindersOptionsContributor>();
     }
 
     /// <inheritdoc />
     public override void PostConfigureServices(IServiceConfigurationContext context)
     {
-        var options = context.Services.GetOptions<PersistenceOptions>();
-        context.Log("AddOrleansPersistence", services => services.AddOrleansPersistence(options));
+        var options = context.Services.GetOptions<RemindersOptions>();
+        context.Log("AddOrleansReminders", services => services.AddOrleansReminders(options));
     }
 }

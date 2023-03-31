@@ -15,7 +15,7 @@ public static class ServiceCollectionExtensions
     /// <param name="services"></param>
     /// <param name="options"></param>
     /// <returns></returns>
-    public static IServiceCollection AddOrleansServer(this IServiceCollection services, OrleansServerOptions options)
+    public static IServiceCollection AddOrleansServer(this IServiceCollection services, ServerOptions options)
     {
         return services.AddOrleans(siloBuilder =>
                                    {

@@ -9,9 +9,9 @@ namespace SiloX.Orleans.Reminders.InMemory;
 /// <summary>
 /// </summary>
 [PublicAPI]
-[DependsOn<OrleansRemindersModule>]
+[DependsOn<RemindersModule>]
 [DependsOn<ConfigurationModule>]
-public class OrleansInMemoryRemindersModule : ConfigureServicesModule
+public class InMemoryRemindersModule : ConfigureServicesModule
 {
     /// <inheritdoc />
     public override void PreConfigureServices(IServiceConfigurationContext context)

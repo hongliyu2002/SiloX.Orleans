@@ -5,6 +5,6 @@ namespace SiloX.Orleans;
 /// <summary>
 /// </summary>
 [PublicAPI]
-public sealed class OrleansClientOptions
+public sealed class ClientOptions
 {
 }

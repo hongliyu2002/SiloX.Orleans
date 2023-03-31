@@ -10,7 +10,7 @@ namespace SiloX.Orleans.Transactions;
 /// </summary>
 [PublicAPI]
 [DependsOn<ConfigurationModule>]
-public class OrleansTransactionsModule : ConfigureServicesModule
+public class TransactionsModule : ConfigureServicesModule
 {
     /// <inheritdoc />
     public override void PreConfigureServices(IServiceConfigurationContext context)

@@ -9,9 +9,9 @@ namespace SiloX.Orleans.Clustering.InMemory;
 /// <summary>
 /// </summary>
 [PublicAPI]
-[DependsOn<OrleansClusteringModule>]
+[DependsOn<ClusteringModule>]
 [DependsOn<ConfigurationModule>]
-public class OrleansInMemoryClusteringModule : ConfigureServicesModule
+public class InMemoryClusteringModule : ConfigureServicesModule
 {
     /// <inheritdoc />
     public override void PreConfigureServices(IServiceConfigurationContext context)

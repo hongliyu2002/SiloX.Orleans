@@ -5,25 +5,25 @@ using Fluxera.Extensions.Hosting.Modules.DataManagement;
 using Fluxera.Extensions.Hosting.Modules.HealthChecks;
 using Fluxera.Extensions.Hosting.Modules.OpenTelemetry;
 using JetBrains.Annotations;
-using SiloX.Orleans.Clustering.Redis.Contributors;
+using SiloX.Orleans.Clustering.AdoNet.Contributors;
 
-namespace SiloX.Orleans.Clustering.Redis;
+namespace SiloX.Orleans.Clustering.AdoNet;
 
 /// <summary>
 /// </summary>
 [PublicAPI]
-[DependsOn<OrleansClusteringModule>]
+[DependsOn<ClusteringModule>]
 [DependsOn<HealthChecksModule>]
 [DependsOn<DataManagementModule>]
 [DependsOn<OpenTelemetryModule>]
 [DependsOn<ConfigurationModule>]
-public class OrleansRedisClusteringModule : ConfigureServicesModule
+public class AdoNetClusteringModule : ConfigureServicesModule
 {
     /// <inheritdoc />
     public override void PreConfigureServices(IServiceConfigurationContext context)
     {
-        context.Services.AddConfigureOptionsContributor<ConfigureRedisClusteringOptionsContributor>();
-        context.Services.AddHealthCheckContributor<RedisClusteringHealthChecksContributor>();
+        context.Services.AddConfigureOptionsContributor<ConfigureAdoNetClusteringOptionsContributor>();
+        context.Services.AddHealthCheckContributor<AdoNetClusteringHealthChecksContributor>();
         context.Services.AddTracerProviderContributor<TracerProviderContributor>();
     }
 
@@ -31,7 +31,7 @@ public class OrleansRedisClusteringModule : ConfigureServicesModule
     public override void PostConfigureServices(IServiceConfigurationContext context)
     {
         var options = context.Services.GetOptions<ClusteringOptions>();
-        var redisOptions = context.Services.GetOptions<RedisClusteringOptions>();
-        context.Log("AddOrleansRedisClustering", services => services.AddOrleansRedisClustering(options, redisOptions));
+        var adoNetOptions = context.Services.GetOptions<AdoNetClusteringOptions>();
+        context.Log("AddOrleansAdoNetClustering", services => services.AddOrleansAdoNetClustering(options, adoNetOptions));
     }
 }

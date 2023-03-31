@@ -11,7 +11,7 @@ namespace Vending.Projection;
 /// <summary>
 /// </summary>
 [PublicAPI]
-[DependsOn<OrleansStreamingModule>]
+[DependsOn<StreamingModule>]
 [DependsOn<ProjectionEFCoreModule>]
 [DependsOn<ConfigurationModule>]
 public class ProjectionModule : ConfigureServicesModule

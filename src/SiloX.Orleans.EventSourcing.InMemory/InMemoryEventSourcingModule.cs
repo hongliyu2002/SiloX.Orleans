@@ -9,9 +9,9 @@ namespace SiloX.Orleans.EventSourcing.InMemory;
 /// <summary>
 /// </summary>
 [PublicAPI]
-[DependsOn<OrleansEventSourcingModule>]
+[DependsOn<EventSourcingModule>]
 [DependsOn<ConfigurationModule>]
-public class OrleansInMemoryEventSourcingModule : ConfigureServicesModule
+public class InMemoryEventSourcingModule : ConfigureServicesModule
 {
     /// <inheritdoc />
     public override void PreConfigureServices(IServiceConfigurationContext context)
