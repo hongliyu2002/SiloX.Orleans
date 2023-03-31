@@ -7,7 +7,10 @@ using Serilog.Extensions.Logging;
 
 namespace Vending.Hosting;
 
-public class ServiceHost : WebApplicationHost<HostingModule>
+/// <summary>
+///     Hosts the Vending Service.
+/// </summary>
+public sealed class ServiceHost : WebApplicationHost<HostingModule>
 {
     /// <inheritdoc />
     protected override void ConfigureApplicationPlugins(IPluginConfigurationContext context)
@@ -27,14 +30,14 @@ public class ServiceHost : WebApplicationHost<HostingModule>
         // Add Serilog logging
         builder.AddSerilogLogging((hostBuilderContext, loggerConfiguration) =>
                                   {
-                                      loggerConfiguration.ReadFrom.Configuration(hostBuilderContext.Configuration).Enrich.FromLogContext();
+                                      loggerConfiguration.ReadFrom.Configuration(hostBuilderContext.Configuration);
                                   });
     }
 
     /// <inheritdoc />
     protected override ILoggerFactory CreateBootstrapperLoggerFactory(IConfiguration configuration)
     {
-        var bootstrapLogger = new LoggerConfiguration().ReadFrom.Configuration(configuration).Enrich.FromLogContext().CreateBootstrapLogger();
+        var bootstrapLogger = new LoggerConfiguration().ReadFrom.Configuration(configuration).CreateBootstrapLogger();
         ILoggerFactory loggerFactory = new SerilogLoggerFactory(bootstrapLogger);
         return loggerFactory;
     }

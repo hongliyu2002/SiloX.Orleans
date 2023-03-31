@@ -43,9 +43,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\samples\Vending.Domain\Vending.Domain.csproj" />
-        <ProjectReference Include="..\..\samples\Vending.Projection\Vending.Projection.csproj" />
-        <ProjectReference Include="..\..\src\SiloX.Domain.Abstractions\SiloX.Domain.Abstractions.csproj" />
+        <ProjectReference Include="..\..\samples\Vending.Domain.Abstractions\Vending.Domain.Abstractions.csproj" />
         <ProjectReference Include="..\..\src\SiloX.Orleans.Client\SiloX.Orleans.Client.csproj" />
         <ProjectReference Include="..\..\src\SiloX.Orleans.Clustering.AdoNet\SiloX.Orleans.Clustering.AdoNet.csproj" />
         <ProjectReference Include="..\..\src\SiloX.Orleans.Clustering.InMemory\SiloX.Orleans.Clustering.InMemory.csproj" />

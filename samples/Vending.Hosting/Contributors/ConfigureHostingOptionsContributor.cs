@@ -5,5 +5,5 @@ namespace Vending.Hosting.Contributors;
 internal sealed class ConfigureHostingOptionsContributor : ConfigureOptionsContributorBase<HostingOptions>
 {
     /// <inheritdoc />
-    public override string SectionName => "Vending:Service:Hosting";
+    public override string SectionName => "Vending:Hosting";
 }
