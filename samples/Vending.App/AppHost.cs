@@ -2,6 +2,7 @@
 using Fluxera.Extensions.Hosting.Modules.Serilog;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Orleans;
 using Serilog;
 
 namespace Vending.App;
@@ -21,6 +22,6 @@ public sealed class AppHost : WpfApplicationHost<AppModule>
                                       loggerConfiguration.ReadFrom.Configuration(hostBuilderContext.Configuration);
                                   });
         // Register the main window factory to use.
-        builder.UseMainWindow(sp => new MainWindow());
+        builder.UseMainWindow(sp => new MainWindow(sp.GetRequiredService<IClusterClient>()));
     }
 }

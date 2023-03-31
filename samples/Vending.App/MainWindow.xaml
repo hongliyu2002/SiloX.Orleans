@@ -4,8 +4,18 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Snacks Management System" Height="450" Width="800">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
 
+        <StackPanel Orientation="Horizontal" Margin="10" Background="Bisque">
+            <Button x:Name="SnacksManagementButton" Content="Snacks Management" Margin="5" Click="SnacksManagementButton_Click"/>
+            <Button x:Name="MachinesManagementButton" Content="Machines Management" Margin="5" Click="MachinesManagementButton_Click"/>
+        </StackPanel>
+
+        <ContentControl x:Name="ContentArea" Grid.Row="1"/>
     </Grid>
 </Window>

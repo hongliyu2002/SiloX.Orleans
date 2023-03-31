@@ -26,6 +26,7 @@
         <ProjectReference Include="..\..\src\SiloX.Orleans.Clustering.Redis\SiloX.Orleans.Clustering.Redis.csproj" />
         <ProjectReference Include="..\..\src\SiloX.Orleans.Streaming.EventStore\SiloX.Orleans.Streaming.EventStore.csproj" />
         <ProjectReference Include="..\..\src\SiloX.Orleans.Transactions\SiloX.Orleans.Transactions.csproj" />
+        <ProjectReference Include="..\Vending.Domain.Abstractions\Vending.Domain.Abstractions.csproj" />
 <!--        <ProjectReference Include="..\..\src\SiloX.Orleans.Clustering.AdoNet\SiloX.Orleans.Clustering.AdoNet.csproj" />-->
 <!--        <ProjectReference Include="..\..\src\SiloX.Orleans.Clustering.InMemory\SiloX.Orleans.Clustering.InMemory.csproj" />-->
 <!--        <ProjectReference Include="..\..\src\SiloX.Orleans.Clustering.Redis\SiloX.Orleans.Clustering.Redis.csproj" />-->
@@ -44,6 +45,19 @@
             <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
             <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
         </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Page Update="Controls\MachinesManagementControl.xaml">
+        <Generator>MSBuild:Compile</Generator>
+        <XamlRuntime>Wpf</XamlRuntime>
+        <SubType>Designer</SubType>
+      </Page>
+      <Page Update="Controls\SnacksManagementControl.xaml">
+        <Generator>MSBuild:Compile</Generator>
+        <XamlRuntime>Wpf</XamlRuntime>
+        <SubType>Designer</SubType>
+      </Page>
     </ItemGroup>
 
 </Project>
