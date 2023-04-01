@@ -131,11 +131,6 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Purchases_BoughtPrice",
-                table: "Purchases",
-                column: "BoughtPrice");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Purchases_MachineId",
                 table: "Purchases",
                 column: "MachineId");
@@ -156,11 +151,6 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
                 column: "SnackPile_SnackId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SnackMachines_IsDeleted_BoughtAmount",
-                table: "SnackMachines",
-                columns: new[] { "IsDeleted", "BoughtAmount" });
-
-            migrationBuilder.CreateIndex(
                 name: "IX_SnackMachines_IsDeleted_CreatedAt",
                 table: "SnackMachines",
                 columns: new[] { "IsDeleted", "CreatedAt" });
@@ -169,16 +159,6 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
                 name: "IX_SnackMachines_IsDeleted_LastModifiedBy",
                 table: "SnackMachines",
                 columns: new[] { "IsDeleted", "LastModifiedBy" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_SnackMachines_IsDeleted_SnackAmount",
-                table: "SnackMachines",
-                columns: new[] { "IsDeleted", "SnackAmount" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Snacks_IsDeleted_BoughtAmount",
-                table: "Snacks",
-                columns: new[] { "IsDeleted", "BoughtAmount" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Snacks_IsDeleted_CreatedAt",

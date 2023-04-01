@@ -12,7 +12,7 @@ using Vending.Projection.EntityFrameworkCore;
 namespace Vending.Projection.EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(ProjectionDbContext))]
-    [Migration("20230401071755_Init")]
+    [Migration("20230401073750_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -61,8 +61,6 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
                         .HasColumnType("nvarchar(512)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BoughtPrice");
 
                     b.HasIndex("MachineId");
 
@@ -145,13 +143,9 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IsDeleted", "BoughtAmount");
-
                     b.HasIndex("IsDeleted", "CreatedAt");
 
                     b.HasIndex("IsDeleted", "LastModifiedBy");
-
-                    b.HasIndex("IsDeleted", "SnackAmount");
 
                     b.ToTable("SnackMachines", (string)null);
                 });
@@ -209,8 +203,6 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("IsDeleted", "BoughtAmount");
 
                     b.HasIndex("IsDeleted", "CreatedAt");
 

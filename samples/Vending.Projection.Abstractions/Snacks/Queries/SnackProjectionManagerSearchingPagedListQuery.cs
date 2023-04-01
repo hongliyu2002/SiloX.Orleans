@@ -3,7 +3,7 @@
 namespace Vending.Projection.Abstractions.Snacks;
 
 /// <summary>
-///     Represents a query for retrieving a paged list of snacks with searching feature.
+///     A query for retrieving a paged list of snacks with searching feature.
 /// </summary>
 [Immutable]
 [Serializable]

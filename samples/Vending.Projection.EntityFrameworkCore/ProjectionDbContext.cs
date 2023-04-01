@@ -38,7 +38,6 @@ public class ProjectionDbContext : DbContext
                                        builder.HasIndex(s => new { s.IsDeleted, s.Name });
                                        builder.Property(s => s.PictureUrl).HasMaxLength(512);
                                        builder.Property(s => s.BoughtAmount).HasPrecision(10, 2);
-                                       builder.HasIndex(s => new { s.IsDeleted, s.BoughtAmount });
                                    });
         // Configures the SnackMachine entity
         modelBuilder.Entity<SnackMachine>(builder =>
@@ -57,9 +56,7 @@ public class ProjectionDbContext : DbContext
                                                                                     });
                                               builder.Property(sm => sm.AmountInTransaction).HasPrecision(10, 2);
                                               builder.Property(sm => sm.SnackAmount).HasPrecision(10, 2);
-                                              builder.HasIndex(sm => new { sm.IsDeleted, sm.SnackAmount });
                                               builder.Property(sm => sm.BoughtAmount).HasPrecision(10, 2);
-                                              builder.HasIndex(sm => new { sm.IsDeleted, sm.BoughtAmount });
                                           });
         // Configures the Slot entity
         modelBuilder.Entity<Slot>(builder =>
@@ -87,7 +84,6 @@ public class ProjectionDbContext : DbContext
                                           builder.HasIndex(p => p.SnackName);
                                           builder.Property(p => p.SnackPictureUrl).HasMaxLength(512);
                                           builder.Property(p => p.BoughtPrice).HasPrecision(10, 2);
-                                          builder.HasIndex(p => p.BoughtPrice);
                                           builder.Property(p => p.BoughtBy).HasMaxLength(256);
                                       });
         base.OnModelCreating(modelBuilder);

@@ -59,8 +59,6 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BoughtPrice");
-
                     b.HasIndex("MachineId");
 
                     b.HasIndex("SnackId");
@@ -142,13 +140,9 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IsDeleted", "BoughtAmount");
-
                     b.HasIndex("IsDeleted", "CreatedAt");
 
                     b.HasIndex("IsDeleted", "LastModifiedBy");
-
-                    b.HasIndex("IsDeleted", "SnackAmount");
 
                     b.ToTable("SnackMachines", (string)null);
                 });
@@ -206,8 +200,6 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("IsDeleted", "BoughtAmount");
 
                     b.HasIndex("IsDeleted", "CreatedAt");
 

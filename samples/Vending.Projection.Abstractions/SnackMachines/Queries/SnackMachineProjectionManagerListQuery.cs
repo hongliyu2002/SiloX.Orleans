@@ -1,16 +1,18 @@
 ﻿using SiloX.Domain.Abstractions;
 
-namespace Vending.Projection.Abstractions.Snacks;
+namespace Vending.Projection.Abstractions.SnackMachines;
 
 /// <summary>
-///     A query for a list of snacks with searching feature.
+///     A query for a list of snack machines.
 /// </summary>
 [Immutable]
 [Serializable]
 [GenerateSerializer]
-public sealed record SnackProjectionManagerSearchingListQuery
-    (string? SearchCriteria,
-     Int32Range? MachineCountRange,
+public sealed record SnackMachineProjectionManagerListQuery
+    (Int32Range? SlotsCountRange,
+     Int32Range? SnackCountRange,
+     Int32Range? SnackQuantityRange,
+     DecimalRange? SnackAmountRange,
      Int32Range? BoughtCountRange,
      DecimalRange? BoughtAmountRange,
      DateTimeOffsetRange? CreatedAtRange,
@@ -23,4 +25,4 @@ public sealed record SnackProjectionManagerSearchingListQuery
      IDictionary<string, bool>? Sortings,
      Guid TraceId,
      DateTimeOffset OperatedAt,
-     string OperatedBy) : DomainSearchingListQuery(SearchCriteria, Sortings, TraceId, OperatedAt, OperatedBy);
+     string OperatedBy) : DomainListQuery(Sortings, TraceId, OperatedAt, OperatedBy);

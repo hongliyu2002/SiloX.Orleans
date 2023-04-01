@@ -3,7 +3,7 @@
 namespace Vending.Domain.Abstractions.SnackMachines;
 
 /// <summary>
-///     This class represents a query for retrieving a paged list of snack machines.
+///     A query for retrieving a paged list of snack machines.
 /// </summary>
 [Immutable]
 [Serializable]
