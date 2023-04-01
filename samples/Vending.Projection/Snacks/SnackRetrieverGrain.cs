@@ -11,6 +11,7 @@ using Vending.Projection.EntityFrameworkCore;
 namespace Vending.Projection.Snacks;
 
 [StatelessWorker]
+[Reentrant]
 public class SnackRetrieverGrain : Grain, ISnackRetrieverGrain
 {
     private readonly ProjectionDbContext _dbContext;

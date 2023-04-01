@@ -1,5 +1,4 @@
 ﻿using System.Collections.Immutable;
-using Orleans.Concurrency;
 using Orleans.FluentResults;
 
 namespace Vending.Projection.Abstractions.Snacks;
@@ -14,7 +13,6 @@ public interface ISnackRetrieverGrain : IGrainWithStringKey
     /// </summary>
     /// <param name="retrieverListQuery">The query.</param>
     /// <returns>List of snacks.</returns>
-    [AlwaysInterleave]
     Task<Result<ImmutableList<Snack>>> ListAsync(SnackRetrieverListQuery retrieverListQuery);
 
     /// <summary>
@@ -22,7 +20,6 @@ public interface ISnackRetrieverGrain : IGrainWithStringKey
     /// </summary>
     /// <param name="retrieverPagedListQuery">The query.</param>
     /// <returns>List of snacks.</returns>
-    [AlwaysInterleave]
     Task<Result<ImmutableList<Snack>>> PagedListAsync(SnackRetrieverPagedListQuery retrieverPagedListQuery);
 
     /// <summary>
@@ -30,7 +27,6 @@ public interface ISnackRetrieverGrain : IGrainWithStringKey
     /// </summary>
     /// <param name="query">The query.</param>
     /// <returns>List of snacks.</returns>
-    [AlwaysInterleave]
     Task<Result<ImmutableList<Snack>>> SearchingListAsync(SnackRetrieverSearchingListQuery query);
 
     /// <summary>
@@ -38,6 +34,5 @@ public interface ISnackRetrieverGrain : IGrainWithStringKey
     /// </summary>
     /// <param name="query">The query.</param>
     /// <returns>List of snacks.</returns>
-    [AlwaysInterleave]
     Task<Result<ImmutableList<Snack>>> SearchingPagedListAsync(SnackRetrieverSearchingPagedListQuery query);
 }

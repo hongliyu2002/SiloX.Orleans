@@ -1,17 +1,15 @@
-﻿using System.Collections.Immutable;
-using System.Linq.Dynamic.Core;
-using Fluxera.Extensions.Common;
+﻿using Fluxera.Extensions.Common;
 using Fluxera.Guards;
 using Microsoft.EntityFrameworkCore;
 using Orleans.Concurrency;
 using Orleans.FluentResults;
-using SiloX.Domain.Abstractions.Extensions;
 using Vending.Domain.Abstractions.SnackMachines;
 using Vending.Domain.EntityFrameworkCore;
 
 namespace Vending.Domain.SnackMachines;
 
 [StatelessWorker]
+[Reentrant]
 public sealed class SnackMachineRepoGrain : Grain, ISnackMachineRepoGrain
 {
     private readonly IGuidGenerator _guidGenerator;

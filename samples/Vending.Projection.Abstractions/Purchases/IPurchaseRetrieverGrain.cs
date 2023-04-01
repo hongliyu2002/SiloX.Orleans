@@ -1,5 +1,4 @@
 ﻿using System.Collections.Immutable;
-using Orleans.Concurrency;
 using Orleans.FluentResults;
 
 namespace Vending.Projection.Abstractions.Purchases;
@@ -14,7 +13,6 @@ public interface IPurchaseRetrieverGrain : IGrainWithStringKey
     /// </summary>
     /// <param name="query">The query.</param>
     /// <returns>List of purchases.</returns>
-    [AlwaysInterleave]
     Task<Result<ImmutableList<Purchase>>> ListAsync(PurchaseRetrieverListQuery query);
 
     /// <summary>
@@ -22,7 +20,6 @@ public interface IPurchaseRetrieverGrain : IGrainWithStringKey
     /// </summary>
     /// <param name="query">The query.</param>
     /// <returns>List of purchases.</returns>
-    [AlwaysInterleave]
     Task<Result<ImmutableList<Purchase>>> PagedListAsync(PurchaseRetrieverPagedListQuery query);
 
     /// <summary>
@@ -30,7 +27,6 @@ public interface IPurchaseRetrieverGrain : IGrainWithStringKey
     /// </summary>
     /// <param name="query">The query.</param>
     /// <returns>List of purchases.</returns>
-    [AlwaysInterleave]
     Task<Result<ImmutableList<Purchase>>> SearchingListAsync(PurchaseRetrieverSearchingListQuery query);
 
     /// <summary>
@@ -38,6 +34,5 @@ public interface IPurchaseRetrieverGrain : IGrainWithStringKey
     /// </summary>
     /// <param name="query">The query.</param>
     /// <returns>List of purchases.</returns>
-    [AlwaysInterleave]
     Task<Result<ImmutableList<Purchase>>> SearchingPagedListAsync(PurchaseRetrieverSearchingPagedListQuery query);
 }

@@ -3,20 +3,18 @@ using Fluxera.Guards;
 using Orleans.Concurrency;
 using Orleans.FluentResults;
 using Vending.Domain.Abstractions.Purchases;
-using Vending.Domain.EntityFrameworkCore;
 
 namespace Vending.Domain.Purchases;
 
 [StatelessWorker]
+[Reentrant]
 public sealed class PurchaseRepoGrain : Grain, IPurchaseRepoGrain
 {
     private readonly IGuidGenerator _guidGenerator;
-    private readonly DomainDbContext _dbContext;
 
     /// <inheritdoc />
-    public PurchaseRepoGrain(DomainDbContext dbContext, IGuidGenerator guidGenerator)
+    public PurchaseRepoGrain(IGuidGenerator guidGenerator)
     {
-        _dbContext = Guard.Against.Null(dbContext, nameof(dbContext));
         _guidGenerator = Guard.Against.Null(guidGenerator, nameof(guidGenerator));
     }
 

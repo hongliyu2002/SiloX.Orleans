@@ -9,6 +9,7 @@ using Vending.Domain.EntityFrameworkCore;
 namespace Vending.Domain.Snacks;
 
 [StatelessWorker]
+[Reentrant]
 public sealed class SnackRepoGrain : Grain, ISnackRepoGrain
 {
     private readonly IGuidGenerator _guidGenerator;

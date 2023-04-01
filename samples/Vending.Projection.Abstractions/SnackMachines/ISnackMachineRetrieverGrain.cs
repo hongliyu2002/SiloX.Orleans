@@ -1,5 +1,4 @@
 ﻿using System.Collections.Immutable;
-using Orleans.Concurrency;
 using Orleans.FluentResults;
 
 namespace Vending.Projection.Abstractions.SnackMachines;
@@ -14,7 +13,6 @@ public interface ISnackMachineRetrieverGrain : IGrainWithStringKey
     /// </summary>
     /// <param name="query">The query.</param>
     /// <returns>List of snack machines.</returns>
-    [AlwaysInterleave]
     Task<Result<ImmutableList<SnackMachine>>> ListAsync(SnackMachineRetrieverListQuery query);
 
     /// <summary>
@@ -22,6 +20,5 @@ public interface ISnackMachineRetrieverGrain : IGrainWithStringKey
     /// </summary>
     /// <param name="query">The query.</param>
     /// <returns>List of snack machines.</returns>
-    [AlwaysInterleave]
     Task<Result<ImmutableList<SnackMachine>>> PagedListAsync(SnackMachineRetrieverPagedListQuery query);
 }
