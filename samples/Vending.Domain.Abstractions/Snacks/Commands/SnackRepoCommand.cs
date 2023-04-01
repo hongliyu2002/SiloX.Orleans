@@ -3,7 +3,7 @@
 [Immutable]
 [Serializable]
 [GenerateSerializer]
-public abstract record SnackManagerCommand
+public abstract record SnackRepoCommand
     (Guid TraceId,
      DateTimeOffset OperatedAt,
      string OperatedBy) : SnackCommand(TraceId, OperatedAt, OperatedBy);

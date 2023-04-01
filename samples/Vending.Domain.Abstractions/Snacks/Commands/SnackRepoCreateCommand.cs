@@ -3,9 +3,9 @@
 [Immutable]
 [Serializable]
 [GenerateSerializer]
-public sealed record SnackManagerCreateCommand
+public sealed record SnackRepoCreateCommand
     (string Name,
      string? PictureUrl,
      Guid TraceId,
      DateTimeOffset OperatedAt,
-     string OperatedBy) : SnackManagerCommand(TraceId, OperatedAt, OperatedBy);
+     string OperatedBy) : SnackRepoCommand(TraceId, OperatedAt, OperatedBy);

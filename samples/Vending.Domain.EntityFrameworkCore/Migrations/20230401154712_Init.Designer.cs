@@ -12,7 +12,7 @@ using Vending.Domain.EntityFrameworkCore;
 namespace Vending.Domain.EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(DomainDbContext))]
-    [Migration("20230401071727_Init")]
+    [Migration("20230401154712_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -53,8 +53,6 @@ namespace Vending.Domain.EntityFrameworkCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BoughtAt");
-
                     b.HasIndex("MachineId");
 
                     b.HasIndex("SnackId");
@@ -85,33 +83,12 @@ namespace Vending.Domain.EntityFrameworkCore.Migrations
                         .HasPrecision(10, 2)
                         .HasColumnType("decimal(10,2)");
 
-                    b.Property<DateTimeOffset?>("CreatedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<DateTimeOffset?>("DeletedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("DeletedBy")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<DateTimeOffset?>("LastModifiedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("IsDeleted", "CreatedAt");
+                    b.HasIndex("IsDeleted", "Id");
 
                     b.ToTable("SnackMachines", (string)null);
                 });
@@ -122,42 +99,17 @@ namespace Vending.Domain.EntityFrameworkCore.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset?>("CreatedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<DateTimeOffset?>("DeletedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("DeletedBy")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
-
-                    b.Property<DateTimeOffset?>("LastModifiedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
-                    b.Property<string>("PictureUrl")
-                        .HasMaxLength(512)
-                        .HasColumnType("nvarchar(512)");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("IsDeleted", "CreatedAt");
+                    b.HasIndex("IsDeleted", "Id");
 
                     b.HasIndex("IsDeleted", "Name");
 

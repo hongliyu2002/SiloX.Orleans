@@ -9,8 +9,7 @@ namespace Vending.Domain.EntityFrameworkCore;
 [PublicAPI]
 public class DomainDbContext : DbContext
 {
-    public DomainDbContext
-        (DbContextOptions<DomainDbContext> options) : base(options)
+    public DomainDbContext(DbContextOptions<DomainDbContext> options) : base(options)
     {
     }
 
@@ -20,33 +19,38 @@ public class DomainDbContext : DbContext
 
     public DbSet<Purchase> Purchases { get; set; } = null!;
 
-    protected override void OnModelCreating
-        (ModelBuilder modelBuilder)
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Configures the Snack entity
         modelBuilder.Entity<Snack>(builder =>
                                    {
                                        builder.ToTable("Snacks");
                                        builder.HasKey(s => s.Id);
-                                       builder.Property(s => s.CreatedBy).HasMaxLength(256);
-                                       builder.Property(s => s.LastModifiedBy).HasMaxLength(256);
-                                       builder.Property(s => s.DeletedBy).HasMaxLength(256);
-                                       builder.HasIndex(s => new { s.IsDeleted, s.CreatedAt });
+                                       builder.Ignore(s => s.CreatedAt);
+                                       builder.Ignore(s => s.CreatedBy);
+                                       builder.Ignore(s => s.LastModifiedAt);
+                                       builder.Ignore(s => s.LastModifiedBy);
+                                       builder.Ignore(s => s.DeletedAt);
+                                       builder.Ignore(s => s.DeletedBy);
+                                       builder.Ignore(s => s.PictureUrl);
                                        builder.Property(s => s.Name).HasMaxLength(256);
+                                       builder.HasIndex(s => new { s.IsDeleted, s.Id });
                                        builder.HasIndex(s => new { s.IsDeleted, s.Name });
-                                       builder.Property(s => s.PictureUrl).HasMaxLength(512);
                                    });
         // Configures the SnackMachine entity
         modelBuilder.Entity<SnackMachine>(builder =>
                                           {
                                               builder.ToTable("SnackMachines");
                                               builder.HasKey(sm => sm.Id);
-                                              builder.Property(sm => sm.CreatedBy).HasMaxLength(256);
-                                              builder.Property(sm => sm.LastModifiedBy).HasMaxLength(256);
-                                              builder.Property(sm => sm.DeletedBy).HasMaxLength(256);
-                                              builder.HasIndex(sm => new { sm.IsDeleted, sm.CreatedAt });
+                                              builder.Ignore(s => s.CreatedAt);
+                                              builder.Ignore(s => s.CreatedBy);
+                                              builder.Ignore(s => s.LastModifiedAt);
+                                              builder.Ignore(s => s.LastModifiedBy);
+                                              builder.Ignore(s => s.DeletedAt);
+                                              builder.Ignore(s => s.DeletedBy);
                                               builder.OwnsOne(sm => sm.MoneyInside);
                                               builder.Property(sm => sm.AmountInTransaction).HasPrecision(10, 2);
+                                              builder.HasIndex(s => new { s.IsDeleted, s.Id });
                                           });
         // Configures the Slot entity
         modelBuilder.Entity<Slot>(builder =>
@@ -69,7 +73,6 @@ public class DomainDbContext : DbContext
                                           builder.HasOne<Snack>().WithMany().HasForeignKey(p => p.SnackId).OnDelete(DeleteBehavior.Cascade);
                                           builder.Property(p => p.BoughtPrice).HasPrecision(10, 2);
                                           builder.Property(p => p.BoughtBy).HasMaxLength(256);
-                                          builder.HasIndex(p => p.BoughtAt);
                                       });
         base.OnModelCreating(modelBuilder);
     }

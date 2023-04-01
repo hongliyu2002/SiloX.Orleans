@@ -3,7 +3,7 @@
 [Immutable]
 [Serializable]
 [GenerateSerializer]
-public abstract record PurchaseManagerCommand
+public abstract record PurchaseRepoCommand
     (Guid TraceId,
      DateTimeOffset OperatedAt,
      string OperatedBy) : PurchaseCommand(TraceId, OperatedAt, OperatedBy);

@@ -3,8 +3,8 @@
 [Immutable]
 [Serializable]
 [GenerateSerializer]
-public sealed record SnackMachineManagerDeleteCommand
+public sealed record SnackMachineRepoDeleteCommand
     (Guid MachineId,
      Guid TraceId,
      DateTimeOffset OperatedAt,
-     string OperatedBy) : SnackMachineManagerCommand(TraceId, OperatedAt, OperatedBy);
+     string OperatedBy) : SnackMachineRepoCommand(TraceId, OperatedAt, OperatedBy);

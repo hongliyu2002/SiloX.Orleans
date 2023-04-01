@@ -3,9 +3,9 @@
 [Immutable]
 [Serializable]
 [GenerateSerializer]
-public sealed record SnackMachineManagerCreateCommand
+public sealed record SnackMachineRepoCreateCommand
     (Money MoneyInside,
      IDictionary<int, SnackPile?> Slots,
      Guid TraceId,
      DateTimeOffset OperatedAt,
-     string OperatedBy) : SnackMachineManagerCommand(TraceId, OperatedAt, OperatedBy);
+     string OperatedBy) : SnackMachineRepoCommand(TraceId, OperatedAt, OperatedBy);
