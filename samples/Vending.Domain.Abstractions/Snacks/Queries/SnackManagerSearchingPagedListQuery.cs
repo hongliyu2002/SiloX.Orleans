@@ -8,7 +8,7 @@ namespace Vending.Domain.Abstractions.Snacks;
 [Immutable]
 [Serializable]
 [GenerateSerializer]
-public sealed record SnackSearchingPagedListQuery
+public sealed record SnackManagerSearchingPagedListQuery
     (string? SearchCriteria,
      DateTimeOffsetRange? CreatedAtRange,
      string? CreatedBy,

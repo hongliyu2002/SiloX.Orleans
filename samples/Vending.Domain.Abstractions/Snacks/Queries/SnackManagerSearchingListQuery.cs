@@ -3,7 +3,7 @@
 namespace Vending.Domain.Abstractions.Snacks;
 
 /// <summary>
-///     A class that represents a query for a snacks with searching feature.
+///     A class that represents a query for a list of snacks with searching feature.
 /// </summary>
 [Immutable]
 [Serializable]

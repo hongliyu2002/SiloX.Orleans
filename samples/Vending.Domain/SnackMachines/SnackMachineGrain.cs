@@ -21,8 +21,8 @@ public sealed class SnackMachineGrain : EventSourcingGrainWithGuidKey<SnackMachi
     private readonly IGuidGenerator _guidGenerator;
 
     /// <inheritdoc />
-    public SnackMachineGrain(DomainDbContext dbContext, IGuidGenerator guidGenerator)
-        : base(Constants.StreamProviderName)
+    public SnackMachineGrain(DomainDbContext dbContext,
+                             IGuidGenerator guidGenerator) : base(Constants.StreamProviderName)
     {
         _dbContext = Guard.Against.Null(dbContext, nameof(dbContext));
         _guidGenerator = Guard.Against.Null(guidGenerator, nameof(guidGenerator));
@@ -78,8 +78,6 @@ public sealed class SnackMachineGrain : EventSourcingGrainWithGuidKey<SnackMachi
                      .Verify(State.IsCreated == false, $"Snack machine {machineId} already exists.")
                      .Verify(command.MoneyInside != null, "Money inside should not be empty.")
                      .Verify(command.Slots.IsNotNullOrEmpty(), "Slots should not be empty.")
-                     .Verify(command.Slots.All(slot => slot.MachineId == machineId), $"Slots should be owned by the same snack machine {machineId}.")
-                     .Verify(command.Slots.GroupBy(slot => new { slot.MachineId, slot.Position }).Any(group => group.Count() == 1), "Slots should not contain duplicate positions.")
                      .Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
     }
 

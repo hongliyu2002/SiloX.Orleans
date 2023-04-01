@@ -114,7 +114,8 @@ public sealed class SnackMachine : IAuditedObject, ISoftDeleteObject
     /// <param name="position"> The position of the slot. </param>
     /// <param name="slot"> The slot at the specified position. </param>
     /// <returns> <c>true</c> if the slot exists; otherwise, <c>false</c>. </returns>
-    public bool TryGetSlot(int position, out Slot? slot)
+    public bool TryGetSlot(int position,
+                           out Slot? slot)
     {
         slot = Slots.FirstOrDefault(sl => sl.Position == position);
         return slot != null;
@@ -128,7 +129,13 @@ public sealed class SnackMachine : IAuditedObject, ISoftDeleteObject
     {
         Id = command.MachineId;
         MoneyInside = command.MoneyInside;
-        Slots = command.Slots.ToList();
+        Slots = command.Slots.Select(pair => new Slot
+                                             {
+                                                 MachineId = command.MachineId,
+                                                 Position = pair.Key,
+                                                 SnackPile = pair.Value
+                                             })
+                       .ToList();
         CreatedAt = command.OperatedAt;
         CreatedBy = command.OperatedBy;
     }
