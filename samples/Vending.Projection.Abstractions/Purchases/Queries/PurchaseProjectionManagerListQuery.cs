@@ -9,13 +9,11 @@ namespace Vending.Projection.Abstractions.Purchases;
 [Serializable]
 [GenerateSerializer]
 public sealed record PurchaseProjectionManagerListQuery
-    (DateTimeOffsetRange? CreatedAtRange,
-     string? CreatedBy,
-     DateTimeOffsetRange? LastModifiedAtRange,
-     string? LastModifiedBy,
-     DateTimeOffsetRange? DeletedAtRange,
-     string? DeletedBy,
-     bool? IsDeleted,
+    (Guid? MachineId,
+     Guid? SnackId,
+     DecimalRange? BoughtPriceRange,
+     DateTimeOffsetRange? BoughtAtRange,
+     string? BoughtBy,
      IDictionary<string, bool>? Sortings,
      Guid TraceId,
      DateTimeOffset OperatedAt,
