@@ -26,22 +26,6 @@ public interface ISnackMachineManagerGrain : IGrainWithStringKey
     Task<Result<ImmutableList<SnackMachine>>> PagedListAsync(SnackMachineManagerPagedListQuery query);
 
     /// <summary>
-    ///     Asynchronously retrieves a list of snack machines with searching feature.
-    /// </summary>
-    /// <param name="query">The query.</param>
-    /// <returns>List of snack machines.</returns>
-    [AlwaysInterleave]
-    Task<Result<ImmutableList<SnackMachine>>> SearchingListAsync(SnackMachineManagerSearchingListQuery query);
-
-    /// <summary>
-    ///     Asynchronously retrieves a paged list of snack machines with searching feature.
-    /// </summary>
-    /// <param name="query">The query.</param>
-    /// <returns>List of snack machines.</returns>
-    [AlwaysInterleave]
-    Task<Result<ImmutableList<SnackMachine>>> SearchingPagedListAsync(SnackMachineManagerSearchingPagedListQuery query);
-
-    /// <summary>
     ///     Asynchronously creates a new snack machine.
     /// </summary>
     /// <param name="command"></param>
