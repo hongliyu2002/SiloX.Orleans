@@ -1,5 +1,4 @@
-﻿using System.Collections.Immutable;
-using SiloX.Domain.Abstractions;
+﻿using SiloX.Domain.Abstractions;
 
 namespace Vending.Domain.Abstractions.SnackMachines;
 
@@ -9,7 +8,7 @@ namespace Vending.Domain.Abstractions.SnackMachines;
 [Immutable]
 [Serializable]
 [GenerateSerializer]
-public sealed record SnackMachineSearchingPagedListQuery
+public sealed record SnackMachineManagerSearchingPagedListQuery
     (string? SearchCriteria,
      DateTimeOffsetRange? CreatedAtRange,
      string? CreatedBy,
@@ -19,7 +18,7 @@ public sealed record SnackMachineSearchingPagedListQuery
      string? DeletedBy,
      int? SkipCount,
      int? MaxResultCount,
-     IImmutableList<KeyValuePair<string, bool>>? Sortings,
+     IDictionary<string, bool>? Sortings,
      Guid TraceId,
      DateTimeOffset OperatedAt,
      string OperatedBy) : DomainSearchingPagedListQuery(SearchCriteria, SkipCount, MaxResultCount, Sortings, TraceId, OperatedAt, OperatedBy);

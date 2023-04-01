@@ -1,15 +1,14 @@
-﻿using System.Collections.Immutable;
-using SiloX.Domain.Abstractions;
+﻿using SiloX.Domain.Abstractions;
 
 namespace Vending.Domain.Abstractions.Snacks;
 
 /// <summary>
-///     A class that represents a query for a snacks with searching feature.
+///     Represents a query for retrieving a paged list of snacks with searching feature.
 /// </summary>
 [Immutable]
 [Serializable]
 [GenerateSerializer]
-public sealed record SnackSearchingListQuery
+public sealed record SnackSearchingPagedListQuery
     (string? SearchCriteria,
      DateTimeOffsetRange? CreatedAtRange,
      string? CreatedBy,
@@ -17,8 +16,9 @@ public sealed record SnackSearchingListQuery
      string? LastModifiedBy,
      DateTimeOffsetRange? DeletedAtRange,
      string? DeletedBy,
-     bool? IsDeleted,
-     IImmutableList<KeyValuePair<string, bool>>? Sortings,
+     int? SkipCount,
+     int? MaxResultCount,
+     IDictionary<string, bool>? Sortings,
      Guid TraceId,
      DateTimeOffset OperatedAt,
-     string OperatedBy) : DomainSearchingListQuery(SearchCriteria, Sortings, TraceId, OperatedAt, OperatedBy);
+     string OperatedBy) : DomainSearchingPagedListQuery(SearchCriteria, SkipCount, MaxResultCount, Sortings, TraceId, OperatedAt, OperatedBy);

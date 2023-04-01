@@ -1,15 +1,14 @@
-﻿using System.Collections.Immutable;
-using SiloX.Domain.Abstractions;
+﻿using SiloX.Domain.Abstractions;
 
-namespace Vending.Domain.Abstractions.Snacks;
+namespace Vending.Domain.Abstractions.SnackMachines;
 
 /// <summary>
-///     This class represents a query for retrieving a paged list of snacks.
+///     This class represents a query for retrieving a paged list of snack machines.
 /// </summary>
 [Immutable]
 [Serializable]
 [GenerateSerializer]
-public sealed record SnackPagedListQuery
+public sealed record SnackMachineManagerPagedListQuery
     (DateTimeOffsetRange? CreatedAtRange,
      string? CreatedBy,
      DateTimeOffsetRange? LastModifiedAtRange,
@@ -19,7 +18,7 @@ public sealed record SnackPagedListQuery
      bool? IsDeleted,
      int? SkipCount,
      int? MaxResultCount,
-     IImmutableList<KeyValuePair<string, bool>>? Sortings,
+     IDictionary<string, bool>? Sortings,
      Guid TraceId,
      DateTimeOffset OperatedAt,
      string OperatedBy) : DomainPagedListQuery(SkipCount, MaxResultCount, Sortings, TraceId, OperatedAt, OperatedBy);

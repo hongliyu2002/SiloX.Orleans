@@ -1,5 +1,4 @@
-﻿using System.Collections.Immutable;
-using SiloX.Domain.Abstractions;
+﻿using SiloX.Domain.Abstractions;
 
 namespace Vending.Domain.Abstractions.Purchases;
 
@@ -9,13 +8,13 @@ namespace Vending.Domain.Abstractions.Purchases;
 [Immutable]
 [Serializable]
 [GenerateSerializer]
-public sealed record PurchaseListQuery
+public sealed record PurchaseManagerListQuery
     (Guid? MachineId,
      Guid? SnackId,
      DecimalRange? BoughtPrice,
      DateTimeOffsetRange? BoughtAtRange,
      string? BoughtBy,
-     IImmutableList<KeyValuePair<string, bool>>? Sortings,
+     IDictionary<string, bool>? Sortings,
      Guid TraceId,
      DateTimeOffset OperatedAt,
      string OperatedBy) : DomainListQuery(Sortings, TraceId, OperatedAt, OperatedBy);

@@ -18,7 +18,7 @@ namespace SiloX.Domain.Abstractions;
 public abstract record DomainPagedListQuery
     (int? SkipCount,
      int? MaxResultCount,
-     IImmutableList<KeyValuePair<string, bool>>? Sortings,
+     IDictionary<string, bool>? Sortings,
      Guid TraceId,
      DateTimeOffset OperatedAt,
      string OperatedBy) : DomainListQuery(Sortings, TraceId, OperatedAt, OperatedBy);

@@ -16,7 +16,7 @@ namespace SiloX.Domain.Abstractions;
 [GenerateSerializer]
 public abstract record DomainSearchingListQuery
     (string? SearchCriteria,
-     IImmutableList<KeyValuePair<string, bool>>? Sortings,
+     IDictionary<string, bool>? Sortings,
      Guid TraceId,
      DateTimeOffset OperatedAt,
      string OperatedBy) : DomainListQuery(Sortings, TraceId, OperatedAt, OperatedBy);
