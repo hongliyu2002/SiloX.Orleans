@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Vending.Domain.EntityFrameworkCore.Migrations
+namespace Vending.Projection.EntityFrameworkCore.Migrations
 {
     /// <inheritdoc />
     public partial class Init : Migration
@@ -16,6 +16,7 @@ namespace Vending.Domain.EntityFrameworkCore.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Version = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     LastModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
@@ -30,7 +31,14 @@ namespace Vending.Domain.EntityFrameworkCore.Migrations
                     MoneyInside_Yuan20 = table.Column<int>(type: "int", nullable: false),
                     MoneyInside_Yuan50 = table.Column<int>(type: "int", nullable: false),
                     MoneyInside_Yuan100 = table.Column<int>(type: "int", nullable: false),
-                    AmountInTransaction = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false)
+                    MoneyInside_Amount = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false),
+                    AmountInTransaction = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false),
+                    SlotsCount = table.Column<int>(type: "int", nullable: false),
+                    SnackCount = table.Column<int>(type: "int", nullable: false),
+                    SnackQuantity = table.Column<int>(type: "int", nullable: false),
+                    SnackAmount = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false),
+                    BoughtCount = table.Column<int>(type: "int", nullable: false),
+                    BoughtAmount = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -42,6 +50,7 @@ namespace Vending.Domain.EntityFrameworkCore.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Version = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     LastModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
@@ -50,7 +59,10 @@ namespace Vending.Domain.EntityFrameworkCore.Migrations
                     DeletedBy = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    PictureUrl = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: true)
+                    PictureUrl = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: true),
+                    MachineCount = table.Column<int>(type: "int", nullable: false),
+                    BoughtCount = table.Column<int>(type: "int", nullable: false),
+                    BoughtAmount = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -65,6 +77,8 @@ namespace Vending.Domain.EntityFrameworkCore.Migrations
                     MachineId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Position = table.Column<int>(type: "int", nullable: false),
                     SnackId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SnackName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    SnackPictureUrl = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: true),
                     BoughtPrice = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false),
                     BoughtAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     BoughtBy = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true)
@@ -93,8 +107,11 @@ namespace Vending.Domain.EntityFrameworkCore.Migrations
                     MachineId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Position = table.Column<int>(type: "int", nullable: false),
                     SnackPile_SnackId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    SnackPile_SnackName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    SnackPile_SnackPictureUrl = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: true),
                     SnackPile_Quantity = table.Column<int>(type: "int", nullable: true),
-                    SnackPile_Price = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: true)
+                    SnackPile_Price = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: true),
+                    SnackPile_TotalAmount = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -114,9 +131,9 @@ namespace Vending.Domain.EntityFrameworkCore.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Purchases_BoughtAt",
+                name: "IX_Purchases_BoughtPrice",
                 table: "Purchases",
-                column: "BoughtAt");
+                column: "BoughtPrice");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Purchases_MachineId",
@@ -129,9 +146,19 @@ namespace Vending.Domain.EntityFrameworkCore.Migrations
                 column: "SnackId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Purchases_SnackName",
+                table: "Purchases",
+                column: "SnackName");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Slots_SnackPile_SnackId",
                 table: "Slots",
                 column: "SnackPile_SnackId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SnackMachines_IsDeleted_BoughtAmount",
+                table: "SnackMachines",
+                columns: new[] { "IsDeleted", "BoughtAmount" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_SnackMachines_IsDeleted_CreatedAt",
@@ -139,14 +166,34 @@ namespace Vending.Domain.EntityFrameworkCore.Migrations
                 columns: new[] { "IsDeleted", "CreatedAt" });
 
             migrationBuilder.CreateIndex(
+                name: "IX_SnackMachines_IsDeleted_LastModifiedBy",
+                table: "SnackMachines",
+                columns: new[] { "IsDeleted", "LastModifiedBy" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SnackMachines_IsDeleted_SnackAmount",
+                table: "SnackMachines",
+                columns: new[] { "IsDeleted", "SnackAmount" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Snacks_IsDeleted_BoughtAmount",
+                table: "Snacks",
+                columns: new[] { "IsDeleted", "BoughtAmount" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Snacks_IsDeleted_CreatedAt",
                 table: "Snacks",
                 columns: new[] { "IsDeleted", "CreatedAt" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Snacks_Name",
+                name: "IX_Snacks_IsDeleted_LastModifiedBy",
                 table: "Snacks",
-                column: "Name");
+                columns: new[] { "IsDeleted", "LastModifiedBy" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Snacks_IsDeleted_Name",
+                table: "Snacks",
+                columns: new[] { "IsDeleted", "Name" });
         }
 
         /// <inheritdoc />

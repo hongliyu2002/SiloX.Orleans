@@ -154,9 +154,9 @@ namespace Vending.Domain.EntityFrameworkCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Name");
-
                     b.HasIndex("IsDeleted", "CreatedAt");
+
+                    b.HasIndex("IsDeleted", "Name");
 
                     b.ToTable("Snacks", (string)null);
                 });

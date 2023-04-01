@@ -22,7 +22,7 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Vending.Projection.Abstractions.Entities.Purchase", b =>
+            modelBuilder.Entity("Vending.Projection.Abstractions.Purchases.Purchase", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -59,14 +59,18 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("BoughtPrice");
+
                     b.HasIndex("MachineId");
 
                     b.HasIndex("SnackId");
 
+                    b.HasIndex("SnackName");
+
                     b.ToTable("Purchases", (string)null);
                 });
 
-            modelBuilder.Entity("Vending.Projection.Abstractions.Entities.Slot", b =>
+            modelBuilder.Entity("Vending.Projection.Abstractions.SnackMachines.Slot", b =>
                 {
                     b.Property<Guid>("MachineId")
                         .HasColumnType("uniqueidentifier");
@@ -79,64 +83,7 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
                     b.ToTable("Slots", (string)null);
                 });
 
-            modelBuilder.Entity("Vending.Projection.Abstractions.Entities.Snack", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("BoughtAmount")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("decimal(10,2)");
-
-                    b.Property<int>("BoughtCount")
-                        .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("CreatedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<DateTimeOffset?>("DeletedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("DeletedBy")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTimeOffset?>("LastModifiedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<int>("MachineCount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("PictureUrl")
-                        .HasMaxLength(512)
-                        .HasColumnType("nvarchar(512)");
-
-                    b.Property<int>("Version")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Snacks", (string)null);
-                });
-
-            modelBuilder.Entity("Vending.Projection.Abstractions.Entities.SnackMachine", b =>
+            modelBuilder.Entity("Vending.Projection.Abstractions.SnackMachines.SnackMachine", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -195,33 +142,106 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("IsDeleted", "BoughtAmount");
+
+                    b.HasIndex("IsDeleted", "CreatedAt");
+
+                    b.HasIndex("IsDeleted", "LastModifiedBy");
+
+                    b.HasIndex("IsDeleted", "SnackAmount");
+
                     b.ToTable("SnackMachines", (string)null);
                 });
 
-            modelBuilder.Entity("Vending.Projection.Abstractions.Entities.Purchase", b =>
+            modelBuilder.Entity("Vending.Projection.Abstractions.Snacks.Snack", b =>
                 {
-                    b.HasOne("Vending.Projection.Abstractions.Entities.SnackMachine", null)
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("BoughtAmount")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<int>("BoughtCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LastModifiedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<int>("MachineCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("PictureUrl")
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted", "BoughtAmount");
+
+                    b.HasIndex("IsDeleted", "CreatedAt");
+
+                    b.HasIndex("IsDeleted", "LastModifiedBy");
+
+                    b.HasIndex("IsDeleted", "Name");
+
+                    b.ToTable("Snacks", (string)null);
+                });
+
+            modelBuilder.Entity("Vending.Projection.Abstractions.Purchases.Purchase", b =>
+                {
+                    b.HasOne("Vending.Projection.Abstractions.SnackMachines.SnackMachine", null)
                         .WithMany()
                         .HasForeignKey("MachineId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Vending.Projection.Abstractions.Entities.Snack", null)
+                    b.HasOne("Vending.Projection.Abstractions.Snacks.Snack", null)
                         .WithMany()
                         .HasForeignKey("SnackId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Vending.Projection.Abstractions.Entities.Slot", b =>
+            modelBuilder.Entity("Vending.Projection.Abstractions.SnackMachines.Slot", b =>
                 {
-                    b.HasOne("Vending.Projection.Abstractions.Entities.SnackMachine", null)
+                    b.HasOne("Vending.Projection.Abstractions.SnackMachines.SnackMachine", null)
                         .WithMany("Slots")
                         .HasForeignKey("MachineId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsOne("Vending.Projection.Abstractions.Entities.SnackPile", "SnackPile", b1 =>
+                    b.OwnsOne("Vending.Projection.Abstractions.SnackMachines.SnackPile", "SnackPile", b1 =>
                         {
                             b1.Property<Guid>("SlotMachineId")
                                 .HasColumnType("uniqueidentifier");
@@ -258,7 +278,7 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
 
                             b1.ToTable("Slots");
 
-                            b1.HasOne("Vending.Projection.Abstractions.Entities.Snack", null)
+                            b1.HasOne("Vending.Projection.Abstractions.Snacks.Snack", null)
                                 .WithMany()
                                 .HasForeignKey("SnackId")
                                 .OnDelete(DeleteBehavior.Cascade)
@@ -271,9 +291,9 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
                     b.Navigation("SnackPile");
                 });
 
-            modelBuilder.Entity("Vending.Projection.Abstractions.Entities.SnackMachine", b =>
+            modelBuilder.Entity("Vending.Projection.Abstractions.SnackMachines.SnackMachine", b =>
                 {
-                    b.OwnsOne("Vending.Projection.Abstractions.Entities.Money", "MoneyInside", b1 =>
+                    b.OwnsOne("Vending.Projection.Abstractions.SnackMachines.Money", "MoneyInside", b1 =>
                         {
                             b1.Property<Guid>("SnackMachineId")
                                 .HasColumnType("uniqueidentifier");
@@ -315,7 +335,7 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Vending.Projection.Abstractions.Entities.SnackMachine", b =>
+            modelBuilder.Entity("Vending.Projection.Abstractions.SnackMachines.SnackMachine", b =>
                 {
                     b.Navigation("Slots");
                 });

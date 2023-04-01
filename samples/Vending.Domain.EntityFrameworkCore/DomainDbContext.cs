@@ -9,7 +9,8 @@ namespace Vending.Domain.EntityFrameworkCore;
 [PublicAPI]
 public class DomainDbContext : DbContext
 {
-    public DomainDbContext(DbContextOptions<DomainDbContext> options) : base(options)
+    public DomainDbContext
+        (DbContextOptions<DomainDbContext> options) : base(options)
     {
     }
 
@@ -19,7 +20,8 @@ public class DomainDbContext : DbContext
 
     public DbSet<Purchase> Purchases { get; set; } = null!;
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    protected override void OnModelCreating
+        (ModelBuilder modelBuilder)
     {
         // Configures the Snack entity
         modelBuilder.Entity<Snack>(builder =>
@@ -31,7 +33,7 @@ public class DomainDbContext : DbContext
                                        builder.Property(s => s.DeletedBy).HasMaxLength(256);
                                        builder.HasIndex(s => new { s.IsDeleted, s.CreatedAt });
                                        builder.Property(s => s.Name).HasMaxLength(256);
-                                       builder.HasIndex(s => s.Name);
+                                       builder.HasIndex(s => new { s.IsDeleted, s.Name });
                                        builder.Property(s => s.PictureUrl).HasMaxLength(512);
                                    });
         // Configures the SnackMachine entity
