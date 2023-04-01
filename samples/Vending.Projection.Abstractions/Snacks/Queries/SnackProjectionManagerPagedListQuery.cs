@@ -9,7 +9,10 @@ namespace Vending.Projection.Abstractions.Snacks;
 [Serializable]
 [GenerateSerializer]
 public sealed record SnackProjectionManagerPagedListQuery
-    (DateTimeOffsetRange? CreatedAtRange,
+    (Int32Range? MachineCountRange,
+     Int32Range? BoughtCountRange,
+     DecimalRange? BoughtAmountRange,
+     DateTimeOffsetRange? CreatedAtRange,
      string? CreatedBy,
      DateTimeOffsetRange? LastModifiedAtRange,
      string? LastModifiedBy,
