@@ -1,6 +1,4 @@
-﻿using SiloX.Domain.Abstractions;
-
-namespace Vending.Domain.Abstractions.Snacks;
+﻿namespace Vending.Domain.Abstractions.Snacks;
 
 [Immutable]
 [Serializable]
@@ -8,4 +6,4 @@ namespace Vending.Domain.Abstractions.Snacks;
 public abstract record SnackManagerCommand
     (Guid TraceId,
      DateTimeOffset OperatedAt,
-     string OperatedBy) : DomainCommand(TraceId, OperatedAt, OperatedBy);
+     string OperatedBy) : SnackCommand(TraceId, OperatedAt, OperatedBy);
