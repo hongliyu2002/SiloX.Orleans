@@ -30,19 +30,19 @@ public interface IPurchaseManagerGrain : IGrainWithStringKey
     /// </summary>
     /// <param name="command"></param>
     /// <returns></returns>
-    Task<Result<Purchase>> CreateAsync(PurchaseManagerCreateCommand command);
+    Task<Result<Guid>> CreateAsync(PurchaseManagerCreateCommand command);
 
     /// <summary>
     ///     Asynchronously deletes a purchase.
     /// </summary>
     /// <param name="command"></param>
     /// <returns></returns>
-    Task<Result<Guid>> DeleteAsync(PurchaseManagerDeleteCommand command);
+    Task<Result> DeleteAsync(PurchaseManagerDeleteCommand command);
 
     /// <summary>
     ///     Asynchronously deletes many purchases.
     /// </summary>
     /// <param name="command"></param>
     /// <returns></returns>
-    Task<Result<ImmutableList<Guid>>> DeleteManyAsync(PurchaseManagerDeleteManyCommand command);
+    Task<Result> DeleteManyAsync(PurchaseManagerDeleteManyCommand command);
 }

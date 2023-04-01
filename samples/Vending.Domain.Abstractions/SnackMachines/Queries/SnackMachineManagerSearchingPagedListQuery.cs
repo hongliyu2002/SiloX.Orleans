@@ -16,6 +16,7 @@ public sealed record SnackMachineManagerSearchingPagedListQuery
      string? LastModifiedBy,
      DateTimeOffsetRange? DeletedAtRange,
      string? DeletedBy,
+     bool? IsDeleted,
      int? SkipCount,
      int? MaxResultCount,
      IDictionary<string, bool>? Sortings,

@@ -46,19 +46,19 @@ public interface ISnackManagerGrain : IGrainWithStringKey
     /// </summary>
     /// <param name="command"></param>
     /// <returns></returns>
-    Task<Result<Snack>> CreateAsync(SnackManagerCreateCommand command);
+    Task<Result<Guid>> CreateAsync(SnackManagerCreateCommand command);
 
     /// <summary>
     ///     Asynchronously deletes a snack.
     /// </summary>
     /// <param name="command"></param>
     /// <returns></returns>
-    Task<Result<Guid>> DeleteAsync(SnackManagerDeleteCommand command);
+    Task<Result> DeleteAsync(SnackManagerDeleteCommand command);
 
     /// <summary>
     ///     Asynchronously deletes many snacks.
     /// </summary>
     /// <param name="command"></param>
     /// <returns></returns>
-    Task<Result<ImmutableList<Guid>>> DeleteManyAsync(SnackManagerDeleteManyCommand command);
+    Task<Result> DeleteManyAsync(SnackManagerDeleteManyCommand command);
 }

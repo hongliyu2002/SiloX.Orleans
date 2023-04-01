@@ -114,6 +114,11 @@ namespace Vending.Domain.EntityFrameworkCore.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Purchases_BoughtAt",
+                table: "Purchases",
+                column: "BoughtAt");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Purchases_MachineId",
                 table: "Purchases",
                 column: "MachineId");
@@ -127,6 +132,21 @@ namespace Vending.Domain.EntityFrameworkCore.Migrations
                 name: "IX_Slots_SnackPile_SnackId",
                 table: "Slots",
                 column: "SnackPile_SnackId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SnackMachines_IsDeleted_CreatedAt",
+                table: "SnackMachines",
+                columns: new[] { "IsDeleted", "CreatedAt" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Snacks_IsDeleted_CreatedAt",
+                table: "Snacks",
+                columns: new[] { "IsDeleted", "CreatedAt" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Snacks_Name",
+                table: "Snacks",
+                column: "Name");
         }
 
         /// <inheritdoc />
