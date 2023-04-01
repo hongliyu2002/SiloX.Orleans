@@ -1,13 +1,16 @@
 ﻿using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
-using Vending.Projection.Abstractions.Entities;
+using Vending.Projection.Abstractions.Purchases;
+using Vending.Projection.Abstractions.SnackMachines;
+using Vending.Projection.Abstractions.Snacks;
 
 namespace Vending.Projection.EntityFrameworkCore;
 
 [PublicAPI]
 public class ProjectionDbContext : DbContext
 {
-    public ProjectionDbContext(DbContextOptions<ProjectionDbContext> options) : base(options)
+    public ProjectionDbContext(DbContextOptions<ProjectionDbContext> options)
+        : base(options)
     {
     }
 
@@ -41,7 +44,10 @@ public class ProjectionDbContext : DbContext
                                               builder.Property(sm => sm.CreatedBy).HasMaxLength(256);
                                               builder.Property(sm => sm.LastModifiedBy).HasMaxLength(256);
                                               builder.Property(sm => sm.DeletedBy).HasMaxLength(256);
-                                              builder.OwnsOne(sm => sm.MoneyInside, navigation => { navigation.Property(m => m.Amount).HasPrecision(10, 2); });
+                                              builder.OwnsOne(sm => sm.MoneyInside, navigation =>
+                                                                                    {
+                                                                                        navigation.Property(m => m.Amount).HasPrecision(10, 2);
+                                                                                    });
                                               builder.Property(sm => sm.AmountInTransaction).HasPrecision(10, 2);
                                               builder.Property(sm => sm.SnackAmount).HasPrecision(10, 2);
                                               builder.Property(sm => sm.BoughtAmount).HasPrecision(10, 2);

@@ -1,11 +1,8 @@
 ﻿using FluentAssertions;
-using Fluxera.Extensions.Hosting;
-using Fluxera.Extensions.Hosting.Modules.UnitTesting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using Vending.Domain.Abstractions.Commands;
-using Vending.Domain.Abstractions.Grains;
+using Vending.Domain.Abstractions.Snacks;
 
 namespace SiloX.Orleans.UnitTests;
 
@@ -13,8 +10,8 @@ namespace SiloX.Orleans.UnitTests;
 public class SnackGrainTests
 {
     private UnitTestsHost _testHost = null!;
-    private TestServer _testServer = null!; 
-    
+    private TestServer _testServer = null!;
+
     // [OneTimeSetUp]
     // public void Initialize()
     // {
@@ -25,7 +22,7 @@ public class SnackGrainTests
     // public void Dispose()
     // {
     // }
-    
+
     [SetUp]
     public async Task SetUp()
     {

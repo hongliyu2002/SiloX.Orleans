@@ -9,4 +9,7 @@
 [Immutable]
 [Serializable]
 [GenerateSerializer]
-public abstract record DomainQuery(Guid TraceId, DateTimeOffset OperatedAt, string OperatedBy) : ITraceable;
+public abstract record DomainQuery
+    (Guid TraceId,
+     DateTimeOffset OperatedAt,
+     string OperatedBy) : ITraceable;

@@ -9,4 +9,7 @@
 [Immutable]
 [Serializable]
 [GenerateSerializer]
-public abstract record DomainCommand(Guid TraceId, DateTimeOffset OperatedAt, string OperatedBy) : ITraceable;
+public abstract record DomainCommand
+    (Guid TraceId,
+     DateTimeOffset OperatedAt,
+     string OperatedBy) : ITraceable;

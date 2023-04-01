@@ -1,13 +1,16 @@
 ﻿using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
-using Vending.Domain.Abstractions.States;
+using Vending.Domain.Abstractions.Purchases;
+using Vending.Domain.Abstractions.SnackMachines;
+using Vending.Domain.Abstractions.Snacks;
 
 namespace Vending.Domain.EntityFrameworkCore;
 
 [PublicAPI]
 public class DomainDbContext : DbContext
 {
-    public DomainDbContext(DbContextOptions<DomainDbContext> options) : base(options)
+    public DomainDbContext(DbContextOptions<DomainDbContext> options)
+        : base(options)
     {
     }
 

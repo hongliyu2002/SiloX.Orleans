@@ -13,5 +13,8 @@ namespace SiloX.Domain.Abstractions;
 [Immutable]
 [Serializable]
 [GenerateSerializer]
-public abstract record DomainListQuery(IImmutableList<KeyValuePair<string, bool>>? Sortings, Guid TraceId, DateTimeOffset OperatedAt, string OperatedBy) 
-    : DomainQuery(TraceId, OperatedAt, OperatedBy);
+public abstract record DomainListQuery
+    (IImmutableList<KeyValuePair<string, bool>>? Sortings,
+     Guid TraceId,
+     DateTimeOffset OperatedAt,
+     string OperatedBy) : DomainQuery(TraceId, OperatedAt, OperatedBy);

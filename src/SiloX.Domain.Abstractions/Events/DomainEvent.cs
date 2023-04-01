@@ -11,4 +11,8 @@
 [Immutable]
 [Serializable]
 [GenerateSerializer]
-public abstract record DomainEvent(int Version, Guid TraceId, DateTimeOffset OperatedAt, string OperatedBy) : IDomainEvent;
+public abstract record DomainEvent
+    (int Version,
+     Guid TraceId,
+     DateTimeOffset OperatedAt,
+     string OperatedBy) : IDomainEvent;

@@ -3,8 +3,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using Orleans;
 using SiloX.Domain.Abstractions.Extensions;
-using Vending.Domain.Abstractions.Commands;
-using Vending.Domain.Abstractions.Grains;
+using Vending.Domain.Abstractions.Snacks;
 
 namespace Vending.App.Controls;
 
