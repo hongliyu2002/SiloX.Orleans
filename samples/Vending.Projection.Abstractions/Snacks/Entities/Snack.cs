@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 namespace Vending.Projection.Abstractions.Snacks;
 
 /// <summary>
-///     Represents a snack that can be sold in a vending machine.
+///     Represents a snack that can be sold in a snack machine.
 /// </summary>
 [PublicAPI]
 [Serializable]
@@ -66,7 +66,7 @@ public sealed class Snack : IAuditedObject, ISoftDeleteObject
     public string? PictureUrl { get; set; }
 
     /// <summary>
-    ///     Gets or sets the number of vending machines that have this snack.
+    ///     Gets or sets the number of snack machines that have this snack.
     /// </summary>
     public int MachineCount { get; set; }
 

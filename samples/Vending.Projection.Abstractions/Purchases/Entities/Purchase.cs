@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 namespace Vending.Projection.Abstractions.Purchases;
 
 /// <summary>
-///     Represents a record of a snack that has been bought from a vending machine.
+///     Represents a record of a snack that has been bought from a snack machine.
 /// </summary>
 [PublicAPI]
 [Serializable]
@@ -16,12 +16,12 @@ public sealed class Purchase
     public Guid Id { get; set; }
 
     /// <summary>
-    ///     Gets or sets the ID of the vending machine where the snack was bought.
+    ///     Gets or sets the ID of the snack machine where the snack was bought.
     /// </summary>
     public Guid MachineId { get; set; }
 
     /// <summary>
-    ///     Gets or sets the position of the slot in the vending machine where the snack was bought.
+    ///     Gets or sets the position of the slot in the snack machine where the snack was bought.
     /// </summary>
     public int Position { get; set; }
 

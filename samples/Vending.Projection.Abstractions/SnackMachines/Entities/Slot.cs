@@ -3,19 +3,19 @@
 namespace Vending.Projection.Abstractions.SnackMachines;
 
 /// <summary>
-///     Represents a vending machine slot that holds a <see cref="SnackPile" />.
+///     Represents a snack machine slot that holds a <see cref="SnackPile" />.
 /// </summary>
 [PublicAPI]
 [Serializable]
 public sealed class Slot
 {
     /// <summary>
-    ///     Gets or sets the ID of the vending machine that this slot belongs to.
+    ///     Gets or sets the ID of the snack machine that this slot belongs to.
     /// </summary>
     public Guid MachineId { get; set; }
 
     /// <summary>
-    ///     Gets or sets the position of this slot within the vending machine.
+    ///     Gets or sets the position of this slot within the snack machine.
     /// </summary>
     public int Position { get; set; }
 

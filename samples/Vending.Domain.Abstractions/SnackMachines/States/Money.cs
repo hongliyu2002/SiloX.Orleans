@@ -4,7 +4,7 @@ using Orleans.FluentResults;
 namespace Vending.Domain.Abstractions.SnackMachines;
 
 /// <summary>
-///     Represents money in the vending machine.
+///     Represents money in the snack machine.
 /// </summary>
 /// <param name="Yuan1">The number of ￥1 coins. </param>
 /// <param name="Yuan2">The number of ￥2 coins. </param>
