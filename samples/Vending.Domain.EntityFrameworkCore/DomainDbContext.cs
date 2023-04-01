@@ -42,23 +42,23 @@ public class DomainDbContext : DbContext
                                           {
                                               builder.ToTable("SnackMachines");
                                               builder.HasKey(sm => sm.Id);
-                                              builder.Ignore(s => s.CreatedAt);
-                                              builder.Ignore(s => s.CreatedBy);
-                                              builder.Ignore(s => s.LastModifiedAt);
-                                              builder.Ignore(s => s.LastModifiedBy);
-                                              builder.Ignore(s => s.DeletedAt);
-                                              builder.Ignore(s => s.DeletedBy);
+                                              builder.Ignore(sm => sm.CreatedAt);
+                                              builder.Ignore(sm => sm.CreatedBy);
+                                              builder.Ignore(sm => sm.LastModifiedAt);
+                                              builder.Ignore(sm => sm.LastModifiedBy);
+                                              builder.Ignore(sm => sm.DeletedAt);
+                                              builder.Ignore(sm => sm.DeletedBy);
                                               builder.OwnsOne(sm => sm.MoneyInside);
                                               builder.Property(sm => sm.AmountInTransaction).HasPrecision(10, 2);
-                                              builder.HasIndex(s => new { s.IsDeleted, s.Id });
+                                              builder.HasIndex(sm => new { sm.IsDeleted, sm.Id });
                                           });
         // Configures the Slot entity
         modelBuilder.Entity<Slot>(builder =>
                                   {
                                       builder.ToTable("Slots");
-                                      builder.HasKey(s => new { s.MachineId, s.Position });
-                                      builder.HasOne<SnackMachine>().WithMany(m => m.Slots).HasForeignKey(s => s.MachineId).OnDelete(DeleteBehavior.Cascade);
-                                      builder.OwnsOne(s => s.SnackPile, navigationBuilder =>
+                                      builder.HasKey(sl => new { sl.MachineId, sl.Position });
+                                      builder.HasOne<SnackMachine>().WithMany(sm => sm.Slots).HasForeignKey(sl => sl.MachineId).OnDelete(DeleteBehavior.Cascade);
+                                      builder.OwnsOne(sl => sl.SnackPile, navigationBuilder =>
                                                                         {
                                                                             navigationBuilder.HasOne<Snack>().WithMany().HasForeignKey(sp => sp.SnackId).OnDelete(DeleteBehavior.Cascade);
                                                                             navigationBuilder.Property(sp => sp.Price).HasPrecision(10, 2);

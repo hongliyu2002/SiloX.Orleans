@@ -156,19 +156,9 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
                 columns: new[] { "IsDeleted", "CreatedAt" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_SnackMachines_IsDeleted_LastModifiedBy",
-                table: "SnackMachines",
-                columns: new[] { "IsDeleted", "LastModifiedBy" });
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Snacks_IsDeleted_CreatedAt",
                 table: "Snacks",
                 columns: new[] { "IsDeleted", "CreatedAt" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Snacks_IsDeleted_LastModifiedBy",
-                table: "Snacks",
-                columns: new[] { "IsDeleted", "LastModifiedBy" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Snacks_IsDeleted_Name",

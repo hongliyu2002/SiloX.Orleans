@@ -11,18 +11,18 @@ using Vending.Projection.EntityFrameworkCore;
 namespace Vending.Projection.Purchases;
 
 [StatelessWorker]
-public class PurchaseProjectionManagerGrain : Grain, IPurchaseProjectionManagerGrain
+public class PurchaseRetrieverGrain : Grain, IPurchaseRetrieverGrain
 {
     private readonly ProjectionDbContext _dbContext;
 
     /// <inheritdoc />
-    public PurchaseProjectionManagerGrain(ProjectionDbContext dbContext)
+    public PurchaseRetrieverGrain(ProjectionDbContext dbContext)
     {
         _dbContext = Guard.Against.Null(dbContext, nameof(dbContext));
     }
 
     /// <inheritdoc />
-    public Task<Result<ImmutableList<Purchase>>> ListAsync(PurchaseProjectionManagerListQuery query)
+    public Task<Result<ImmutableList<Purchase>>> ListAsync(PurchaseRetrieverListQuery query)
     {
         var machineId = query.MachineId;
         var snackId = query.SnackId;
@@ -45,7 +45,7 @@ public class PurchaseProjectionManagerGrain : Grain, IPurchaseProjectionManagerG
     }
 
     /// <inheritdoc />
-    public Task<Result<ImmutableList<Purchase>>> PagedListAsync(PurchaseProjectionManagerPagedListQuery query)
+    public Task<Result<ImmutableList<Purchase>>> PagedListAsync(PurchaseRetrieverPagedListQuery query)
     {
         var machineId = query.MachineId;
         var snackId = query.SnackId;
@@ -72,7 +72,7 @@ public class PurchaseProjectionManagerGrain : Grain, IPurchaseProjectionManagerG
     }
 
     /// <inheritdoc />
-    public Task<Result<ImmutableList<Purchase>>> SearchingListAsync(PurchaseProjectionManagerSearchingListQuery query)
+    public Task<Result<ImmutableList<Purchase>>> SearchingListAsync(PurchaseRetrieverSearchingListQuery query)
     {
         var searchCriteria = query.SearchCriteria;
         var machineId = query.MachineId;
@@ -97,7 +97,7 @@ public class PurchaseProjectionManagerGrain : Grain, IPurchaseProjectionManagerG
     }
 
     /// <inheritdoc />
-    public Task<Result<ImmutableList<Purchase>>> SearchingPagedListAsync(PurchaseProjectionManagerSearchingPagedListQuery query)
+    public Task<Result<ImmutableList<Purchase>>> SearchingPagedListAsync(PurchaseRetrieverSearchingPagedListQuery query)
     {
         var searchCriteria = query.SearchCriteria;
         var machineId = query.MachineId;

@@ -11,36 +11,36 @@ using Vending.Projection.EntityFrameworkCore;
 namespace Vending.Projection.Snacks;
 
 [StatelessWorker]
-public class SnackProjectionManagerGrain : Grain, ISnackProjectionManagerGrain
+public class SnackRetrieverGrain : Grain, ISnackRetrieverGrain
 {
     private readonly ProjectionDbContext _dbContext;
 
     /// <inheritdoc />
-    public SnackProjectionManagerGrain(ProjectionDbContext dbContext)
+    public SnackRetrieverGrain(ProjectionDbContext dbContext)
     {
         _dbContext = Guard.Against.Null(dbContext, nameof(dbContext));
     }
 
     /// <inheritdoc />
-    public Task<Result<ImmutableList<Snack>>> ListAsync(SnackProjectionManagerListQuery query)
+    public Task<Result<ImmutableList<Snack>>> ListAsync(SnackRetrieverListQuery retrieverListQuery)
     {
-        var machineCountRangeStart = query.MachineCountRange?.Start;
-        var machineCountRangeEnd = query.MachineCountRange?.End;
-        var boughtCountRangeStart = query.BoughtCountRange?.Start;
-        var boughtCountRangeEnd = query.BoughtCountRange?.End;
-        var boughtAmountRangeStart = query.BoughtAmountRange?.Start;
-        var boughtAmountRangeEnd = query.BoughtAmountRange?.End;
-        var createdAtRangeStart = query.CreatedAtRange?.Start;
-        var createdAtRangeEnd = query.CreatedAtRange?.End;
-        var createdBy = query.CreatedBy;
-        var lastModifiedAtRangeStart = query.LastModifiedAtRange?.Start;
-        var lastModifiedAtRangeEnd = query.LastModifiedAtRange?.End;
-        var lastModifiedBy = query.LastModifiedBy;
-        var deletedAtRangeStart = query.DeletedAtRange?.Start;
-        var deletedAtRangeEnd = query.DeletedAtRange?.End;
-        var deletedBy = query.DeletedBy;
-        var isDeleted = query.IsDeleted;
-        var sortings = query.Sortings?.ToSortStrinng();
+        var machineCountRangeStart = retrieverListQuery.MachineCountRange?.Start;
+        var machineCountRangeEnd = retrieverListQuery.MachineCountRange?.End;
+        var boughtCountRangeStart = retrieverListQuery.BoughtCountRange?.Start;
+        var boughtCountRangeEnd = retrieverListQuery.BoughtCountRange?.End;
+        var boughtAmountRangeStart = retrieverListQuery.BoughtAmountRange?.Start;
+        var boughtAmountRangeEnd = retrieverListQuery.BoughtAmountRange?.End;
+        var createdAtRangeStart = retrieverListQuery.CreatedAtRange?.Start;
+        var createdAtRangeEnd = retrieverListQuery.CreatedAtRange?.End;
+        var createdBy = retrieverListQuery.CreatedBy;
+        var lastModifiedAtRangeStart = retrieverListQuery.LastModifiedAtRange?.Start;
+        var lastModifiedAtRangeEnd = retrieverListQuery.LastModifiedAtRange?.End;
+        var lastModifiedBy = retrieverListQuery.LastModifiedBy;
+        var deletedAtRangeStart = retrieverListQuery.DeletedAtRange?.Start;
+        var deletedAtRangeEnd = retrieverListQuery.DeletedAtRange?.End;
+        var deletedBy = retrieverListQuery.DeletedBy;
+        var isDeleted = retrieverListQuery.IsDeleted;
+        var sortings = retrieverListQuery.Sortings?.ToSortStrinng();
         return Result.Ok(_dbContext.Snacks.AsNoTracking())
                      .MapIf(machineCountRangeStart != null, snacks => snacks.Where(s => s.MachineCount >= machineCountRangeStart))
                      .MapIf(machineCountRangeEnd != null, snacks => snacks.Where(s => s.MachineCount < machineCountRangeEnd))
@@ -63,27 +63,27 @@ public class SnackProjectionManagerGrain : Grain, ISnackProjectionManagerGrain
     }
 
     /// <inheritdoc />
-    public Task<Result<ImmutableList<Snack>>> PagedListAsync(SnackProjectionManagerPagedListQuery query)
+    public Task<Result<ImmutableList<Snack>>> PagedListAsync(SnackRetrieverPagedListQuery retrieverPagedListQuery)
     {
-        var machineCountRangeStart = query.MachineCountRange?.Start;
-        var machineCountRangeEnd = query.MachineCountRange?.End;
-        var boughtCountRangeStart = query.BoughtCountRange?.Start;
-        var boughtCountRangeEnd = query.BoughtCountRange?.End;
-        var boughtAmountRangeStart = query.BoughtAmountRange?.Start;
-        var boughtAmountRangeEnd = query.BoughtAmountRange?.End;
-        var createdAtRangeStart = query.CreatedAtRange?.Start;
-        var createdAtRangeEnd = query.CreatedAtRange?.End;
-        var createdBy = query.CreatedBy;
-        var lastModifiedAtRangeStart = query.LastModifiedAtRange?.Start;
-        var lastModifiedAtRangeEnd = query.LastModifiedAtRange?.End;
-        var lastModifiedBy = query.LastModifiedBy;
-        var deletedAtRangeStart = query.DeletedAtRange?.Start;
-        var deletedAtRangeEnd = query.DeletedAtRange?.End;
-        var deletedBy = query.DeletedBy;
-        var isDeleted = query.IsDeleted;
-        var sortings = query.Sortings?.ToSortStrinng();
-        var skipCount = query.SkipCount;
-        var maxResultCount = query.MaxResultCount;
+        var machineCountRangeStart = retrieverPagedListQuery.MachineCountRange?.Start;
+        var machineCountRangeEnd = retrieverPagedListQuery.MachineCountRange?.End;
+        var boughtCountRangeStart = retrieverPagedListQuery.BoughtCountRange?.Start;
+        var boughtCountRangeEnd = retrieverPagedListQuery.BoughtCountRange?.End;
+        var boughtAmountRangeStart = retrieverPagedListQuery.BoughtAmountRange?.Start;
+        var boughtAmountRangeEnd = retrieverPagedListQuery.BoughtAmountRange?.End;
+        var createdAtRangeStart = retrieverPagedListQuery.CreatedAtRange?.Start;
+        var createdAtRangeEnd = retrieverPagedListQuery.CreatedAtRange?.End;
+        var createdBy = retrieverPagedListQuery.CreatedBy;
+        var lastModifiedAtRangeStart = retrieverPagedListQuery.LastModifiedAtRange?.Start;
+        var lastModifiedAtRangeEnd = retrieverPagedListQuery.LastModifiedAtRange?.End;
+        var lastModifiedBy = retrieverPagedListQuery.LastModifiedBy;
+        var deletedAtRangeStart = retrieverPagedListQuery.DeletedAtRange?.Start;
+        var deletedAtRangeEnd = retrieverPagedListQuery.DeletedAtRange?.End;
+        var deletedBy = retrieverPagedListQuery.DeletedBy;
+        var isDeleted = retrieverPagedListQuery.IsDeleted;
+        var sortings = retrieverPagedListQuery.Sortings?.ToSortStrinng();
+        var skipCount = retrieverPagedListQuery.SkipCount;
+        var maxResultCount = retrieverPagedListQuery.MaxResultCount;
         return Result.Ok(_dbContext.Snacks.AsNoTracking())
                      .MapIf(machineCountRangeStart != null, snacks => snacks.Where(s => s.MachineCount >= machineCountRangeStart))
                      .MapIf(machineCountRangeEnd != null, snacks => snacks.Where(s => s.MachineCount < machineCountRangeEnd))
@@ -108,7 +108,7 @@ public class SnackProjectionManagerGrain : Grain, ISnackProjectionManagerGrain
     }
 
     /// <inheritdoc />
-    public Task<Result<ImmutableList<Snack>>> SearchingListAsync(SnackProjectionManagerSearchingListQuery query)
+    public Task<Result<ImmutableList<Snack>>> SearchingListAsync(SnackRetrieverSearchingListQuery query)
     {
         var searchCriteria = query.SearchCriteria;
         var machineCountRangeStart = query.MachineCountRange?.Start;
@@ -151,7 +151,7 @@ public class SnackProjectionManagerGrain : Grain, ISnackProjectionManagerGrain
     }
 
     /// <inheritdoc />
-    public Task<Result<ImmutableList<Snack>>> SearchingPagedListAsync(SnackProjectionManagerSearchingPagedListQuery query)
+    public Task<Result<ImmutableList<Snack>>> SearchingPagedListAsync(SnackRetrieverSearchingPagedListQuery query)
     {
         var searchCriteria = query.SearchCriteria;
         var machineCountRangeStart = query.MachineCountRange?.Start;

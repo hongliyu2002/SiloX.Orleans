@@ -3,12 +3,12 @@
 namespace Vending.Projection.Abstractions.Snacks;
 
 /// <summary>
-///     A query for a list of snacks with searching feature.
+///     A query for retrieving a paged list of snacks with searching feature.
 /// </summary>
 [Immutable]
 [Serializable]
 [GenerateSerializer]
-public sealed record SnackProjectionManagerSearchingListQuery
+public sealed record SnackRetrieverSearchingPagedListQuery
     (string? SearchCriteria,
      Int32Range? MachineCountRange,
      Int32Range? BoughtCountRange,
@@ -20,7 +20,9 @@ public sealed record SnackProjectionManagerSearchingListQuery
      DateTimeOffsetRange? DeletedAtRange,
      string? DeletedBy,
      bool? IsDeleted,
+     int? SkipCount,
+     int? MaxResultCount,
      IDictionary<string, bool>? Sortings,
      Guid TraceId,
      DateTimeOffset OperatedAt,
-     string OperatedBy) : DomainSearchingListQuery(SearchCriteria, Sortings, TraceId, OperatedAt, OperatedBy);
+     string OperatedBy) : DomainSearchingPagedListQuery(SearchCriteria, SkipCount, MaxResultCount, Sortings, TraceId, OperatedAt, OperatedBy);

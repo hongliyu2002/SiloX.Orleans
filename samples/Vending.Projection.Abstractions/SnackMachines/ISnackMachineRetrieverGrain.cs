@@ -7,7 +7,7 @@ namespace Vending.Projection.Abstractions.SnackMachines;
 /// <summary>
 ///     The grain for snack machines management.
 /// </summary>
-public interface ISnackMachineProjectionManagerGrain : IGrainWithStringKey
+public interface ISnackMachineRetrieverGrain : IGrainWithStringKey
 {
     /// <summary>
     ///     Asynchronously retrieves a list of snack machines.
@@ -15,7 +15,7 @@ public interface ISnackMachineProjectionManagerGrain : IGrainWithStringKey
     /// <param name="query">The query.</param>
     /// <returns>List of snack machines.</returns>
     [AlwaysInterleave]
-    Task<Result<ImmutableList<SnackMachine>>> ListAsync(SnackMachineProjectionManagerListQuery query);
+    Task<Result<ImmutableList<SnackMachine>>> ListAsync(SnackMachineRetrieverListQuery query);
 
     /// <summary>
     ///     Asynchronously retrieves a paged list of snack machines.
@@ -23,5 +23,5 @@ public interface ISnackMachineProjectionManagerGrain : IGrainWithStringKey
     /// <param name="query">The query.</param>
     /// <returns>List of snack machines.</returns>
     [AlwaysInterleave]
-    Task<Result<ImmutableList<SnackMachine>>> PagedListAsync(SnackMachineProjectionManagerPagedListQuery query);
+    Task<Result<ImmutableList<SnackMachine>>> PagedListAsync(SnackMachineRetrieverPagedListQuery query);
 }

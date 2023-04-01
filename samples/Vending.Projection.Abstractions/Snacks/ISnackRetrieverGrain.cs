@@ -7,23 +7,23 @@ namespace Vending.Projection.Abstractions.Snacks;
 /// <summary>
 ///     The grain for snacks management.
 /// </summary>
-public interface ISnackProjectionManagerGrain : IGrainWithStringKey
+public interface ISnackRetrieverGrain : IGrainWithStringKey
 {
     /// <summary>
     ///     Asynchronously retrieves a list of snacks.
     /// </summary>
-    /// <param name="query">The query.</param>
+    /// <param name="retrieverListQuery">The query.</param>
     /// <returns>List of snacks.</returns>
     [AlwaysInterleave]
-    Task<Result<ImmutableList<Snack>>> ListAsync(SnackProjectionManagerListQuery query);
+    Task<Result<ImmutableList<Snack>>> ListAsync(SnackRetrieverListQuery retrieverListQuery);
 
     /// <summary>
     ///     Asynchronously retrieves a paged list of snacks.
     /// </summary>
-    /// <param name="query">The query.</param>
+    /// <param name="retrieverPagedListQuery">The query.</param>
     /// <returns>List of snacks.</returns>
     [AlwaysInterleave]
-    Task<Result<ImmutableList<Snack>>> PagedListAsync(SnackProjectionManagerPagedListQuery query);
+    Task<Result<ImmutableList<Snack>>> PagedListAsync(SnackRetrieverPagedListQuery retrieverPagedListQuery);
 
     /// <summary>
     ///     Asynchronously retrieves a list of snacks with searching feature.
@@ -31,7 +31,7 @@ public interface ISnackProjectionManagerGrain : IGrainWithStringKey
     /// <param name="query">The query.</param>
     /// <returns>List of snacks.</returns>
     [AlwaysInterleave]
-    Task<Result<ImmutableList<Snack>>> SearchingListAsync(SnackProjectionManagerSearchingListQuery query);
+    Task<Result<ImmutableList<Snack>>> SearchingListAsync(SnackRetrieverSearchingListQuery query);
 
     /// <summary>
     ///     Asynchronously retrieves a paged list of snacks with searching feature.
@@ -39,5 +39,5 @@ public interface ISnackProjectionManagerGrain : IGrainWithStringKey
     /// <param name="query">The query.</param>
     /// <returns>List of snacks.</returns>
     [AlwaysInterleave]
-    Task<Result<ImmutableList<Snack>>> SearchingPagedListAsync(SnackProjectionManagerSearchingPagedListQuery query);
+    Task<Result<ImmutableList<Snack>>> SearchingPagedListAsync(SnackRetrieverSearchingPagedListQuery query);
 }

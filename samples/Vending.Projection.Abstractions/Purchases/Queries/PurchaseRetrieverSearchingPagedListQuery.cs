@@ -3,19 +3,21 @@
 namespace Vending.Projection.Abstractions.Purchases;
 
 /// <summary>
-///     A query for a list of purchases with searching feature.
+///     A query for retrieving a paged list of purchases with searching feature.
 /// </summary>
 [Immutable]
 [Serializable]
 [GenerateSerializer]
-public sealed record PurchaseProjectionManagerSearchingListQuery
+public sealed record PurchaseRetrieverSearchingPagedListQuery
     (string? SearchCriteria,
      Guid? MachineId,
      Guid? SnackId,
      DecimalRange? BoughtPriceRange,
      DateTimeOffsetRange? BoughtAtRange,
      string? BoughtBy,
+     int? SkipCount,
+     int? MaxResultCount,
      IDictionary<string, bool>? Sortings,
      Guid TraceId,
      DateTimeOffset OperatedAt,
-     string OperatedBy) : DomainSearchingListQuery(SearchCriteria, Sortings, TraceId, OperatedAt, OperatedBy);
+     string OperatedBy) : DomainSearchingPagedListQuery(SearchCriteria, SkipCount, MaxResultCount, Sortings, TraceId, OperatedAt, OperatedBy);

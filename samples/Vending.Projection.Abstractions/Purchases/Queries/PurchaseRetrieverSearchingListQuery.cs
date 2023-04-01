@@ -3,13 +3,14 @@
 namespace Vending.Projection.Abstractions.Purchases;
 
 /// <summary>
-///     A query for a list of purchases.
+///     A query for a list of purchases with searching feature.
 /// </summary>
 [Immutable]
 [Serializable]
 [GenerateSerializer]
-public sealed record PurchaseProjectionManagerListQuery
-    (Guid? MachineId,
+public sealed record PurchaseRetrieverSearchingListQuery
+    (string? SearchCriteria,
+     Guid? MachineId,
      Guid? SnackId,
      DecimalRange? BoughtPriceRange,
      DateTimeOffsetRange? BoughtAtRange,
@@ -17,4 +18,4 @@ public sealed record PurchaseProjectionManagerListQuery
      IDictionary<string, bool>? Sortings,
      Guid TraceId,
      DateTimeOffset OperatedAt,
-     string OperatedBy) : DomainListQuery(Sortings, TraceId, OperatedAt, OperatedBy);
+     string OperatedBy) : DomainSearchingListQuery(SearchCriteria, Sortings, TraceId, OperatedAt, OperatedBy);

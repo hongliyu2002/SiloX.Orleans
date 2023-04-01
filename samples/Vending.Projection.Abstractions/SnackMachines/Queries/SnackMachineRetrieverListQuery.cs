@@ -1,15 +1,18 @@
 ﻿using SiloX.Domain.Abstractions;
 
-namespace Vending.Projection.Abstractions.Snacks;
+namespace Vending.Projection.Abstractions.SnackMachines;
 
 /// <summary>
-///     A query for retrieving a paged list of snacks.
+///     A query for a list of snack machines.
 /// </summary>
 [Immutable]
 [Serializable]
 [GenerateSerializer]
-public sealed record SnackProjectionManagerPagedListQuery
-    (Int32Range? MachineCountRange,
+public sealed record SnackMachineRetrieverListQuery
+    (Int32Range? SlotsCountRange,
+     Int32Range? SnackCountRange,
+     Int32Range? SnackQuantityRange,
+     DecimalRange? SnackAmountRange,
      Int32Range? BoughtCountRange,
      DecimalRange? BoughtAmountRange,
      DateTimeOffsetRange? CreatedAtRange,
@@ -19,9 +22,7 @@ public sealed record SnackProjectionManagerPagedListQuery
      DateTimeOffsetRange? DeletedAtRange,
      string? DeletedBy,
      bool? IsDeleted,
-     int? SkipCount,
-     int? MaxResultCount,
      IDictionary<string, bool>? Sortings,
      Guid TraceId,
      DateTimeOffset OperatedAt,
-     string OperatedBy) : DomainPagedListQuery(SkipCount, MaxResultCount, Sortings, TraceId, OperatedAt, OperatedBy);
+     string OperatedBy) : DomainListQuery(Sortings, TraceId, OperatedAt, OperatedBy);

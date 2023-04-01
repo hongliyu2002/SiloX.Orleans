@@ -142,8 +142,6 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
 
                     b.HasIndex("IsDeleted", "CreatedAt");
 
-                    b.HasIndex("IsDeleted", "LastModifiedBy");
-
                     b.ToTable("SnackMachines", (string)null);
                 });
 
@@ -202,8 +200,6 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("IsDeleted", "CreatedAt");
-
-                    b.HasIndex("IsDeleted", "LastModifiedBy");
 
                     b.HasIndex("IsDeleted", "Name");
 

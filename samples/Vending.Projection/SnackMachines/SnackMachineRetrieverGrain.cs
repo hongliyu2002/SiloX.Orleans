@@ -11,18 +11,18 @@ using Vending.Projection.EntityFrameworkCore;
 namespace Vending.Projection.SnackMachines;
 
 [StatelessWorker]
-public class SnackMachineProjectionManagerGrain : Grain, ISnackMachineProjectionManagerGrain
+public class SnackMachineRetrieverGrain : Grain, ISnackMachineRetrieverGrain
 {
     private readonly ProjectionDbContext _dbContext;
 
     /// <inheritdoc />
-    public SnackMachineProjectionManagerGrain(ProjectionDbContext dbContext)
+    public SnackMachineRetrieverGrain(ProjectionDbContext dbContext)
     {
         _dbContext = Guard.Against.Null(dbContext, nameof(dbContext));
     }
 
     /// <inheritdoc />
-    public Task<Result<ImmutableList<SnackMachine>>> ListAsync(SnackMachineProjectionManagerListQuery query)
+    public Task<Result<ImmutableList<SnackMachine>>> ListAsync(SnackMachineRetrieverListQuery query)
     {
         var slotsCountRangeStart = query.SlotsCountRange?.Start;
         var slotsCountRangeEnd = query.SlotsCountRange?.End;
@@ -75,7 +75,7 @@ public class SnackMachineProjectionManagerGrain : Grain, ISnackMachineProjection
     }
 
     /// <inheritdoc />
-    public Task<Result<ImmutableList<SnackMachine>>> PagedListAsync(SnackMachineProjectionManagerPagedListQuery query)
+    public Task<Result<ImmutableList<SnackMachine>>> PagedListAsync(SnackMachineRetrieverPagedListQuery query)
     {
         var slotsCountRangeStart = query.SlotsCountRange?.Start;
         var slotsCountRangeEnd = query.SlotsCountRange?.End;

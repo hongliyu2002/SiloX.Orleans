@@ -7,7 +7,7 @@ namespace Vending.Projection.Abstractions.Purchases;
 /// <summary>
 ///     The grain for purchases management.
 /// </summary>
-public interface IPurchaseProjectionManagerGrain : IGrainWithStringKey
+public interface IPurchaseRetrieverGrain : IGrainWithStringKey
 {
     /// <summary>
     ///     Asynchronously retrieves a list of purchases.
@@ -15,7 +15,7 @@ public interface IPurchaseProjectionManagerGrain : IGrainWithStringKey
     /// <param name="query">The query.</param>
     /// <returns>List of purchases.</returns>
     [AlwaysInterleave]
-    Task<Result<ImmutableList<Purchase>>> ListAsync(PurchaseProjectionManagerListQuery query);
+    Task<Result<ImmutableList<Purchase>>> ListAsync(PurchaseRetrieverListQuery query);
 
     /// <summary>
     ///     Asynchronously retrieves a paged list of purchases.
@@ -23,7 +23,7 @@ public interface IPurchaseProjectionManagerGrain : IGrainWithStringKey
     /// <param name="query">The query.</param>
     /// <returns>List of purchases.</returns>
     [AlwaysInterleave]
-    Task<Result<ImmutableList<Purchase>>> PagedListAsync(PurchaseProjectionManagerPagedListQuery query);
+    Task<Result<ImmutableList<Purchase>>> PagedListAsync(PurchaseRetrieverPagedListQuery query);
 
     /// <summary>
     ///     Asynchronously retrieves a list of purchases with searching feature.
@@ -31,7 +31,7 @@ public interface IPurchaseProjectionManagerGrain : IGrainWithStringKey
     /// <param name="query">The query.</param>
     /// <returns>List of purchases.</returns>
     [AlwaysInterleave]
-    Task<Result<ImmutableList<Purchase>>> SearchingListAsync(PurchaseProjectionManagerSearchingListQuery query);
+    Task<Result<ImmutableList<Purchase>>> SearchingListAsync(PurchaseRetrieverSearchingListQuery query);
 
     /// <summary>
     ///     Asynchronously retrieves a paged list of purchases with searching feature.
@@ -39,5 +39,5 @@ public interface IPurchaseProjectionManagerGrain : IGrainWithStringKey
     /// <param name="query">The query.</param>
     /// <returns>List of purchases.</returns>
     [AlwaysInterleave]
-    Task<Result<ImmutableList<Purchase>>> SearchingPagedListAsync(PurchaseProjectionManagerSearchingPagedListQuery query);
+    Task<Result<ImmutableList<Purchase>>> SearchingPagedListAsync(PurchaseRetrieverSearchingPagedListQuery query);
 }
