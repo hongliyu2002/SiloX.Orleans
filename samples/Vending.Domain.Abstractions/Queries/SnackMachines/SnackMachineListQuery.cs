@@ -10,5 +10,5 @@ namespace Vending.Domain.Abstractions.Queries;
 [Serializable]
 [GenerateSerializer]
 public sealed record SnackMachineListQuery(DateTimeOffsetRange? CreatedAtRange, string? CreatedBy, DateTimeOffsetRange? LastModifiedAtRange, string? LastModifiedBy, DateTimeOffsetRange? DeletedAtRange, string? DeletedBy, bool? IsDeleted,
-                                           IImmutableList<KeyValuePair<string, bool>> Sortings, Guid TraceId, DateTimeOffset OperatedAt, string OperatedBy) 
+                                           IImmutableList<KeyValuePair<string, bool>>? Sortings, Guid TraceId, DateTimeOffset OperatedAt, string OperatedBy) 
     : DomainListQuery(Sortings, TraceId, OperatedAt, OperatedBy);

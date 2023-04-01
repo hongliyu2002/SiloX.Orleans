@@ -9,6 +9,6 @@ namespace Vending.Domain.Abstractions.Queries;
 [Immutable]
 [Serializable]
 [GenerateSerializer]
-public sealed record SnackMachineSearchingListQuery(string SearchCriteria, DateTimeOffsetRange? CreatedAtRange, string? CreatedBy, DateTimeOffsetRange? LastModifiedAtRange, string? LastModifiedBy, DateTimeOffsetRange? DeletedAtRange, string? DeletedBy,
-                                                    bool? IsDeleted, IImmutableList<KeyValuePair<string, bool>> Sortings, Guid TraceId, DateTimeOffset OperatedAt, string OperatedBy) 
+public sealed record SnackMachineSearchingListQuery(string? SearchCriteria, DateTimeOffsetRange? CreatedAtRange, string? CreatedBy, DateTimeOffsetRange? LastModifiedAtRange, string? LastModifiedBy, DateTimeOffsetRange? DeletedAtRange, string? DeletedBy,
+                                                    bool? IsDeleted, IImmutableList<KeyValuePair<string, bool>>? Sortings, Guid TraceId, DateTimeOffset OperatedAt, string OperatedBy) 
     : DomainSearchingListQuery(SearchCriteria, Sortings, TraceId, OperatedAt, OperatedBy);

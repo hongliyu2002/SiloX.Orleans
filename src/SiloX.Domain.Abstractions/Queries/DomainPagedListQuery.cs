@@ -15,5 +15,5 @@ namespace SiloX.Domain.Abstractions;
 [Immutable]
 [Serializable]
 [GenerateSerializer]
-public abstract record DomainPagedListQuery(int SkipCount, int MaxResultCount, IImmutableList<KeyValuePair<string, bool>> Sortings, Guid TraceId, DateTimeOffset OperatedAt, string OperatedBy) 
+public abstract record DomainPagedListQuery(int SkipCount, int MaxResultCount, IImmutableList<KeyValuePair<string, bool>>? Sortings, Guid TraceId, DateTimeOffset OperatedAt, string OperatedBy) 
     : DomainListQuery(Sortings, TraceId, OperatedAt, OperatedBy);

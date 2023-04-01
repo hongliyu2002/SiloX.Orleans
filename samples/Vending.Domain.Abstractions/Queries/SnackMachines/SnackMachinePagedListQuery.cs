@@ -10,5 +10,5 @@ namespace Vending.Domain.Abstractions.Queries;
 [Serializable]
 [GenerateSerializer]
 public sealed record SnackMachinePagedListQuery(DateTimeOffsetRange? CreatedAtRange, string? CreatedBy, DateTimeOffsetRange? LastModifiedAtRange, string? LastModifiedBy, DateTimeOffsetRange? DeletedAtRange, string? DeletedBy, bool? IsDeleted, int SkipCount,
-                                                int MaxResultCount, IImmutableList<KeyValuePair<string, bool>> Sortings, Guid TraceId, DateTimeOffset OperatedAt, string OperatedBy) 
+                                                int MaxResultCount, IImmutableList<KeyValuePair<string, bool>>? Sortings, Guid TraceId, DateTimeOffset OperatedAt, string OperatedBy) 
     : DomainPagedListQuery(SkipCount, MaxResultCount, Sortings, TraceId, OperatedAt, OperatedBy);
