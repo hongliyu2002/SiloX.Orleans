@@ -18,8 +18,7 @@ public sealed class SnackMachineManagerGrain : Grain, ISnackMachineManagerGrain
     private readonly DomainDbContext _dbContext;
 
     /// <inheritdoc />
-    public SnackMachineManagerGrain(DomainDbContext dbContext,
-                                    IGuidGenerator guidGenerator)
+    public SnackMachineManagerGrain(DomainDbContext dbContext, IGuidGenerator guidGenerator)
     {
         _dbContext = Guard.Against.Null(dbContext, nameof(dbContext));
         _guidGenerator = Guard.Against.Null(guidGenerator, nameof(guidGenerator));

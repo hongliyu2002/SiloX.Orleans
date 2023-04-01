@@ -11,7 +11,7 @@ namespace Vending.Domain.Abstractions.Purchases;
 public sealed record PurchaseManagerPagedListQuery
     (Guid? MachineId,
      Guid? SnackId,
-     DecimalRange? BoughtPrice,
+     DecimalRange? BoughtPriceRange,
      DateTimeOffsetRange? BoughtAtRange,
      string? BoughtBy,
      int? SkipCount,

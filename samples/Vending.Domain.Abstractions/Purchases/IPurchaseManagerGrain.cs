@@ -31,18 +31,4 @@ public interface IPurchaseManagerGrain : IGrainWithStringKey
     /// <param name="command"></param>
     /// <returns></returns>
     Task<Result<Guid>> CreateAsync(PurchaseManagerCreateCommand command);
-
-    /// <summary>
-    ///     Asynchronously deletes a purchase.
-    /// </summary>
-    /// <param name="command"></param>
-    /// <returns></returns>
-    Task<Result> DeleteAsync(PurchaseManagerDeleteCommand command);
-
-    /// <summary>
-    ///     Asynchronously deletes many purchases.
-    /// </summary>
-    /// <param name="command"></param>
-    /// <returns></returns>
-    Task<Result> DeleteManyAsync(PurchaseManagerDeleteManyCommand command);
 }
