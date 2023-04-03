@@ -290,9 +290,9 @@ public sealed class SnackProjectionGrain : SubscriberGrainWithGuidKey<SnackEvent
                 }
                 snack = snackInGrain.ToProjection(snack);
                 snack.Version = await snackGrain.GetVersionAsync();
-                var machineStatsGrain = GrainFactory.GetGrain<ISnackSnackMachineStatsGrain>(snackId);
+                var machineStatsGrain = GrainFactory.GetGrain<ISnackStatsOfSnackMachineGrain>(snackId);
                 snack.MachineCount = await machineStatsGrain.GetCountAsync();
-                var purchaseStatsGrain = GrainFactory.GetGrain<ISnackPurchaseStatsGrain>(snackId);
+                var purchaseStatsGrain = GrainFactory.GetGrain<ISnackStatsOfPurchasesGrain>(snackId);
                 snack.BoughtCount = await purchaseStatsGrain.GetCountAsync();
                 snack.BoughtAmount = await purchaseStatsGrain.GetAmountAsync();
                 await _dbContext.SaveChangesAsync();

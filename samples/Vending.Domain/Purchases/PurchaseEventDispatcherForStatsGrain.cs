@@ -10,12 +10,12 @@ using Vending.Domain.Abstractions.Snacks;
 namespace Vending.Domain.Purchases;
 
 [ImplicitStreamSubscription(Constants.PurchasesBroadcastNamespace)]
-public class PurchaseStatsDispatcherGrain : BroadcastSubscriberGrainWithStringKey<PurchaseEvent, PurchaseErrorEvent>, IPurchaseStatsDispatcherGrain
+public class PurchaseEventDispatcherForStatsGrain : BroadcastSubscriberGrainWithStringKey<PurchaseEvent, PurchaseErrorEvent>, IPurchaseEventDispatcherForStatsGrain
 {
-    private readonly ILogger<PurchaseStatsDispatcherGrain> _logger;
+    private readonly ILogger<PurchaseEventDispatcherForStatsGrain> _logger;
 
     /// <inheritdoc />
-    public PurchaseStatsDispatcherGrain(ILogger<PurchaseStatsDispatcherGrain> logger)
+    public PurchaseEventDispatcherForStatsGrain(ILogger<PurchaseEventDispatcherForStatsGrain> logger)
         : base(Constants.StreamProviderName)
     {
         _logger = Guard.Against.Null(logger, nameof(logger));
@@ -64,16 +64,16 @@ public class PurchaseStatsDispatcherGrain : BroadcastSubscriberGrainWithStringKe
     {
         try
         {
-            var traceId = Guid.NewGuid();
+            var traceId = purchaseEvent.TraceId;
             var operatedAt = DateTimeOffset.UtcNow;
             var operatedBy = $"System/{GetType().Name}";
             var tasks = new List<Task<Result>>(4);
-            // Update SnackMachinePurchaseStatsGrain
-            var machineGrain = GrainFactory.GetGrain<ISnackMachinePurchaseStatsGrain>(purchaseEvent.MachineId);
+            // Update SnackMachineStatsOfPurchasesGrain
+            var machineGrain = GrainFactory.GetGrain<ISnackMachineStatsOfPurchasesGrain>(purchaseEvent.MachineId);
             tasks.Add(machineGrain.IncrementCountAsync(new SnackMachineIncrementBoughtCountCommand(1, traceId, operatedAt, operatedBy)));
             tasks.Add(machineGrain.IncrementAmountAsync(new SnackMachineIncrementBoughtAmountCommand(purchaseEvent.BoughtPrice, traceId, operatedAt, operatedBy)));
-            // Update SnackPurchaseStatsGrain
-            var snackGrain = GrainFactory.GetGrain<ISnackPurchaseStatsGrain>(purchaseEvent.SnackId);
+            // Update SnackStatsOfPurchasesGrain
+            var snackGrain = GrainFactory.GetGrain<ISnackStatsOfPurchasesGrain>(purchaseEvent.SnackId);
             tasks.Add(snackGrain.IncrementCountAsync(new SnackIncrementBoughtCountCommand(1, traceId, operatedAt, operatedBy)));
             tasks.Add(snackGrain.IncrementAmountAsync(new SnackIncrementBoughtAmountCommand(purchaseEvent.BoughtPrice, traceId, operatedAt, operatedBy)));
             var results = await Task.WhenAll(tasks);

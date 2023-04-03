@@ -8,12 +8,12 @@ using Vending.Domain.Abstractions.Snacks;
 namespace Vending.Domain.SnackMachines;
 
 [ImplicitStreamSubscription(Constants.SnackMachinesBroadcastNamespace)]
-public class SnackMachineStatsDispatcherGrain : BroadcastSubscriberGrainWithStringKey<SnackMachineEvent, SnackMachineErrorEvent>, ISnackMachineStatsDispatcherGrain
+public class SnackMachineEventDispatcherForStatsGrain : BroadcastSubscriberGrainWithStringKey<SnackMachineEvent, SnackMachineErrorEvent>, ISnackMachineEventDispatcherForStatsGrain
 {
-    private readonly ILogger<SnackMachineStatsDispatcherGrain> _logger;
+    private readonly ILogger<SnackMachineEventDispatcherForStatsGrain> _logger;
 
     /// <inheritdoc />
-    public SnackMachineStatsDispatcherGrain(ILogger<SnackMachineStatsDispatcherGrain> logger)
+    public SnackMachineEventDispatcherForStatsGrain(ILogger<SnackMachineEventDispatcherForStatsGrain> logger)
         : base(Constants.StreamProviderName)
     {
         _logger = Guard.Against.Null(logger, nameof(logger));
@@ -68,12 +68,12 @@ public class SnackMachineStatsDispatcherGrain : BroadcastSubscriberGrainWithStri
     {
         try
         {
-            var traceId = Guid.NewGuid();
+            var traceId = machineEvent.TraceId;
             var operatedAt = DateTimeOffset.UtcNow;
             var operatedBy = $"System/{GetType().Name}";
-            // Update SnackSnackMachineStatsGrain
+            // Update SnackStatsOfSnackMachineGrain
             var snackIds = machineEvent.Slots.Where(sl => sl.SnackPile != null).Select(x => x.SnackPile!.SnackId).Distinct().ToArray();
-            var tasks = snackIds.Select(snackId => GrainFactory.GetGrain<ISnackSnackMachineStatsGrain>(snackId)).Select(statsGrain => statsGrain.IncrementCountAsync(new SnackIncrementMachineCountCommand(1, traceId, operatedAt, operatedBy)));
+            var tasks = snackIds.Select(snackId => GrainFactory.GetGrain<ISnackStatsOfSnackMachineGrain>(snackId)).Select(statsGrain => statsGrain.IncrementCountAsync(new SnackIncrementMachineCountCommand(1, traceId, operatedAt, operatedBy)));
             var results = await Task.WhenAll(tasks);
             _logger.LogInformation("Dispatch SnackMachineInitializedEvent: {SnackMachineId} is dispatched. With success： {SuccessCount} failed： {FailedCount}", this.GetPrimaryKey(), results.Count(r => r.IsSuccess), results.Count(r => r.IsFailed));
         }
@@ -87,12 +87,12 @@ public class SnackMachineStatsDispatcherGrain : BroadcastSubscriberGrainWithStri
     {
         try
         {
-            var traceId = Guid.NewGuid();
+            var traceId = machineEvent.TraceId;
             var operatedAt = DateTimeOffset.UtcNow;
             var operatedBy = $"System/{GetType().Name}";
-            // Update SnackSnackMachineStatsGrain
+            // Update SnackStatsOfSnackMachineGrain
             var snackIds = machineEvent.Slots.Where(sl => sl.SnackPile != null).Select(sl => sl.SnackPile!.SnackId).Distinct().ToArray();
-            var tasks = snackIds.Select(snackId => GrainFactory.GetGrain<ISnackSnackMachineStatsGrain>(snackId)).Select(machineStatsGrain => machineStatsGrain.DecrementCountAsync(new SnackDecrementMachineCountCommand(1, traceId, operatedAt, operatedBy)));
+            var tasks = snackIds.Select(snackId => GrainFactory.GetGrain<ISnackStatsOfSnackMachineGrain>(snackId)).Select(machineStatsGrain => machineStatsGrain.DecrementCountAsync(new SnackDecrementMachineCountCommand(1, traceId, operatedAt, operatedBy)));
             var results = await Task.WhenAll(tasks);
             _logger.LogInformation("Dispatch SnackMachineRemovedEvent: {SnackMachineId} is dispatched. With success： {SuccessCount} failed： {FailedCount}", this.GetPrimaryKey(), results.Count(r => r.IsSuccess), results.Count(r => r.IsFailed));
         }
@@ -106,13 +106,13 @@ public class SnackMachineStatsDispatcherGrain : BroadcastSubscriberGrainWithStri
     {
         try
         {
-            var traceId = Guid.NewGuid();
+            var traceId = machineEvent.TraceId;
             var operatedAt = DateTimeOffset.UtcNow;
             var operatedBy = $"System/{GetType().Name}";
-            // Update SnackSnackMachineStatsGrain
+            // Update SnackStatsOfSnackMachineGrain
             if (machineEvent.Slot is { SnackPile: { } })
             {
-                var machineStatsGrain = GrainFactory.GetGrain<ISnackSnackMachineStatsGrain>(machineEvent.Slot.SnackPile.SnackId);
+                var machineStatsGrain = GrainFactory.GetGrain<ISnackStatsOfSnackMachineGrain>(machineEvent.Slot.SnackPile.SnackId);
                 var result = await machineStatsGrain.IncrementCountAsync(new SnackIncrementMachineCountCommand(1, traceId, operatedAt, operatedBy));
                 _logger.LogInformation("Dispatch SnackMachineSnacksLoadedEvent: {SnackMachineId} is dispatched. With success {IsSuccess}", this.GetPrimaryKey(), result.IsSuccess);
             }
@@ -127,13 +127,13 @@ public class SnackMachineStatsDispatcherGrain : BroadcastSubscriberGrainWithStri
     {
         try
         {
-            var traceId = Guid.NewGuid();
+            var traceId = machineEvent.TraceId;
             var operatedAt = DateTimeOffset.UtcNow;
             var operatedBy = $"System/{GetType().Name}";
-            // Update SnackSnackMachineStatsGrain
+            // Update SnackStatsOfSnackMachineGrain
             if (machineEvent.Slot is { SnackPile: { } })
             {
-                var machineStatsGrain = GrainFactory.GetGrain<ISnackSnackMachineStatsGrain>(machineEvent.Slot.SnackPile.SnackId);
+                var machineStatsGrain = GrainFactory.GetGrain<ISnackStatsOfSnackMachineGrain>(machineEvent.Slot.SnackPile.SnackId);
                 var result = await machineStatsGrain.DecrementCountAsync(new SnackDecrementMachineCountCommand(1, traceId, operatedAt, operatedBy));
                 _logger.LogInformation("Dispatch SnackMachineSnacksUnloadedEvent: {SnackMachineId} is dispatched. With success {IsSuccess}", this.GetPrimaryKey(), result.IsSuccess);
             }

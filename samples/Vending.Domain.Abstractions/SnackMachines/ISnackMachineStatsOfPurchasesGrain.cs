@@ -5,9 +5,9 @@ using Vending.Domain.Abstractions.Purchases;
 namespace Vending.Domain.Abstractions.SnackMachines;
 
 /// <summary>
-///     Grain interface ISnackMachinePurchaseStatsGrain
+///     Grain interface ISnackMachineStatsOfPurchasesGrain
 /// </summary>
-public interface ISnackMachinePurchaseStatsGrain : IGrainWithGuidKey
+public interface ISnackMachineStatsOfPurchasesGrain : IGrainWithGuidKey
 {
     /// <summary>
     ///     Asynchronously retrieves the current state of the snack machine.
