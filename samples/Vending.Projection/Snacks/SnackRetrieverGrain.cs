@@ -111,7 +111,7 @@ public class SnackRetrieverGrain : Grain, ISnackRetrieverGrain
     /// <inheritdoc />
     public Task<Result<ImmutableList<Snack>>> SearchingListAsync(SnackRetrieverSearchingListQuery query)
     {
-        var searchCriteria = query.SearchCriteria;
+        var searchTerm = query.SearchTerm;
         var machineCountRangeStart = query.MachineCountRange?.Start;
         var machineCountRangeEnd = query.MachineCountRange?.End;
         var boughtCountRangeStart = query.BoughtCountRange?.Start;
@@ -130,7 +130,7 @@ public class SnackRetrieverGrain : Grain, ISnackRetrieverGrain
         var isDeleted = query.IsDeleted;
         var sortings = query.Sortings?.ToSortStrinng();
         return Result.Ok(_dbContext.Snacks.AsNoTracking())
-                     .MapIf(searchCriteria != null, snacks => snacks.Where(s => s.Name.Contains(searchCriteria!)))
+                     .MapIf(searchTerm != null, snacks => snacks.Where(s => s.Name.Contains(searchTerm!)))
                      .MapIf(machineCountRangeStart != null, snacks => snacks.Where(s => s.MachineCount >= machineCountRangeStart))
                      .MapIf(machineCountRangeEnd != null, snacks => snacks.Where(s => s.MachineCount < machineCountRangeEnd))
                      .MapIf(boughtCountRangeStart != null, snacks => snacks.Where(s => s.BoughtCount >= boughtCountRangeStart))
@@ -154,7 +154,7 @@ public class SnackRetrieverGrain : Grain, ISnackRetrieverGrain
     /// <inheritdoc />
     public Task<Result<ImmutableList<Snack>>> SearchingPagedListAsync(SnackRetrieverSearchingPagedListQuery query)
     {
-        var searchCriteria = query.SearchCriteria;
+        var searchTerm = query.SearchTerm;
         var machineCountRangeStart = query.MachineCountRange?.Start;
         var machineCountRangeEnd = query.MachineCountRange?.End;
         var boughtCountRangeStart = query.BoughtCountRange?.Start;
@@ -175,7 +175,7 @@ public class SnackRetrieverGrain : Grain, ISnackRetrieverGrain
         var skipCount = query.SkipCount;
         var maxResultCount = query.MaxResultCount;
         return Result.Ok(_dbContext.Snacks.AsNoTracking())
-                     .MapIf(searchCriteria != null, snacks => snacks.Where(s => s.Name.Contains(searchCriteria!)))
+                     .MapIf(searchTerm != null, snacks => snacks.Where(s => s.Name.Contains(searchTerm!)))
                      .MapIf(machineCountRangeStart != null, snacks => snacks.Where(s => s.MachineCount >= machineCountRangeStart))
                      .MapIf(machineCountRangeEnd != null, snacks => snacks.Where(s => s.MachineCount < machineCountRangeEnd))
                      .MapIf(boughtCountRangeStart != null, snacks => snacks.Where(s => s.BoughtCount >= boughtCountRangeStart))

@@ -9,7 +9,7 @@ namespace Vending.Projection.Abstractions.Snacks;
 [Serializable]
 [GenerateSerializer]
 public sealed record SnackRetrieverSearchingPagedListQuery
-    (string? SearchCriteria,
+    (string? SearchTerm,
      Int32Range? MachineCountRange,
      Int32Range? BoughtCountRange,
      DecimalRange? BoughtAmountRange,
@@ -25,4 +25,4 @@ public sealed record SnackRetrieverSearchingPagedListQuery
      IDictionary<string, bool>? Sortings,
      Guid TraceId,
      DateTimeOffset OperatedAt,
-     string OperatedBy) : DomainSearchingPagedListQuery(SearchCriteria, SkipCount, MaxResultCount, Sortings, TraceId, OperatedAt, OperatedBy);
+     string OperatedBy) : DomainSearchingPagedListQuery(SearchTerm, SkipCount, MaxResultCount, Sortings, TraceId, OperatedAt, OperatedBy);

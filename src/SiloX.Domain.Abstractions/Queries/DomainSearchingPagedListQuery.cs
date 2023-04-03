@@ -6,7 +6,7 @@ namespace SiloX.Domain.Abstractions;
 ///     An abstract class that represents a query for a domain list with searching and paging feature.
 ///     It contains search criteria, start position, maximum number of items to return, sorting criteria and traceability information.
 /// </summary>
-/// <param name="SearchCriteria">The criteria for searching.</param>
+/// <param name="SearchTerm">The criteria for searching.</param>
 /// <param name="SkipCount">An integer representing the number of items to skip from the beginning of the list.</param>
 /// <param name="MaxResultCount">An integer representing the maximum number of items to return.</param>
 /// <param name="Sortings">The sorting criteria.</param>
@@ -17,7 +17,7 @@ namespace SiloX.Domain.Abstractions;
 [Serializable]
 [GenerateSerializer]
 public abstract record DomainSearchingPagedListQuery
-    (string? SearchCriteria,
+    (string? SearchTerm,
      int? SkipCount,
      int? MaxResultCount,
      IDictionary<string, bool>? Sortings,

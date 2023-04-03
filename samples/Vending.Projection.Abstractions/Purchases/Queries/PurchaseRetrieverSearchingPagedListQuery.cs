@@ -9,7 +9,7 @@ namespace Vending.Projection.Abstractions.Purchases;
 [Serializable]
 [GenerateSerializer]
 public sealed record PurchaseRetrieverSearchingPagedListQuery
-    (string? SearchCriteria,
+    (string? SearchTerm,
      Guid? MachineId,
      Guid? SnackId,
      DecimalRange? BoughtPriceRange,
@@ -20,4 +20,4 @@ public sealed record PurchaseRetrieverSearchingPagedListQuery
      IDictionary<string, bool>? Sortings,
      Guid TraceId,
      DateTimeOffset OperatedAt,
-     string OperatedBy) : DomainSearchingPagedListQuery(SearchCriteria, SkipCount, MaxResultCount, Sortings, TraceId, OperatedAt, OperatedBy);
+     string OperatedBy) : DomainSearchingPagedListQuery(SearchTerm, SkipCount, MaxResultCount, Sortings, TraceId, OperatedAt, OperatedBy);

@@ -75,7 +75,7 @@ public class PurchaseRetrieverGrain : Grain, IPurchaseRetrieverGrain
     /// <inheritdoc />
     public Task<Result<ImmutableList<Purchase>>> SearchingListAsync(PurchaseRetrieverSearchingListQuery query)
     {
-        var searchCriteria = query.SearchCriteria;
+        var searchTerm = query.SearchTerm;
         var machineId = query.MachineId;
         var snackId = query.SnackId;
         var boughtPriceRangeStart = query.BoughtPriceRange?.Start;
@@ -85,7 +85,7 @@ public class PurchaseRetrieverGrain : Grain, IPurchaseRetrieverGrain
         var boughtBy = query.BoughtBy;
         var sortings = query.Sortings?.ToSortStrinng();
         return Result.Ok(_dbContext.Purchases.AsNoTracking())
-                     .MapIf(searchCriteria != null, purchases => purchases.Where(p => p.SnackName.Contains(searchCriteria!)))
+                     .MapIf(searchTerm != null, purchases => purchases.Where(p => p.SnackName.Contains(searchTerm!)))
                      .MapIf(machineId != null, purchases => purchases.Where(p => p.MachineId == machineId))
                      .MapIf(snackId != null, purchases => purchases.Where(p => p.SnackId == snackId))
                      .MapIf(boughtPriceRangeStart != null, purchases => purchases.Where(p => p.BoughtPrice >= boughtPriceRangeStart))
@@ -100,7 +100,7 @@ public class PurchaseRetrieverGrain : Grain, IPurchaseRetrieverGrain
     /// <inheritdoc />
     public Task<Result<ImmutableList<Purchase>>> SearchingPagedListAsync(PurchaseRetrieverSearchingPagedListQuery query)
     {
-        var searchCriteria = query.SearchCriteria;
+        var searchTerm = query.SearchTerm;
         var machineId = query.MachineId;
         var snackId = query.SnackId;
         var boughtPriceRangeStart = query.BoughtPriceRange?.Start;
@@ -112,7 +112,7 @@ public class PurchaseRetrieverGrain : Grain, IPurchaseRetrieverGrain
         var skipCount = query.SkipCount;
         var maxResultCount = query.MaxResultCount;
         return Result.Ok(_dbContext.Purchases.AsNoTracking())
-                     .MapIf(searchCriteria != null, purchases => purchases.Where(p => p.SnackName.Contains(searchCriteria!)))
+                     .MapIf(searchTerm != null, purchases => purchases.Where(p => p.SnackName.Contains(searchTerm!)))
                      .MapIf(machineId != null, purchases => purchases.Where(p => p.MachineId == machineId))
                      .MapIf(snackId != null, purchases => purchases.Where(p => p.SnackId == snackId))
                      .MapIf(boughtPriceRangeStart != null, purchases => purchases.Where(p => p.BoughtPrice >= boughtPriceRangeStart))

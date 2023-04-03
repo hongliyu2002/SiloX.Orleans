@@ -6,7 +6,7 @@ namespace SiloX.Domain.Abstractions;
 ///     An abstract class that represents a query for a domain list with searching feature.
 ///     It contains search criteria, sorting criteria and traceability information.
 /// </summary>
-/// <param name="SearchCriteria">The criteria for searching.</param>
+/// <param name="SearchTerm">The criteria for searching.</param>
 /// <param name="Sortings">The sorting criteria.</param>
 /// <param name="TraceId">The unique identifier for the trace.</param>
 /// <param name="OperatedAt">The date and time when the operation was performed.</param>
@@ -15,7 +15,7 @@ namespace SiloX.Domain.Abstractions;
 [Serializable]
 [GenerateSerializer]
 public abstract record DomainSearchingListQuery
-    (string? SearchCriteria,
+    (string? SearchTerm,
      IDictionary<string, bool>? Sortings,
      Guid TraceId,
      DateTimeOffset OperatedAt,
