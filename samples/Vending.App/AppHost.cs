@@ -1,8 +1,6 @@
 ﻿using Fluxera.Extensions.Hosting;
 using Fluxera.Extensions.Hosting.Modules.Serilog;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Orleans;
 using Serilog;
 
 namespace Vending.App;

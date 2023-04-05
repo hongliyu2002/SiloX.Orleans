@@ -22,15 +22,15 @@
         <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
         <PackageReference Include="Splat.Microsoft.Extensions.DependencyInjection" Version="14.6.8" />
     </ItemGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\..\src\SiloX.Orleans.Client\SiloX.Orleans.Client.csproj" />
-        <ProjectReference Include="..\..\src\SiloX.Orleans.Clustering.Redis\SiloX.Orleans.Clustering.Redis.csproj" />
-        <ProjectReference Include="..\..\src\SiloX.Orleans.Streaming.EventStore\SiloX.Orleans.Streaming.EventStore.csproj" />
-        <ProjectReference Include="..\..\src\SiloX.Orleans.Transactions\SiloX.Orleans.Transactions.csproj" />
-        <ProjectReference Include="..\Vending.Domain.Abstractions\Vending.Domain.Abstractions.csproj" />
-        <ProjectReference Include="..\Vending.Projection.Abstractions\Vending.Projection.Abstractions.csproj" />
-    </ItemGroup>
+    <!-- -->
+    <!-- <ItemGroup> -->
+    <!--     <ProjectReference Include="..\..\src\SiloX.Orleans.Client\SiloX.Orleans.Client.csproj" /> -->
+    <!--     <ProjectReference Include="..\..\src\SiloX.Orleans.Clustering.Redis\SiloX.Orleans.Clustering.Redis.csproj" /> -->
+    <!--     <ProjectReference Include="..\..\src\SiloX.Orleans.Streaming.EventStore\SiloX.Orleans.Streaming.EventStore.csproj" /> -->
+    <!--     <ProjectReference Include="..\..\src\SiloX.Orleans.Transactions\SiloX.Orleans.Transactions.csproj" /> -->
+    <!--     <ProjectReference Include="..\Vending.Domain.Abstractions\Vending.Domain.Abstractions.csproj" /> -->
+    <!--     <ProjectReference Include="..\Vending.Projection.Abstractions\Vending.Projection.Abstractions.csproj" /> -->
+    <!-- </ItemGroup> -->
 
     <ItemGroup>
         <None Update="appsettings.json">
@@ -41,16 +41,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Page Update="Controls\MachinesManagementControl.xaml">
-            <Generator>MSBuild:Compile</Generator>
-            <XamlRuntime>Wpf</XamlRuntime>
-            <SubType>Designer</SubType>
-        </Page>
-        <Page Update="Controls\SnacksManagementControl.xaml">
-            <Generator>MSBuild:Compile</Generator>
-            <XamlRuntime>Wpf</XamlRuntime>
-            <SubType>Designer</SubType>
-        </Page>
         <Page Update="Main\Views\MainWindow.xaml">
           <Generator>MSBuild:Compile</Generator>
           <XamlRuntime>Wpf</XamlRuntime>

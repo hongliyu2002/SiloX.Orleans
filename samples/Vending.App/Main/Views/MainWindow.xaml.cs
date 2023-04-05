@@ -1,8 +1,6 @@
 ﻿using System.Reactive.Disposables;
 using Fluxera.Extensions.Hosting;
-using Orleans;
 using ReactiveUI;
-using Splat;
 using Vending.App.ViewModels;
 
 namespace Vending.App;
