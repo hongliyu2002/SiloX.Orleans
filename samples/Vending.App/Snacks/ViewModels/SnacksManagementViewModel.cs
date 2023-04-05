@@ -43,14 +43,23 @@ public class SnacksManagementViewModel : ReactiveObject
                                "CreatedAt", false
                            }
                        };
-        var result = await Result.Ok()
-                                 .Ensure(_clusterClient != null, "Cluster client is not available")
-                                 .MapTry(() => _clusterClient!.GetGrain<ISnackRetrieverGrain>(string.Empty))
-                                 .BindTryAsync(grain => grain.SearchingListAsync(new SnackRetrieverSearchingListQuery(term, null, null, null, null, null, null, null, null, null,
-                                                                                                                      false, sortings, Guid.NewGuid(), DateTimeOffset.UtcNow,
-                                                                                                                      "Manager")))
-                                 .MapAsync(snacks => snacks.Select(snack => new SnackItemViewModel(snack)));
-        return result.IsSuccess ? result.Value : Enumerable.Empty<SnackItemViewModel>();
+        // var result = await Result.Ok()
+        //                          .Ensure(_clusterClient != null, "Cluster client is not available")
+        //                          .MapTry(() => _clusterClient!.GetGrain<ISnackRetrieverGrain>(string.Empty))
+        //                          .BindTryAsync(grain => grain.SearchingListAsync(new SnackRetrieverSearchingListQuery(term, null, null, null, null, null, null, null, null, null,
+        //                                                                                                               false, sortings, Guid.NewGuid(), DateTimeOffset.UtcNow,
+        //                                                                                                               "Manager")))
+        //                          .MapAsync(snacks => snacks.Select(snack => new SnackItemViewModel(snack)));
+
+        var grain = _clusterClient!.GetGrain<ISnackRetrieverGrain>(string.Empty);
+        var result = await grain.SearchingListAsync(new SnackRetrieverSearchingListQuery(term, null, null, null, null, null, null, null, null, null,
+                                                                                          false, sortings, Guid.NewGuid(), DateTimeOffset.UtcNow,
+                                                                                          "Manager"));
+        if(result.IsSuccess)
+        {
+            return result.Value.Select(snack => new SnackItemViewModel(snack));
+        }
+        return Enumerable.Empty<SnackItemViewModel>();
     }
 
     #region Properties
