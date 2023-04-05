@@ -20,7 +20,7 @@ public class InMemoryClusteringModule : ConfigureServicesModule
     }
 
     /// <inheritdoc />
-    public override void PostConfigureServices(IServiceConfigurationContext context)
+    public override void ConfigureServices(IServiceConfigurationContext context)
     {
         var options = context.Services.GetOptions<ClusteringOptions>();
         var inMemoryOptions = context.Services.GetOptions<InMemoryClusteringOptions>();

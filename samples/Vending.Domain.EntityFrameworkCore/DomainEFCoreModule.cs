@@ -23,7 +23,7 @@ public class DomainEFCoreModule : ConfigureServicesModule
     }
 
     /// <inheritdoc />
-    public override void PostConfigureServices(IServiceConfigurationContext context)
+    public override void ConfigureServices(IServiceConfigurationContext context)
     {
         var efCoreOptions = context.Services.GetOptions<DomainEFCoreOptions>();
         context.Log("AddDomainEFCore", services => services.AddDomainEFCore(efCoreOptions));

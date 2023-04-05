@@ -19,7 +19,7 @@ public class ClientModule : ConfigureServicesModule
     }
 
     /// <inheritdoc />
-    public override void PostConfigureServices(IServiceConfigurationContext context)
+    public override void ConfigureServices(IServiceConfigurationContext context)
     {
         var options = context.Services.GetOptions<ClientOptions>();
         context.Log("AddOrleansClient", services => services.AddOrleansClient(options));

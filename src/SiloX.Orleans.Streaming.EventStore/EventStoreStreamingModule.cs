@@ -28,7 +28,7 @@ public class EventStoreStreamingModule : ConfigureServicesModule
     }
 
     /// <inheritdoc />
-    public override void PostConfigureServices(IServiceConfigurationContext context)
+    public override void ConfigureServices(IServiceConfigurationContext context)
     {
         var options = context.Services.GetOptions<StreamingOptions>();
         var eventStoreOptions = context.Services.GetOptions<EventStoreStreamingOptions>();

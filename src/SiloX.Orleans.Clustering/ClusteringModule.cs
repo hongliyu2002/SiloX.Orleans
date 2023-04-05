@@ -19,7 +19,7 @@ public class ClusteringModule : ConfigureServicesModule
     }
 
     /// <inheritdoc />
-    public override void PostConfigureServices(IServiceConfigurationContext context)
+    public override void ConfigureServices(IServiceConfigurationContext context)
     {
         var options = context.Services.GetOptions<ClusteringOptions>();
         context.Log("AddOrleansClustering", services => services.AddOrleansClustering(options));

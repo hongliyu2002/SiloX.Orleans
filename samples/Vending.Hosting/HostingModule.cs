@@ -36,7 +36,7 @@ public sealed class HostingModule : ConfigureApplicationModule
     }
 
     /// <inheritdoc />
-    public override void PostConfigureServices(IServiceConfigurationContext context)
+    public override void ConfigureServices(IServiceConfigurationContext context)
     {
         var options = context.Services.GetOptions<HostingOptions>();
         context.Log("AddVendingHosting", services => services.AddVendingHosting(options));

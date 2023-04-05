@@ -25,7 +25,7 @@ public class SnacksManagementViewModel : ReactiveObject
                           .Throttle(TimeSpan.FromMilliseconds(500))
                           .Select(term => term?.Trim())
                           .DistinctUntilChanged()
-                          .Where(term => !string.IsNullOrEmpty(term))
+                          // .Where(term => !string.IsNullOrEmpty(term))
                           .SelectMany(term => GetSnackItems(term!))
                           .ObserveOn(RxApp.MainThreadScheduler)
                           .ToProperty(this, vm => vm.SnackItems);
@@ -37,6 +37,7 @@ public class SnacksManagementViewModel : ReactiveObject
 
     private async Task<IEnumerable<SnackItemViewModel>> GetSnackItems(string? term)
     {
+        await Task.Delay(500);
         var sortings = new Dictionary<string, bool>
                        {
                            {
@@ -45,7 +46,7 @@ public class SnacksManagementViewModel : ReactiveObject
                        };
         var result = await Result.Ok()
                                  .Ensure(_clusterClient != null, "Cluster client is not available")
-                                 .MapTry(() => _clusterClient!.GetGrain<ISnackRetrieverGrain>(string.Empty))
+                                 .MapTry(() => _clusterClient!.GetGrain<ISnackRetrieverGrain>("Manager"))
                                  .BindTryAsync(grain => grain.SearchingListAsync(new SnackRetrieverSearchingListQuery(term, null, null, null, null, null, null, null, null, null, false, sortings,
                                                                                                                       Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")))
                                  .MapAsync(snacks => snacks.Select(snack => new SnackItemViewModel(snack)));

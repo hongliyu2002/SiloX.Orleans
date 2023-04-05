@@ -19,7 +19,7 @@ public class PersistenceModule : ConfigureServicesModule
     }
 
     /// <inheritdoc />
-    public override void PostConfigureServices(IServiceConfigurationContext context)
+    public override void ConfigureServices(IServiceConfigurationContext context)
     {
         var options = context.Services.GetOptions<PersistenceOptions>();
         context.Log("AddOrleansPersistence", services => services.AddOrleansPersistence(options));

@@ -28,7 +28,7 @@ public class EventStorePersistenceModule : ConfigureServicesModule
     }
 
     /// <inheritdoc />
-    public override void PostConfigureServices(IServiceConfigurationContext context)
+    public override void ConfigureServices(IServiceConfigurationContext context)
     {
         var eventStoreOptions = context.Services.GetOptions<EventStorePersistenceOptions>();
         context.Log("AddOrleansEventStorePersistence", services => services.AddOrleansEventStorePersistence(eventStoreOptions));

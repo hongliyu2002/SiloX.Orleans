@@ -28,7 +28,7 @@ public class RedisPersistenceModule : ConfigureServicesModule
     }
 
     /// <inheritdoc />
-    public override void PostConfigureServices(IServiceConfigurationContext context)
+    public override void ConfigureServices(IServiceConfigurationContext context)
     {
         var redisOptions = context.Services.GetOptions<RedisPersistenceOptions>();
         context.Log("AddOrleansRedisPersistence", services => services.AddOrleansRedisPersistence(redisOptions));

@@ -31,17 +31,17 @@ public sealed class AppModule : ConfigureApplicationModule
     /// <inheritdoc />
     public override void ConfigureServices(IServiceConfigurationContext context)
     {
-        context.Services.UseMicrosoftDependencyResolver();
-        Locator.CurrentMutable.InitializeSplat();
-        Locator.CurrentMutable.InitializeReactiveUI();
-        Locator.CurrentMutable.RegisterViewsForViewModels(Assembly.GetExecutingAssembly());
+        var options = context.Services.GetOptions<AppOptions>();
+        context.Log("AddVendingApp", services => services.AddVendingApp(options));
     }
 
     /// <inheritdoc />
     public override void PostConfigureServices(IServiceConfigurationContext context)
     {
-        var options = context.Services.GetOptions<AppOptions>();
-        context.Log("AddVendingApp", services => services.AddVendingApp(options));
+        context.Services.UseMicrosoftDependencyResolver();
+        Locator.CurrentMutable.InitializeSplat();
+        Locator.CurrentMutable.InitializeReactiveUI();
+        Locator.CurrentMutable.RegisterViewsForViewModels(Assembly.GetExecutingAssembly());
     }
 
     /// <inheritdoc />

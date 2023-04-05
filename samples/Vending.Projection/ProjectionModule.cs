@@ -23,7 +23,7 @@ public class ProjectionModule : ConfigureServicesModule
     }
 
     /// <inheritdoc />
-    public override void PostConfigureServices(IServiceConfigurationContext context)
+    public override void ConfigureServices(IServiceConfigurationContext context)
     {
         var options = context.Services.GetOptions<ProjectionOptions>();
         context.Log("AddProjection", services => services.AddProjection(options));

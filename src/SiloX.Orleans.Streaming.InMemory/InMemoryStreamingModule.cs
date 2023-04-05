@@ -20,7 +20,7 @@ public class InMemoryStreamingModule : ConfigureServicesModule
     }
 
     /// <inheritdoc />
-    public override void PostConfigureServices(IServiceConfigurationContext context)
+    public override void ConfigureServices(IServiceConfigurationContext context)
     {
         var options = context.Services.GetOptions<StreamingOptions>();
         var inMemoryOptions = context.Services.GetOptions<InMemoryStreamingOptions>();

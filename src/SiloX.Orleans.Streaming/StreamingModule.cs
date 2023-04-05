@@ -19,7 +19,7 @@ public class StreamingModule : ConfigureServicesModule
     }
 
     /// <inheritdoc />
-    public override void PostConfigureServices(IServiceConfigurationContext context)
+    public override void ConfigureServices(IServiceConfigurationContext context)
     {
         var options = context.Services.GetOptions<StreamingOptions>();
         context.Log("AddOrleansStreaming", services => services.AddOrleansStreaming(options));

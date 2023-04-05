@@ -28,7 +28,7 @@ public class RedisRemindersModule : ConfigureServicesModule
     }
 
     /// <inheritdoc />
-    public override void PostConfigureServices(IServiceConfigurationContext context)
+    public override void ConfigureServices(IServiceConfigurationContext context)
     {
         var redisOptions = context.Services.GetOptions<RedisRemindersOptions>();
         context.Log("AddOrleansRedisReminders", services => services.AddOrleansRedisReminders(redisOptions));

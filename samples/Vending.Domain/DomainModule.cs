@@ -23,7 +23,7 @@ public class DomainModule : ConfigureServicesModule
     }
 
     /// <inheritdoc />
-    public override void PostConfigureServices(IServiceConfigurationContext context)
+    public override void ConfigureServices(IServiceConfigurationContext context)
     {
         var options = context.Services.GetOptions<DomainOptions>();
         context.Log("AddDomain", services => services.AddDomain(options));

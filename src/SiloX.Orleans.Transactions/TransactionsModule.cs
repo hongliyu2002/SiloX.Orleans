@@ -19,7 +19,7 @@ public class TransactionsModule : ConfigureServicesModule
     }
 
     /// <inheritdoc />
-    public override void PostConfigureServices(IServiceConfigurationContext context)
+    public override void ConfigureServices(IServiceConfigurationContext context)
     {
         var options = context.Services.GetOptions<TransactionsOptions>();
         context.Log("AddOrleansTransactions", services => services.AddOrleansTransactions(options));

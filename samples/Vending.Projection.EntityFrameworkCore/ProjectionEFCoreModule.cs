@@ -23,7 +23,7 @@ public class ProjectionEFCoreModule : ConfigureServicesModule
     }
 
     /// <inheritdoc />
-    public override void PostConfigureServices(IServiceConfigurationContext context)
+    public override void ConfigureServices(IServiceConfigurationContext context)
     {
         var efCoreOptions = context.Services.GetOptions<ProjectionEFCoreOptions>();
         context.Log("AddProjectionEFCore", services => services.AddProjectionEFCore(efCoreOptions));

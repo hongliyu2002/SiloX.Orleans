@@ -20,7 +20,7 @@ public class InMemoryPersistenceModule : ConfigureServicesModule
     }
 
     /// <inheritdoc />
-    public override void PostConfigureServices(IServiceConfigurationContext context)
+    public override void ConfigureServices(IServiceConfigurationContext context)
     {
         var inMemoryOptions = context.Services.GetOptions<InMemoryPersistenceOptions>();
         context.Log("AddOrleansInMemoryPersistence", services => services.AddOrleansInMemoryPersistence(inMemoryOptions));

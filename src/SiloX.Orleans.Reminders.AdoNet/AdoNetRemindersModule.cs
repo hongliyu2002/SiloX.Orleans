@@ -28,7 +28,7 @@ public class AdoNetRemindersModule : ConfigureServicesModule
     }
 
     /// <inheritdoc />
-    public override void PostConfigureServices(IServiceConfigurationContext context)
+    public override void ConfigureServices(IServiceConfigurationContext context)
     {
         var adoNetOptions = context.Services.GetOptions<AdoNetRemindersOptions>();
         context.Log("AddOrleansAdoNetReminders", services => services.AddOrleansAdoNetReminders(adoNetOptions));
