@@ -39,7 +39,7 @@
                 <TextBlock Text="Search:" FontSize="13" Margin="5" VerticalAlignment="Center" />
                 <TextBox x:Name="SearchTextBox" Width="190" Height="20" Margin="5" />
             </StackPanel>
-            <ListView x:Name="SnacksListView" Grid.Row="2" Margin="5 0 5 5" ItemTemplate="{StaticResource SnackItemTemplate}" />
+            <ListView x:Name="SnackItemsListView" Grid.Row="2" Margin="5 0 5 5" ItemTemplate="{StaticResource SnackItemTemplate}" />
         </Grid>
         <StackPanel Grid.Column="1" Orientation="Vertical">
             <Label>Name:</Label>
