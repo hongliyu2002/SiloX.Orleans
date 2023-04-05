@@ -8,51 +8,61 @@ namespace Vending.Projection.Abstractions.Purchases;
 /// </summary>
 [PublicAPI]
 [Serializable]
+[GenerateSerializer]
 public sealed class Purchase
 {
     /// <summary>
     ///     Gets or sets the ID of the purchase.
     /// </summary>
+    [Id(0)]
     public Guid Id { get; set; }
 
     /// <summary>
     ///     Gets or sets the ID of the snack machine where the snack was bought.
     /// </summary>
+    [Id(1)]
     public Guid MachineId { get; set; }
 
     /// <summary>
     ///     Gets or sets the position of the slot in the snack machine where the snack was bought.
     /// </summary>
+    [Id(2)]
     public int Position { get; set; }
 
     /// <summary>
     ///     Gets or sets the ID of the snack that was bought.
     /// </summary>
+    [Id(3)]
     public Guid SnackId { get; set; }
 
     /// <summary>
     ///     Gets or sets the name of the snack that was bought.
     /// </summary>
+    [Id(4)]
     public string SnackName { get; set; } = null!;
 
     /// <summary>
     ///     Gets or sets the URL of the picture for the snack that was bought.
     /// </summary>
+    [Id(5)]
     public string? SnackPictureUrl { get; set; }
 
     /// <summary>
     ///     Gets or sets the price of the snack that was bought.
     /// </summary>
+    [Id(6)]
     public decimal BoughtPrice { get; set; }
 
     /// <summary>
     ///     Gets or sets the date and time when the snack was bought.
     /// </summary>
+    [Id(7)]
     public DateTimeOffset? BoughtAt { get; set; }
 
     /// <summary>
     ///     Gets or sets the name of the user who bought the snack.
     /// </summary>
+    [Id(8)]
     public string? BoughtBy { get; set; }
 
     /// <summary>
