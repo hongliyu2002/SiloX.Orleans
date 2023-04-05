@@ -5,6 +5,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Fluxera.Utilities.Extensions;
+using Microsoft.Extensions.Hosting;
 using Orleans;
 using Orleans.FluentResults;
 using ReactiveUI;
@@ -16,17 +17,23 @@ namespace Vending.App.ViewModels;
 public class SnacksManagementViewModel : ReactiveObject
 {
     private readonly IClusterClient? _clusterClient;
+    private bool _initialized;
 
     /// <inheritdoc />
     public SnacksManagementViewModel()
     {
+        var appLifetime = Locator.Current.GetService<IHostApplicationLifetime>();
+        if (appLifetime != null)
+        {
+            appLifetime.ApplicationStarted.Register(() => _initialized = true);
+            appLifetime.ApplicationStopped.Register(() => _initialized = false);
+        }
         _clusterClient = Locator.Current.GetService<IClusterClient>();
         _snackItems = this.WhenAnyValue(vm => vm.SearchTerm)
                           .Throttle(TimeSpan.FromMilliseconds(500))
-                          .Select(term => term?.Trim())
+                          .Select(term => term.Trim())
                           .DistinctUntilChanged()
-                          // .Where(term => !string.IsNullOrEmpty(term))
-                          .SelectMany(term => GetSnackItems(term!))
+                          .SelectMany(GetSnackItems)
                           .ObserveOn(RxApp.MainThreadScheduler)
                           .ToProperty(this, vm => vm.SnackItems);
         _isSnackItemsAvailable = this.WhenAnyValue(vm => vm.SnackItems).Select(items => items.IsNotNullOrEmpty()).ToProperty(this, vm => vm.IsSnackItemsAvailable);
@@ -37,7 +44,10 @@ public class SnacksManagementViewModel : ReactiveObject
 
     private async Task<IEnumerable<SnackItemViewModel>> GetSnackItems(string? term)
     {
-        await Task.Delay(500);
+        if (!_initialized)
+        {
+            return Enumerable.Empty<SnackItemViewModel>();
+        }
         var sortings = new Dictionary<string, bool>
                        {
                            {
@@ -62,9 +72,9 @@ public class SnacksManagementViewModel : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref _navigationSide, value);
     }
 
-    private string? _searchTerm;
+    private string _searchTerm = string.Empty;
 
-    public string? SearchTerm
+    public string SearchTerm
     {
         get => _searchTerm;
         set => this.RaiseAndSetIfChanged(ref _searchTerm, value);
@@ -84,12 +94,18 @@ public class SnacksManagementViewModel : ReactiveObject
 
     private void AddSnack()
     {
+        if (!_initialized)
+        {
+        }
     }
 
     public ReactiveCommand<Unit, Unit> RemoveSnackCommand { get; }
 
     private void RemoveSnack()
     {
+        if (!_initialized)
+        {
+        }
     }
 
     public ReactiveCommand<Unit, Unit> MoveNavigationSideCommand { get; }
