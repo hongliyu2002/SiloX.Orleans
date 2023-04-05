@@ -6,6 +6,7 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Fluxera.Utilities.Extensions;
 using Orleans;
+using Orleans.FluentResults;
 using ReactiveUI;
 using Splat;
 using Vending.Projection.Abstractions.Snacks;
@@ -34,29 +35,21 @@ public class SnacksManagementViewModel : ReactiveObject
         MoveNavigationSideCommand = ReactiveCommand.Create(MoveNavigationSide);
     }
 
-    private async Task<IEnumerable<SnackItemViewModel>> GetSnackItems(string term)
+    private async Task<IEnumerable<SnackItemViewModel>> GetSnackItems(string? term)
     {
         var sortings = new Dictionary<string, bool>
                        {
                            {
-                               "CreatedAt", false
+                               "CreatedAt", true
                            }
                        };
-        // var result = await Result.Ok()
-        //                          .Ensure(_clusterClient != null, "Cluster client is not available")
-        //                          .MapTry(() => _clusterClient!.GetGrain<ISnackRetrieverGrain>(string.Empty))
-        //                          .BindTryAsync(grain => grain.SearchingListAsync(new SnackRetrieverSearchingListQuery(term, null, null, null, null, null, null, null, null, null,
-        //                                                                                                               false, sortings, Guid.NewGuid(), DateTimeOffset.UtcNow,
-        //                                                                                                               "Manager")))
-        //                          .MapAsync(snacks => snacks.Select(snack => new SnackItemViewModel(snack)));
-        var grain = _clusterClient!.GetGrain<ISnackRetrieverGrain>(string.Empty);
-        var result = await grain.SearchingListAsync(new SnackRetrieverSearchingListQuery(term, null, null, null, null, null, null, null, null, null, false, sortings, Guid.NewGuid(),
-                                                                                         DateTimeOffset.UtcNow, "Manager"));
-        if (result.IsSuccess)
-        {
-            return result.Value.Select(snack => new SnackItemViewModel(snack));
-        }
-        return Enumerable.Empty<SnackItemViewModel>();
+        var result = await Result.Ok()
+                                 .Ensure(_clusterClient != null, "Cluster client is not available")
+                                 .MapTry(() => _clusterClient!.GetGrain<ISnackRetrieverGrain>(string.Empty))
+                                 .BindTryAsync(grain => grain.SearchingListAsync(new SnackRetrieverSearchingListQuery(term, null, null, null, null, null, null, null, null, null, false, sortings,
+                                                                                                                      Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")))
+                                 .MapAsync(snacks => snacks.Select(snack => new SnackItemViewModel(snack)));
+        return result.IsSuccess ? result.Value : Enumerable.Empty<SnackItemViewModel>();
     }
 
     #region Properties

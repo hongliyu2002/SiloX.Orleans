@@ -34,7 +34,7 @@ public sealed class AppModule : ConfigureApplicationModule
         context.Services.UseMicrosoftDependencyResolver();
         Locator.CurrentMutable.InitializeSplat();
         Locator.CurrentMutable.InitializeReactiveUI();
-        Locator.CurrentMutable.RegisterViewsForViewModels(Assembly.GetCallingAssembly());
+        Locator.CurrentMutable.RegisterViewsForViewModels(Assembly.GetExecutingAssembly());
     }
 
     /// <inheritdoc />
