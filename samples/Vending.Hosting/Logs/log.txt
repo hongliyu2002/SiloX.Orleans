@@ -1,0 +1,3 @@
+2023-04-06T02:11:34.7680577+08:00 [INF] (/BOSSHONG/1) Host configuration starting.
+2023-04-06T02:11:35.3866798+08:00 [INF] (/BOSSHONG/1) Running host using "ConsoleLifetime".
+2023-04-06T02:11:35.3895585+08:00 [INF] (/BOSSHONG/1) Host configured in 946 ms.

@@ -85,7 +85,7 @@ public class PurchaseRetrieverGrain : Grain, IPurchaseRetrieverGrain
         var boughtBy = query.BoughtBy;
         var sortings = query.Sortings?.ToSortStrinng();
         return Result.Ok(_dbContext.Purchases.AsNoTracking())
-                     .MapIf(searchTerm != null, purchases => purchases.Where(p => p.SnackName.Contains(searchTerm!)))
+                     .MapIf(searchTerm != null, purchases => purchases.Where(p => EF.Functions.Like(p.SnackName, $"%{searchTerm}%")))
                      .MapIf(machineId != null, purchases => purchases.Where(p => p.MachineId == machineId))
                      .MapIf(snackId != null, purchases => purchases.Where(p => p.SnackId == snackId))
                      .MapIf(boughtPriceRangeStart != null, purchases => purchases.Where(p => p.BoughtPrice >= boughtPriceRangeStart))
@@ -112,7 +112,7 @@ public class PurchaseRetrieverGrain : Grain, IPurchaseRetrieverGrain
         var skipCount = query.SkipCount;
         var maxResultCount = query.MaxResultCount;
         return Result.Ok(_dbContext.Purchases.AsNoTracking())
-                     .MapIf(searchTerm != null, purchases => purchases.Where(p => p.SnackName.Contains(searchTerm!)))
+                     .MapIf(searchTerm != null, purchases => purchases.Where(p => EF.Functions.Like(p.SnackName, $"%{searchTerm}%")))
                      .MapIf(machineId != null, purchases => purchases.Where(p => p.MachineId == machineId))
                      .MapIf(snackId != null, purchases => purchases.Where(p => p.SnackId == snackId))
                      .MapIf(boughtPriceRangeStart != null, purchases => purchases.Where(p => p.BoughtPrice >= boughtPriceRangeStart))

@@ -130,7 +130,7 @@ public class SnackRetrieverGrain : Grain, ISnackRetrieverGrain
         var isDeleted = query.IsDeleted;
         var sortings = query.Sortings?.ToSortStrinng();
         return Result.Ok(_dbContext.Snacks.AsNoTracking())
-                     .MapIf(searchTerm != null, snacks => snacks.Where(s => s.Name.Contains(searchTerm!)))
+                     .MapIf(searchTerm != null, snacks => snacks.Where(s => EF.Functions.Like(s.Name, $"%{searchTerm}%")))
                      .MapIf(machineCountRangeStart != null, snacks => snacks.Where(s => s.MachineCount >= machineCountRangeStart))
                      .MapIf(machineCountRangeEnd != null, snacks => snacks.Where(s => s.MachineCount < machineCountRangeEnd))
                      .MapIf(boughtCountRangeStart != null, snacks => snacks.Where(s => s.BoughtCount >= boughtCountRangeStart))
@@ -175,7 +175,7 @@ public class SnackRetrieverGrain : Grain, ISnackRetrieverGrain
         var skipCount = query.SkipCount;
         var maxResultCount = query.MaxResultCount;
         return Result.Ok(_dbContext.Snacks.AsNoTracking())
-                     .MapIf(searchTerm != null, snacks => snacks.Where(s => s.Name.Contains(searchTerm!)))
+                     .MapIf(searchTerm != null, snacks => snacks.Where(s => EF.Functions.Like(s.Name, $"%{searchTerm}%")))
                      .MapIf(machineCountRangeStart != null, snacks => snacks.Where(s => s.MachineCount >= machineCountRangeStart))
                      .MapIf(machineCountRangeEnd != null, snacks => snacks.Where(s => s.MachineCount < machineCountRangeEnd))
                      .MapIf(boughtCountRangeStart != null, snacks => snacks.Where(s => s.BoughtCount >= boughtCountRangeStart))

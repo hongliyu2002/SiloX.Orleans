@@ -11,10 +11,8 @@ public partial class SnackItemView
         InitializeComponent();
         this.WhenActivated(disposable =>
                            {
-                               this.OneWayBind(ViewModel, vm => vm.Name, v => v.NameRun.Text)
-                                   .DisposeWith(disposable);
-                               this.OneWayBind(ViewModel, vm => vm.PictureUrl, v => v.PictureImage.Source, url => url == null ? null : new BitmapImage(url))
-                                   .DisposeWith(disposable);
+                               this.OneWayBind(ViewModel, vm => vm.Name, v => v.NameRun.Text).DisposeWith(disposable);
+                               this.OneWayBind(ViewModel, vm => vm.PictureUrl, v => v.PictureImage.Source, url => url == null ? null : new BitmapImage(url)).DisposeWith(disposable);
                            });
     }
 }

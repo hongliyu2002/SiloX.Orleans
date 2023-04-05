@@ -14,8 +14,8 @@ public partial class SnacksManagementView
         this.WhenActivated(disposable =>
                            {
                                this.OneWayBind(ViewModel, vm => vm.NavigationSide, v => v.NavigationGridGridColumn, side => side == NavigationSide.Left ? 0 : 2).DisposeWith(disposable);
-                               this.OneWayBind(ViewModel, vm => vm.SnackItems, v => v.SnackItemsListView.ItemsSource).DisposeWith(disposable);
-                               this.OneWayBind(ViewModel, vm => vm.IsSnackItemsAvailable, v => v.SnackItemsListView.IsEnabled).DisposeWith(disposable);
+                               this.OneWayBind(ViewModel, vm => vm.SnackItems, v => v.SnackItemsListBox.ItemsSource).DisposeWith(disposable);
+                               this.OneWayBind(ViewModel, vm => vm.IsSnackItemsAvailable, v => v.SnackItemsListBox.IsEnabled).DisposeWith(disposable);
                                this.Bind(ViewModel, vm => vm.SearchTerm, v => v.SearchTextBox.Text).DisposeWith(disposable);
                                this.BindCommand(ViewModel, vm => vm.AddSnackCommand, v => v.AddSnackButton).DisposeWith(disposable);
                                this.BindCommand(ViewModel, vm => vm.RemoveSnackCommand, v => v.RemoveSnackButton).DisposeWith(disposable);

@@ -6,7 +6,6 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Fluxera.Utilities.Extensions;
 using Orleans;
-using Orleans.FluentResults;
 using ReactiveUI;
 using Splat;
 using Vending.Projection.Abstractions.Snacks;
@@ -50,12 +49,10 @@ public class SnacksManagementViewModel : ReactiveObject
         //                                                                                                               false, sortings, Guid.NewGuid(), DateTimeOffset.UtcNow,
         //                                                                                                               "Manager")))
         //                          .MapAsync(snacks => snacks.Select(snack => new SnackItemViewModel(snack)));
-
         var grain = _clusterClient!.GetGrain<ISnackRetrieverGrain>(string.Empty);
-        var result = await grain.SearchingListAsync(new SnackRetrieverSearchingListQuery(term, null, null, null, null, null, null, null, null, null,
-                                                                                          false, sortings, Guid.NewGuid(), DateTimeOffset.UtcNow,
-                                                                                          "Manager"));
-        if(result.IsSuccess)
+        var result = await grain.SearchingListAsync(new SnackRetrieverSearchingListQuery(term, null, null, null, null, null, null, null, null, null, false, sortings, Guid.NewGuid(),
+                                                                                         DateTimeOffset.UtcNow, "Manager"));
+        if (result.IsSuccess)
         {
             return result.Value.Select(snack => new SnackItemViewModel(snack));
         }
