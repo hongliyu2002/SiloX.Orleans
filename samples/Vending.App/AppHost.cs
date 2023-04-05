@@ -22,6 +22,6 @@ public sealed class AppHost : WpfApplicationHost<AppModule>
                                       loggerConfiguration.ReadFrom.Configuration(hostBuilderContext.Configuration);
                                   });
         // Register the main window factory to use.
-        builder.UseMainWindow(sp => new MainWindow(sp.GetRequiredService<IClusterClient>()));
+        builder.UseMainWindow(sp => new MainWindow());
     }
 }
