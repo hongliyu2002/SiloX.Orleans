@@ -43,24 +43,13 @@ public interface ISnackGrain : IGrainWithGuidKey
     Task<Result> RemoveAsync(SnackRemoveCommand command);
 
     /// <summary>
-    ///     Asynchronously checks whether the Snack's name can be changed with the given command
+    ///     Asynchronously checks whether the snack's name and picture url can be changed with the given command
     /// </summary>
     [AlwaysInterleave]
-    Task<bool> CanChangeNameAsync(SnackChangeNameCommand command);
+    Task<bool> CanUpdateAsync(SnackUpdateCommand command);
 
     /// <summary>
-    ///     Asynchronously changes the Snack's name with the given command
+    ///     Asynchronously changes the snack's name and picture url with the given command
     /// </summary>
-    Task<Result> ChangeNameAsync(SnackChangeNameCommand command);
-
-    /// <summary>
-    ///     Asynchronously checks whether the Snack's picture URL can be changed with the given command
-    /// </summary>
-    [AlwaysInterleave]
-    Task<bool> CanChangePictureUrlAsync(SnackChangePictureUrlCommand command);
-
-    /// <summary>
-    ///     Asynchronously changes the Snack's picture URL with the given command
-    /// </summary>
-    Task<Result> ChangePictureUrlAsync(SnackChangePictureUrlCommand command);
+    Task<Result> UpdateAsync(SnackUpdateCommand command);
 }

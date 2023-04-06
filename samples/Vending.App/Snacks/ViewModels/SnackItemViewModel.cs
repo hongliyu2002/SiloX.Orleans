@@ -1,23 +1,37 @@
 ﻿using System;
 using Fluxera.Utilities.Extensions;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 using Vending.Projection.Abstractions.Snacks;
 
 namespace Vending.App.ViewModels;
 
 public class SnackItemViewModel : ReactiveObject
 {
-    private readonly Snack _snack;
-    private readonly Uri _defaultUrl;
+    private const string DefaultUrl = "pack://application:,,,/Vending.App;component/Images/snack.png";
 
-    /// <inheritdoc />
     public SnackItemViewModel(Snack snack)
     {
-        _snack = snack;
-        _defaultUrl = new Uri("https://git.io/fAlfh");
+        LoadWith(snack);
     }
 
-    public string Name => _snack.Name;
+    [Reactive]
+    public Guid Id { get; set; }
 
-    public Uri PictureUrl => _snack.PictureUrl.IsNullOrWhiteSpace() ? _defaultUrl : new Uri(_snack.PictureUrl!);
+    [Reactive]
+    public bool IsDeleted { get; set; }
+
+    [Reactive]
+    public string Name { get; set; } = string.Empty;
+
+    [Reactive]
+    public Uri PictureUrl { get; set; } = new(DefaultUrl);
+
+    public void LoadWith(Snack snack)
+    {
+        Id = snack.Id;
+        IsDeleted = snack.IsDeleted;
+        Name = snack.Name;
+        PictureUrl = snack.PictureUrl.IsNotNullOrEmpty() ? new Uri(snack.PictureUrl!) : new Uri(DefaultUrl);
+    }
 }

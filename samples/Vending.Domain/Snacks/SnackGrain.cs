@@ -54,7 +54,7 @@ public sealed class SnackGrain : EventSourcingGrainWithGuidKey<Snack, SnackComma
                      .Verify(State.IsDeleted == false, $"Snack {snackId} has already been removed.")
                      .Verify(State.IsCreated == false, $"Snack {snackId} already exists.")
                      .Verify(command.Name.IsNotNullOrWhiteSpace(), $"The name of snack {snackId} should not be empty.")
-                     .Verify(command.Name.Length <= 100, $"The name of snack {snackId} is too long.")
+                     .Verify(command.Name.Length <= 200, $"The name of snack {snackId} is too long.")
                      .Verify(command.PictureUrl == null || command.PictureUrl!.Length <= 500, $"The picture url of snack {snackId} is too long.")
                      .Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
     }
@@ -78,7 +78,10 @@ public sealed class SnackGrain : EventSourcingGrainWithGuidKey<Snack, SnackComma
     private Result ValidateRemove(SnackRemoveCommand command)
     {
         var snackId = this.GetPrimaryKey();
-        return Result.Ok().Verify(State.IsDeleted == false, $"Snack {snackId} has already been removed.").Verify(State.IsCreated, $"Snack {snackId} is not initialized.").Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
+        return Result.Ok()
+                     .Verify(State.IsDeleted == false, $"Snack {snackId} has already been removed.")
+                     .Verify(State.IsCreated, $"Snack {snackId} is not initialized.")
+                     .Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
     }
 
     /// <inheritdoc />
@@ -97,57 +100,32 @@ public sealed class SnackGrain : EventSourcingGrainWithGuidKey<Snack, SnackComma
               .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(this.GetPrimaryKey(), Version, 102, errors.ToReasonStrings(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
-    private Result ValidateChangeName(SnackChangeNameCommand command)
+    private Result ValidateUpdate(SnackUpdateCommand command)
     {
         var snackId = this.GetPrimaryKey();
         return Result.Ok()
                      .Verify(State.IsDeleted == false, $"Snack {snackId} has already been removed.")
                      .Verify(State.IsCreated, $"Snack {snackId} is not initialized.")
                      .Verify(command.Name.IsNotNullOrWhiteSpace(), $"The name of snack {snackId} should not be empty.")
-                     .Verify(command.Name.Length <= 100, $"The name of snack {snackId} is too long.")
-                     .Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
-    }
-
-    /// <inheritdoc />
-    public Task<bool> CanChangeNameAsync(SnackChangeNameCommand command)
-    {
-        return Task.FromResult(ValidateChangeName(command).IsSuccess);
-    }
-
-    /// <inheritdoc />
-    public Task<Result> ChangeNameAsync(SnackChangeNameCommand command)
-    {
-        return ValidateChangeName(command)
-              .MapTryAsync(() => RaiseConditionalEvent(command))
-              .MapTryIfAsync(persisted => persisted, PersistAsync)
-              .MapTryAsync(() => PublishAsync(new SnackNameChangedEvent(State.Id, Version, State.Name, command.TraceId, State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? command.OperatedBy)))
-              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(this.GetPrimaryKey(), Version, 103, errors.ToReasonStrings(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
-    }
-
-    private Result ValidateChangePictureUrl(SnackChangePictureUrlCommand command)
-    {
-        var snackId = this.GetPrimaryKey();
-        return Result.Ok()
-                     .Verify(State.IsDeleted == false, $"Snack {snackId} has already been removed.")
-                     .Verify(State.IsCreated, $"Snack {snackId} is not initialized.")
+                     .Verify(command.Name.Length <= 200, $"The name of snack {snackId} is too long.")
                      .Verify(command.PictureUrl.IsNullOrWhiteSpace() || command.PictureUrl!.Length <= 500, $"The picture url of snack {snackId} is too long.")
                      .Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
     }
 
     /// <inheritdoc />
-    public Task<bool> CanChangePictureUrlAsync(SnackChangePictureUrlCommand command)
+    public Task<bool> CanUpdateAsync(SnackUpdateCommand command)
     {
-        return Task.FromResult(ValidateChangePictureUrl(command).IsSuccess);
+        return Task.FromResult(ValidateUpdate(command).IsSuccess);
     }
 
     /// <inheritdoc />
-    public Task<Result> ChangePictureUrlAsync(SnackChangePictureUrlCommand command)
+    public Task<Result> UpdateAsync(SnackUpdateCommand command)
     {
-        return ValidateChangePictureUrl(command)
+        return ValidateUpdate(command)
               .MapTryAsync(() => RaiseConditionalEvent(command))
               .MapTryIfAsync(persisted => persisted, PersistAsync)
-              .MapTryAsync(() => PublishAsync(new SnackPictureUrlChangedEvent(State.Id, Version, State.PictureUrl, command.TraceId, State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? command.OperatedBy)))
-              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(this.GetPrimaryKey(), Version, 104, errors.ToReasonStrings(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
+              .MapTryAsync(() => PublishAsync(new SnackUpdatedEvent(State.Id, Version, State.Name, State.PictureUrl, command.TraceId, State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? command.OperatedBy)))
+              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(this.GetPrimaryKey(), Version, 103, errors.ToReasonStrings(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
     #region Persistence
@@ -165,10 +143,11 @@ public sealed class SnackGrain : EventSourcingGrainWithGuidKey<Snack, SnackComma
         snack.Name = snackInGrain.Name;
         snack.PictureUrl = snackInGrain.PictureUrl;
         snack.CreatedAt = snackInGrain.CreatedAt;
-        snack.LastModifiedAt = snackInGrain.LastModifiedAt;
-        snack.DeletedAt = snackInGrain.DeletedAt;
         snack.CreatedBy = snackInGrain.CreatedBy;
+        snack.IsCreated = snackInGrain.IsCreated;
+        snack.LastModifiedAt = snackInGrain.LastModifiedAt;
         snack.LastModifiedBy = snackInGrain.LastModifiedBy;
+        snack.DeletedAt = snackInGrain.DeletedAt;
         snack.DeletedBy = snackInGrain.DeletedBy;
         snack.IsDeleted = snackInGrain.IsDeleted;
         await _dbContext.SaveChangesAsync();

@@ -49,11 +49,11 @@
             <TextBox x:Name="PictureTextBox" Margin="5" />
             <CheckBox x:Name="IsDeletedCheckBox" Content="Deleted" Margin="5" IsEnabled="False" />
             <StackPanel Orientation="Horizontal" Margin="5">
-                <Button x:Name="ChangeNameButton" Width="120" Margin="5">
-                    <TextBlock Text="Change Name" FontSize="13" />
+                <Button x:Name="SaveButton" Width="120" Margin="5">
+                    <TextBlock Text="Save" FontSize="13" />
                 </Button>
-                <Button x:Name="ChangePictureUrlButton" Width="120" Margin="5">
-                    <TextBlock Text="Change Picture" FontSize="13" />
+                <Button x:Name="CancelButton" Width="120" Margin="5">
+                    <TextBlock Text="Cancel" FontSize="13" />
                 </Button>
             </StackPanel>
         </StackPanel>

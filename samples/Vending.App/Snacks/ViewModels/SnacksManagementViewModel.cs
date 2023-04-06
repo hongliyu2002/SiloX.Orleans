@@ -25,20 +25,20 @@ public class SnacksManagementViewModel : ReactiveObject
         var appLifetime = Locator.Current.GetService<IHostApplicationLifetime>();
         if (appLifetime != null)
         {
-            appLifetime.ApplicationStarted.Register(() => IsInitialized = true);
-            appLifetime.ApplicationStopped.Register(() => IsInitialized = false);
+            appLifetime.ApplicationStarted.Register(() => Initialized = true);
+            appLifetime.ApplicationStopped.Register(() => Initialized = false);
         }
         _clusterClient = Locator.Current.GetService<IClusterClient>();
-        this.WhenAnyValue(vm => vm.SearchTerm, vm => vm.IsInitialized)
+        this.WhenAnyValue(vm => vm.SearchTerm, vm => vm.Initialized)
             .Throttle(TimeSpan.FromMilliseconds(500))
             .Where(termInitialized => termInitialized.Item2)
             .Select(termInitialized => termInitialized.Item1.Trim())
             .DistinctUntilChanged()
-             // .CombineLatest(this.WhenAnyValue(vm => vm.IsInitialized).Where(initialized => initialized))
+             // .CombineLatest(this.WhenAnyValue(vm => vm.Initialized).Where(initialized => initialized))
             .SelectMany(GetSnackItemsAsync)
             .ObserveOn(RxApp.MainThreadScheduler)
             .ToPropertyEx(this, vm => vm.SnackItems);
-        this.WhenAnyValue(vm => vm.SnackItems).Select(items => items.IsNotNullOrEmpty()).ToPropertyEx(this, vm => vm.IsSnackItemsAvailable);
+        this.WhenAnyValue(vm => vm.SnackItems).Select(items => items.IsNotNullOrEmpty()).ToPropertyEx(this, vm => vm.SnackItemsAvailable);
         AddSnackCommand = ReactiveCommand.Create(AddSnack);
         RemoveSnackCommand = ReactiveCommand.Create(RemoveSnack);
         MoveNavigationSideCommand = ReactiveCommand.Create(MoveNavigationSide);
@@ -46,7 +46,7 @@ public class SnacksManagementViewModel : ReactiveObject
 
     private async Task<IEnumerable<SnackItemViewModel>> GetSnackItemsAsync(string? term)
     {
-        if (!IsInitialized)
+        if (!Initialized)
         {
             return Enumerable.Empty<SnackItemViewModel>();
         }
@@ -62,7 +62,7 @@ public class SnacksManagementViewModel : ReactiveObject
     #region Properties
 
     [Reactive]
-    public bool IsInitialized { get; set; }
+    public bool Initialized { get; set; }
 
     [Reactive]
     public NavigationSide NavigationSide { get; set; }
@@ -74,7 +74,10 @@ public class SnacksManagementViewModel : ReactiveObject
     public IEnumerable<SnackItemViewModel>? SnackItems { get; }
 
     [ObservableAsProperty]
-    public bool IsSnackItemsAvailable { get; }
+    public bool SnackItemsAvailable { get; }
+
+    [Reactive]
+    public SnackItemViewModel? SelectedSnackItem { get; set; }
 
     #endregion
 
@@ -84,16 +87,23 @@ public class SnacksManagementViewModel : ReactiveObject
 
     private void AddSnack()
     {
-        if (!IsInitialized)
+        if (!Initialized)
         {
+            return;
         }
+        var snack = new Snack { Name = "New Snack" };
+        var snackItem = new SnackItemViewModel(snack);
+        // var result = await Result.Ok()
+        //                          .Ensure(_clusterClient != null, "Cluster client is not available")
+        //                          .MapTry(() => _clusterClient!.GetGrain<ISnackRepoGrain>(string.Empty))
+        //                          .BindTryAsync(grain => grain.CreateAsync(new SnackRepoCreateCommand()))
     }
 
     public ReactiveCommand<Unit, Unit> RemoveSnackCommand { get; }
 
     private void RemoveSnack()
     {
-        if (!IsInitialized)
+        if (!Initialized)
         {
         }
     }

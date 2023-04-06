@@ -3,9 +3,10 @@
 [Immutable]
 [Serializable]
 [GenerateSerializer]
-public sealed record SnackPictureUrlChangedEvent
+public sealed record SnackUpdatedEvent
     (Guid SnackId,
      int Version,
+     string Name,
      string? PictureUrl,
      Guid TraceId,
      DateTimeOffset OperatedAt,

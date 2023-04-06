@@ -3,8 +3,9 @@
 [Immutable]
 [Serializable]
 [GenerateSerializer]
-public sealed record SnackChangePictureUrlCommand
-    (string? PictureUrl,
+public sealed record SnackUpdateCommand
+    (string Name,
+     string? PictureUrl,
      Guid TraceId,
      DateTimeOffset OperatedAt,
      string OperatedBy) : SnackCommand(TraceId, OperatedAt, OperatedBy);

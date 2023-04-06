@@ -39,9 +39,7 @@ public sealed class SnackProjectionGrain : SubscriberGrainWithGuidKey<SnackEvent
                 return ApplyEventAsync(snackEvent);
             case SnackRemovedEvent snackEvent:
                 return ApplyEventAsync(snackEvent);
-            case SnackNameChangedEvent snackEvent:
-                return ApplyEventAsync(snackEvent);
-            case SnackPictureUrlChangedEvent snackEvent:
+            case SnackUpdatedEvent snackEvent:
                 return ApplyEventAsync(snackEvent);
             case SnackMachineCountUpdatedEvent snackEvent:
                 return ApplyEventAsync(snackEvent);
@@ -57,14 +55,14 @@ public sealed class SnackProjectionGrain : SubscriberGrainWithGuidKey<SnackEvent
     /// <inheritdoc />
     protected override Task HandLeErrorEventAsync(SnackErrorEvent errorEvent)
     {
-        _logger.LogWarning($"SnackErrorEvent received: {string.Join(';', errorEvent.Reasons)}");
+        _logger.LogWarning("SnackErrorEvent received: {Reasons}", string.Join(';', errorEvent.Reasons));
         return Task.CompletedTask;
     }
 
     /// <inheritdoc />
     protected override Task HandleExceptionAsync(Exception exception)
     {
-        _logger.LogError(exception, exception.Message);
+        _logger.LogError(exception, "Exception is {Message}", exception.Message);
         return Task.CompletedTask;
     }
 
@@ -95,7 +93,7 @@ public sealed class SnackProjectionGrain : SubscriberGrainWithGuidKey<SnackEvent
             }
             if (_dbContext.Entry(snack).State != EntityState.Added)
             {
-                _logger.LogWarning($"Apply SnackInitializedEvent: Snack {snackEvent.SnackId} is already in the database. Try to execute full update...");
+                _logger.LogWarning("Apply SnackInitializedEvent: Snack {SnackId} is already in the database. Try to execute full update...", snackEvent.SnackId);
                 await ApplyFullUpdateAsync(snackEvent);
                 return;
             }
@@ -115,13 +113,13 @@ public sealed class SnackProjectionGrain : SubscriberGrainWithGuidKey<SnackEvent
             var snack = await _dbContext.Snacks.FindAsync(snackEvent.SnackId);
             if (snack == null)
             {
-                _logger.LogWarning($"Apply SnackRemovedEvent: Snack {snackEvent.SnackId} does not exist in the database. Try to execute full update...");
+                _logger.LogWarning("Apply SnackRemovedEvent: Snack {SnackId} does not exist in the database. Try to execute full update...", snackEvent.SnackId);
                 await ApplyFullUpdateAsync(snackEvent);
                 return;
             }
             if (snack.Version != snackEvent.Version - 1)
             {
-                _logger.LogWarning($"Apply SnackRemovedEvent: Snack {snackEvent.SnackId} version {snack.Version}) in the database should be {snackEvent.Version - 1}. Try to execute full update...");
+                _logger.LogWarning("Apply SnackRemovedEvent: Snack {SnackId} version {Version}) in the database should be {SnackVersion}. Try to execute full update...", snackEvent.SnackId, snack.Version, snackEvent.Version - 1);
                 await ApplyFullUpdateAsync(snackEvent);
                 return;
             }
@@ -138,53 +136,24 @@ public sealed class SnackProjectionGrain : SubscriberGrainWithGuidKey<SnackEvent
         }
     }
 
-    private async Task ApplyEventAsync(SnackNameChangedEvent snackEvent)
+    private async Task ApplyEventAsync(SnackUpdatedEvent snackEvent)
     {
         try
         {
             var snack = await _dbContext.Snacks.FindAsync(snackEvent.SnackId);
             if (snack == null)
             {
-                _logger.LogWarning($"Apply SnackNameChangedEvent: Snack {snackEvent.SnackId} does not exist in the database. Try to execute full update...");
+                _logger.LogWarning("Apply SnackUpdatedEvent: Snack {SnackId} does not exist in the database. Try to execute full update...", snackEvent.SnackId);
                 await ApplyFullUpdateAsync(snackEvent);
                 return;
             }
             if (snack.Version != snackEvent.Version - 1)
             {
-                _logger.LogWarning($"Apply SnackNameChangedEvent: Snack {snackEvent.SnackId} version {snack.Version}) in the database should be {snackEvent.Version - 1}. Try to execute full update...");
+                _logger.LogWarning("Apply SnackUpdatedEvent: Snack {SnackId} version {Version}) in the database should be {SnackVersion}. Try to execute full update...", snackEvent.SnackId, snack.Version, snackEvent.Version - 1);
                 await ApplyFullUpdateAsync(snackEvent);
                 return;
             }
             snack.Name = snackEvent.Name;
-            snack.LastModifiedAt = snackEvent.OperatedAt;
-            snack.LastModifiedBy = snackEvent.OperatedBy;
-            snack.Version = snackEvent.Version;
-            await _dbContext.SaveChangesAsync();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Apply SnackNameChangedEvent: Exception is occurred when try to write data to the database. Try to execute full update...");
-            await ApplyFullUpdateAsync(snackEvent);
-        }
-    }
-
-    private async Task ApplyEventAsync(SnackPictureUrlChangedEvent snackEvent)
-    {
-        try
-        {
-            var snack = await _dbContext.Snacks.FindAsync(snackEvent.SnackId);
-            if (snack == null)
-            {
-                _logger.LogWarning($"Apply SnackPictureUrlChangedEvent: Snack {snackEvent.SnackId} does not exist in the database. Try to execute full update...");
-                await ApplyFullUpdateAsync(snackEvent);
-                return;
-            }
-            if (snack.Version != snackEvent.Version - 1)
-            {
-                _logger.LogWarning($"Apply SnackPictureUrlChangedEvent: Snack {snackEvent.SnackId} version {snack.Version}) in the database should be {snackEvent.Version - 1}. Try to execute full update...");
-                await ApplyFullUpdateAsync(snackEvent);
-                return;
-            }
             snack.PictureUrl = snackEvent.PictureUrl;
             snack.LastModifiedAt = snackEvent.OperatedAt;
             snack.LastModifiedBy = snackEvent.OperatedBy;
@@ -193,7 +162,7 @@ public sealed class SnackProjectionGrain : SubscriberGrainWithGuidKey<SnackEvent
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Apply SnackPictureUrlChangedEvent: Exception is occurred when try to write data to the database. Try to execute full update...");
+            _logger.LogError(ex, "Apply SnackUpdatedEvent: Exception is occurred when try to write data to the database. Try to execute full update...");
             await ApplyFullUpdateAsync(snackEvent);
         }
     }
@@ -205,7 +174,7 @@ public sealed class SnackProjectionGrain : SubscriberGrainWithGuidKey<SnackEvent
             var snack = await _dbContext.Snacks.FindAsync(snackEvent.SnackId);
             if (snack == null)
             {
-                _logger.LogWarning($"Apply SnackMachineCountUpdatedEvent: Snack {snackEvent.SnackId} does not exist in the database. Try to execute full update...");
+                _logger.LogWarning("Apply SnackMachineCountUpdatedEvent: Snack {SnackId} does not exist in the database. Try to execute full update...", snackEvent.SnackId);
                 await ApplyFullUpdateAsync(snackEvent);
                 return;
             }
@@ -226,7 +195,7 @@ public sealed class SnackProjectionGrain : SubscriberGrainWithGuidKey<SnackEvent
             var snack = await _dbContext.Snacks.FindAsync(snackEvent.SnackId);
             if (snack == null)
             {
-                _logger.LogWarning($"Apply SnackBoughtCountUpdatedEvent: Snack {snackEvent.SnackId} does not exist in the database. Try to execute full update...");
+                _logger.LogWarning("Apply SnackBoughtCountUpdatedEvent: Snack {SnackId} does not exist in the database. Try to execute full update...", snackEvent.SnackId);
                 await ApplyFullUpdateAsync(snackEvent);
                 return;
             }
@@ -247,7 +216,7 @@ public sealed class SnackProjectionGrain : SubscriberGrainWithGuidKey<SnackEvent
             var snack = await _dbContext.Snacks.FindAsync(snackEvent.SnackId);
             if (snack == null)
             {
-                _logger.LogWarning($"Apply SnackBoughtAmountUpdatedEvent: Snack {snackEvent.SnackId} does not exist in the database. Try to execute full update...");
+                _logger.LogWarning("Apply SnackBoughtAmountUpdatedEvent: Snack {SnackId} does not exist in the database. Try to execute full update...", snackEvent.SnackId);
                 await ApplyFullUpdateAsync(snackEvent);
                 return;
             }
@@ -303,13 +272,13 @@ public sealed class SnackProjectionGrain : SubscriberGrainWithGuidKey<SnackEvent
                 retryNeeded = ++attempts <= 3;
                 if (retryNeeded)
                 {
-                    _logger.LogWarning(ex, $"ApplyFullUpdateAsync: DbUpdateConcurrencyException is occurred when try to write data to the database. Retrying {attempts}...");
+                    _logger.LogWarning(ex, "ApplyFullUpdateAsync: DbUpdateConcurrencyException is occurred when try to write data to the database. Retrying {Attempts}...", attempts);
                     await Task.Delay(TimeSpan.FromSeconds(attempts));
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "ApplyFullUpdateAsync: Exception is occurred when try to write data to the database.");
+                _logger.LogError(ex, "ApplyFullUpdateAsync: Exception is occurred when try to write data to the database");
                 retryNeeded = false;
             }
         }

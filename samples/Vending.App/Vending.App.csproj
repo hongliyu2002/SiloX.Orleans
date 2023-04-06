@@ -64,6 +64,8 @@
         <Resource Include="Images\add.png" />
         <None Remove="Images\move.png" />
         <Resource Include="Images\move.png" />
+        <None Remove="Images\snack.png" />
+        <Resource Include="Images\snack.png" />
     </ItemGroup>
 
 </Project>

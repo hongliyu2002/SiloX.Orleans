@@ -26,14 +26,11 @@ public class DomainDbContext : DbContext
                                    {
                                        builder.ToTable("Snacks");
                                        builder.HasKey(s => s.Id);
-                                       builder.Ignore(s => s.CreatedAt);
-                                       builder.Ignore(s => s.CreatedBy);
-                                       builder.Ignore(s => s.LastModifiedAt);
-                                       builder.Ignore(s => s.LastModifiedBy);
-                                       builder.Ignore(s => s.DeletedAt);
-                                       builder.Ignore(s => s.DeletedBy);
-                                       builder.Ignore(s => s.PictureUrl);
+                                       builder.Property(s => s.CreatedBy).HasMaxLength(256);
+                                       builder.Property(s => s.LastModifiedBy).HasMaxLength(256);
+                                       builder.Property(s => s.DeletedBy).HasMaxLength(256);
                                        builder.Property(s => s.Name).HasMaxLength(256);
+                                       builder.Property(s => s.PictureUrl).HasMaxLength(512);
                                        builder.HasIndex(s => new { s.IsDeleted, s.Name });
                                    });
         // Configures the SnackMachine entity
