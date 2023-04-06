@@ -29,12 +29,13 @@ public class SnacksManagementViewModel : ReactiveObject
             appLifetime.ApplicationStopped.Register(() => IsInitialized = false);
         }
         _clusterClient = Locator.Current.GetService<IClusterClient>();
-        this.WhenAnyValue(vm => vm.SearchTerm)
+        this.WhenAnyValue(vm => vm.SearchTerm, vm => vm.IsInitialized)
             .Throttle(TimeSpan.FromMilliseconds(500))
-            .Select(term => term.Trim())
+            .Where(termInitialized => termInitialized.Item2)
+            .Select(termInitialized => termInitialized.Item1.Trim())
             .DistinctUntilChanged()
-            .CombineLatest(this.WhenAnyValue(vm => vm.IsInitialized).Where(initialized => initialized))
-            .SelectMany(termInitialized => GetSnackItemsAsync(termInitialized.First))
+             // .CombineLatest(this.WhenAnyValue(vm => vm.IsInitialized).Where(initialized => initialized))
+            .SelectMany(GetSnackItemsAsync)
             .ObserveOn(RxApp.MainThreadScheduler)
             .ToPropertyEx(this, vm => vm.SnackItems);
         this.WhenAnyValue(vm => vm.SnackItems).Select(items => items.IsNotNullOrEmpty()).ToPropertyEx(this, vm => vm.IsSnackItemsAvailable);

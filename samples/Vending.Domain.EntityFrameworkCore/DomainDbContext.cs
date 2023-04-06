@@ -34,7 +34,6 @@ public class DomainDbContext : DbContext
                                        builder.Ignore(s => s.DeletedBy);
                                        builder.Ignore(s => s.PictureUrl);
                                        builder.Property(s => s.Name).HasMaxLength(256);
-                                       builder.HasIndex(s => new { s.IsDeleted, s.Id });
                                        builder.HasIndex(s => new { s.IsDeleted, s.Name });
                                    });
         // Configures the SnackMachine entity
@@ -50,7 +49,6 @@ public class DomainDbContext : DbContext
                                               builder.Ignore(sm => sm.DeletedBy);
                                               builder.OwnsOne(sm => sm.MoneyInside);
                                               builder.Property(sm => sm.AmountInTransaction).HasPrecision(10, 2);
-                                              builder.HasIndex(sm => new { sm.IsDeleted, sm.Id });
                                           });
         // Configures the Slot entity
         modelBuilder.Entity<Slot>(builder =>
