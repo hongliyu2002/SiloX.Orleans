@@ -2,6 +2,7 @@
 using System.Reactive;
 using System.Reactive.Linq;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace Vending.App.ViewModels;
 
@@ -9,18 +10,16 @@ public class MainViewModel : ReactiveObject
 {
     public MainViewModel()
     {
-        _selectedViewModel = this.WhenAnyValue(vm => vm.SelectedName)
-                                 .Select(GetSelectedViewModel)
-                                 .ToProperty(this, vm => vm.SelectedViewModel);
+        this.WhenAnyValue(vm => vm.SelectedName).Select(GetSelectedViewModel).ToPropertyEx(this, vm => vm.SelectedViewModel);
         ManageSnacksCommand = ReactiveCommand.Create(ManageSnacks);
         ManageSnackMachinesCommand = ReactiveCommand.Create(ManageSnackMachines);
     }
 
     private readonly Dictionary<string, ReactiveObject> _viewModels = new()
-    {
-        { "Snacks", new SnacksManagementViewModel() },
-        { "SnackMachines", new SnackMachinesManagementViewModel() }
-    };
+                                                                      {
+                                                                          { "Snacks", new SnacksManagementViewModel() },
+                                                                          { "SnackMachines", new SnackMachinesManagementViewModel() }
+                                                                      };
 
     private ReactiveObject GetSelectedViewModel(string? name)
     {
@@ -34,15 +33,11 @@ public class MainViewModel : ReactiveObject
 
     #region Properties
 
-    private readonly ObservableAsPropertyHelper<ReactiveObject> _selectedViewModel;
-    public ReactiveObject SelectedViewModel => _selectedViewModel.Value;
+    [ObservableAsProperty]
+    public ReactiveObject? SelectedViewModel { get; }
 
-    private string? _selectedName;
-    public string? SelectedName
-    {
-        get => _selectedName;
-        set => this.RaiseAndSetIfChanged(ref _selectedName, value);
-    }
+    [Reactive]
+    public string? SelectedName { get; set; }
 
     #endregion
 

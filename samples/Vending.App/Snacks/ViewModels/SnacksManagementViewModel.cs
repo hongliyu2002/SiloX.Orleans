@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Orleans;
 using Orleans.FluentResults;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 using Splat;
 using Vending.Projection.Abstractions.Snacks;
 
@@ -28,15 +29,15 @@ public class SnacksManagementViewModel : ReactiveObject
             appLifetime.ApplicationStopped.Register(() => IsInitialized = false);
         }
         _clusterClient = Locator.Current.GetService<IClusterClient>();
-        _snackItems = this.WhenAnyValue(vm => vm.SearchTerm)
-                          .Throttle(TimeSpan.FromMilliseconds(500))
-                          .Select(term => term.Trim())
-                          .DistinctUntilChanged()
-                          .CombineLatest(this.WhenAnyValue(vm => vm.IsInitialized).Where(initialized => initialized))
-                          .SelectMany(termInitialized => GetSnackItemsAsync(termInitialized.First))
-                          .ObserveOn(RxApp.MainThreadScheduler)
-                          .ToProperty(this, vm => vm.SnackItems);
-        _isSnackItemsAvailable = this.WhenAnyValue(vm => vm.SnackItems).Select(items => items.IsNotNullOrEmpty()).ToProperty(this, vm => vm.IsSnackItemsAvailable);
+        this.WhenAnyValue(vm => vm.SearchTerm)
+            .Throttle(TimeSpan.FromMilliseconds(500))
+            .Select(term => term.Trim())
+            .DistinctUntilChanged()
+            .CombineLatest(this.WhenAnyValue(vm => vm.IsInitialized).Where(initialized => initialized))
+            .SelectMany(termInitialized => GetSnackItemsAsync(termInitialized.First))
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .ToPropertyEx(this, vm => vm.SnackItems);
+        this.WhenAnyValue(vm => vm.SnackItems).Select(items => items.IsNotNullOrEmpty()).ToPropertyEx(this, vm => vm.IsSnackItemsAvailable);
         AddSnackCommand = ReactiveCommand.Create(AddSnack);
         RemoveSnackCommand = ReactiveCommand.Create(RemoveSnack);
         MoveNavigationSideCommand = ReactiveCommand.Create(MoveNavigationSide);
@@ -48,51 +49,31 @@ public class SnacksManagementViewModel : ReactiveObject
         {
             return Enumerable.Empty<SnackItemViewModel>();
         }
-        var sortings = new Dictionary<string, bool>
-                       {
-                           {
-                               "CreatedAt", true
-                           }
-                       };
+        var sortings = new Dictionary<string, bool> { { "CreatedAt", true } };
         var result = await Result.Ok()
                                  .Ensure(_clusterClient != null, "Cluster client is not available")
                                  .MapTry(() => _clusterClient!.GetGrain<ISnackRetrieverGrain>("Manager"))
-                                 .BindTryAsync(grain => grain.SearchingListAsync(new SnackRetrieverSearchingListQuery(term, null, null, null, null, null, null, null, null, null, false, sortings,
-                                                                                                                      Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")))
+                                 .BindTryAsync(grain => grain.SearchingListAsync(new SnackRetrieverSearchingListQuery(term, null, null, null, null, null, null, null, null, null, false, sortings, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")))
                                  .MapAsync(snacks => snacks.Select(snack => new SnackItemViewModel(snack)));
         return result.IsSuccess ? result.Value : Enumerable.Empty<SnackItemViewModel>();
     }
 
     #region Properties
 
-    private bool _isInitialized;
+    [Reactive]
+    public bool IsInitialized { get; set; }
 
-    public bool IsInitialized
-    {
-        get => _isInitialized;
-        set => this.RaiseAndSetIfChanged(ref _isInitialized, value);
-    }
+    [Reactive]
+    public NavigationSide NavigationSide { get; set; }
 
-    private NavigationSide _navigationSide;
-    public NavigationSide NavigationSide
-    {
-        get => _navigationSide;
-        set => this.RaiseAndSetIfChanged(ref _navigationSide, value);
-    }
+    [Reactive]
+    public string SearchTerm { get; set; } = string.Empty;
 
-    private string _searchTerm = string.Empty;
+    [ObservableAsProperty]
+    public IEnumerable<SnackItemViewModel>? SnackItems { get; }
 
-    public string SearchTerm
-    {
-        get => _searchTerm;
-        set => this.RaiseAndSetIfChanged(ref _searchTerm, value);
-    }
-
-    private readonly ObservableAsPropertyHelper<IEnumerable<SnackItemViewModel>> _snackItems;
-    public IEnumerable<SnackItemViewModel> SnackItems => _snackItems.Value;
-
-    private readonly ObservableAsPropertyHelper<bool> _isSnackItemsAvailable;
-    public bool IsSnackItemsAvailable => _isSnackItemsAvailable.Value;
+    [ObservableAsProperty]
+    public bool IsSnackItemsAvailable { get; }
 
     #endregion
 
