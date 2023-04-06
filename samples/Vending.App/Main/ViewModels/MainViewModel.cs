@@ -1,4 +1,5 @@
-﻿using System.Reactive;
+﻿using System.Collections.Generic;
+using System.Reactive;
 using System.Reactive.Linq;
 using ReactiveUI;
 
@@ -15,14 +16,20 @@ public class MainViewModel : ReactiveObject
         ManageSnackMachinesCommand = ReactiveCommand.Create(ManageSnackMachines);
     }
 
+    private readonly Dictionary<string, ReactiveObject> _viewModels = new()
+    {
+        { "Snacks", new SnacksManagementViewModel() },
+        { "SnackMachines", new SnackMachinesManagementViewModel() }
+    };
+
     private ReactiveObject GetSelectedViewModel(string? name)
     {
-        return name switch
-               {
-                   "Snacks" => new SnacksManagementViewModel(),
-                   "SnackMachines" => new SnackMachinesManagementViewModel(),
-                   _ => new SnacksManagementViewModel()
-               };
+        name ??= "Snacks";
+        if (!_viewModels.TryGetValue(name, out var viewModel))
+        {
+            viewModel = _viewModels["Snacks"];
+        }
+        return viewModel;
     }
 
     #region Properties

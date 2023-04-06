@@ -1,16 +1,8 @@
 ﻿<reactiveUi:ReactiveWindow x:TypeArguments="viewModels:MainViewModel" x:Class="Vending.App.MainWindow"
                            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                            xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                           xmlns:reactiveUi="http://reactiveui.net" xmlns:viewModels="clr-namespace:Vending.App.ViewModels"
-                           xmlns:views="clr-namespace:Vending.App.Views" mc:Ignorable="d" Title="Snacks Management System" Height="450" Width="800">
-    <Window.Resources>
-        <DataTemplate DataType="{x:Type viewModels:SnacksManagementViewModel}">
-            <views:SnacksManagementView />
-        </DataTemplate>
-        <DataTemplate DataType="{x:Type viewModels:SnackMachinesManagementViewModel}">
-            <views:SnackMachinesManagementView />
-        </DataTemplate>
-    </Window.Resources>
+                           xmlns:reactiveUi="http://reactiveui.net" xmlns:viewModels="clr-namespace:Vending.App.ViewModels" mc:Ignorable="d"
+                           Title="Snacks Management System" Height="450" Width="800">
     <Grid ShowGridLines="False">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -22,6 +14,6 @@
             <MenuItem x:Name="MachinesManagementMenuItem" Header="_Machines Management" />
         </Menu>
 
-        <ContentControl x:Name="MainContent" Grid.Row="1" />
+        <reactiveUi:ViewModelViewHost x:Name="MainViewHost" Grid.Row="1" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
     </Grid>
 </reactiveUi:ReactiveWindow>

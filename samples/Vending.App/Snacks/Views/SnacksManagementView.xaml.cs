@@ -10,7 +10,6 @@ public partial class SnacksManagementView
     public SnacksManagementView()
     {
         InitializeComponent();
-        ViewModel = new SnacksManagementViewModel();
         this.WhenActivated(disposable =>
                            {
                                this.OneWayBind(ViewModel, vm => vm.NavigationSide, v => v.NavigationGridGridColumn, side => side == NavigationSide.Left ? 0 : 2).DisposeWith(disposable);

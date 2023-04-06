@@ -315,7 +315,7 @@ public sealed class EventStoreStreamingStreamsOptions
     /// <summary>
     ///     Interval to write checkpoints.  Prevents spamming storage.
     /// </summary>
-    public TimeSpan CheckpointPersistInterval { get; set; } = EventStoreStreamCheckpointerOptions.DefaultCheckpointPersistInterval;
+    public TimeSpan CheckpointPersistInterval { get; set; } = TimeSpan.FromSeconds(30);
 
     #endregion
 
