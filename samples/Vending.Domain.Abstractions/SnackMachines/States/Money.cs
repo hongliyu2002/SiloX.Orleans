@@ -1,22 +1,13 @@
 ﻿using Fluxera.Guards;
-using Orleans.FluentResults;
 
 namespace Vending.Domain.Abstractions.SnackMachines;
 
 /// <summary>
 ///     Represents money in the snack machine.
 /// </summary>
-/// <param name="Yuan1">The number of ￥1 coins. </param>
-/// <param name="Yuan2">The number of ￥2 coins. </param>
-/// <param name="Yuan5">The number of ￥5 coins. </param>
-/// <param name="Yuan10">The number of ￥10 notes. </param>
-/// <param name="Yuan20">The number of ￥20 notes. </param>
-/// <param name="Yuan50">The number of ￥50 notes. </param>
-/// <param name="Yuan100">The number of ￥100 notes. </param>
-[Immutable]
 [Serializable]
 [GenerateSerializer]
-public sealed record Money(int Yuan1, int Yuan2, int Yuan5, int Yuan10, int Yuan20, int Yuan50, int Yuan100)
+public sealed class Money
 {
     public static readonly Money Zero = new(0, 0, 0, 0, 0, 0, 0);
     public static readonly Money OneYuan = new(1, 0, 0, 0, 0, 0, 0);
@@ -38,35 +29,88 @@ public sealed record Money(int Yuan1, int Yuan2, int Yuan5, int Yuan10, int Yuan
     };
 
     /// <summary>
+    ///     Represents money in the snack machine.
+    /// </summary>
+    public Money()
+    {
+    }
+
+    /// <summary>
+    ///     Represents money in the snack machine.
+    /// </summary>
+    /// <param name="yuan1">The number of ￥1 coins. </param>
+    /// <param name="yuan2">The number of ￥2 coins. </param>
+    /// <param name="yuan5">The number of ￥5 coins. </param>
+    /// <param name="yuan10">The number of ￥10 notes. </param>
+    /// <param name="yuan20">The number of ￥20 notes. </param>
+    /// <param name="yuan50">The number of ￥50 notes. </param>
+    /// <param name="yuan100">The number of ￥100 notes. </param>
+    public Money(int yuan1, int yuan2, int yuan5, int yuan10, int yuan20, int yuan50, int yuan100)
+        : this()
+    {
+        Yuan1 = Guard.Against.Negative(yuan1, nameof(yuan1));
+        Yuan2 = Guard.Against.Negative(yuan2, nameof(yuan2));
+        Yuan5 = Guard.Against.Negative(yuan5, nameof(yuan5));
+        Yuan10 = Guard.Against.Negative(yuan10, nameof(yuan10));
+        Yuan20 = Guard.Against.Negative(yuan20, nameof(yuan20));
+        Yuan50 = Guard.Against.Negative(yuan50, nameof(yuan50));
+        Yuan100 = Guard.Against.Negative(yuan100, nameof(yuan100));
+        Amount = yuan1 * 1m + yuan2 * 2m + yuan5 * 5m + yuan10 * 10m + yuan20 * 20m + yuan50 * 50m + yuan100 * 100m;
+    }
+
+    /// <summary>
+    ///     The number of ￥1 coins.
+    /// </summary>
+    [Id(0)]
+    public int Yuan1 { get; private set; }
+
+    /// <summary>
+    ///     The number of ￥2 coins.
+    /// </summary>
+    [Id(1)]
+    public int Yuan2 { get; private set; }
+
+    /// <summary>
+    ///     The number of ￥5 coins.
+    /// </summary>
+    [Id(2)]
+    public int Yuan5 { get; private set; }
+
+    /// <summary>
+    ///     The number of ￥10 notes.
+    /// </summary>
+    [Id(3)]
+    public int Yuan10 { get; private set; }
+
+    /// <summary>
+    ///     The number of ￥20 notes.
+    /// </summary>
+    [Id(4)]
+    public int Yuan20 { get; private set; }
+
+    /// <summary>
+    ///     The number of ￥50 notes.
+    /// </summary>
+    [Id(5)]
+    public int Yuan50 { get; private set; }
+
+    /// <summary>
+    ///     The number of ￥100 notes.
+    /// </summary>
+    [Id(6)]
+    public int Yuan100 { get; private set; }
+
+    /// <summary>
     ///     The total amount of money.
     /// </summary>
-    public decimal Amount => Yuan1 * 1m + Yuan2 * 2m + Yuan5 * 5m + Yuan10 * 10m + Yuan20 * 20m + Yuan50 * 50m + Yuan100 * 100m;
+    [Id(7)]
+    public decimal Amount { get; private set; }
 
     /// <inheritdoc />
     public override string ToString()
     {
         return $"Money ￥1:{Yuan1} ￥2:{Yuan2} ￥5:{Yuan5} ￥10:{Yuan10} ￥20:{Yuan20} ￥50:{Yuan50} ￥100:{Yuan100} Amount:{Amount}";
     }
-
-    #region Create
-
-    /// <summary>
-    ///     Creates a new instance of <see cref="Money" />.
-    /// </summary>
-    public static Result<Money> Create(int yuan1, int yuan2, int yuan5, int yuan10, int yuan20, int yuan50, int yuan100)
-    {
-        return Result.Ok()
-                     .Verify(yuan1 >= 0, "￥1 should not be negative.")
-                     .Verify(yuan2 >= 0, "￥2 should not be negative.")
-                     .Verify(yuan5 >= 0, "￥5 should not be negative.")
-                     .Verify(yuan10 >= 0, "￥10 should not be negative.")
-                     .Verify(yuan20 >= 0, "￥20 should not be negative.")
-                     .Verify(yuan50 >= 0, "￥50 should not be negative.")
-                     .Verify(yuan100 >= 0, "￥100 should not be negative.")
-                     .MapTry(() => new Money(yuan1, yuan2, yuan5, yuan10, yuan20, yuan50, yuan100));
-    }
-
-    #endregion
 
     #region Allocate
 
@@ -111,30 +155,40 @@ public sealed record Money(int Yuan1, int Yuan2, int Yuan5, int Yuan10, int Yuan
 
     #endregion
 
-    #region Operator
+    #region Operators
 
-    public static Money operator +(Money money, Money money2)
+    public void Add(Money money)
     {
         money = Guard.Against.Null(money, nameof(money));
-        money2 = Guard.Against.Null(money2, nameof(money2));
-        var result = Create(money.Yuan1 + money2.Yuan1, money.Yuan2 + money2.Yuan2, money.Yuan5 + money2.Yuan5, money.Yuan10 + money2.Yuan10, money.Yuan20 + money2.Yuan20, money.Yuan50 + money2.Yuan50, money.Yuan100 + money2.Yuan100);
-        return result.IsSuccess ? result.Value : throw new InvalidOperationException(result.ToString());
+        Yuan1 += money.Yuan1;
+        Yuan2 += money.Yuan2;
+        Yuan5 += money.Yuan5;
+        Yuan10 += money.Yuan10;
+        Yuan20 += money.Yuan20;
+        Yuan50 += money.Yuan50;
+        Yuan100 += money.Yuan100;
+        Amount += money.Amount;
     }
 
-    public static Money operator -(Money money, Money money2)
+    public void Subtract(Money money)
     {
         money = Guard.Against.Null(money, nameof(money));
-        money2 = Guard.Against.Null(money2, nameof(money2));
-        var result = Create(money.Yuan1 - money2.Yuan1, money.Yuan2 - money2.Yuan2, money.Yuan5 - money2.Yuan5, money.Yuan10 - money2.Yuan10, money.Yuan20 - money2.Yuan20, money.Yuan50 - money2.Yuan50, money.Yuan100 - money2.Yuan100);
-        return result.IsSuccess ? result.Value : throw new InvalidOperationException(result.ToString());
-    }
-
-    public static Money operator *(Money money, int multiplier)
-    {
-        money = Guard.Against.Null(money, nameof(money));
-        multiplier = Guard.Against.Negative(multiplier, nameof(multiplier));
-        var result = Create(money.Yuan1 * multiplier, money.Yuan2 * multiplier, money.Yuan5 * multiplier, money.Yuan10 * multiplier, money.Yuan20 * multiplier, money.Yuan50 * multiplier, money.Yuan100 * multiplier);
-        return result.IsSuccess ? result.Value : throw new InvalidOperationException(result.ToString());
+        Guard.Against.Negative(Yuan1 - money.Yuan1, nameof(money.Yuan1));
+        Guard.Against.Negative(Yuan2 - money.Yuan2, nameof(money.Yuan2));
+        Guard.Against.Negative(Yuan5 - money.Yuan5, nameof(money.Yuan5));
+        Guard.Against.Negative(Yuan10 - money.Yuan10, nameof(money.Yuan10));
+        Guard.Against.Negative(Yuan20 - money.Yuan20, nameof(money.Yuan20));
+        Guard.Against.Negative(Yuan50 - money.Yuan50, nameof(money.Yuan50));
+        Guard.Against.Negative(Yuan100 - money.Yuan100, nameof(money.Yuan100));
+        Guard.Against.Negative(Amount - money.Amount, nameof(money.Amount));
+        Yuan1 -= money.Yuan1;
+        Yuan2 -= money.Yuan2;
+        Yuan5 -= money.Yuan5;
+        Yuan10 -= money.Yuan10;
+        Yuan20 -= money.Yuan20;
+        Yuan50 -= money.Yuan50;
+        Yuan100 -= money.Yuan100;
+        Amount -= money.Amount;
     }
 
     #endregion

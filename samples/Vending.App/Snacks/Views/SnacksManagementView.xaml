@@ -42,20 +42,6 @@
             <ListBox x:Name="SnackItemsListBox" Grid.Row="2" Margin="5 0 5 5" HorizontalContentAlignment="Stretch"
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
         </Grid>
-        <StackPanel Grid.Column="1" Orientation="Vertical">
-            <Label>Name:</Label>
-            <TextBox x:Name="NameTextBox" Margin="5" />
-            <Label>Picture Url:</Label>
-            <TextBox x:Name="PictureTextBox" Margin="5" />
-            <CheckBox x:Name="IsDeletedCheckBox" Content="Deleted" Margin="5" IsEnabled="False" />
-            <StackPanel Orientation="Horizontal" Margin="5">
-                <Button x:Name="SaveButton" Width="120" Margin="5">
-                    <TextBlock Text="Save" FontSize="13" />
-                </Button>
-                <Button x:Name="CancelButton" Width="120" Margin="5">
-                    <TextBlock Text="Cancel" FontSize="13" />
-                </Button>
-            </StackPanel>
-        </StackPanel>
+        <reactiveUi:ViewModelViewHost x:Name="EditViewHost" Grid.Column="1" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Width="300" />
     </Grid>
 </reactiveUi:ReactiveUserControl>

@@ -11,7 +11,9 @@ using Orleans.FluentResults;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Splat;
+using Vending.Domain.Abstractions.Snacks;
 using Vending.Projection.Abstractions.Snacks;
+using Snack = Vending.Projection.Abstractions.Snacks.Snack;
 
 namespace Vending.App.ViewModels;
 
@@ -31,20 +33,26 @@ public class SnacksManagementViewModel : ReactiveObject
         _clusterClient = Locator.Current.GetService<IClusterClient>();
         this.WhenAnyValue(vm => vm.SearchTerm, vm => vm.Initialized)
             .Throttle(TimeSpan.FromMilliseconds(500))
-            .Where(termInitialized => termInitialized.Item2)
-            .Select(termInitialized => termInitialized.Item1.Trim())
+            .Where(pair => pair.Item2)
+            .Select(pair => pair.Item1.Trim())
             .DistinctUntilChanged()
-             // .CombineLatest(this.WhenAnyValue(vm => vm.Initialized).Where(initialized => initialized))
             .SelectMany(GetSnackItemsAsync)
             .ObserveOn(RxApp.MainThreadScheduler)
             .ToPropertyEx(this, vm => vm.SnackItems);
         this.WhenAnyValue(vm => vm.SnackItems).Select(items => items.IsNotNullOrEmpty()).ToPropertyEx(this, vm => vm.SnackItemsAvailable);
+        this.WhenAnyValue(vm => vm.SelectedSnackItem, vm => vm.Initialized)
+            .Where(pair => pair.Item2)
+            .Select(pair => pair.Item1?.Id ?? Guid.Empty)
+            .DistinctUntilChanged()
+            .SelectMany(GetSnackEditAsync)
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .ToPropertyEx(this, vm => vm.SelectedSnackEdit);
         AddSnackCommand = ReactiveCommand.Create(AddSnack);
         RemoveSnackCommand = ReactiveCommand.Create(RemoveSnack);
         MoveNavigationSideCommand = ReactiveCommand.Create(MoveNavigationSide);
     }
 
-    private async Task<IEnumerable<SnackItemViewModel>> GetSnackItemsAsync(string? term)
+    private async Task<IEnumerable<SnackItemViewModel>> GetSnackItemsAsync(string? searchTerm)
     {
         if (!Initialized)
         {
@@ -54,9 +62,25 @@ public class SnacksManagementViewModel : ReactiveObject
         var result = await Result.Ok()
                                  .Ensure(_clusterClient != null, "Cluster client is not available")
                                  .MapTry(() => _clusterClient!.GetGrain<ISnackRetrieverGrain>("Manager"))
-                                 .BindTryAsync(grain => grain.SearchingListAsync(new SnackRetrieverSearchingListQuery(term, null, null, null, null, null, null, null, null, null, false, sortings, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")))
+                                 .BindTryAsync(grain => grain.SearchingListAsync(new SnackRetrieverSearchingListQuery(searchTerm, null, null, null, null, null,
+                                                                                                                      null, null, null, null, false, sortings,
+                                                                                                                      Guid.NewGuid(), DateTimeOffset.UtcNow,
+                                                                                                                      "Manager")))
                                  .MapAsync(snacks => snacks.Select(snack => new SnackItemViewModel(snack)));
         return result.IsSuccess ? result.Value : Enumerable.Empty<SnackItemViewModel>();
+    }
+
+    private async Task<SnackEditViewModel?> GetSnackEditAsync(Guid id)
+    {
+        if (!Initialized)
+        {
+            return null;
+        }
+        var result = await Result.Ok()
+                                 .Ensure(_clusterClient != null, "Cluster client is not available")
+                                 .MapTry(() => _clusterClient!.GetGrain<ISnackGrain>(id))
+                                 .MapTryAsync(grain => grain.GetStateAsync());
+        return result.IsSuccess ? new SnackEditViewModel(result.Value) : null;
     }
 
     #region Properties
@@ -78,6 +102,9 @@ public class SnacksManagementViewModel : ReactiveObject
 
     [Reactive]
     public SnackItemViewModel? SelectedSnackItem { get; set; }
+
+    [ObservableAsProperty]
+    public SnackEditViewModel? SelectedSnackEdit { get; }
 
     #endregion
 

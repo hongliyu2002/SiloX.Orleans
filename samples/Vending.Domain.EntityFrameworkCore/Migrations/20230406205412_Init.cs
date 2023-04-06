@@ -16,6 +16,12 @@ namespace Vending.Domain.EntityFrameworkCore.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true),
+                    LastModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    LastModifiedBy = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true),
+                    DeletedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    DeletedBy = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     MoneyInside_Yuan1 = table.Column<int>(type: "int", nullable: false),
                     MoneyInside_Yuan2 = table.Column<int>(type: "int", nullable: false),
@@ -24,7 +30,12 @@ namespace Vending.Domain.EntityFrameworkCore.Migrations
                     MoneyInside_Yuan20 = table.Column<int>(type: "int", nullable: false),
                     MoneyInside_Yuan50 = table.Column<int>(type: "int", nullable: false),
                     MoneyInside_Yuan100 = table.Column<int>(type: "int", nullable: false),
-                    AmountInTransaction = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false)
+                    MoneyInside_Amount = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false),
+                    AmountInTransaction = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false),
+                    SlotsCount = table.Column<int>(type: "int", nullable: false),
+                    SnackCount = table.Column<int>(type: "int", nullable: false),
+                    SnackQuantity = table.Column<int>(type: "int", nullable: false),
+                    SnackAmount = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -37,14 +48,13 @@ namespace Vending.Domain.EntityFrameworkCore.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    CreatedBy = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    IsCreated = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true),
                     LastModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    LastModifiedBy = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    LastModifiedBy = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true),
                     DeletedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    DeletedBy = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    DeletedBy = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
                     PictureUrl = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: true)
                 },
                 constraints: table =>
@@ -62,7 +72,7 @@ namespace Vending.Domain.EntityFrameworkCore.Migrations
                     SnackId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     BoughtPrice = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false),
                     BoughtAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    BoughtBy = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true)
+                    BoughtBy = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -89,7 +99,8 @@ namespace Vending.Domain.EntityFrameworkCore.Migrations
                     Position = table.Column<int>(type: "int", nullable: false),
                     SnackPile_SnackId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     SnackPile_Quantity = table.Column<int>(type: "int", nullable: true),
-                    SnackPile_Price = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: true)
+                    SnackPile_Price = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: true),
+                    SnackPile_Amount = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -103,6 +114,32 @@ namespace Vending.Domain.EntityFrameworkCore.Migrations
                     table.ForeignKey(
                         name: "FK_Slots_Snacks_SnackPile_SnackId",
                         column: x => x.SnackPile_SnackId,
+                        principalTable: "Snacks",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SnackStat",
+                columns: table => new
+                {
+                    MachineId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SnackId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TotalQuantity = table.Column<int>(type: "int", nullable: false),
+                    TotalAmount = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SnackStat", x => new { x.MachineId, x.SnackId });
+                    table.ForeignKey(
+                        name: "FK_SnackStat_SnackMachines_MachineId",
+                        column: x => x.MachineId,
+                        principalTable: "SnackMachines",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_SnackStat_Snacks_SnackId",
+                        column: x => x.SnackId,
                         principalTable: "Snacks",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -127,6 +164,11 @@ namespace Vending.Domain.EntityFrameworkCore.Migrations
                 name: "IX_Snacks_IsDeleted_Name",
                 table: "Snacks",
                 columns: new[] { "IsDeleted", "Name" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SnackStat_SnackId",
+                table: "SnackStat",
+                column: "SnackId");
         }
 
         /// <inheritdoc />
@@ -137,6 +179,9 @@ namespace Vending.Domain.EntityFrameworkCore.Migrations
 
             migrationBuilder.DropTable(
                 name: "Slots");
+
+            migrationBuilder.DropTable(
+                name: "SnackStat");
 
             migrationBuilder.DropTable(
                 name: "SnackMachines");

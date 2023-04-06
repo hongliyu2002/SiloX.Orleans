@@ -26,10 +26,10 @@ public class DomainDbContext : DbContext
                                    {
                                        builder.ToTable("Snacks");
                                        builder.HasKey(s => s.Id);
-                                       builder.Property(s => s.CreatedBy).HasMaxLength(256);
-                                       builder.Property(s => s.LastModifiedBy).HasMaxLength(256);
-                                       builder.Property(s => s.DeletedBy).HasMaxLength(256);
-                                       builder.Property(s => s.Name).HasMaxLength(256);
+                                       builder.Property(s => s.CreatedBy).HasMaxLength(128);
+                                       builder.Property(s => s.LastModifiedBy).HasMaxLength(128);
+                                       builder.Property(s => s.DeletedBy).HasMaxLength(128);
+                                       builder.Property(s => s.Name).HasMaxLength(128);
                                        builder.Property(s => s.PictureUrl).HasMaxLength(512);
                                        builder.HasIndex(s => new { s.IsDeleted, s.Name });
                                    });
@@ -38,14 +38,15 @@ public class DomainDbContext : DbContext
                                           {
                                               builder.ToTable("SnackMachines");
                                               builder.HasKey(sm => sm.Id);
-                                              builder.Ignore(sm => sm.CreatedAt);
-                                              builder.Ignore(sm => sm.CreatedBy);
-                                              builder.Ignore(sm => sm.LastModifiedAt);
-                                              builder.Ignore(sm => sm.LastModifiedBy);
-                                              builder.Ignore(sm => sm.DeletedAt);
-                                              builder.Ignore(sm => sm.DeletedBy);
-                                              builder.OwnsOne(sm => sm.MoneyInside);
+                                              builder.Property(sm => sm.CreatedBy).HasMaxLength(128);
+                                              builder.Property(sm => sm.LastModifiedBy).HasMaxLength(128);
+                                              builder.Property(sm => sm.DeletedBy).HasMaxLength(128);
+                                              builder.OwnsOne(sm => sm.MoneyInside, navigation =>
+                                                                                    {
+                                                                                        navigation.Property(m => m.Amount).HasPrecision(10, 2);
+                                                                                    });
                                               builder.Property(sm => sm.AmountInTransaction).HasPrecision(10, 2);
+                                              builder.Property(sm => sm.SnackAmount).HasPrecision(10, 2);
                                           });
         // Configures the Slot entity
         modelBuilder.Entity<Slot>(builder =>
@@ -57,8 +58,17 @@ public class DomainDbContext : DbContext
                                                                         {
                                                                             navigationBuilder.HasOne<Snack>().WithMany().HasForeignKey(sp => sp.SnackId).OnDelete(DeleteBehavior.Cascade);
                                                                             navigationBuilder.Property(sp => sp.Price).HasPrecision(10, 2);
+                                                                            navigationBuilder.Property(sp => sp.Amount).HasPrecision(10, 2);
                                                                         });
                                   });
+        // Configures the SnackStat entity
+        modelBuilder.Entity<SnackStat>(builder =>
+                                        {
+                                            builder.HasKey(ss => new { ss.MachineId, ss.SnackId });
+                                            builder.HasOne<SnackMachine>().WithMany(sm => sm.SnackStats).HasForeignKey(ss => ss.MachineId).OnDelete(DeleteBehavior.Cascade);
+                                            builder.HasOne<Snack>().WithMany().HasForeignKey(ss => ss.SnackId).OnDelete(DeleteBehavior.Cascade);
+                                            builder.Property(ss => ss.TotalAmount).HasPrecision(10, 2);
+                                        });
         // Configures the Purchase entity
         modelBuilder.Entity<Purchase>(builder =>
                                       {
@@ -67,7 +77,7 @@ public class DomainDbContext : DbContext
                                           builder.HasOne<SnackMachine>().WithMany().HasForeignKey(p => p.MachineId).OnDelete(DeleteBehavior.Cascade);
                                           builder.HasOne<Snack>().WithMany().HasForeignKey(p => p.SnackId).OnDelete(DeleteBehavior.Cascade);
                                           builder.Property(p => p.BoughtPrice).HasPrecision(10, 2);
-                                          builder.Property(p => p.BoughtBy).HasMaxLength(256);
+                                          builder.Property(p => p.BoughtBy).HasMaxLength(128);
                                       });
         base.OnModelCreating(modelBuilder);
     }

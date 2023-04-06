@@ -32,8 +32,8 @@ namespace Vending.Domain.EntityFrameworkCore.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("BoughtBy")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<decimal>("BoughtPrice")
                         .HasPrecision(10, 2)
@@ -80,12 +80,68 @@ namespace Vending.Domain.EntityFrameworkCore.Migrations
                         .HasPrecision(10, 2)
                         .HasColumnType("decimal(10,2)");
 
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LastModifiedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<int>("SlotsCount")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("SnackAmount")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<int>("SnackCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SnackQuantity")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.ToTable("SnackMachines", (string)null);
+                });
+
+            modelBuilder.Entity("Vending.Domain.Abstractions.SnackMachines.SnackStat", b =>
+                {
+                    b.Property<Guid>("MachineId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("SnackId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<int>("TotalQuantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("MachineId", "SnackId");
+
+                    b.HasIndex("SnackId");
+
+                    b.ToTable("SnackStat");
                 });
 
             modelBuilder.Entity("Vending.Domain.Abstractions.Snacks.Snack", b =>
@@ -98,18 +154,15 @@ namespace Vending.Domain.EntityFrameworkCore.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("CreatedBy")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<DateTimeOffset?>("DeletedAt")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("DeletedBy")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<bool>("IsCreated")
-                        .HasColumnType("bit");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -118,13 +171,13 @@ namespace Vending.Domain.EntityFrameworkCore.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("LastModifiedBy")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("PictureUrl")
                         .HasMaxLength(512)
@@ -168,6 +221,10 @@ namespace Vending.Domain.EntityFrameworkCore.Migrations
                             b1.Property<int>("SlotPosition")
                                 .HasColumnType("int");
 
+                            b1.Property<decimal>("Amount")
+                                .HasPrecision(10, 2)
+                                .HasColumnType("decimal(10,2)");
+
                             b1.Property<decimal>("Price")
                                 .HasPrecision(10, 2)
                                 .HasColumnType("decimal(10,2)");
@@ -204,6 +261,10 @@ namespace Vending.Domain.EntityFrameworkCore.Migrations
                             b1.Property<Guid>("SnackMachineId")
                                 .HasColumnType("uniqueidentifier");
 
+                            b1.Property<decimal>("Amount")
+                                .HasPrecision(10, 2)
+                                .HasColumnType("decimal(10,2)");
+
                             b1.Property<int>("Yuan1")
                                 .HasColumnType("int");
 
@@ -237,9 +298,26 @@ namespace Vending.Domain.EntityFrameworkCore.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Vending.Domain.Abstractions.SnackMachines.SnackStat", b =>
+                {
+                    b.HasOne("Vending.Domain.Abstractions.SnackMachines.SnackMachine", null)
+                        .WithMany("SnackStats")
+                        .HasForeignKey("MachineId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Vending.Domain.Abstractions.Snacks.Snack", null)
+                        .WithMany()
+                        .HasForeignKey("SnackId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Vending.Domain.Abstractions.SnackMachines.SnackMachine", b =>
                 {
                     b.Navigation("Slots");
+
+                    b.Navigation("SnackStats");
                 });
 #pragma warning restore 612, 618
         }

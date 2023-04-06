@@ -2,6 +2,7 @@
 using Fluxera.Extensions.Common;
 using Fluxera.Guards;
 using Fluxera.Utilities.Extensions;
+using Microsoft.EntityFrameworkCore;
 using Orleans.FluentResults;
 using Orleans.Providers;
 using SiloX.Domain.Abstractions;
@@ -15,14 +16,15 @@ namespace Vending.Domain.SnackMachines;
 
 [LogConsistencyProvider(ProviderName = Constants.LogConsistencyName)]
 [StorageProvider(ProviderName = Constants.GrainStorageName)]
-public sealed class SnackMachineGrain : EventSourcingGrainWithGuidKey<SnackMachine, SnackMachineCommand, SnackMachineEvent, SnackMachineErrorEvent>, ISnackMachineGrain
+public sealed class SnackMachineGrain : EventSourcingGrainWithGuidKey<SnackMachine, SnackMachineCommand, SnackMachineEvent, SnackMachineErrorEvent>,
+                                        ISnackMachineGrain
 {
     private readonly DomainDbContext _dbContext;
     private readonly IGuidGenerator _guidGenerator;
 
     /// <inheritdoc />
-    public SnackMachineGrain(DomainDbContext dbContext,
-                             IGuidGenerator guidGenerator) : base(Constants.StreamProviderName)
+    public SnackMachineGrain(DomainDbContext dbContext, IGuidGenerator guidGenerator)
+        : base(Constants.StreamProviderName)
     {
         _dbContext = Guard.Against.Null(dbContext, nameof(dbContext));
         _guidGenerator = Guard.Against.Null(guidGenerator, nameof(guidGenerator));
@@ -93,9 +95,11 @@ public sealed class SnackMachineGrain : EventSourcingGrainWithGuidKey<SnackMachi
         return ValidateInitialize(command)
               .MapTryAsync(() => RaiseConditionalEvent(command))
               .MapTryIfAsync(persisted => persisted, PersistAsync)
-              .MapTryAsync(() => PublishAsync(new SnackMachineInitializedEvent(State.Id, Version, State.MoneyInside, State.Slots.ToImmutableList(), State.SlotsCount, State.SnackCount, State.SnackQuantity, State.SnackAmount, command.TraceId,
-                                                                               DateTimeOffset.UtcNow, command.OperatedBy)))
-              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackMachineErrorEvent(this.GetPrimaryKey(), Version, 201, errors.ToReasonStrings(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
+              .MapTryAsync(() => PublishAsync(new SnackMachineInitializedEvent(State.Id, Version, State.MoneyInside, State.Slots.ToImmutableList(),
+                                                                               State.SlotsCount, State.SnackCount, State.SnackQuantity, State.SnackAmount,
+                                                                               command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
+              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackMachineErrorEvent(this.GetPrimaryKey(), Version, 201, errors.ToReasonStrings(),
+                                                                                       command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
     private Result ValidateRemove(SnackMachineRemoveCommand command)
@@ -120,9 +124,12 @@ public sealed class SnackMachineGrain : EventSourcingGrainWithGuidKey<SnackMachi
         return ValidateRemove(command)
               .MapTryAsync(() => RaiseConditionalEvent(command))
               .MapTryIfAsync(persisted => persisted, PersistAsync)
-              .MapTryAsync(() => PublishAsync(new SnackMachineRemovedEvent(State.Id, Version, State.MoneyInside, State.AmountInTransaction, State.Slots.ToImmutableList(), State.SlotsCount, State.SnackCount, State.SnackQuantity, State.SnackAmount,
-                                                                           command.TraceId, State.DeletedAt ?? DateTimeOffset.UtcNow, State.DeletedBy ?? command.OperatedBy)))
-              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackMachineErrorEvent(this.GetPrimaryKey(), Version, 202, errors.ToReasonStrings(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
+              .MapTryAsync(() => PublishAsync(new SnackMachineRemovedEvent(State.Id, Version, State.MoneyInside, State.AmountInTransaction,
+                                                                           State.Slots.ToImmutableList(), State.SlotsCount, State.SnackCount,
+                                                                           State.SnackQuantity, State.SnackAmount, command.TraceId,
+                                                                           State.DeletedAt ?? DateTimeOffset.UtcNow, State.DeletedBy ?? command.OperatedBy)))
+              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackMachineErrorEvent(this.GetPrimaryKey(), Version, 202, errors.ToReasonStrings(),
+                                                                                       command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
     private Result ValidateLoadMoney(SnackMachineLoadMoneyCommand command)
@@ -147,8 +154,11 @@ public sealed class SnackMachineGrain : EventSourcingGrainWithGuidKey<SnackMachi
         return ValidateLoadMoney(command)
               .MapTryAsync(() => RaiseConditionalEvent(command))
               .MapTryIfAsync(persisted => persisted, PersistAsync)
-              .MapTryAsync(() => PublishAsync(new SnackMachineMoneyLoadedEvent(State.Id, Version, State.MoneyInside, command.TraceId, State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? command.OperatedBy)))
-              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackMachineErrorEvent(this.GetPrimaryKey(), Version, 203, errors.ToReasonStrings(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
+              .MapTryAsync(() => PublishAsync(new SnackMachineMoneyLoadedEvent(State.Id, Version, State.MoneyInside, command.TraceId,
+                                                                               State.LastModifiedAt ?? DateTimeOffset.UtcNow,
+                                                                               State.LastModifiedBy ?? command.OperatedBy)))
+              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackMachineErrorEvent(this.GetPrimaryKey(), Version, 203, errors.ToReasonStrings(),
+                                                                                       command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
     private Result ValidateUnloadMoney(SnackMachineUnloadMoneyCommand command)
@@ -172,8 +182,11 @@ public sealed class SnackMachineGrain : EventSourcingGrainWithGuidKey<SnackMachi
         return ValidateUnloadMoney(command)
               .MapTryAsync(() => RaiseConditionalEvent(command))
               .MapTryIfAsync(persisted => persisted, PersistAsync)
-              .MapTryAsync(() => PublishAsync(new SnackMachineMoneyUnloadedEvent(State.Id, Version, State.MoneyInside, command.TraceId, State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? command.OperatedBy)))
-              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackMachineErrorEvent(this.GetPrimaryKey(), Version, 204, errors.ToReasonStrings(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
+              .MapTryAsync(() => PublishAsync(new SnackMachineMoneyUnloadedEvent(State.Id, Version, State.MoneyInside, command.TraceId,
+                                                                                 State.LastModifiedAt ?? DateTimeOffset.UtcNow,
+                                                                                 State.LastModifiedBy ?? command.OperatedBy)))
+              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackMachineErrorEvent(this.GetPrimaryKey(), Version, 204, errors.ToReasonStrings(),
+                                                                                       command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
     private Result ValidateInsertMoney(SnackMachineInsertMoneyCommand command)
@@ -198,8 +211,11 @@ public sealed class SnackMachineGrain : EventSourcingGrainWithGuidKey<SnackMachi
         return ValidateInsertMoney(command)
               .MapTryAsync(() => RaiseConditionalEvent(command))
               .MapTryIfAsync(persisted => persisted, PersistAsync)
-              .MapTryAsync(() => PublishAsync(new SnackMachineMoneyInsertedEvent(State.Id, Version, State.MoneyInside, State.AmountInTransaction, command.TraceId, State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? command.OperatedBy)))
-              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackMachineErrorEvent(this.GetPrimaryKey(), Version, 205, errors.ToReasonStrings(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
+              .MapTryAsync(() => PublishAsync(new SnackMachineMoneyInsertedEvent(State.Id, Version, State.MoneyInside, State.AmountInTransaction,
+                                                                                 command.TraceId, State.LastModifiedAt ?? DateTimeOffset.UtcNow,
+                                                                                 State.LastModifiedBy ?? command.OperatedBy)))
+              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackMachineErrorEvent(this.GetPrimaryKey(), Version, 205, errors.ToReasonStrings(),
+                                                                                       command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
     private Result ValidateReturnMoney(SnackMachineReturnMoneyCommand command)
@@ -224,8 +240,11 @@ public sealed class SnackMachineGrain : EventSourcingGrainWithGuidKey<SnackMachi
         return ValidateReturnMoney(command)
               .MapTryAsync(() => RaiseConditionalEvent(command))
               .MapTryIfAsync(persisted => persisted, PersistAsync)
-              .MapTryAsync(() => PublishAsync(new SnackMachineMoneyReturnedEvent(State.Id, Version, State.MoneyInside, State.AmountInTransaction, command.TraceId, State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? command.OperatedBy)))
-              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackMachineErrorEvent(this.GetPrimaryKey(), Version, 206, errors.ToReasonStrings(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
+              .MapTryAsync(() => PublishAsync(new SnackMachineMoneyReturnedEvent(State.Id, Version, State.MoneyInside, State.AmountInTransaction,
+                                                                                 command.TraceId, State.LastModifiedAt ?? DateTimeOffset.UtcNow,
+                                                                                 State.LastModifiedBy ?? command.OperatedBy)))
+              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackMachineErrorEvent(this.GetPrimaryKey(), Version, 206, errors.ToReasonStrings(),
+                                                                                       command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
     private Result ValidateLoadSnacks(SnackMachineLoadSnacksCommand command)
@@ -234,10 +253,12 @@ public sealed class SnackMachineGrain : EventSourcingGrainWithGuidKey<SnackMachi
         return Result.Ok()
                      .Verify(State.IsDeleted == false, $"Snack machine {machineId} has already been removed.")
                      .Verify(State.IsCreated, $"Snack machine {machineId} is not initialized.")
-                     .Verify(State.TryGetSlot(command.Position, out var slot), $"Slot at position {command.Position} in the snack machine {machineId} does not exist.")
+                     .Verify(State.TryGetSlot(command.Position, out var slot),
+                             $"Slot at position {command.Position} in the snack machine {machineId} does not exist.")
                      .Verify(command.SnackPile != null, "Snack pile to load should not be empty.")
                      .Verify(command.SnackPile!.Quantity > 0, "Snack pile quantity to load should be greater than zero.")
-                     .Verify(slot!.SnackPile == null || slot.SnackPile.SnackId == command.SnackPile.SnackId, $"Snack pile to load should be of the same type as the one already in the slot at position {command.Position} in the snack machine {machineId}.")
+                     .Verify(slot!.SnackPile == null || slot.SnackPile.SnackId == command.SnackPile.SnackId,
+                             $"Snack pile to load should be of the same type as the one already in the slot at position {command.Position} in the snack machine {machineId}.")
                      .Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
     }
 
@@ -253,9 +274,12 @@ public sealed class SnackMachineGrain : EventSourcingGrainWithGuidKey<SnackMachi
         return ValidateLoadSnacks(command)
               .MapTryAsync(() => RaiseConditionalEvent(command))
               .MapTryIfAsync(persisted => persisted, PersistAsync)
-              .MapTryAsync(() => PublishAsync(new SnackMachineSnacksLoadedEvent(State.Id, Version, State.Slots.Single(sl => sl.Position == command.Position), State.SlotsCount, State.SnackCount, State.SnackQuantity, State.SnackAmount, command.TraceId,
-                                                                                State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? command.OperatedBy)))
-              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackMachineErrorEvent(this.GetPrimaryKey(), Version, 207, errors.ToReasonStrings(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
+              .MapTryAsync(() => PublishAsync(new SnackMachineSnacksLoadedEvent(State.Id, Version, State.Slots.Single(sl => sl.Position == command.Position),
+                                                                                State.SlotsCount, State.SnackCount, State.SnackQuantity, State.SnackAmount,
+                                                                                command.TraceId, State.LastModifiedAt ?? DateTimeOffset.UtcNow,
+                                                                                State.LastModifiedBy ?? command.OperatedBy)))
+              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackMachineErrorEvent(this.GetPrimaryKey(), Version, 207, errors.ToReasonStrings(),
+                                                                                       command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
     private Result ValidateUnloadSnacks(SnackMachineUnloadSnacksCommand command)
@@ -280,9 +304,12 @@ public sealed class SnackMachineGrain : EventSourcingGrainWithGuidKey<SnackMachi
         return ValidateUnloadSnacks(command)
               .MapTryAsync(() => RaiseConditionalEvent(command))
               .MapTryIfAsync(persisted => persisted, PersistAsync)
-              .MapTryAsync(() => PublishAsync(new SnackMachineSnacksUnloadedEvent(State.Id, Version, State.Slots.Single(sl => sl.Position == command.Position), State.SlotsCount, State.SnackCount, State.SnackQuantity, State.SnackAmount, command.TraceId,
-                                                                                  State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? command.OperatedBy)))
-              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackMachineErrorEvent(this.GetPrimaryKey(), Version, 208, errors.ToReasonStrings(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
+              .MapTryAsync(() => PublishAsync(new SnackMachineSnacksUnloadedEvent(State.Id, Version, State.Slots.Single(sl => sl.Position == command.Position),
+                                                                                  State.SlotsCount, State.SnackCount, State.SnackQuantity, State.SnackAmount,
+                                                                                  command.TraceId, State.LastModifiedAt ?? DateTimeOffset.UtcNow,
+                                                                                  State.LastModifiedBy ?? command.OperatedBy)))
+              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackMachineErrorEvent(this.GetPrimaryKey(), Version, 208, errors.ToReasonStrings(),
+                                                                                       command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
     private Result ValidateBuySnack(SnackMachineBuySnackCommand command)
@@ -291,11 +318,15 @@ public sealed class SnackMachineGrain : EventSourcingGrainWithGuidKey<SnackMachi
         return Result.Ok()
                      .Verify(State.IsDeleted == false, $"Snack machine {machineId} has already been removed.")
                      .Verify(State.IsCreated, $"Snack machine {machineId} is not initialized.")
-                     .Verify(State.TryGetSlot(command.Position, out var slot), $"Slot at position {command.Position} in the snack machine {machineId} does not exist.")
+                     .Verify(State.TryGetSlot(command.Position, out var slot),
+                             $"Slot at position {command.Position} in the snack machine {machineId} does not exist.")
                      .Verify(slot?.SnackPile != null, $"Snack pile of the slot at position {command.Position} in the snack machine {machineId} does not exist.")
-                     .Verify(slot?.SnackPile != null && slot.SnackPile.CanPopOne(), $"Not enough snack in the snack pile of the slot at position {command.Position} in the snack machine {machineId}.")
-                     .Verify(State.AmountInTransaction >= (slot?.SnackPile?.Price ?? 0), $"Not enough money (￥{State.AmountInTransaction}) to buy the snack {slot?.SnackPile?.SnackId} (￥{slot?.SnackPile?.Price}) in the snack machine {machineId}.")
-                     .Verify(State.MoneyInside.CanAllocate(State.AmountInTransaction - (slot?.SnackPile?.Price ?? 0), out _), $"Not enough change in the snack machine {machineId} after purchase.")
+                     .Verify(slot?.SnackPile != null && slot.SnackPile.CanSubtractOne(),
+                             $"Not enough snack in the snack pile of the slot at position {command.Position} in the snack machine {machineId}.")
+                     .Verify(State.AmountInTransaction >= (slot?.SnackPile?.Price ?? 0),
+                             $"Not enough money (￥{State.AmountInTransaction}) to buy the snack {slot?.SnackPile?.SnackId} (￥{slot?.SnackPile?.Price}) in the snack machine {machineId}.")
+                     .Verify(State.MoneyInside.CanAllocate(State.AmountInTransaction - (slot?.SnackPile?.Price ?? 0), out _),
+                             $"Not enough change in the snack machine {machineId} after purchase.")
                      .Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
     }
 
@@ -313,33 +344,28 @@ public sealed class SnackMachineGrain : EventSourcingGrainWithGuidKey<SnackMachi
               .MapTryIfAsync(persisted => persisted, PersistAsync)
               .MapTryAsync(() => InitializePurchaseAsync(command))
               .MapTryIfAsync(initialized => initialized,
-                             () => PublishAsync(new SnackMachineSnackBoughtEvent(State.Id, Version, State.AmountInTransaction, State.Slots.Single(sl => sl.Position == command.Position), State.SnackQuantity, State.SnackAmount, command.TraceId,
-                                                                                 State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? command.OperatedBy)))
-              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackMachineErrorEvent(this.GetPrimaryKey(), Version, 209, errors.ToReasonStrings(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
+                             () => PublishAsync(new SnackMachineSnackBoughtEvent(State.Id, Version, State.AmountInTransaction,
+                                                                                 State.Slots.Single(sl => sl.Position == command.Position), State.SnackQuantity,
+                                                                                 State.SnackAmount, command.TraceId,
+                                                                                 State.LastModifiedAt ?? DateTimeOffset.UtcNow,
+                                                                                 State.LastModifiedBy ?? command.OperatedBy)))
+              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackMachineErrorEvent(this.GetPrimaryKey(), Version, 209, errors.ToReasonStrings(),
+                                                                                       command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
     #region Persistence
 
     private async Task PersistAsync()
     {
-        var machineInGrain = State;
-        var machine = await _dbContext.SnackMachines.FindAsync(machineInGrain.Id);
-        if (machine == null)
+        var machine = await _dbContext.SnackMachines.Include(sm => sm.Slots).Include(sm => sm.SnackStats).FirstOrDefaultAsync(sm => sm.Id == State.Id);
+        if (machine != null)
         {
-            machine = new SnackMachine();
-            _dbContext.SnackMachines.Add(machine);
+            _dbContext.Entry(machine).CurrentValues.SetValues(State);
         }
-        machine.Id = machineInGrain.Id;
-        machine.CreatedAt = machineInGrain.CreatedAt;
-        machine.LastModifiedAt = machineInGrain.LastModifiedAt;
-        machine.DeletedAt = machineInGrain.DeletedAt;
-        machine.CreatedBy = machineInGrain.CreatedBy;
-        machine.LastModifiedBy = machineInGrain.LastModifiedBy;
-        machine.DeletedBy = machineInGrain.DeletedBy;
-        machine.IsDeleted = machineInGrain.IsDeleted;
-        machine.MoneyInside = machineInGrain.MoneyInside;
-        machine.AmountInTransaction = machineInGrain.AmountInTransaction;
-        machine.Slots = machineInGrain.Slots;
+        else
+        {
+            _dbContext.SnackMachines.Add(State);
+        }
         await _dbContext.SaveChangesAsync();
     }
 
@@ -353,7 +379,9 @@ public sealed class SnackMachineGrain : EventSourcingGrainWithGuidKey<SnackMachi
         {
             var purchaseId = _guidGenerator.Create();
             var purchaseGrain = GrainFactory.GetGrain<IPurchaseGrain>(purchaseId);
-            var result = await purchaseGrain.InitializeAsync(new PurchaseInitializeCommand(purchaseId, State.Id, slot.Position, slot.SnackPile.SnackId, slot.SnackPile.Price, command.TraceId, command.OperatedAt, command.OperatedBy));
+            var result = await purchaseGrain.InitializeAsync(new PurchaseInitializeCommand(purchaseId, State.Id, slot.Position, slot.SnackPile.SnackId,
+                                                                                           slot.SnackPile.Price, command.TraceId, command.OperatedAt,
+                                                                                           command.OperatedBy));
             return result.IsSuccess;
         }
         return false;

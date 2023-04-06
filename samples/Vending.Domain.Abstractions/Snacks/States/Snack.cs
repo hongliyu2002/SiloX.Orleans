@@ -1,100 +1,66 @@
-﻿using System.Reactive.Concurrency;
-using System.Reactive.Linq;
-using Fluxera.Extensions.Hosting.Modules.Domain.Shared.Model;
-using ReactiveUI;
-
-namespace Vending.Domain.Abstractions.Snacks;
+﻿namespace Vending.Domain.Abstractions.Snacks;
 
 /// <summary>
 ///     Represents a snack.
 /// </summary>
 [Serializable]
 [GenerateSerializer]
-public sealed class Snack : ReactiveObject, IAuditedObject, ISoftDeleteObject
+public sealed class Snack
 {
-    /// <inheritdoc />
-    public Snack()
-    {
-        this.WhenAnyValue(vm => vm.CreatedAt).ObserveOn(Scheduler.CurrentThread).Subscribe(createdAt => IsCreated = createdAt != null);
-        this.WhenAnyValue(vm => vm.DeletedAt).ObserveOn(Scheduler.CurrentThread).Subscribe(deletedAt => IsDeleted = deletedAt != null);
-    }
-
-    [Id(0)]
-    private Guid _id;
     /// <summary>
     ///     The unique identifier of the snack.
     /// </summary>
-    public Guid Id { get => _id; set => this.RaiseAndSetIfChanged(ref _id, value); }
+    public Guid Id { get; private set; }
 
-    [Id(1)]
-    private DateTimeOffset? _createdAt;
     /// <summary>
     ///     The date and time when the snack was created.
     /// </summary>
-    public DateTimeOffset? CreatedAt { get => _createdAt; set => this.RaiseAndSetIfChanged(ref _createdAt, value); }
+    public DateTimeOffset? CreatedAt { get; private set; }
 
-    [Id(2)]
-    private string? _createdBy;
     /// <summary>
     ///     The user who created the snack.
     /// </summary>
-    public string? CreatedBy { get => _createdBy; set => this.RaiseAndSetIfChanged(ref _createdBy, value); }
+    public string? CreatedBy { get; private set; }
 
-    [Id(3)]
-    private bool _isCreated;
     /// <summary>
     ///     Indicates whether the snack has been created.
     /// </summary>
-    public bool IsCreated { get => _isCreated; set => this.RaiseAndSetIfChanged(ref _isCreated, value); }
+    public bool IsCreated => CreatedAt.HasValue;
 
-    [Id(4)]
-    private DateTimeOffset? _lastModifiedAt;
     /// <summary>
     ///     The date and time when the snack was last modified.
     /// </summary>
-    public DateTimeOffset? LastModifiedAt { get => _lastModifiedAt; set => this.RaiseAndSetIfChanged(ref _lastModifiedAt, value); }
+    public DateTimeOffset? LastModifiedAt { get; private set; }
 
-    [Id(5)]
-    private string? _lastModifiedBy;
     /// <summary>
     ///     The user who last modified the snack.
     /// </summary>
-    public string? LastModifiedBy { get => _lastModifiedBy; set => this.RaiseAndSetIfChanged(ref _lastModifiedBy, value); }
+    public string? LastModifiedBy { get; private set; }
 
-    [Id(6)]
-    private DateTimeOffset? _deletedAt;
     /// <summary>
     ///     The date and time when the snack was deleted.
     /// </summary>
-    public DateTimeOffset? DeletedAt { get => _deletedAt; set => this.RaiseAndSetIfChanged(ref _deletedAt, value); }
+    public DateTimeOffset? DeletedAt { get; private set; }
 
-    [Id(7)]
-    private string? _deletedBy;
     /// <summary>
     ///     The user who deleted the snack.
     /// </summary>
-    public string? DeletedBy { get => _deletedBy; set => this.RaiseAndSetIfChanged(ref _deletedBy, value); }
+    public string? DeletedBy { get; private set; }
 
-    [Id(8)]
-    private bool _isDeleted;
     /// <summary>
     ///     Indicates whether the snack has been deleted.
     /// </summary>
-    public bool IsDeleted { get => _isDeleted; set => this.RaiseAndSetIfChanged(ref _isDeleted, value); }
+    public bool IsDeleted { get; private set; }
 
-    [Id(9)]
-    private string _name = null!;
     /// <summary>
     ///     The name of the snack.
     /// </summary>
-    public string Name { get => _name; set => this.RaiseAndSetIfChanged(ref _name, value); }
+    public string Name { get; private set; } = string.Empty;
 
-    [Id(10)]
-    private string? _pictureUrl;
     /// <summary>
     ///     The URL of the picture of the snack.
     /// </summary>
-    public string? PictureUrl { get => _pictureUrl; set => this.RaiseAndSetIfChanged(ref _pictureUrl, value); }
+    public string? PictureUrl { get; private set; }
 
     public override string ToString()
     {
@@ -116,6 +82,7 @@ public sealed class Snack : ReactiveObject, IAuditedObject, ISoftDeleteObject
     {
         DeletedAt = command.OperatedAt;
         DeletedBy = command.OperatedBy;
+        IsDeleted = true;
     }
 
     public void Apply(SnackUpdateCommand command)

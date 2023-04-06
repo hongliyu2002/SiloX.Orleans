@@ -1,109 +1,114 @@
-﻿using Fluxera.Extensions.Hosting.Modules.Domain.Shared.Model;
-
-namespace Vending.Domain.Abstractions.SnackMachines;
+﻿namespace Vending.Domain.Abstractions.SnackMachines;
 
 /// <summary>
-///     Represents a Snack Machine.
+///     Represents a snack mMachine.
 /// </summary>
 [Serializable]
 [GenerateSerializer]
-public sealed class SnackMachine : IAuditedObject, ISoftDeleteObject
+public sealed class SnackMachine
 {
     /// <summary>
-    ///     The unique identifier of the Snack Machine.
+    ///     The unique identifier of the snack mMachine.
     /// </summary>
     [Id(0)]
-    public Guid Id { get; set; }
+    public Guid Id { get; private set; }
 
     /// <summary>
-    ///     The date and time when the Snack Machine was created.
+    ///     The date and time when the snack mMachine was created.
     /// </summary>
     [Id(1)]
-    public DateTimeOffset? CreatedAt { get; set; }
+    public DateTimeOffset? CreatedAt { get; private set; }
 
     /// <summary>
-    ///     The user who created the Snack Machine.
+    ///     The user who created the snack mMachine.
     /// </summary>
     [Id(2)]
-    public string? CreatedBy { get; set; }
+    public string? CreatedBy { get; private set; }
 
     /// <summary>
-    ///     Indicates whether the Snack Machine has been created.
+    ///     Indicates whether the snack mMachine has been created.
     /// </summary>
-    public bool IsCreated => CreatedAt != null;
+    public bool IsCreated => CreatedAt.HasValue;
 
     /// <summary>
-    ///     The date and time when the Snack Machine was last modified.
+    ///     The date and time when the snack mMachine was last modified.
     /// </summary>
     [Id(3)]
-    public DateTimeOffset? LastModifiedAt { get; set; }
+    public DateTimeOffset? LastModifiedAt { get; private set; }
 
     /// <summary>
-    ///     The user who last modified the Snack Machine.
+    ///     The user who last modified the snack mMachine.
     /// </summary>
     [Id(4)]
-    public string? LastModifiedBy { get; set; }
+    public string? LastModifiedBy { get; private set; }
 
     /// <summary>
-    ///     The date and time when the Snack Machine was deleted.
+    ///     The date and time when the snack mMachine was deleted.
     /// </summary>
     [Id(5)]
-    public DateTimeOffset? DeletedAt { get; set; }
+    public DateTimeOffset? DeletedAt { get; private set; }
 
     /// <summary>
-    ///     The user who deleted the Snack Machine.
+    ///     The user who deleted the snack mMachine.
     /// </summary>
     [Id(6)]
-    public string? DeletedBy { get; set; }
+    public string? DeletedBy { get; private set; }
 
     /// <summary>
-    ///     Indicates whether the Snack Machine has been deleted.
+    ///     Indicates whether the snack mMachine has been deleted.
     /// </summary>
     [Id(7)]
-    public bool IsDeleted { get; set; }
+    public bool IsDeleted { get; private set; }
 
     /// <summary>
-    ///     The money inside the Snack Machine.
+    ///     The money inside the snack mMachine.
     /// </summary>
     [Id(8)]
-    public Money MoneyInside { get; set; } = Money.Zero;
+    public Money MoneyInside { get; private set; } = Money.Zero;
 
     /// <summary>
     ///     The amount of money in the transaction.
     /// </summary>
     [Id(9)]
-    public decimal AmountInTransaction { get; set; }
+    public decimal AmountInTransaction { get; private set; }
 
     /// <summary>
-    ///     The slots of the Snack Machine.
+    ///     The slots of the snack mMachine.
     /// </summary>
     [Id(10)]
-    public IList<Slot> Slots { get; set; } = new List<Slot>();
+    public IList<Slot> Slots { get; private set; } = new List<Slot>();
 
     /// <summary>
-    ///     The number of slots in the Snack Machine.
+    ///     The snack statistics of the snack mMachine.
     /// </summary>
-    public int SlotsCount => Slots.Count;
+    [Id(11)]
+    public IList<SnackStat> SnackStats { get; private set; } = new List<SnackStat>();
 
     /// <summary>
-    ///     The number of snacks in the Snack Machine.
+    ///     The number of slots in the snack mMachine.
     /// </summary>
-    public int SnackCount => Slots.Where(s => s.SnackPile != null).Select(s => s.SnackPile!.SnackId).Distinct().Count();
+    public int SlotsCount { get; private set; }
 
     /// <summary>
-    ///     The quantity of snacks in the Snack Machine.
+    ///     The number of snacks in the snack mMachine.
     /// </summary>
-    public int SnackQuantity => Slots.Where(s => s.SnackPile != null).Sum(s => s.SnackPile!.Quantity);
+    public int SnackCount { get; private set; }
 
     /// <summary>
-    ///     The amount of snacks in the Snack Machine.
+    ///     The quantity of snacks in the snack mMachine.
     /// </summary>
-    public decimal SnackAmount => Slots.Where(s => s.SnackPile != null).Sum(s => s.SnackPile!.TotalAmount);
+    public int SnackQuantity { get; private set; }
+
+    /// <summary>
+    ///     The amount of snacks in the snack mMachine.
+    /// </summary>
+    public decimal SnackAmount { get; private set; }
 
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"SnackMachine with Id:'{Id}' MoneyInside:'{MoneyInside}' AmountInTransaction:{AmountInTransaction} Slots:'{string.Join(';', Slots.Select(slot => slot.ToString()))}'";
+        return
+            $"SnackMachine with Id:'{Id}' MoneyInside:'{MoneyInside}' AmountInTransaction:{AmountInTransaction} Slots:'{string.Join(';', Slots.Select(slot => slot.ToString()))}'";
     }
 
     #region Get Slot
@@ -114,11 +119,37 @@ public sealed class SnackMachine : IAuditedObject, ISoftDeleteObject
     /// <param name="position"> The position of the slot. </param>
     /// <param name="slot"> The slot at the specified position. </param>
     /// <returns> <c>true</c> if the slot exists; otherwise, <c>false</c>. </returns>
-    public bool TryGetSlot(int position,
-                           out Slot? slot)
+    public bool TryGetSlot(int position, out Slot? slot)
     {
         slot = Slots.FirstOrDefault(sl => sl.Position == position);
         return slot != null;
+    }
+
+    #endregion
+
+    #region Update Stats
+
+    private void UpdateStats()
+    {
+        SlotsCount = Slots.Count;
+        SnackStats = Slots.Where(sl => sl.SnackPile != null)
+                          .Select(sl => new
+                                        {
+                                            sl.MachineId,
+                                            sl.SnackPile!.SnackId,
+                                            sl.SnackPile.Quantity,
+                                            TotalAmount = sl.SnackPile.Amount
+                                        })
+                          .GroupBy(r => new
+                                        {
+                                            r.MachineId,
+                                            r.SnackId
+                                        })
+                          .Select(g => new SnackStat(g.Key.MachineId, g.Key.SnackId, g.Sum(r => r.Quantity), g.Sum(r => r.TotalAmount)))
+                          .ToList();
+        SnackCount = SnackStats.Select(ss => ss.SnackId).Count();
+        SnackQuantity = SnackStats.Sum(ss => ss.TotalQuantity);
+        SnackAmount = SnackStats.Sum(ss => ss.TotalAmount);
     }
 
     #endregion
@@ -129,13 +160,8 @@ public sealed class SnackMachine : IAuditedObject, ISoftDeleteObject
     {
         Id = command.MachineId;
         MoneyInside = command.MoneyInside;
-        Slots = command.Slots.Select(pair => new Slot
-                                             {
-                                                 MachineId = command.MachineId,
-                                                 Position = pair.Key,
-                                                 SnackPile = pair.Value
-                                             })
-                       .ToList();
+        Slots = command.Slots.Select(pair => new Slot(command.MachineId, pair.Key, pair.Value)).ToList();
+        UpdateStats();
         CreatedAt = command.OperatedAt;
         CreatedBy = command.OperatedBy;
     }
@@ -149,7 +175,7 @@ public sealed class SnackMachine : IAuditedObject, ISoftDeleteObject
 
     public void Apply(SnackMachineLoadMoneyCommand command)
     {
-        MoneyInside += command.Money;
+        MoneyInside.Add(command.Money);
         LastModifiedAt = command.OperatedAt;
         LastModifiedBy = command.OperatedBy;
     }
@@ -163,7 +189,7 @@ public sealed class SnackMachine : IAuditedObject, ISoftDeleteObject
 
     public void Apply(SnackMachineInsertMoneyCommand command)
     {
-        MoneyInside += command.Money;
+        MoneyInside.Add(command.Money);
         AmountInTransaction += command.Money.Amount;
         LastModifiedAt = command.OperatedAt;
         LastModifiedBy = command.OperatedBy;
@@ -173,8 +199,8 @@ public sealed class SnackMachine : IAuditedObject, ISoftDeleteObject
     {
         if (MoneyInside.CanAllocate(AmountInTransaction, out var moneyToReturn))
         {
-            MoneyInside -= moneyToReturn;
-            AmountInTransaction = 0;
+            MoneyInside.Subtract(moneyToReturn);
+            AmountInTransaction -= moneyToReturn.Amount;
             LastModifiedAt = command.OperatedAt;
             LastModifiedBy = command.OperatedBy;
         }
@@ -185,9 +211,12 @@ public sealed class SnackMachine : IAuditedObject, ISoftDeleteObject
         var slot = Slots.FirstOrDefault(sl => sl.Position == command.Position);
         if (slot != null)
         {
-            if (slot.SnackPile != null && slot.SnackPile.SnackId == command.SnackPile.SnackId)
+            if (slot.SnackPile != null)
             {
-                slot.SnackPile += command.SnackPile.Quantity;
+                if (slot.SnackPile.SnackId == command.SnackPile.SnackId)
+                {
+                    slot.SnackPile.Add(command.SnackPile.Quantity);
+                }
             }
             else
             {
@@ -196,8 +225,9 @@ public sealed class SnackMachine : IAuditedObject, ISoftDeleteObject
         }
         else
         {
-            Slots.Add(new Slot { Position = command.Position, SnackPile = command.SnackPile });
+            Slots.Add(new Slot(Id, command.Position, command.SnackPile));
         }
+        UpdateStats();
         LastModifiedAt = command.OperatedAt;
         LastModifiedBy = command.OperatedBy;
     }
@@ -209,10 +239,7 @@ public sealed class SnackMachine : IAuditedObject, ISoftDeleteObject
         {
             slot.SnackPile = null;
         }
-        else
-        {
-            Slots.Add(new Slot { Position = command.Position, SnackPile = null });
-        }
+        UpdateStats();
         LastModifiedAt = command.OperatedAt;
         LastModifiedBy = command.OperatedBy;
     }
@@ -220,10 +247,11 @@ public sealed class SnackMachine : IAuditedObject, ISoftDeleteObject
     public void Apply(SnackMachineBuySnackCommand command)
     {
         var slot = Slots.FirstOrDefault(sl => sl.Position == command.Position);
-        if (slot is { SnackPile: { } })
+        if (slot is { SnackPile: not null })
         {
-            slot.SnackPile -= 1;
+            slot.SnackPile.Subtract(1);
             AmountInTransaction -= slot.SnackPile.Price;
+            UpdateStats();
             LastModifiedAt = command.OperatedAt;
             LastModifiedBy = command.OperatedBy;
         }

@@ -3,26 +3,29 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Vending.Projection.EntityFrameworkCore;
+using Vending.Domain.EntityFrameworkCore;
 
 #nullable disable
 
-namespace Vending.Projection.EntityFrameworkCore.Migrations
+namespace Vending.Domain.EntityFrameworkCore.Migrations
 {
-    [DbContext(typeof(ProjectionDbContext))]
-    partial class ProjectionDbContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(DomainDbContext))]
+    [Migration("20230406205412_Init")]
+    partial class Init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.3")
+                .HasAnnotation("ProductVersion", "7.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Vending.Projection.Abstractions.Purchases.Purchase", b =>
+            modelBuilder.Entity("Vending.Domain.Abstractions.Purchases.Purchase", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -32,8 +35,8 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("BoughtBy")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<decimal>("BoughtPrice")
                         .HasPrecision(10, 2)
@@ -48,27 +51,16 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
                     b.Property<Guid>("SnackId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("SnackName")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("SnackPictureUrl")
-                        .HasMaxLength(512)
-                        .HasColumnType("nvarchar(512)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("MachineId");
 
                     b.HasIndex("SnackId");
 
-                    b.HasIndex("SnackName");
-
                     b.ToTable("Purchases", (string)null);
                 });
 
-            modelBuilder.Entity("Vending.Projection.Abstractions.SnackMachines.Slot", b =>
+            modelBuilder.Entity("Vending.Domain.Abstractions.SnackMachines.Slot", b =>
                 {
                     b.Property<Guid>("MachineId")
                         .HasColumnType("uniqueidentifier");
@@ -81,7 +73,7 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
                     b.ToTable("Slots", (string)null);
                 });
 
-            modelBuilder.Entity("Vending.Projection.Abstractions.SnackMachines.SnackMachine", b =>
+            modelBuilder.Entity("Vending.Domain.Abstractions.SnackMachines.SnackMachine", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -91,26 +83,19 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
                         .HasPrecision(10, 2)
                         .HasColumnType("decimal(10,2)");
 
-                    b.Property<decimal>("BoughtAmount")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("decimal(10,2)");
-
-                    b.Property<int>("BoughtCount")
-                        .HasColumnType("int");
-
                     b.Property<DateTimeOffset?>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("CreatedBy")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<DateTimeOffset?>("DeletedAt")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("DeletedBy")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -119,8 +104,8 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("LastModifiedBy")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<int>("SlotsCount")
                         .HasColumnType("int");
@@ -135,42 +120,52 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
                     b.Property<int>("SnackQuantity")
                         .HasColumnType("int");
 
-                    b.Property<int>("Version")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("IsDeleted", "CreatedAt");
 
                     b.ToTable("SnackMachines", (string)null);
                 });
 
-            modelBuilder.Entity("Vending.Projection.Abstractions.Snacks.Snack", b =>
+            modelBuilder.Entity("Vending.Domain.Abstractions.SnackMachines.SnackStat", b =>
+                {
+                    b.Property<Guid>("MachineId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("SnackId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<int>("TotalQuantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("MachineId", "SnackId");
+
+                    b.HasIndex("SnackId");
+
+                    b.ToTable("SnackStat");
+                });
+
+            modelBuilder.Entity("Vending.Domain.Abstractions.Snacks.Snack", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<decimal>("BoughtAmount")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("decimal(10,2)");
-
-                    b.Property<int>("BoughtCount")
-                        .HasColumnType("int");
-
                     b.Property<DateTimeOffset?>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("CreatedBy")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<DateTimeOffset?>("DeletedAt")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("DeletedBy")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -179,63 +174,59 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("LastModifiedBy")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<int>("MachineCount")
-                        .HasColumnType("int");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("PictureUrl")
                         .HasMaxLength(512)
                         .HasColumnType("nvarchar(512)");
 
-                    b.Property<int>("Version")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("IsDeleted", "CreatedAt");
 
                     b.HasIndex("IsDeleted", "Name");
 
                     b.ToTable("Snacks", (string)null);
                 });
 
-            modelBuilder.Entity("Vending.Projection.Abstractions.Purchases.Purchase", b =>
+            modelBuilder.Entity("Vending.Domain.Abstractions.Purchases.Purchase", b =>
                 {
-                    b.HasOne("Vending.Projection.Abstractions.SnackMachines.SnackMachine", null)
+                    b.HasOne("Vending.Domain.Abstractions.SnackMachines.SnackMachine", null)
                         .WithMany()
                         .HasForeignKey("MachineId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Vending.Projection.Abstractions.Snacks.Snack", null)
+                    b.HasOne("Vending.Domain.Abstractions.Snacks.Snack", null)
                         .WithMany()
                         .HasForeignKey("SnackId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Vending.Projection.Abstractions.SnackMachines.Slot", b =>
+            modelBuilder.Entity("Vending.Domain.Abstractions.SnackMachines.Slot", b =>
                 {
-                    b.HasOne("Vending.Projection.Abstractions.SnackMachines.SnackMachine", null)
+                    b.HasOne("Vending.Domain.Abstractions.SnackMachines.SnackMachine", null)
                         .WithMany("Slots")
                         .HasForeignKey("MachineId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsOne("Vending.Projection.Abstractions.SnackMachines.SnackPile", "SnackPile", b1 =>
+                    b.OwnsOne("Vending.Domain.Abstractions.SnackMachines.SnackPile", "SnackPile", b1 =>
                         {
                             b1.Property<Guid>("SlotMachineId")
                                 .HasColumnType("uniqueidentifier");
 
                             b1.Property<int>("SlotPosition")
                                 .HasColumnType("int");
+
+                            b1.Property<decimal>("Amount")
+                                .HasPrecision(10, 2)
+                                .HasColumnType("decimal(10,2)");
 
                             b1.Property<decimal>("Price")
                                 .HasPrecision(10, 2)
@@ -247,26 +238,13 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
                             b1.Property<Guid>("SnackId")
                                 .HasColumnType("uniqueidentifier");
 
-                            b1.Property<string>("SnackName")
-                                .IsRequired()
-                                .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
-
-                            b1.Property<string>("SnackPictureUrl")
-                                .HasMaxLength(512)
-                                .HasColumnType("nvarchar(512)");
-
-                            b1.Property<decimal>("TotalAmount")
-                                .HasPrecision(10, 2)
-                                .HasColumnType("decimal(10,2)");
-
                             b1.HasKey("SlotMachineId", "SlotPosition");
 
                             b1.HasIndex("SnackId");
 
                             b1.ToTable("Slots");
 
-                            b1.HasOne("Vending.Projection.Abstractions.Snacks.Snack", null)
+                            b1.HasOne("Vending.Domain.Abstractions.Snacks.Snack", null)
                                 .WithMany()
                                 .HasForeignKey("SnackId")
                                 .OnDelete(DeleteBehavior.Cascade)
@@ -279,9 +257,9 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
                     b.Navigation("SnackPile");
                 });
 
-            modelBuilder.Entity("Vending.Projection.Abstractions.SnackMachines.SnackMachine", b =>
+            modelBuilder.Entity("Vending.Domain.Abstractions.SnackMachines.SnackMachine", b =>
                 {
-                    b.OwnsOne("Vending.Projection.Abstractions.SnackMachines.Money", "MoneyInside", b1 =>
+                    b.OwnsOne("Vending.Domain.Abstractions.SnackMachines.Money", "MoneyInside", b1 =>
                         {
                             b1.Property<Guid>("SnackMachineId")
                                 .HasColumnType("uniqueidentifier");
@@ -323,9 +301,26 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Vending.Projection.Abstractions.SnackMachines.SnackMachine", b =>
+            modelBuilder.Entity("Vending.Domain.Abstractions.SnackMachines.SnackStat", b =>
+                {
+                    b.HasOne("Vending.Domain.Abstractions.SnackMachines.SnackMachine", null)
+                        .WithMany("SnackStats")
+                        .HasForeignKey("MachineId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Vending.Domain.Abstractions.Snacks.Snack", null)
+                        .WithMany()
+                        .HasForeignKey("SnackId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Vending.Domain.Abstractions.SnackMachines.SnackMachine", b =>
                 {
                     b.Navigation("Slots");
+
+                    b.Navigation("SnackStats");
                 });
 #pragma warning restore 612, 618
         }
