@@ -10,6 +10,8 @@ namespace Vending.Projection.Abstractions.Snacks;
 [GenerateSerializer]
 public sealed record SnackRetrieverPagedListQuery
     (Int32Range? MachineCountRange,
+     Int32Range? TotalQuantityRange,
+     DecimalRange? TotalAmountRange,
      Int32Range? BoughtCountRange,
      DecimalRange? BoughtAmountRange,
      DateTimeOffsetRange? CreatedAtRange,

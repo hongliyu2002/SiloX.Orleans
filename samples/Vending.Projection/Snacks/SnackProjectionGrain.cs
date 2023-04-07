@@ -286,29 +286,31 @@ public sealed class SnackProjectionGrain : SubscriberGrainWithGuidKey<SnackEvent
                 var snackId = snackEvent.SnackId;
                 var snackGrain = GrainFactory.GetGrain<ISnackGrain>(snackId);
                 var snackInGrain = await snackGrain.GetSnackAsync();
-                var snack = await _dbContext.Snacks.FindAsync(snackId);
+                var snackInfo = await _dbContext.Snacks.FindAsync(snackId);
                 if (snackInGrain == null)
                 {
-                    if (snack == null)
+                    if (snackInfo == null)
                     {
                         return;
                     }
-                    _dbContext.Remove(snack);
+                    _dbContext.Remove(snackInfo);
                     await _dbContext.SaveChangesAsync();
                     return;
                 }
-                if (snack == null)
+                if (snackInfo == null)
                 {
-                    snack = new SnackInfo();
-                    _dbContext.Snacks.Add(snack);
+                    snackInfo = new SnackInfo();
+                    _dbContext.Snacks.Add(snackInfo);
                 }
-                snack = snackInGrain.ToProjection(snack);
-                snack.Version = await snackGrain.GetVersionAsync();
-                var machineStatsGrain = GrainFactory.GetGrain<ISnackStatsOfMachinesGrain>(snackId);
-                snack.MachineCount = await machineStatsGrain.GetMachineCountAsync();
-                var purchaseStatsGrain = GrainFactory.GetGrain<ISnackStatsOfPurchasesGrain>(snackId);
-                snack.BoughtCount = await purchaseStatsGrain.GetBoughtCountAsync();
-                snack.BoughtAmount = await purchaseStatsGrain.GetBoughtAmountAsync();
+                snackInfo = snackInGrain.ToProjection(snackInfo);
+                snackInfo.Version = await snackGrain.GetVersionAsync();
+                var statsOfMachinesGrain = GrainFactory.GetGrain<ISnackStatsOfMachinesGrain>(snackId);
+                snackInfo.MachineCount = await statsOfMachinesGrain.GetMachineCountAsync();
+                snackInfo.TotalQuantity = await statsOfMachinesGrain.GetTotalQuantityAsync();
+                snackInfo.TotalAmount = await statsOfMachinesGrain.GetTotalAmountAsync();
+                var statsOfPurchasesGrain = GrainFactory.GetGrain<ISnackStatsOfPurchasesGrain>(snackId);
+                snackInfo.BoughtCount = await statsOfPurchasesGrain.GetBoughtCountAsync();
+                snackInfo.BoughtAmount = await statsOfPurchasesGrain.GetBoughtAmountAsync();
                 await _dbContext.SaveChangesAsync();
                 return;
             }

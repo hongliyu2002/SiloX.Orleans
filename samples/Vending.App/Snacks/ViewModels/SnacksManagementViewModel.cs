@@ -61,7 +61,7 @@ public class SnacksManagementViewModel : ReactiveObject
         var result = await Result.Ok()
                                  .Ensure(_clusterClient != null, "Cluster client is not available")
                                  .MapTry(() => _clusterClient!.GetGrain<ISnackRetrieverGrain>("Manager"))
-                                 .BindTryAsync(grain => grain.SearchingListAsync(new SnackRetrieverSearchingListQuery(searchTerm, null, null, null, null, null,
+                                 .BindTryAsync(grain => grain.SearchingListAsync(new SnackRetrieverSearchingListQuery(searchTerm, null, null, null, null, null, null, null,
                                                                                                                       null, null, null, null, false, sortings,
                                                                                                                       Guid.NewGuid(), DateTimeOffset.UtcNow,
                                                                                                                       "Manager")))

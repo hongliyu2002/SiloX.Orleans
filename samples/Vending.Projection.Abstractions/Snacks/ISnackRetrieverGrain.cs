@@ -11,16 +11,16 @@ public interface ISnackRetrieverGrain : IGrainWithStringKey
     /// <summary>
     ///     Asynchronously retrieves a list of snacks.
     /// </summary>
-    /// <param name="retrieverListQuery">The query.</param>
+    /// <param name="query">The query.</param>
     /// <returns>List of snacks.</returns>
-    Task<Result<ImmutableList<SnackInfo>>> ListAsync(SnackRetrieverListQuery retrieverListQuery);
+    Task<Result<ImmutableList<SnackInfo>>> ListAsync(SnackRetrieverListQuery query);
 
     /// <summary>
     ///     Asynchronously retrieves a paged list of snacks.
     /// </summary>
-    /// <param name="retrieverPagedListQuery">The query.</param>
+    /// <param name="query">The query.</param>
     /// <returns>List of snacks.</returns>
-    Task<Result<ImmutableList<SnackInfo>>> PagedListAsync(SnackRetrieverPagedListQuery retrieverPagedListQuery);
+    Task<Result<ImmutableList<SnackInfo>>> PagedListAsync(SnackRetrieverPagedListQuery query);
 
     /// <summary>
     ///     Asynchronously retrieves a list of snacks with searching feature.

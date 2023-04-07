@@ -11,6 +11,8 @@ namespace Vending.Projection.Abstractions.Snacks;
 public sealed record SnackRetrieverSearchingListQuery
     (string? SearchTerm,
      Int32Range? MachineCountRange,
+     Int32Range? TotalQuantityRange,
+     DecimalRange? TotalAmountRange,
      Int32Range? BoughtCountRange,
      DecimalRange? BoughtAmountRange,
      DateTimeOffsetRange? CreatedAtRange,
