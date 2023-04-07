@@ -12,7 +12,7 @@ public interface ISnackGrain : IGrainWithGuidKey
     ///     Asynchronously retrieves the current state of the Snack
     /// </summary>
     [AlwaysInterleave]
-    Task<Snack> GetStateAsync();
+    Task<Snack> GetSnackAsync();
 
     /// <summary>
     ///     Asynchronously retrieves the current version number of the Snack

@@ -3,19 +3,19 @@ using Microsoft.Extensions.Logging;
 using Orleans.FluentResults;
 using SiloX.Domain.Abstractions;
 using Vending.Domain.Abstractions;
-using Vending.Domain.Abstractions.Purchases;
 using Vending.Domain.Abstractions.Machines;
+using Vending.Domain.Abstractions.Purchases;
 using Vending.Domain.Abstractions.Snacks;
 
 namespace Vending.Domain.Purchases;
 
 [ImplicitStreamSubscription(Constants.PurchasesBroadcastNamespace)]
-public class PurchaseEventDispatcherForStatsGrain : BroadcastSubscriberGrainWithStringKey<PurchaseEvent, PurchaseErrorEvent>, IPurchaseEventDispatcherForStatsGrain
+public class PurchaseEventHubGrain : BroadcastSubscriberGrainWithStringKey<PurchaseEvent, PurchaseErrorEvent>, IPurchaseEventHubGrain
 {
-    private readonly ILogger<PurchaseEventDispatcherForStatsGrain> _logger;
+    private readonly ILogger<PurchaseEventHubGrain> _logger;
 
     /// <inheritdoc />
-    public PurchaseEventDispatcherForStatsGrain(ILogger<PurchaseEventDispatcherForStatsGrain> logger)
+    public PurchaseEventHubGrain(ILogger<PurchaseEventHubGrain> logger)
         : base(Constants.StreamProviderName)
     {
         _logger = Guard.Against.Null(logger, nameof(logger));
@@ -33,7 +33,7 @@ public class PurchaseEventDispatcherForStatsGrain : BroadcastSubscriberGrainWith
         switch (domainEvent)
         {
             case PurchaseInitializedEvent purchaseEvent:
-                return DispatchEventAsync(purchaseEvent);
+                return DispatchTasksAsync(purchaseEvent);
             default:
                 return Task.CompletedTask;
         }
@@ -60,24 +60,21 @@ public class PurchaseEventDispatcherForStatsGrain : BroadcastSubscriberGrainWith
         return Task.CompletedTask;
     }
 
-    private async Task DispatchEventAsync(PurchaseInitializedEvent purchaseEvent)
+    private async Task DispatchTasksAsync(PurchaseInitializedEvent purchaseEvent)
     {
         try
         {
-            var traceId = purchaseEvent.TraceId;
-            var operatedAt = DateTimeOffset.UtcNow;
-            var operatedBy = $"System/{GetType().Name}";
             var tasks = new List<Task<Result>>(4);
             // Update MachineStatsOfPurchasesGrain
-            var machineGrain = GrainFactory.GetGrain<IMachineStatsOfPurchasesGrain>(purchaseEvent.MachineId);
-            tasks.Add(machineGrain.IncrementCountAsync(new MachineIncrementBoughtCountCommand(1, traceId, operatedAt, operatedBy)));
-            tasks.Add(machineGrain.IncrementAmountAsync(new MachineIncrementBoughtAmountCommand(purchaseEvent.BoughtPrice, traceId, operatedAt, operatedBy)));
+            var machineStatsGrain = GrainFactory.GetGrain<IMachineStatsOfPurchasesGrain>(purchaseEvent.MachineId);
+            tasks.Add(machineStatsGrain.UpdateBoughtCountAsync(-1));
+            tasks.Add(machineStatsGrain.UpdateBoughtAmountAsync(-1));
             // Update SnackStatsOfPurchasesGrain
-            var snackGrain = GrainFactory.GetGrain<ISnackStatsOfPurchasesGrain>(purchaseEvent.SnackId);
-            tasks.Add(snackGrain.IncrementCountAsync(new SnackIncrementBoughtCountCommand(1, traceId, operatedAt, operatedBy)));
-            tasks.Add(snackGrain.IncrementAmountAsync(new SnackIncrementBoughtAmountCommand(purchaseEvent.BoughtPrice, traceId, operatedAt, operatedBy)));
+            var snackStatsGrain = GrainFactory.GetGrain<ISnackStatsOfPurchasesGrain>(purchaseEvent.SnackId);
+            tasks.Add(snackStatsGrain.UpdateBoughtCountAsync(-1));
+            tasks.Add(snackStatsGrain.UpdateBoughtAmountAsync(-1));
             var results = await Task.WhenAll(tasks);
-            _logger.LogInformation("Dispatch PurchaseInitializedEvent: {PurchaseId} is dispatched. With success： {SuccessCount} failed： {FailedCount}", this.GetPrimaryKey(), results.Count(r => r.IsSuccess), results.Count(r => r.IsFailed));
+            _logger.LogInformation("Dispatch PurchaseInitializedEvent: Purchase {PurchaseId} tasks is dispatched. With success： {SuccessCount} failed： {FailedCount}", this.GetPrimaryKey(), results.Count(r => r.IsSuccess), results.Count(r => r.IsFailed));
         }
         catch (Exception ex)
         {

@@ -1,7 +1,7 @@
 ﻿namespace Vending.Domain.Abstractions.Purchases;
 
 /// <summary>
-///     Represents a purchase of snack on a snack machine.
+///     Represents a purchase of snack on a machine.
 /// </summary>
 [Serializable]
 [GenerateSerializer]
@@ -14,7 +14,7 @@ public sealed class Purchase
     public Guid Id { get; set; }
 
     /// <summary>
-    ///     The snack machine id.
+    ///     The machine id.
     /// </summary>
     [Id(1)]
     public Guid MachineId { get; set; }

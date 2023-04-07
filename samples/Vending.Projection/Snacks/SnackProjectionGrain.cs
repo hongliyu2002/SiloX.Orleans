@@ -40,7 +40,11 @@ public sealed class SnackProjectionGrain : SubscriberGrainWithGuidKey<SnackEvent
                 return ApplyEventAsync(snackEvent);
             case SnackUpdatedEvent snackEvent:
                 return ApplyEventAsync(snackEvent);
-            case MachineCountUpdatedEvent snackEvent:
+            case SnackMachineCountUpdatedEvent snackEvent:
+                return ApplyEventAsync(snackEvent);
+            case SnackTotalQuantityUpdatedEvent snackEvent:
+                return ApplyEventAsync(snackEvent);
+            case SnackTotalAmountUpdatedEvent snackEvent:
                 return ApplyEventAsync(snackEvent);
             case SnackBoughtCountUpdatedEvent snackEvent:
                 return ApplyEventAsync(snackEvent);
@@ -166,27 +170,69 @@ public sealed class SnackProjectionGrain : SubscriberGrainWithGuidKey<SnackEvent
         }
     }
 
-    private async Task ApplyEventAsync(MachineCountUpdatedEvent snackEvent)
+    private async Task ApplyEventAsync(SnackMachineCountUpdatedEvent snackEvent)
     {
         try
         {
             var snack = await _dbContext.Snacks.FindAsync(snackEvent.SnackId);
             if (snack == null)
             {
-                _logger.LogWarning("Apply MachineCountUpdatedEvent: SnackInfo {SnackId} does not exist in the database. Try to execute full update...", snackEvent.SnackId);
+                _logger.LogWarning("Apply SnackMachineCountUpdatedEvent: SnackInfo {SnackId} does not exist in the database. Try to execute full update...", snackEvent.SnackId);
                 await ApplyFullUpdateAsync(snackEvent);
                 return;
             }
-            snack.MachineCount = snackEvent.Count;
+            snack.MachineCount = snackEvent.MachineCount;
             await _dbContext.SaveChangesAsync();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Apply MachineCountUpdatedEvent: Exception is occurred when try to write data to the database. Try to execute full update...");
+            _logger.LogError(ex, "Apply SnackMachineCountUpdatedEvent: Exception is occurred when try to write data to the database. Try to execute full update...");
             await ApplyFullUpdateAsync(snackEvent);
         }
     }
 
+    private async Task ApplyEventAsync(SnackTotalQuantityUpdatedEvent snackEvent)
+    {
+        try
+        {
+            var snack = await _dbContext.Snacks.FindAsync(snackEvent.SnackId);
+            if (snack == null)
+            {
+                _logger.LogWarning("Apply SnackTotalQuantityUpdatedEvent: SnackInfo {SnackId} does not exist in the database. Try to execute full update...", snackEvent.SnackId);
+                await ApplyFullUpdateAsync(snackEvent);
+                return;
+            }
+            snack.TotalQuantity = snackEvent.TotalQuantity;
+            await _dbContext.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Apply SnackTotalQuantityUpdatedEvent: Exception is occurred when try to write data to the database. Try to execute full update...");
+            await ApplyFullUpdateAsync(snackEvent);
+        }
+    }
+
+    private async Task ApplyEventAsync(SnackTotalAmountUpdatedEvent snackEvent)
+    {
+        try
+        {
+            var snack = await _dbContext.Snacks.FindAsync(snackEvent.SnackId);
+            if (snack == null)
+            {
+                _logger.LogWarning("Apply SnackTotalAmountUpdatedEvent: SnackInfo {SnackId} does not exist in the database. Try to execute full update...", snackEvent.SnackId);
+                await ApplyFullUpdateAsync(snackEvent);
+                return;
+            }
+            snack.TotalAmount = snackEvent.TotalAmount;
+            await _dbContext.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Apply SnackTotalAmountUpdatedEvent: Exception is occurred when try to write data to the database. Try to execute full update...");
+            await ApplyFullUpdateAsync(snackEvent);
+        }
+    }
+    
     private async Task ApplyEventAsync(SnackBoughtCountUpdatedEvent snackEvent)
     {
         try
@@ -198,7 +244,7 @@ public sealed class SnackProjectionGrain : SubscriberGrainWithGuidKey<SnackEvent
                 await ApplyFullUpdateAsync(snackEvent);
                 return;
             }
-            snack.BoughtCount = snackEvent.Count;
+            snack.BoughtCount = snackEvent.BoughtCount;
             await _dbContext.SaveChangesAsync();
         }
         catch (Exception ex)
@@ -219,7 +265,7 @@ public sealed class SnackProjectionGrain : SubscriberGrainWithGuidKey<SnackEvent
                 await ApplyFullUpdateAsync(snackEvent);
                 return;
             }
-            snack.BoughtAmount = snackEvent.Amount;
+            snack.BoughtAmount = snackEvent.BoughtAmount;
             await _dbContext.SaveChangesAsync();
         }
         catch (Exception ex)
@@ -239,7 +285,7 @@ public sealed class SnackProjectionGrain : SubscriberGrainWithGuidKey<SnackEvent
             {
                 var snackId = snackEvent.SnackId;
                 var snackGrain = GrainFactory.GetGrain<ISnackGrain>(snackId);
-                var snackInGrain = await snackGrain.GetStateAsync();
+                var snackInGrain = await snackGrain.GetSnackAsync();
                 var snack = await _dbContext.Snacks.FindAsync(snackId);
                 if (snackInGrain == null)
                 {
@@ -258,11 +304,11 @@ public sealed class SnackProjectionGrain : SubscriberGrainWithGuidKey<SnackEvent
                 }
                 snack = snackInGrain.ToProjection(snack);
                 snack.Version = await snackGrain.GetVersionAsync();
-                var machineStatsGrain = GrainFactory.GetGrain<ISnackStatsOfMachineGrain>(snackId);
-                snack.MachineCount = await machineStatsGrain.GetCountAsync();
+                var machineStatsGrain = GrainFactory.GetGrain<ISnackStatsOfMachinesGrain>(snackId);
+                snack.MachineCount = await machineStatsGrain.GetMachineCountAsync();
                 var purchaseStatsGrain = GrainFactory.GetGrain<ISnackStatsOfPurchasesGrain>(snackId);
-                snack.BoughtCount = await purchaseStatsGrain.GetCountAsync();
-                snack.BoughtAmount = await purchaseStatsGrain.GetAmountAsync();
+                snack.BoughtCount = await purchaseStatsGrain.GetBoughtCountAsync();
+                snack.BoughtAmount = await purchaseStatsGrain.GetBoughtAmountAsync();
                 await _dbContext.SaveChangesAsync();
                 return;
             }

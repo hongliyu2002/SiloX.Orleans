@@ -47,7 +47,7 @@ public sealed class MachineRepoGrain : Grain, IMachineRepoGrain
     {
         return Result.Ok()
                      .MapTryAsync(() => _dbContext.Machines.Where(sm => sm.IsDeleted == false).Select(sm => sm.Id).Intersect(command.MachineIds).ToListAsync())
-                     .EnsureAsync(machineIds => machineIds.Count == command.MachineIds.Count, "Some snack machines do not exist or have already been deleted.")
+                     .EnsureAsync(machineIds => machineIds.Count == command.MachineIds.Count, "Some machines do not exist or have already been deleted.")
                      .MapTryAsync(machineIds => machineIds.Select(machineId => GrainFactory.GetGrain<IMachineGrain>(machineId)))
                      .MapTryAsync(grains => grains.Select(grain => grain.RemoveAsync(new MachineRemoveCommand(command.TraceId, command.OperatedAt, command.OperatedBy))))
                      .MapTryAsync(Task.WhenAll)

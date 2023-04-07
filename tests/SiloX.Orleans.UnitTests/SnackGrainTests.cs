@@ -102,7 +102,7 @@ public class SnackGrainTests
         var command = new SnackInitializeCommand(snackId, "Lays", null, Guid.NewGuid(), DateTimeOffset.UtcNow, "CanInitializeAsync_WithValidCommand_ReturnsTrue");
         // Act
         var result = await grain.InitializeAsync(command);
-        var state = await grain.GetStateAsync();
+        var state = await grain.GetSnackAsync();
         // Assert
         result.IsSuccess.Should().BeTrue();
         state.Name.Should().Be("Lays");

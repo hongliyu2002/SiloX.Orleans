@@ -3,7 +3,7 @@
 [Immutable]
 [Serializable]
 [GenerateSerializer]
-public sealed record MachineUnloadedEvent
+public sealed record MachineSnacksLoadedEvent
     (Guid MachineId,
      int Version,
      MachineSlot Slot,

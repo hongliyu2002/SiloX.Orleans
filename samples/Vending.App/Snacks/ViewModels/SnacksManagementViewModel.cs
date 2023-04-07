@@ -78,7 +78,7 @@ public class SnacksManagementViewModel : ReactiveObject
         var result = await Result.Ok()
                                  .Ensure(_clusterClient != null, "Cluster client is not available")
                                  .MapTry(() => _clusterClient!.GetGrain<ISnackGrain>(id))
-                                 .MapTryAsync(grain => grain.GetStateAsync());
+                                 .MapTryAsync(grain => grain.GetSnackAsync());
         return result.IsSuccess ? new SnackEditViewModel(result.Value) : null;
     }
 

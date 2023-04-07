@@ -3,7 +3,7 @@
 namespace Vending.Domain.Abstractions.Machines;
 
 /// <summary>
-///     Represents money in the snack machine.
+///     Represents money in the machine.
 /// </summary>
 [Serializable]
 [GenerateSerializer]
@@ -29,14 +29,14 @@ public sealed class Money
     };
 
     /// <summary>
-    ///     Represents money in the snack machine.
+    ///     Represents money in the machine.
     /// </summary>
     public Money()
     {
     }
 
     /// <summary>
-    ///     Represents money in the snack machine.
+    ///     Represents money in the machine.
     /// </summary>
     /// <param name="yuan1">The number of ￥1 coins. </param>
     /// <param name="yuan2">The number of ￥2 coins. </param>
@@ -109,7 +109,7 @@ public sealed class Money
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"Money ￥1:{Yuan1} ￥2:{Yuan2} ￥5:{Yuan5} ￥10:{Yuan10} ￥20:{Yuan20} ￥50:{Yuan50} ￥100:{Yuan100} Amount:{Amount}";
+        return $"Money ￥1:{Yuan1} ￥2:{Yuan2} ￥5:{Yuan5} ￥10:{Yuan10} ￥20:{Yuan20} ￥50:{Yuan50} ￥100:{Yuan100} BoughtAmount:{Amount}";
     }
 
     #region Allocate

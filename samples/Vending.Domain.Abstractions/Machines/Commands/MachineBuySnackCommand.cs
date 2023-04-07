@@ -3,7 +3,7 @@
 [Immutable]
 [Serializable]
 [GenerateSerializer]
-public sealed record MachineBuyCommand
+public sealed record MachineBuySnackCommand
     (int Position,
      Guid TraceId,
      DateTimeOffset OperatedAt,

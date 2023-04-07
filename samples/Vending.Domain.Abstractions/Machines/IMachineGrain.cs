@@ -90,32 +90,32 @@ public interface IMachineGrain : IGrainWithGuidKey
     ///     Asynchronously checks whether the Machine can have snacks loaded with the given command.
     /// </summary>
     [AlwaysInterleave]
-    Task<bool> CanLoadSnacksAsync(MachineLoadCommand command);
+    Task<bool> CanLoadSnacksAsync(MachineLoadSnacksCommand snacksCommand);
 
     /// <summary>
     ///     Asynchronously loads snacks into the Machine with the given command.
     /// </summary>
-    Task<Result> LoadSnacksAsync(MachineLoadCommand command);
+    Task<Result> LoadSnacksAsync(MachineLoadSnacksCommand snacksCommand);
 
     /// <summary>
     ///     Asynchronously checks whether the Machine can have snacks unloaded with the given command.
     /// </summary>
     [AlwaysInterleave]
-    Task<bool> CanUnloadSnacksAsync(MachineUnloadCommand command);
+    Task<bool> CanUnloadSnacksAsync(MachineUnloadSnacksCommand snacksCommand);
 
     /// <summary>
     ///     Asynchronously unloads snacks from the Machine with the given command.
     /// </summary>
-    Task<Result> UnloadSnacksAsync(MachineUnloadCommand command);
+    Task<Result> UnloadSnacksAsync(MachineUnloadSnacksCommand snacksCommand);
 
     /// <summary>
     ///     Asynchronously checks whether the Machine can have a snack bought with the given command.
     /// </summary>
     [AlwaysInterleave]
-    Task<bool> CanBuySnackAsync(MachineBuyCommand command);
+    Task<bool> CanBuySnackAsync(MachineBuySnackCommand snackCommand);
 
     /// <summary>
     ///     Asynchronously buys a snack from the Machine with the given command.
     /// </summary>
-    Task<Result> BuySnackAsync(MachineBuyCommand command);
+    Task<Result> BuySnackAsync(MachineBuySnackCommand snackCommand);
 }

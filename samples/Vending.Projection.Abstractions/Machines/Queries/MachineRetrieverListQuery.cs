@@ -3,7 +3,7 @@
 namespace Vending.Projection.Abstractions.Machines;
 
 /// <summary>
-///     A query for a list of snack machines.
+///     A query for a list of machines.
 /// </summary>
 [Immutable]
 [Serializable]

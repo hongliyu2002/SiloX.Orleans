@@ -58,7 +58,7 @@ public sealed class SnackPile
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"SnackPile with SnackId:'{SnackId}' Quantity:{Quantity} Price:{Price} Amount:{Amount}";
+        return $"SnackPile with SnackId:'{SnackId}' Quantity:{Quantity} Price:{Price} BoughtAmount:{Amount}";
     }
 
     /// <summary>

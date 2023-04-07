@@ -37,7 +37,7 @@ public sealed class SnackGrain : EventSourcingGrainWithGuidKey<Snack, SnackComma
     }
 
     /// <inheritdoc />
-    public Task<Snack> GetStateAsync()
+    public Task<Snack> GetSnackAsync()
     {
         return Task.FromResult(State);
     }

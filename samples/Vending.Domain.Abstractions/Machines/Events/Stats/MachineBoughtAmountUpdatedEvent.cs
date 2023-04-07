@@ -5,7 +5,7 @@
 [GenerateSerializer]
 public sealed record MachineBoughtAmountUpdatedEvent
     (Guid MachineId,
-     decimal Amount,
+     decimal BoughtAmount,
      Guid TraceId,
      DateTimeOffset OperatedAt,
      string OperatedBy) : MachineEvent(MachineId, 0, TraceId, OperatedAt, OperatedBy);

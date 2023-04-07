@@ -10,46 +10,34 @@ namespace Vending.Domain.Abstractions.Machines;
 public interface IMachineStatsOfPurchasesGrain : IGrainWithGuidKey
 {
     /// <summary>
-    ///     Asynchronously retrieves the current state of the snack machine.
+    ///     Asynchronously retrieves the current state of the machine.
     /// </summary>
     [AlwaysInterleave]
-    Task<PurchaseStats> GetStateAsync();
+    Task<StatsOfPurchases> GetStatsOfPurchasesAsync();
 
     /// <summary>
-    ///     Asynchronously retrieves the count of purchases that have this snack machine.
+    ///     Asynchronously retrieves the count of purchases that made for this machine.
     /// </summary>
-    /// <returns>The count of purchases that have this snack.</returns>
+    /// <returns>The count of purchases that made for this machine.</returns>
     [AlwaysInterleave]
-    Task<int> GetCountAsync();
+    Task<int> GetBoughtCountAsync();
 
     /// <summary>
-    ///     Asynchronously increments the count of purchases that have this snack machine.
+    ///     Asynchronously retrieves the amount of purchases that made for this machine.
     /// </summary>
-    /// <param name="command">The number of purchases that have this snack </param>
-    Task<Result> IncrementCountAsync(MachineIncrementBoughtCountCommand command);
-
-    /// <summary>
-    ///     Asynchronously decrements the count of purchases that have this snack machine.
-    /// </summary>
-    /// <param name="command">The number of purchases that have this snack </param>
-    Task<Result> DecrementCountAsync(MachineDecrementBoughtCountCommand command);
-
-    /// <summary>
-    ///     Asynchronously retrieves the amount of purchase that have this snack machine.
-    /// </summary>
-    /// <returns>The amount of purchases that have this snack.</returns>
+    /// <returns>The amount of purchases that made for this machine.</returns>
     [AlwaysInterleave]
-    Task<decimal> GetAmountAsync();
+    Task<decimal> GetBoughtAmountAsync();
 
     /// <summary>
-    ///     Asynchronously increments the amount of purchases that have this snack machine.
+    ///     Asynchronously updates the count of purchases that made for this machine.
     /// </summary>
-    /// <param name="command">The number of purchases made for this snack</param>
-    Task<Result> IncrementAmountAsync(MachineIncrementBoughtAmountCommand command);
+    /// <param name="boughtCount">The count of purchases that made for this machine.</param>
+    Task<Result> UpdateBoughtCountAsync(int boughtCount);
 
     /// <summary>
-    ///     Asynchronously decrements the amount of purchases that have this snack machine.
+    ///     Asynchronously updates the amount of purchases that made for this machine.
     /// </summary>
-    /// <param name="command">The number of purchases made for this snack</param>
-    Task<Result> DecrementAmountAsync(MachineDecrementBoughtAmountCommand command);
+    /// <param name="boughtAmount">The amount of purchases that made for this machine.</param>
+    Task<Result> UpdateBoughtAmountAsync(decimal boughtAmount);
 }

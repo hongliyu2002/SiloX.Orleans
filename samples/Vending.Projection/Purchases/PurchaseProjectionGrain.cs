@@ -155,7 +155,7 @@ public sealed class PurchaseProjectionGrain : SubscriberGrainWithStringKey<Purch
         if (!_snackNamePictureCache.TryGetValue(snackId, out var snackNamePicture))
         {
             var snackGrain = GrainFactory.GetGrain<ISnackGrain>(snackId);
-            var snackInGrain = await snackGrain.GetStateAsync();
+            var snackInGrain = await snackGrain.GetSnackAsync();
             snackNamePicture = (snackInGrain.Name, snackInGrain.PictureUrl);
             _snackNamePictureCache.TryAdd(snackId, snackNamePicture);
         }

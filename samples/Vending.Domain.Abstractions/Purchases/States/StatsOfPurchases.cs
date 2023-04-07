@@ -5,17 +5,17 @@
 /// </summary>
 [Serializable]
 [GenerateSerializer]
-public sealed class PurchaseStats
+public sealed class StatsOfPurchases
 {
     /// <summary>
     ///     Count of purchases.
     /// </summary>
     [Id(0)]
-    public int Count { get; set; }
+    public int BoughtCount { get; set; }
 
     /// <summary>
     ///     Total amount of money spent.
     /// </summary>
     [Id(1)]
-    public decimal Amount { get; set; }
+    public decimal BoughtAmount { get; set; }
 }

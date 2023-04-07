@@ -1,5 +1,4 @@
 ﻿using Fluxera.Guards;
-using Fluxera.Utilities.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Orleans.FluentResults;
@@ -17,7 +16,7 @@ namespace Vending.Domain.Snacks;
 ///     Grain implementation class SnackStatsOfPurchasesGrain.
 /// </summary>
 [StorageProvider(ProviderName = Constants.GrainStorageName)]
-public class SnackStatsOfPurchasesGrain : StatefulGrainWithGuidKey<PurchaseStats, SnackEvent, SnackErrorEvent>, ISnackStatsOfPurchasesGrain
+public class SnackStatsOfPurchasesGrain : StatefulGrainWithGuidKey<StatsOfPurchases, SnackEvent, SnackErrorEvent>, ISnackStatsOfPurchasesGrain
 {
     private readonly DomainDbContext _dbContext;
     private readonly ILogger<SnackStatsOfPurchasesGrain> _logger;
@@ -28,14 +27,6 @@ public class SnackStatsOfPurchasesGrain : StatefulGrainWithGuidKey<PurchaseStats
     {
         _dbContext = Guard.Against.Null(dbContext, nameof(dbContext));
         _logger = Guard.Against.Null(logger, nameof(logger));
-    }
-
-    /// <inheritdoc />
-    public override async Task OnActivateAsync(CancellationToken cancellationToken)
-    {
-        await UpdateCountAsync();
-        await UpdateAmountAsync();
-        await base.OnActivateAsync(cancellationToken);
     }
 
     /// <inheritdoc />
@@ -51,152 +42,78 @@ public class SnackStatsOfPurchasesGrain : StatefulGrainWithGuidKey<PurchaseStats
     }
 
     /// <inheritdoc />
-    public Task<PurchaseStats> GetStateAsync()
+    public Task<StatsOfPurchases> GetStatsOfPurchasesAsync()
     {
         return Task.FromResult(State);
     }
 
     /// <inheritdoc />
-    public Task<int> GetCountAsync()
+    public Task<int> GetBoughtCountAsync()
     {
-        return Task.FromResult(State.Count);
-    }
-
-    private Result ValidateIncrementCount(SnackIncrementBoughtCountCommand command)
-    {
-        var snackId = this.GetPrimaryKey();
-        return Result.Ok().Verify(command.Number > 0, $"The number of purchases to increment for {snackId} should be greater than 0.").Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
-    }
-
-    private Task IncrementCountAsync(int number)
-    {
-        State.Count += number;
-        _logger.LogInformation("Incremented count of purchases that have this snack to {Count}", State.Count);
-        return WriteStateAsync();
+        return Task.FromResult(State.BoughtCount);
     }
 
     /// <inheritdoc />
-    public Task<Result> IncrementCountAsync(SnackIncrementBoughtCountCommand command)
+    public Task<decimal> GetBoughtAmountAsync()
     {
-        var snackId = this.GetPrimaryKey();
-        return ValidateIncrementCount(command)
-              .MapTryAsync(() => IncrementCountAsync(command.Number))
-              .MapTryAsync(() => PublishAsync(new SnackBoughtCountUpdatedEvent(snackId, State.Count, command.TraceId, command.OperatedAt, command.OperatedBy)))
-              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(snackId, 0, 121, errors.ToReasonStrings(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
-    }
-
-    private Result ValidateDecrementCount(SnackDecrementBoughtCountCommand command)
-    {
-        var snackId = this.GetPrimaryKey();
-        return Result.Ok().Verify(command.Number > 0, $"The number of purchases to decrement for {snackId} should be greater than 0.").Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
-    }
-
-    private Task DecrementCountAsync(int number)
-    {
-        State.Count -= number;
-        _logger.LogInformation("Decremented count of purchases that have this snack to {Count}", State.Count);
-        return WriteStateAsync();
+        return Task.FromResult(State.BoughtAmount);
     }
 
     /// <inheritdoc />
-    public Task<Result> DecrementCountAsync(SnackDecrementBoughtCountCommand command)
+    public Task<Result> UpdateBoughtCountAsync(int boughtCount)
     {
         var snackId = this.GetPrimaryKey();
-        return ValidateDecrementCount(command)
-              .MapTryAsync(() => DecrementCountAsync(command.Number))
-              .MapTryAsync(() => PublishAsync(new SnackBoughtCountUpdatedEvent(snackId, State.Count, command.TraceId, command.OperatedAt, command.OperatedBy)))
-              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(snackId, 0, 122, errors.ToReasonStrings(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
+        var traceId = Guid.NewGuid();
+        var operationAt = DateTimeOffset.UtcNow;
+        var operationBy = $"System/{GetType().Name}";
+        return Result.Ok()
+                     .MapTryAsync(() => ApplyBoughtCountAsync(boughtCount))
+                     .MapTryAsync(() => PublishAsync(new SnackBoughtCountUpdatedEvent(snackId, State.BoughtCount, traceId, operationAt, operationBy)))
+                     .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(snackId, 0, 121, errors.ToReasonStrings(), traceId, operationAt, operationBy)));
     }
 
     /// <inheritdoc />
-    public Task<decimal> GetAmountAsync()
-    {
-        return Task.FromResult(State.Amount);
-    }
-
-    private Result ValidateIncrementAmount(SnackIncrementBoughtAmountCommand command)
+    public Task<Result> UpdateBoughtAmountAsync(decimal boughtAmount)
     {
         var snackId = this.GetPrimaryKey();
-        return Result.Ok().Verify(command.Amount >= 0, $"The amount of purchases to increment for {snackId} should be greater than or equals 0.").Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
+        var traceId = Guid.NewGuid();
+        var operationAt = DateTimeOffset.UtcNow;
+        var operationBy = $"System/{GetType().Name}";
+        return Result.Ok()
+                     .MapTryAsync(() => ApplyBoughtAmountAsync(boughtAmount))
+                     .MapTryAsync(() => PublishAsync(new SnackBoughtAmountUpdatedEvent(snackId, State.BoughtAmount, traceId, operationAt, operationBy)))
+                     .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(snackId, 0, 122, errors.ToReasonStrings(), traceId, operationAt, operationBy)));
     }
 
-    private Task IncrementAmountAsync(decimal amount)
-    {
-        State.Amount += amount;
-        _logger.LogInformation("Incremented amount of purchases that have this snack to {Amount}", State.Amount);
-        return WriteStateAsync();
-    }
+    #region Persistence
 
-    /// <inheritdoc />
-    public Task<Result> IncrementAmountAsync(SnackIncrementBoughtAmountCommand command)
+    private async Task ApplyBoughtCountAsync(int boughtCount)
     {
-        var snackId = this.GetPrimaryKey();
-        return ValidateIncrementAmount(command)
-              .MapTryAsync(() => IncrementAmountAsync(command.Amount))
-              .MapTryAsync(() => PublishAsync(new SnackBoughtAmountUpdatedEvent(snackId, State.Amount, command.TraceId, command.OperatedAt, command.OperatedBy)))
-              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(snackId, 0, 123, errors.ToReasonStrings(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
-    }
-
-    private Result ValidateDecrementAmount(SnackDecrementBoughtAmountCommand command)
-    {
-        var snackId = this.GetPrimaryKey();
-        return Result.Ok().Verify(command.Amount >= 0, $"The amount of purchases to decrement for {snackId} should be greater than or equals 0.").Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
-    }
-
-    private Task DecrementAmountAsync(decimal amount)
-    {
-        State.Amount -= amount;
-        _logger.LogInformation("Decremented amount of purchases that have this snack to {Amount}", State.Amount);
-        return WriteStateAsync();
-    }
-
-    /// <inheritdoc />
-    public Task<Result> DecrementAmountAsync(SnackDecrementBoughtAmountCommand command)
-    {
-        var snackId = this.GetPrimaryKey();
-        return ValidateDecrementAmount(command)
-              .MapTryAsync(() => DecrementAmountAsync(command.Amount))
-              .MapTryAsync(() => PublishAsync(new SnackBoughtAmountUpdatedEvent(snackId, State.Amount, command.TraceId, command.OperatedAt, command.OperatedBy)))
-              .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(snackId, 0, 124, errors.ToReasonStrings(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
-    }
-
-    #region Update From DB
-
-    private async Task UpdateCountAsync()
-    {
-        var snackId = this.GetPrimaryKey();
-        try
+        if (boughtCount < 0)
         {
-            var count = await _dbContext.Purchases.Where(p => p.SnackId == snackId).CountAsync();
-            if (State.Count != count)
-            {
-                State.Count = count;
-                _logger.LogInformation("Updated count of purchases that have this snack from {OldCount} to {NewCount}", State.Count, count);
-                await WriteStateAsync();
-            }
+            var snackId = this.GetPrimaryKey();
+            boughtCount = await _dbContext.Purchases.Where(p => p.SnackId == snackId).CountAsync();
         }
-        catch (Exception ex)
+        if (State.BoughtCount != boughtCount)
         {
-            _logger.LogError(ex, "Failed to update count of purchases for snack {SnackId}", snackId);
+            State.BoughtCount = boughtCount;
+            await WriteStateAsync();
+            _logger.LogInformation("Updated count of purchases that have this snack from {OldCount} to {NewCount}", State.BoughtCount, boughtCount);
         }
     }
 
-    private async Task UpdateAmountAsync()
+    private async Task ApplyBoughtAmountAsync(decimal boughtAmount)
     {
-        var snackId = this.GetPrimaryKey();
-        try
+        if (boughtAmount < 0)
         {
-            var amount = await _dbContext.Purchases.Where(p => p.SnackId == snackId).SumAsync(p => p.BoughtPrice);
-            if (State.Amount != amount)
-            {
-                State.Amount = amount;
-                _logger.LogInformation("Updated amount of purchases that have this snack from {OldAmount} to {NewAmount}", State.Amount, amount);
-                await WriteStateAsync();
-            }
+            var snackId = this.GetPrimaryKey();
+            boughtAmount = await _dbContext.Purchases.Where(p => p.SnackId == snackId).SumAsync(p => p.BoughtPrice);
         }
-        catch (Exception ex)
+        if (State.BoughtAmount != boughtAmount)
         {
-            _logger.LogError(ex, "Failed to update amount of purchases for snack {SnackId}", snackId);
+            State.BoughtAmount = boughtAmount;
+            await WriteStateAsync();
+            _logger.LogInformation("Updated amount of purchases that have this snack from {OldAmount} to {NewAmount}", State.BoughtAmount, boughtAmount);
         }
     }
 

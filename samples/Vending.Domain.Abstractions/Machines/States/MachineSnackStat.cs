@@ -59,6 +59,6 @@ public sealed class MachineSnackStat
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"MachineSnackStat with MachineId:'{MachineId}' SnackId:'{SnackId}' TotalQuantity:'{TotalQuantity}' Amount:'{TotalAmount}'";
+        return $"MachineSnackStat with MachineId:'{MachineId}' SnackId:'{SnackId}' TotalQuantity:'{TotalQuantity}' BoughtAmount:'{TotalAmount}'";
     }
 }

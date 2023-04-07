@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 namespace Vending.Projection.Abstractions.Machines;
 
 /// <summary>
-///     Represents a pile of snacks with the same type and price in the snack machine.
+///     Represents a pile of snacks with the same type and price in the machine.
 /// </summary>
 [PublicAPI]
 [Serializable]

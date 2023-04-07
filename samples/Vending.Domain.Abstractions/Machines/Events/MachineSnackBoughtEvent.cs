@@ -3,7 +3,7 @@
 [Immutable]
 [Serializable]
 [GenerateSerializer]
-public sealed record MachineBoughtEvent
+public sealed record MachineSnackBoughtEvent
     (Guid MachineId,
      int Version,
      decimal AmountInTransaction,

@@ -209,54 +209,54 @@ public sealed class Machine
         }
     }
 
-    public void Apply(MachineLoadCommand command)
+    public void Apply(MachineLoadSnacksCommand snacksCommand)
     {
-        var slot = Slots.FirstOrDefault(ms => ms.Position == command.Position);
+        var slot = Slots.FirstOrDefault(ms => ms.Position == snacksCommand.Position);
         if (slot != null)
         {
             if (slot.SnackPile != null)
             {
-                if (slot.SnackPile.SnackId == command.SnackPile.SnackId)
+                if (slot.SnackPile.SnackId == snacksCommand.SnackPile.SnackId)
                 {
-                    slot.SnackPile.Add(command.SnackPile.Quantity);
+                    slot.SnackPile.Add(snacksCommand.SnackPile.Quantity);
                 }
             }
             else
             {
-                slot.SnackPile = command.SnackPile;
+                slot.SnackPile = snacksCommand.SnackPile;
             }
         }
         else
         {
-            Slots.Add(new MachineSlot(Id, command.Position, command.SnackPile));
+            Slots.Add(new MachineSlot(Id, snacksCommand.Position, snacksCommand.SnackPile));
         }
         UpdateStats();
-        LastModifiedAt = command.OperatedAt;
-        LastModifiedBy = command.OperatedBy;
+        LastModifiedAt = snacksCommand.OperatedAt;
+        LastModifiedBy = snacksCommand.OperatedBy;
     }
 
-    public void Apply(MachineUnloadCommand command)
+    public void Apply(MachineUnloadSnacksCommand snacksCommand)
     {
-        var slot = Slots.FirstOrDefault(ms => ms.Position == command.Position);
+        var slot = Slots.FirstOrDefault(ms => ms.Position == snacksCommand.Position);
         if (slot != null)
         {
             slot.SnackPile = null;
         }
         UpdateStats();
-        LastModifiedAt = command.OperatedAt;
-        LastModifiedBy = command.OperatedBy;
+        LastModifiedAt = snacksCommand.OperatedAt;
+        LastModifiedBy = snacksCommand.OperatedBy;
     }
 
-    public void Apply(MachineBuyCommand command)
+    public void Apply(MachineBuySnackCommand snackCommand)
     {
-        var slot = Slots.FirstOrDefault(ms => ms.Position == command.Position);
+        var slot = Slots.FirstOrDefault(ms => ms.Position == snackCommand.Position);
         if (slot is { SnackPile: not null })
         {
             slot.SnackPile.Subtract(1);
             AmountInTransaction -= slot.SnackPile.Price;
             UpdateStats();
-            LastModifiedAt = command.OperatedAt;
-            LastModifiedBy = command.OperatedBy;
+            LastModifiedAt = snackCommand.OperatedAt;
+            LastModifiedBy = snackCommand.OperatedBy;
         }
     }
 

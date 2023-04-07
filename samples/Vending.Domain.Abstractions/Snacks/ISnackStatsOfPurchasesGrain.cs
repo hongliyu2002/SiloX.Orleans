@@ -13,43 +13,31 @@ public interface ISnackStatsOfPurchasesGrain : IGrainWithGuidKey
     ///     Asynchronously retrieves the current state of the snack.
     /// </summary>
     [AlwaysInterleave]
-    Task<PurchaseStats> GetStateAsync();
+    Task<StatsOfPurchases> GetStatsOfPurchasesAsync();
 
     /// <summary>
     ///     Asynchronously retrieves the count of purchases that have this snack.
     /// </summary>
-    /// <returns>The count of purchases that have this snack.</returns>
+    /// <returns>The count of purchases that made for this snack.</returns>
     [AlwaysInterleave]
-    Task<int> GetCountAsync();
+    Task<int> GetBoughtCountAsync();
 
     /// <summary>
-    ///     Asynchronously increments the count of purchases that have this snack.
+    ///     Asynchronously retrieves the amount of purchases that made for this snack.
     /// </summary>
-    /// <param name="command">The number of purchases that have this snack </param>
-    Task<Result> IncrementCountAsync(SnackIncrementBoughtCountCommand command);
-
-    /// <summary>
-    ///     Asynchronously decrements the count of purchases that have this snack.
-    /// </summary>
-    /// <param name="command">The number of purchases that have this snack </param>
-    Task<Result> DecrementCountAsync(SnackDecrementBoughtCountCommand command);
-
-    /// <summary>
-    ///     Asynchronously retrieves the amount of purchase that have this snack.
-    /// </summary>
-    /// <returns>The amount of purchases that have this snack.</returns>
+    /// <returns>The amount of purchases that made for this snack.</returns>
     [AlwaysInterleave]
-    Task<decimal> GetAmountAsync();
+    Task<decimal> GetBoughtAmountAsync();
 
     /// <summary>
-    ///     Asynchronously increments the amount of purchases that have this snack.
+    ///     Asynchronously updates the count of purchases that have this snack.
     /// </summary>
-    /// <param name="command">The number of purchases made for this snack</param>
-    Task<Result> IncrementAmountAsync(SnackIncrementBoughtAmountCommand command);
+    /// <param name="boughtCount">The count of purchases that made for this snack.</param>
+    Task<Result> UpdateBoughtCountAsync(int boughtCount);
 
     /// <summary>
-    ///     Asynchronously decrements the amount of purchases that have this snack.
+    ///     Asynchronously updates the amount of purchases that made for this snack.
     /// </summary>
-    /// <param name="command">The number of purchases made for this snack</param>
-    Task<Result> DecrementAmountAsync(SnackDecrementBoughtAmountCommand command);
+    /// <param name="boughtAmount">The amount of purchases that made for this snack.</param>
+    Task<Result> UpdateBoughtAmountAsync(decimal boughtAmount);
 }

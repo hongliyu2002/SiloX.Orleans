@@ -11,7 +11,7 @@ using Vending.Domain.EntityFrameworkCore;
 namespace Vending.Domain.Purchases;
 
 /// <summary>
-///     Represents a grain that manages the state of a snack purchase of a snack machine.
+///     Represents a grain that manages the state of a snack purchase of a machine.
 /// </summary>
 [StorageProvider(ProviderName = Constants.GrainStorageName)]
 public sealed class PurchaseGrain : StatefulGrainWithStringKey<Purchase, PurchaseEvent, PurchaseErrorEvent>, IPurchaseGrain
