@@ -4,7 +4,7 @@ using Orleans.FluentResults;
 using SiloX.Domain.Abstractions;
 using Vending.Domain.Abstractions;
 using Vending.Domain.Abstractions.Purchases;
-using Vending.Domain.Abstractions.SnackMachines;
+using Vending.Domain.Abstractions.Machines;
 using Vending.Domain.Abstractions.Snacks;
 
 namespace Vending.Domain.Purchases;
@@ -42,14 +42,14 @@ public class PurchaseEventDispatcherForStatsGrain : BroadcastSubscriberGrainWith
     /// <inheritdoc />
     protected override Task HandLeErrorEventAsync(PurchaseErrorEvent errorEvent)
     {
-        _logger.LogWarning($"PurchaseErrorEvent received: {string.Join(';', errorEvent.Reasons)}");
+        _logger.LogWarning("PurchaseErrorEvent received: {Reasons}", string.Join(';', errorEvent.Reasons));
         return Task.CompletedTask;
     }
 
     /// <inheritdoc />
     protected override Task HandleExceptionAsync(Exception exception)
     {
-        _logger.LogError(exception, exception.Message);
+        _logger.LogError(exception, "Exception is {Message}", exception.Message);
         return Task.CompletedTask;
     }
 
@@ -68,10 +68,10 @@ public class PurchaseEventDispatcherForStatsGrain : BroadcastSubscriberGrainWith
             var operatedAt = DateTimeOffset.UtcNow;
             var operatedBy = $"System/{GetType().Name}";
             var tasks = new List<Task<Result>>(4);
-            // Update SnackMachineStatsOfPurchasesGrain
-            var machineGrain = GrainFactory.GetGrain<ISnackMachineStatsOfPurchasesGrain>(purchaseEvent.MachineId);
-            tasks.Add(machineGrain.IncrementCountAsync(new SnackMachineIncrementBoughtCountCommand(1, traceId, operatedAt, operatedBy)));
-            tasks.Add(machineGrain.IncrementAmountAsync(new SnackMachineIncrementBoughtAmountCommand(purchaseEvent.BoughtPrice, traceId, operatedAt, operatedBy)));
+            // Update MachineStatsOfPurchasesGrain
+            var machineGrain = GrainFactory.GetGrain<IMachineStatsOfPurchasesGrain>(purchaseEvent.MachineId);
+            tasks.Add(machineGrain.IncrementCountAsync(new MachineIncrementBoughtCountCommand(1, traceId, operatedAt, operatedBy)));
+            tasks.Add(machineGrain.IncrementAmountAsync(new MachineIncrementBoughtAmountCommand(purchaseEvent.BoughtPrice, traceId, operatedAt, operatedBy)));
             // Update SnackStatsOfPurchasesGrain
             var snackGrain = GrainFactory.GetGrain<ISnackStatsOfPurchasesGrain>(purchaseEvent.SnackId);
             tasks.Add(snackGrain.IncrementCountAsync(new SnackIncrementBoughtCountCommand(1, traceId, operatedAt, operatedBy)));
@@ -81,7 +81,7 @@ public class PurchaseEventDispatcherForStatsGrain : BroadcastSubscriberGrainWith
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Dispatch PurchaseInitializedEvent: Exception is occurred when dispatching.");
+            _logger.LogError(ex, "Dispatch PurchaseInitializedEvent: Exception is occurred when dispatching");
         }
     }
 }

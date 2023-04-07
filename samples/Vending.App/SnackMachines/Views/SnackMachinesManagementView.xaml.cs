@@ -2,11 +2,11 @@
 
 namespace Vending.App.Views;
 
-public partial class SnackMachinesManagementView
+public partial class MachinesManagementView
 {
-    public SnackMachinesManagementView()
+    public MachinesManagementView()
     {
         InitializeComponent();
-        ViewModel = new SnackMachinesManagementViewModel();
+        ViewModel = new MachinesManagementViewModel();
     }
 }

@@ -13,26 +13,26 @@ public interface ISnackRetrieverGrain : IGrainWithStringKey
     /// </summary>
     /// <param name="retrieverListQuery">The query.</param>
     /// <returns>List of snacks.</returns>
-    Task<Result<ImmutableList<Snack>>> ListAsync(SnackRetrieverListQuery retrieverListQuery);
+    Task<Result<ImmutableList<SnackInfo>>> ListAsync(SnackRetrieverListQuery retrieverListQuery);
 
     /// <summary>
     ///     Asynchronously retrieves a paged list of snacks.
     /// </summary>
     /// <param name="retrieverPagedListQuery">The query.</param>
     /// <returns>List of snacks.</returns>
-    Task<Result<ImmutableList<Snack>>> PagedListAsync(SnackRetrieverPagedListQuery retrieverPagedListQuery);
+    Task<Result<ImmutableList<SnackInfo>>> PagedListAsync(SnackRetrieverPagedListQuery retrieverPagedListQuery);
 
     /// <summary>
     ///     Asynchronously retrieves a list of snacks with searching feature.
     /// </summary>
     /// <param name="query">The query.</param>
     /// <returns>List of snacks.</returns>
-    Task<Result<ImmutableList<Snack>>> SearchingListAsync(SnackRetrieverSearchingListQuery query);
+    Task<Result<ImmutableList<SnackInfo>>> SearchingListAsync(SnackRetrieverSearchingListQuery query);
 
     /// <summary>
     ///     Asynchronously retrieves a paged list of snacks with searching feature.
     /// </summary>
     /// <param name="query">The query.</param>
     /// <returns>List of snacks.</returns>
-    Task<Result<ImmutableList<Snack>>> SearchingPagedListAsync(SnackRetrieverSearchingPagedListQuery query);
+    Task<Result<ImmutableList<SnackInfo>>> SearchingPagedListAsync(SnackRetrieverSearchingPagedListQuery query);
 }

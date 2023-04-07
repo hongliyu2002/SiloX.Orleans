@@ -54,7 +54,7 @@ public sealed class PurchaseProjectionGrain : SubscriberGrainWithStringKey<Purch
     /// <inheritdoc />
     protected override Task HandleExceptionAsync(Exception exception)
     {
-        _logger.LogError(exception, exception.Message);
+        _logger.LogError(exception, "Exception is {Message}", exception.Message);
         return Task.CompletedTask;
     }
 
@@ -147,7 +147,7 @@ public sealed class PurchaseProjectionGrain : SubscriberGrainWithStringKey<Purch
         while (retryNeeded);
     }
 
-    #region Get Snack Name And Picture Url
+    #region Get SnackInfo Name And Picture Url
 
     private readonly ConcurrentDictionary<Guid, (string SnackName, string? SnackPictureUrl)> _snackNamePictureCache = new();
 

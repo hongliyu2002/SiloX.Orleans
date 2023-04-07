@@ -3,7 +3,7 @@
 [Immutable]
 [Serializable]
 [GenerateSerializer]
-public sealed record SnackMachineCountUpdatedEvent
+public sealed record MachineCountUpdatedEvent
     (Guid SnackId,
      int Count,
      Guid TraceId,

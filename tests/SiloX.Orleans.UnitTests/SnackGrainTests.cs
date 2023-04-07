@@ -1,7 +1,9 @@
 ﻿using FluentAssertions;
+using Fluxera.Guards;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
+using Vending.Domain.Abstractions.Machines;
 using Vending.Domain.Abstractions.Snacks;
 
 namespace SiloX.Orleans.UnitTests;
@@ -27,9 +29,9 @@ public class SnackGrainTests
     public async Task SetUp()
     {
         // StartApplication();
-        _testHost = new UnitTestsHost();
-        await _testHost.RunAsync(Array.Empty<string>());
-        _testServer = _testHost.Server;
+        // _testHost = new UnitTestsHost();
+        // await _testHost.RunAsync(Array.Empty<string>());
+        // _testServer = _testHost.Server;
     }
 
     [TearDown]
@@ -39,6 +41,15 @@ public class SnackGrainTests
         // _testServer.Dispose();
     }
 
+    [Test]
+    public void Test_Guard()
+    {
+        var yuan1 = 10;
+        var amount = 3;
+        var result = Guard.Against.Negative(yuan1 - amount, nameof(amount));
+        result.Should().Be(7);
+    }
+    
     [Test]
     public async Task CanInitializeAsync_WithValidCommand_ReturnsTrue()
     {

@@ -12,13 +12,13 @@ public class MainViewModel : ReactiveObject
     {
         this.WhenAnyValue(vm => vm.SelectedName).Select(GetSelectedViewModel).ToPropertyEx(this, vm => vm.SelectedViewModel);
         ManageSnacksCommand = ReactiveCommand.Create(ManageSnacks);
-        ManageSnackMachinesCommand = ReactiveCommand.Create(ManageSnackMachines);
+        ManageMachinesCommand = ReactiveCommand.Create(ManageMachines);
     }
 
     private readonly Dictionary<string, ReactiveObject> _viewModels = new()
                                                                       {
                                                                           { "Snacks", new SnacksManagementViewModel() },
-                                                                          { "SnackMachines", new SnackMachinesManagementViewModel() }
+                                                                          { "Machines", new MachinesManagementViewModel() }
                                                                       };
 
     private ReactiveObject GetSelectedViewModel(string? name)
@@ -50,11 +50,11 @@ public class MainViewModel : ReactiveObject
         SelectedName = "Snacks";
     }
 
-    public ReactiveCommand<Unit, Unit> ManageSnackMachinesCommand { get; }
+    public ReactiveCommand<Unit, Unit> ManageMachinesCommand { get; }
 
-    private void ManageSnackMachines()
+    private void ManageMachines()
     {
-        SelectedName = "SnackMachines";
+        SelectedName = "Machines";
     }
 
     #endregion

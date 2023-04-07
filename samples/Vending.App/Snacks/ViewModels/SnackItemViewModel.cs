@@ -8,11 +8,11 @@ namespace Vending.App.ViewModels;
 
 public class SnackItemViewModel : ReactiveObject
 {
-    private const string DefaultUrl = "pack://application:,,,/Vending.App;component/Images/snack.png";
+    private const string DefaultUrl = "pack://application:,,,/Vending.App;component/Images/snackInfo.png";
 
-    public SnackItemViewModel(Snack snack)
+    public SnackItemViewModel(SnackInfo snackInfo)
     {
-        LoadWith(snack);
+        LoadWith(snackInfo);
     }
 
     [Reactive]
@@ -27,11 +27,11 @@ public class SnackItemViewModel : ReactiveObject
     [Reactive]
     public Uri PictureUrl { get; set; } = new(DefaultUrl);
 
-    public void LoadWith(Snack snack)
+    public void LoadWith(SnackInfo snackInfo)
     {
-        Id = snack.Id;
-        IsDeleted = snack.IsDeleted;
-        Name = snack.Name;
-        PictureUrl = snack.PictureUrl.IsNotNullOrEmpty() ? new Uri(snack.PictureUrl!) : new Uri(DefaultUrl);
+        Id = snackInfo.Id;
+        IsDeleted = snackInfo.IsDeleted;
+        Name = snackInfo.Name;
+        PictureUrl = snackInfo.PictureUrl.IsNotNullOrEmpty() ? new Uri(snackInfo.PictureUrl!) : new Uri(DefaultUrl);
     }
 }

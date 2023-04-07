@@ -24,7 +24,7 @@ public class SnackRetrieverGrain : Grain, ISnackRetrieverGrain
     }
 
     /// <inheritdoc />
-    public Task<Result<ImmutableList<Snack>>> ListAsync(SnackRetrieverListQuery retrieverListQuery)
+    public Task<Result<ImmutableList<SnackInfo>>> ListAsync(SnackRetrieverListQuery retrieverListQuery)
     {
         var machineCountRangeStart = retrieverListQuery.MachineCountRange?.Start;
         var machineCountRangeEnd = retrieverListQuery.MachineCountRange?.End;
@@ -65,7 +65,7 @@ public class SnackRetrieverGrain : Grain, ISnackRetrieverGrain
     }
 
     /// <inheritdoc />
-    public Task<Result<ImmutableList<Snack>>> PagedListAsync(SnackRetrieverPagedListQuery retrieverPagedListQuery)
+    public Task<Result<ImmutableList<SnackInfo>>> PagedListAsync(SnackRetrieverPagedListQuery retrieverPagedListQuery)
     {
         var machineCountRangeStart = retrieverPagedListQuery.MachineCountRange?.Start;
         var machineCountRangeEnd = retrieverPagedListQuery.MachineCountRange?.End;
@@ -110,7 +110,7 @@ public class SnackRetrieverGrain : Grain, ISnackRetrieverGrain
     }
 
     /// <inheritdoc />
-    public Task<Result<ImmutableList<Snack>>> SearchingListAsync(SnackRetrieverSearchingListQuery query)
+    public Task<Result<ImmutableList<SnackInfo>>> SearchingListAsync(SnackRetrieverSearchingListQuery query)
     {
         var searchTerm = query.SearchTerm;
         var machineCountRangeStart = query.MachineCountRange?.Start;
@@ -153,7 +153,7 @@ public class SnackRetrieverGrain : Grain, ISnackRetrieverGrain
     }
 
     /// <inheritdoc />
-    public Task<Result<ImmutableList<Snack>>> SearchingPagedListAsync(SnackRetrieverSearchingPagedListQuery query)
+    public Task<Result<ImmutableList<SnackInfo>>> SearchingPagedListAsync(SnackRetrieverSearchingPagedListQuery query)
     {
         var searchTerm = query.SearchTerm;
         var machineCountRangeStart = query.MachineCountRange?.Start;

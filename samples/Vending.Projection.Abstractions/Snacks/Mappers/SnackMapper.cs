@@ -1,26 +1,28 @@
-﻿namespace Vending.Projection.Abstractions.Snacks;
+﻿using Vending.Domain.Abstractions.Snacks;
+
+namespace Vending.Projection.Abstractions.Snacks;
 
 public static class SnackMapper
 {
     /// <summary>
-    ///     Maps a <see cref="Domain.Abstractions.Snacks.Snack" /> to a <see cref="Snack" />
+    ///     Maps a <see cref="Domain.Abstractions.Snacks.Snack" /> to a <see cref="SnackInfo" />
     /// </summary>
-    /// <param name="snackInGrain">The <see cref="Domain.Abstractions.Snacks.Snack" /> to map from.</param>
-    /// <param name="snack">The <see cref="Snack" /> to map to. If null, a new instance will be created.</param>
-    /// <returns>The mapped <see cref="Snack" />.</returns>
-    public static Snack ToProjection(this Domain.Abstractions.Snacks.Snack snackInGrain, Snack? snack = null)
+    /// <param name="snack">The <see cref="Domain.Abstractions.Snacks.Snack" /> to map from.</param>
+    /// <param name="snackInfo">The <see cref="SnackInfo" /> to map to. If null, a new instance will be created.</param>
+    /// <returns>The mapped <see cref="SnackInfo" />.</returns>
+    public static SnackInfo ToProjection(this Snack snack, SnackInfo? snackInfo = null)
     {
-        snack ??= new Snack();
-        snack.Id = snackInGrain.Id;
-        snack.Name = snackInGrain.Name;
-        snack.PictureUrl = snackInGrain.PictureUrl;
-        snack.CreatedAt = snackInGrain.CreatedAt;
-        snack.LastModifiedAt = snackInGrain.LastModifiedAt;
-        snack.DeletedAt = snackInGrain.DeletedAt;
-        snack.CreatedBy = snackInGrain.CreatedBy;
-        snack.LastModifiedBy = snackInGrain.LastModifiedBy;
-        snack.DeletedBy = snackInGrain.DeletedBy;
-        snack.IsDeleted = snackInGrain.IsDeleted;
-        return snack;
+        snackInfo ??= new SnackInfo();
+        snackInfo.Id = snack.Id;
+        snackInfo.Name = snack.Name;
+        snackInfo.PictureUrl = snack.PictureUrl;
+        snackInfo.CreatedAt = snack.CreatedAt;
+        snackInfo.CreatedBy = snack.CreatedBy;
+        snackInfo.LastModifiedAt = snack.LastModifiedAt;
+        snackInfo.LastModifiedBy = snack.LastModifiedBy;
+        snackInfo.DeletedBy = snack.DeletedBy;
+        snackInfo.DeletedAt = snack.DeletedAt;
+        snackInfo.IsDeleted = snack.IsDeleted;
+        return snackInfo;
     }
 }

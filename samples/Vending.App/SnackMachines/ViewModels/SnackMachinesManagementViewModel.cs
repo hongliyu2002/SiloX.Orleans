@@ -2,7 +2,7 @@
 
 namespace Vending.App.ViewModels;
 
-public class SnackMachinesManagementViewModel : ReactiveObject
+public class MachinesManagementViewModel : ReactiveObject
 {
 
 }

@@ -13,7 +13,6 @@ using ReactiveUI.Fody.Helpers;
 using Splat;
 using Vending.Domain.Abstractions.Snacks;
 using Vending.Projection.Abstractions.Snacks;
-using Snack = Vending.Projection.Abstractions.Snacks.Snack;
 
 namespace Vending.App.ViewModels;
 
@@ -118,7 +117,7 @@ public class SnacksManagementViewModel : ReactiveObject
         {
             return;
         }
-        var snack = new Snack { Name = "New Snack" };
+        var snack = new SnackInfo { Name = "New SnackInfo" };
         var snackItem = new SnackItemViewModel(snack);
         // var result = await Result.Ok()
         //                          .Ensure(_clusterClient != null, "Cluster client is not available")

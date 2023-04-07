@@ -18,7 +18,7 @@ public partial class MainWindow : IMainWindow
                            {
                                this.OneWayBind(ViewModel, vm => vm.SelectedViewModel, v => v.MainViewHost.ViewModel).DisposeWith(disposable);
                                this.BindCommand(ViewModel, vm => vm.ManageSnacksCommand, v => v.SnacksManagementMenuItem).DisposeWith(disposable);
-                               this.BindCommand(ViewModel, vm => vm.ManageSnackMachinesCommand, v => v.MachinesManagementMenuItem).DisposeWith(disposable);
+                               this.BindCommand(ViewModel, vm => vm.ManageMachinesCommand, v => v.MachinesManagementMenuItem).DisposeWith(disposable);
                            });
     }
 }

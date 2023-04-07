@@ -47,7 +47,7 @@
             <XamlRuntime>Wpf</XamlRuntime>
             <SubType>Designer</SubType>
         </Page>
-        <Page Update="SnackMachines\Views\SnackMachinesManagementView.xaml">
+        <Page Update="Machines\Views\MachinesManagementView.xaml">
             <Generator>MSBuild:Compile</Generator>
             <XamlRuntime>Wpf</XamlRuntime>
             <SubType>Designer</SubType>
