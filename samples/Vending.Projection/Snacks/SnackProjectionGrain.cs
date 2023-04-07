@@ -24,7 +24,7 @@ public sealed class SnackProjectionGrain : SubscriberGrainWithGuidKey<SnackEvent
     }
 
     /// <inheritdoc />
-    protected override string GetStreamNamespace()
+    protected override string GetSubStreamNamespace()
     {
         return Constants.SnacksNamespace;
     }

@@ -7,30 +7,30 @@ namespace SiloX.Domain.Abstractions;
 /// <summary>
 ///     Represents a base class for Orleans event subscribers that can subscribe to a stream of TEvent.
 /// </summary>
-public abstract class SubscriberGrainWithStringKey<TEvent, TErrorEvent> : Grain, IGrainWithStringKey
-    where TEvent : DomainEvent
-    where TErrorEvent : TEvent, IDomainErrorEvent
+public abstract class SubscriberGrainWithStringKey<TSubEvent, TSubErrorEvent> : Grain, IGrainWithStringKey
+    where TSubEvent : DomainEvent
+    where TSubErrorEvent : TSubEvent, IDomainErrorEvent
 {
-    private readonly IStreamProvider _streamProvider;
-    private IAsyncStream<TEvent>? _stream;
-    private StreamSubscriptionHandle<TEvent>? _subscription;
+    private readonly IStreamProvider _subStreamProvider;
+    private IAsyncStream<TSubEvent>? _subStream;
+    private StreamSubscriptionHandle<TSubEvent>? _subscription;
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="SubscriberGrainWithStringKey{TEvent,TErrorEvent}" /> class with
+    ///     Initializes a new instance of the <see cref="SubscriberGrainWithStringKey{TSubEvent,TSubErrorEvent}" /> class with
     ///     the specified stream provider name and stream namespace.
     /// </summary>
     /// <param name="streamProviderName">The name of the stream provider.</param>
     protected SubscriberGrainWithStringKey(string streamProviderName)
     {
         streamProviderName = Guard.Against.NullOrWhiteSpace(streamProviderName, nameof(streamProviderName));
-        _streamProvider = this.GetStreamProvider(streamProviderName);
+        _subStreamProvider = this.GetStreamProvider(streamProviderName);
     }
 
     /// <inheritdoc />
     public override async Task OnActivateAsync(CancellationToken cancellationToken)
     {
         await base.OnActivateAsync(cancellationToken);
-        _subscription = await GetStream().SubscribeAsync(HandleNextAsync, HandleExceptionAsync, HandleCompleteAsync);
+        _subscription = await GetSubStream().SubscribeAsync(HandleNextAsync, HandleExceptionAsync, HandleCompleteAsync);
     }
 
     /// <inheritdoc />
@@ -47,15 +47,15 @@ public abstract class SubscriberGrainWithStringKey<TEvent, TErrorEvent> : Grain,
     ///     Gets the stream namespace.
     /// </summary>
     /// <returns>The stream namespace.</returns>
-    protected abstract string GetStreamNamespace();
+    protected abstract string GetSubStreamNamespace();
 
     /// <summary>
     ///     Gets the stream for the grain.
     /// </summary>
     /// <returns>The stream.</returns>
-    private IAsyncStream<TEvent> GetStream()
+    private IAsyncStream<TSubEvent> GetSubStream()
     {
-        return _stream ??= _streamProvider.GetStream<TEvent>(StreamId.Create(GetStreamNamespace(), this.GetPrimaryKeyString()));
+        return _subStream ??= _subStreamProvider.GetStream<TSubEvent>(StreamId.Create(GetSubStreamNamespace(), this.GetPrimaryKeyString()));
     }
 
     /// <summary>
@@ -63,9 +63,9 @@ public abstract class SubscriberGrainWithStringKey<TEvent, TErrorEvent> : Grain,
     /// </summary>
     /// <param name="domainEvent">The next event in the stream.</param>
     /// <param name="sequenceToken">The sequence token of the event.</param>
-    private Task HandleNextAsync(TEvent domainEvent, StreamSequenceToken sequenceToken)
+    private Task HandleNextAsync(TSubEvent domainEvent, StreamSequenceToken sequenceToken)
     {
-        if (domainEvent is TErrorEvent errorEvent)
+        if (domainEvent is TSubErrorEvent errorEvent)
         {
             return HandLeErrorEventAsync(errorEvent);
         }
@@ -76,13 +76,13 @@ public abstract class SubscriberGrainWithStringKey<TEvent, TErrorEvent> : Grain,
     ///     Handles a successful domain event in the stream.
     /// </summary>
     /// <param name="domainEvent">The domain event.</param>
-    protected abstract Task HandLeEventAsync(TEvent domainEvent);
+    protected abstract Task HandLeEventAsync(TSubEvent domainEvent);
 
     /// <summary>
     ///     Handles an error event in the stream.
     /// </summary>
     /// <param name="errorEvent">The error event.</param>
-    protected abstract Task HandLeErrorEventAsync(TErrorEvent errorEvent);
+    protected abstract Task HandLeErrorEventAsync(TSubErrorEvent errorEvent);
 
     /// <summary>
     ///     Handles an exception that occurred while processing the stream.

@@ -9,7 +9,7 @@ using Vending.Domain.Abstractions.Snacks;
 namespace Vending.Domain.Machines;
 
 [ImplicitStreamSubscription(Constants.MachinesBroadcastNamespace)]
-public class MachineEventHubGrain : BroadcastSubscriberGrainWithStringKey<MachineEvent, MachineErrorEvent>, IMachineEventHubGrain
+public class MachineEventHubGrain : ReceiverGrainWithStringKey<MachineEvent, MachineErrorEvent>, IMachineEventHubGrain
 {
     private readonly ILogger<MachineEventHubGrain> _logger;
 
@@ -21,7 +21,7 @@ public class MachineEventHubGrain : BroadcastSubscriberGrainWithStringKey<Machin
     }
 
     /// <inheritdoc />
-    protected override string GetBroadcastStreamNamespace()
+    protected override string GetSubBroadcastStreamNamespace()
     {
         return Constants.MachinesBroadcastNamespace;
     }

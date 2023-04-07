@@ -26,7 +26,7 @@ public sealed class MachineProjectionGrain : SubscriberGrainWithGuidKey<MachineE
     }
 
     /// <inheritdoc />
-    protected override string GetStreamNamespace()
+    protected override string GetSubStreamNamespace()
     {
         return Constants.MachinesNamespace;
     }

@@ -30,13 +30,13 @@ public class SnackStatsOfPurchasesGrain : StatefulGrainWithGuidKey<StatsOfPurcha
     }
 
     /// <inheritdoc />
-    protected override string GetStreamNamespace()
+    protected override string GetPubStreamNamespace()
     {
         return Constants.SnacksNamespace;
     }
 
     /// <inheritdoc />
-    protected override string GetBroadcastStreamNamespace()
+    protected override string GetPubBroadcastStreamNamespace()
     {
         return Constants.SnacksBroadcastNamespace;
     }

@@ -4,6 +4,8 @@
                                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:viewModels="clr-namespace:Vending.App.ViewModels" mc:Ignorable="d" d:DesignHeight="320" d:DesignWidth="480">
     <StackPanel Orientation="Vertical" Background=" Linen">
+        <Label>Id:</Label>
+        <TextBox x:Name="IdTextBox" Margin="5" IsReadOnly="True" IsEnabled="False" />
         <Label>Name:</Label>
         <TextBox x:Name="NameTextBox" Margin="5" />
         <Label>Picture Url:</Label>

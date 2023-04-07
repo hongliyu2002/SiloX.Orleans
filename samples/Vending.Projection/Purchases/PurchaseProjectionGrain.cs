@@ -26,7 +26,7 @@ public sealed class PurchaseProjectionGrain : SubscriberGrainWithStringKey<Purch
     }
 
     /// <inheritdoc />
-    protected override string GetStreamNamespace()
+    protected override string GetSubStreamNamespace()
     {
         return Constants.PurchasesNamespace;
     }

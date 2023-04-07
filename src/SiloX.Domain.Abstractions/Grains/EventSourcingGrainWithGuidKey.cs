@@ -11,56 +11,56 @@ namespace SiloX.Domain.Abstractions;
 /// </summary>
 /// <typeparam name="TState">The type of state used by the grain.</typeparam>
 /// <typeparam name="TCommand">The type of domain command used by the grain.</typeparam>
-/// <typeparam name="TEvent">The type of domain event used by the grain.</typeparam>
-/// <typeparam name="TErrorEvent">The type of domain error event used by the grain.</typeparam>
-public abstract class EventSourcingGrainWithGuidKey<TState, TCommand, TEvent, TErrorEvent> : JournaledGrain<TState, TCommand>, IGrainWithGuidKey
+/// <typeparam name="TPubEvent">The type of domain event used by the grain.</typeparam>
+/// <typeparam name="TPubErrorEvent">The type of domain error event used by the grain.</typeparam>
+public abstract class EventSourcingGrainWithGuidKey<TState, TCommand, TPubEvent, TPubErrorEvent> : JournaledGrain<TState, TCommand>, IGrainWithGuidKey
     where TState : class, new()
     where TCommand : DomainCommand
-    where TEvent : DomainEvent
-    where TErrorEvent : TEvent, IDomainErrorEvent
+    where TPubEvent : DomainEvent
+    where TPubErrorEvent : TPubEvent, IDomainErrorEvent
 {
-    private readonly IStreamProvider _streamProvider;
-    private IAsyncStream<TEvent>? _stream;
-    private IAsyncStream<TEvent>? _broadcastStream;
+    private readonly IStreamProvider _pubStreamProvider;
+    private IAsyncStream<TPubEvent>? _pubStream;
+    private IAsyncStream<TPubEvent>? _pubBroadcastStream;
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="EventSourcingGrainWithGuidKey{TState, TCommand, TEvent, TErrorEvent}" /> class.
+    ///     Initializes a new instance of the <see cref="EventSourcingGrainWithGuidKey{TState, TCommand, TPubEvent, TPubErrorEvent}" /> class.
     /// </summary>
     /// <param name="streamProviderName">The name of the stream provider.</param>
     protected EventSourcingGrainWithGuidKey(string streamProviderName)
     {
         streamProviderName = Guard.Against.NullOrWhiteSpace(streamProviderName, nameof(streamProviderName));
-        _streamProvider = this.GetStreamProvider(streamProviderName);
+        _pubStreamProvider = this.GetStreamProvider(streamProviderName);
     }
 
     /// <summary>
     ///     Gets the stream namespace for the publish stream.
     /// </summary>
     /// <returns>The stream namespace.</returns>
-    protected abstract string GetStreamNamespace();
+    protected abstract string GetPubStreamNamespace();
 
     /// <summary>
     ///     Gets the stream namespace for the broadcast stream.
     /// </summary>
     /// <returns>The stream namespace.</returns>
-    protected abstract string GetBroadcastStreamNamespace();
+    protected abstract string GetPubBroadcastStreamNamespace();
 
     /// <summary>
     ///     Gets the stream for the grain.
     /// </summary>
     /// <returns>The stream.</returns>
-    private IAsyncStream<TEvent> GetStream()
+    private IAsyncStream<TPubEvent> GetPubStream()
     {
-        return _stream ??= _streamProvider.GetStream<TEvent>(StreamId.Create(GetStreamNamespace(), this.GetPrimaryKey()));
+        return _pubStream ??= _pubStreamProvider.GetStream<TPubEvent>(StreamId.Create(GetPubStreamNamespace(), this.GetPrimaryKey()));
     }
 
     /// <summary>
     ///     Gets the broadcast stream for the grain.
     /// </summary>
     /// <returns>The stream.</returns>
-    private IAsyncStream<TEvent> GetBroadcastStream()
+    private IAsyncStream<TPubEvent> GetPubBroadcastStream()
     {
-        return _broadcastStream ??= _streamProvider.GetStream<TEvent>(StreamId.Create(GetBroadcastStreamNamespace(), Guid.Empty));
+        return _pubBroadcastStream ??= _pubStreamProvider.GetStream<TPubEvent>(StreamId.Create(GetPubBroadcastStreamNamespace(), Guid.Empty));
     }
 
     /// <summary>
@@ -68,10 +68,10 @@ public abstract class EventSourcingGrainWithGuidKey<TState, TCommand, TEvent, TE
     /// </summary>
     /// <param name="event">The domain event to publish and broadcast.</param>
     /// <returns>A <see cref="Result{T}" /> that represents the result of the operation.</returns>
-    protected async Task PublishAsync(TEvent @event)
+    protected async Task PublishAsync(TPubEvent @event)
     {
-        await GetStream().OnNextAsync(@event);
-        await GetBroadcastStream().OnNextAsync(@event);
+        await GetPubStream().OnNextAsync(@event);
+        await GetPubBroadcastStream().OnNextAsync(@event);
     }
 
     /// <summary>
@@ -79,9 +79,9 @@ public abstract class EventSourcingGrainWithGuidKey<TState, TCommand, TEvent, TE
     /// </summary>
     /// <param name="errorEvent">The domain error event to publish and broadcast.</param>
     /// <returns>A <see cref="Result" /> that represents the result of the operation.</returns>
-    protected async Task PublishErrorAsync(TErrorEvent errorEvent)
+    protected async Task PublishErrorAsync(TPubErrorEvent errorEvent)
     {
-        await GetStream().OnNextAsync(errorEvent);
-        await GetBroadcastStream().OnNextAsync(errorEvent);
+        await GetPubStream().OnNextAsync(errorEvent);
+        await GetPubBroadcastStream().OnNextAsync(errorEvent);
     }
 }

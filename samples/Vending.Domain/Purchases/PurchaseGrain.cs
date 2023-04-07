@@ -26,13 +26,13 @@ public sealed class PurchaseGrain : StatefulGrainWithStringKey<Purchase, Purchas
     }
 
     /// <inheritdoc />
-    protected override string GetStreamNamespace()
+    protected override string GetPubStreamNamespace()
     {
         return Constants.PurchasesNamespace;
     }
 
     /// <inheritdoc />
-    protected override string GetBroadcastStreamNamespace()
+    protected override string GetPubBroadcastStreamNamespace()
     {
         return Constants.PurchasesBroadcastNamespace;
     }

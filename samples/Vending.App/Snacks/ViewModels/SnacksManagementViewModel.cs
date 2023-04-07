@@ -41,7 +41,7 @@ public class SnacksManagementViewModel : ReactiveObject
         this.WhenAnyValue(vm => vm.SnackItems).Select(items => items.IsNotNullOrEmpty()).ToPropertyEx(this, vm => vm.SnackItemsAvailable);
         this.WhenAnyValue(vm => vm.SelectedSnackItem, vm => vm.Initialized)
             .Where(pair => pair.Item2)
-            .Select(pair => pair.Item1?.Id ?? Guid.Empty)
+            .Select(pair => pair.Item1?.Id)
             .DistinctUntilChanged()
             .SelectMany(GetSnackEditAsync)
             .ObserveOn(RxApp.MainThreadScheduler)
@@ -69,15 +69,15 @@ public class SnacksManagementViewModel : ReactiveObject
         return result.IsSuccess ? result.Value : Enumerable.Empty<SnackItemViewModel>();
     }
 
-    private async Task<SnackEditViewModel?> GetSnackEditAsync(Guid id)
+    private async Task<SnackEditViewModel?> GetSnackEditAsync(Guid? id)
     {
-        if (!Initialized)
+        if (!Initialized || id == null)
         {
             return null;
         }
         var result = await Result.Ok()
                                  .Ensure(_clusterClient != null, "Cluster client is not available")
-                                 .MapTry(() => _clusterClient!.GetGrain<ISnackGrain>(id))
+                                 .MapTry(() => _clusterClient!.GetGrain<ISnackGrain>(id.Value))
                                  .MapTryAsync(grain => grain.GetSnackAsync());
         return result.IsSuccess ? new SnackEditViewModel(result.Value) : null;
     }

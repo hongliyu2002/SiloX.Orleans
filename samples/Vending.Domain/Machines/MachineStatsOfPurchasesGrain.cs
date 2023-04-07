@@ -30,13 +30,13 @@ public class MachineStatsOfPurchasesGrain : StatefulGrainWithGuidKey<StatsOfPurc
     }
 
     /// <inheritdoc />
-    protected override string GetStreamNamespace()
+    protected override string GetPubStreamNamespace()
     {
         return Constants.MachinesNamespace;
     }
 
     /// <inheritdoc />
-    protected override string GetBroadcastStreamNamespace()
+    protected override string GetPubBroadcastStreamNamespace()
     {
         return Constants.MachinesBroadcastNamespace;
     }
