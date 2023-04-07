@@ -1,11 +1,11 @@
 ﻿using SiloX.Domain.Abstractions;
 
-namespace Vending.Projection.Abstractions.Snacks.Events;
+namespace Vending.Projection.Abstractions.Snacks;
 
 [Immutable]
 [Serializable]
 [GenerateSerializer]
-public sealed record SnackInfoChangedEvent
+public abstract record SnackInfoEvent
     (Guid SnackId,
      int Version,
      Guid TraceId,
