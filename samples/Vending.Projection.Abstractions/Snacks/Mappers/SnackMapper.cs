@@ -5,9 +5,9 @@ namespace Vending.Projection.Abstractions.Snacks;
 public static class SnackMapper
 {
     /// <summary>
-    ///     Maps a <see cref="Domain.Abstractions.Snacks.Snack" /> to a <see cref="SnackInfo" />
+    ///     Maps a <see cref="Snack" /> to a <see cref="SnackInfo" />
     /// </summary>
-    /// <param name="snack">The <see cref="Domain.Abstractions.Snacks.Snack" /> to map from.</param>
+    /// <param name="snack">The <see cref="Snack" /> to map from.</param>
     /// <param name="snackInfo">The <see cref="SnackInfo" /> to map to. If null, a new instance will be created.</param>
     /// <returns>The mapped <see cref="SnackInfo" />.</returns>
     public static SnackInfo ToProjection(this Snack snack, SnackInfo? snackInfo = null)

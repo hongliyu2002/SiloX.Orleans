@@ -35,7 +35,6 @@ public class DomainDbContext : DbContext
                                        builder.Ignore(s => s.DeletedAt);
                                        builder.Ignore(s => s.DeletedBy);
                                        builder.Ignore(s => s.PictureUrl);
-                                       builder.Property(s => s.Name).HasMaxLength(128);
                                        builder.HasIndex(s => new { s.IsDeleted, s.Name });
                                    });
         // Configures the Machine entity

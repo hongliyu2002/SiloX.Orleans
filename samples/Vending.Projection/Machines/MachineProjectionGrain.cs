@@ -296,7 +296,7 @@ public sealed class MachineProjectionGrain : SubscriberGrainWithGuidKey<MachineE
             var slot = machine.Slots.FirstOrDefault(sl => sl.MachineId == machineEvent.Slot.MachineId && sl.Position == machineEvent.Slot.Position);
             if (slot == null)
             {
-                slot = new SlotInfo();
+                slot = new MachineSlotInfo();
                 machine.Slots.Add(slot);
             }
             await machineEvent.Slot.ToProjection(GetSnackNameAndPictureUrlAsync, slot);
@@ -336,7 +336,7 @@ public sealed class MachineProjectionGrain : SubscriberGrainWithGuidKey<MachineE
             var slot = machine.Slots.FirstOrDefault(sl => sl.MachineId == machineEvent.Slot.MachineId && sl.Position == machineEvent.Slot.Position);
             if (slot == null)
             {
-                slot = new SlotInfo();
+                slot = new MachineSlotInfo();
                 machine.Slots.Add(slot);
             }
             await machineEvent.Slot.ToProjection(GetSnackNameAndPictureUrlAsync, slot);
@@ -377,7 +377,7 @@ public sealed class MachineProjectionGrain : SubscriberGrainWithGuidKey<MachineE
             var slot = machine.Slots.FirstOrDefault(sl => sl.MachineId == machineEvent.Slot.MachineId && sl.Position == machineEvent.Slot.Position);
             if (slot == null)
             {
-                slot = new SlotInfo();
+                slot = new MachineSlotInfo();
                 machine.Slots.Add(slot);
             }
             await machineEvent.Slot.ToProjection(GetSnackNameAndPictureUrlAsync, slot);

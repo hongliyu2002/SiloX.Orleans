@@ -24,7 +24,7 @@ public class PurchaseRetrieverGrain : Grain, IPurchaseRetrieverGrain
     }
 
     /// <inheritdoc />
-    public Task<Result<ImmutableList<Purchase>>> ListAsync(PurchaseRetrieverListQuery query)
+    public Task<Result<ImmutableList<PurchaseInfo>>> ListAsync(PurchaseRetrieverListQuery query)
     {
         var machineId = query.MachineId;
         var snackId = query.SnackId;
@@ -47,7 +47,7 @@ public class PurchaseRetrieverGrain : Grain, IPurchaseRetrieverGrain
     }
 
     /// <inheritdoc />
-    public Task<Result<ImmutableList<Purchase>>> PagedListAsync(PurchaseRetrieverPagedListQuery query)
+    public Task<Result<ImmutableList<PurchaseInfo>>> PagedListAsync(PurchaseRetrieverPagedListQuery query)
     {
         var machineId = query.MachineId;
         var snackId = query.SnackId;
@@ -74,7 +74,7 @@ public class PurchaseRetrieverGrain : Grain, IPurchaseRetrieverGrain
     }
 
     /// <inheritdoc />
-    public Task<Result<ImmutableList<Purchase>>> SearchingListAsync(PurchaseRetrieverSearchingListQuery query)
+    public Task<Result<ImmutableList<PurchaseInfo>>> SearchingListAsync(PurchaseRetrieverSearchingListQuery query)
     {
         var searchTerm = query.SearchTerm;
         var machineId = query.MachineId;
@@ -99,7 +99,7 @@ public class PurchaseRetrieverGrain : Grain, IPurchaseRetrieverGrain
     }
 
     /// <inheritdoc />
-    public Task<Result<ImmutableList<Purchase>>> SearchingPagedListAsync(PurchaseRetrieverSearchingPagedListQuery query)
+    public Task<Result<ImmutableList<PurchaseInfo>>> SearchingPagedListAsync(PurchaseRetrieverSearchingPagedListQuery query)
     {
         var searchTerm = query.SearchTerm;
         var machineId = query.MachineId;

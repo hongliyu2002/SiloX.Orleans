@@ -8,7 +8,6 @@ using Vending.Domain.Abstractions.Purchases;
 using Vending.Domain.Abstractions.Snacks;
 using Vending.Projection.Abstractions.Purchases;
 using Vending.Projection.EntityFrameworkCore;
-using Purchase = Vending.Projection.Abstractions.Purchases.Purchase;
 
 namespace Vending.Projection.Purchases;
 
@@ -72,7 +71,7 @@ public sealed class PurchaseProjectionGrain : SubscriberGrainWithStringKey<Purch
             var purchase = await _dbContext.Purchases.FindAsync(purchaseEvent.PurchaseId);
             if (purchase == null)
             {
-                purchase = new Purchase
+                purchase = new PurchaseInfo
                            {
                                Id = purchaseEvent.PurchaseId,
                                MachineId = purchaseEvent.MachineId,
@@ -86,7 +85,7 @@ public sealed class PurchaseProjectionGrain : SubscriberGrainWithStringKey<Purch
             }
             if (_dbContext.Entry(purchase).State != EntityState.Added)
             {
-                _logger.LogWarning($"Apply PurchaseInitializedEvent: Purchase {purchaseEvent.PurchaseId} is already in the database. Try to execute full update...");
+                _logger.LogWarning($"Apply PurchaseInitializedEvent: PurchaseInfo {purchaseEvent.PurchaseId} is already in the database. Try to execute full update...");
                 await ApplyFullUpdateAsync(purchaseEvent);
                 return;
             }
@@ -122,7 +121,7 @@ public sealed class PurchaseProjectionGrain : SubscriberGrainWithStringKey<Purch
                 }
                 if (purchase == null)
                 {
-                    purchase = new Purchase();
+                    purchase = new PurchaseInfo();
                     _dbContext.Purchases.Add(purchase);
                 }
                 await purchaseInGrain.ToProjection(GetSnackNameAndPictureUrlAsync, purchase);

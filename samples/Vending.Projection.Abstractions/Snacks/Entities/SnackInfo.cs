@@ -1,10 +1,12 @@
 ﻿using Fluxera.Extensions.Hosting.Modules.Domain.Shared.Model;
+using JetBrains.Annotations;
 
 namespace Vending.Projection.Abstractions.Snacks;
 
 /// <summary>
 ///     Represents a snack that can be sold in a snack machine.
 /// </summary>
+[PublicAPI]
 [Serializable]
 [GenerateSerializer]
 public sealed class SnackInfo : IAuditedObject, ISoftDeleteObject
@@ -16,22 +18,22 @@ public sealed class SnackInfo : IAuditedObject, ISoftDeleteObject
     public Guid Id { get; set; }
 
     /// <summary>
-    ///     Gets or sets the name of the snack.
+    ///     Gets or sets the version of the snack.(Concurrency token)
     /// </summary>
     [Id(1)]
+    public int Version { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the name of the snack.
+    /// </summary>
+    [Id(2)]
     public string Name { get; set; } = null!;
 
     /// <summary>
     ///     Gets or sets the URL of the picture for the snack.
     /// </summary>
-    [Id(2)]
-    public string? PictureUrl { get; set; }
-
-    /// <summary>
-    ///     Gets or sets the version of the snack.(Concurrency token)
-    /// </summary>
     [Id(3)]
-    public int Version { get; set; }
+    public string? PictureUrl { get; set; }
 
     /// <summary>
     ///     Gets or sets the date and time when the snack was created.

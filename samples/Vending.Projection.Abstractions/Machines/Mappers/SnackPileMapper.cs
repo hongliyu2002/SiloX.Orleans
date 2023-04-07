@@ -15,7 +15,7 @@ public static class SnackPileMapper
         snackPileInfo.SnackId = snackPile.SnackId;
         snackPileInfo.Quantity = snackPile.Quantity;
         snackPileInfo.Price = snackPile.Price;
-        snackPileInfo.TotalAmount = snackPile.Amount;
+        snackPileInfo.Amount = snackPile.Amount;
         await snackPileInfo.UpdateSnackNameAndPictureUrlAsync(getNamePicture);
         return snackPileInfo;
     }

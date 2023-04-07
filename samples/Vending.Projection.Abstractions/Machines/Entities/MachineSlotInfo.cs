@@ -3,27 +3,27 @@
 namespace Vending.Projection.Abstractions.Machines;
 
 /// <summary>
-///     Represents a snack machine machineSlot that holds a <see cref="SnackPile" />.
+///     Represents a snack machine slot that holds a <see cref="SnackPile" />.
 /// </summary>
-
+[PublicAPI]
 [Serializable]
 [GenerateSerializer]
-public sealed class SlotInfo
+public sealed class MachineSlotInfo
 {
     /// <summary>
-    ///     Gets or sets the ID of the snack machine that this machineSlot belongs to.
+    ///     The ID of the snack machine that this slot belongs to.
     /// </summary>
     [Id(0)]
     public Guid MachineId { get; set; }
 
     /// <summary>
-    ///     Gets or sets the position of this machineSlot within the snack machine.
+    ///     The position of this slot within the snack machine.
     /// </summary>
     [Id(1)]
     public int Position { get; set; }
 
     /// <summary>
-    ///     Gets or sets the <see cref="SnackPile" /> that is stored in this machineSlot.
+    ///     The <see cref="SnackPile" /> that is stored in this slot.
     /// </summary>
     [Id(2)]
     public SnackPileInfo? SnackPile { get; set; }

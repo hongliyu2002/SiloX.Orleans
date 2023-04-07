@@ -13,26 +13,26 @@ public interface IPurchaseRetrieverGrain : IGrainWithStringKey
     /// </summary>
     /// <param name="query">The query.</param>
     /// <returns>List of purchases.</returns>
-    Task<Result<ImmutableList<Purchase>>> ListAsync(PurchaseRetrieverListQuery query);
+    Task<Result<ImmutableList<PurchaseInfo>>> ListAsync(PurchaseRetrieverListQuery query);
 
     /// <summary>
     ///     Asynchronously retrieves a paged list of purchases.
     /// </summary>
     /// <param name="query">The query.</param>
     /// <returns>List of purchases.</returns>
-    Task<Result<ImmutableList<Purchase>>> PagedListAsync(PurchaseRetrieverPagedListQuery query);
+    Task<Result<ImmutableList<PurchaseInfo>>> PagedListAsync(PurchaseRetrieverPagedListQuery query);
 
     /// <summary>
     ///     Asynchronously retrieves a list of purchases with searching feature.
     /// </summary>
     /// <param name="query">The query.</param>
     /// <returns>List of purchases.</returns>
-    Task<Result<ImmutableList<Purchase>>> SearchingListAsync(PurchaseRetrieverSearchingListQuery query);
+    Task<Result<ImmutableList<PurchaseInfo>>> SearchingListAsync(PurchaseRetrieverSearchingListQuery query);
 
     /// <summary>
     ///     Asynchronously retrieves a paged list of purchases with searching feature.
     /// </summary>
     /// <param name="query">The query.</param>
     /// <returns>List of purchases.</returns>
-    Task<Result<ImmutableList<Purchase>>> SearchingPagedListAsync(PurchaseRetrieverSearchingPagedListQuery query);
+    Task<Result<ImmutableList<PurchaseInfo>>> SearchingPagedListAsync(PurchaseRetrieverSearchingPagedListQuery query);
 }

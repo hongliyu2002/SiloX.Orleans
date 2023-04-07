@@ -9,7 +9,7 @@ namespace Vending.Projection.Abstractions.Purchases;
 [PublicAPI]
 [Serializable]
 [GenerateSerializer]
-public sealed class Purchase
+public sealed class PurchaseInfo
 {
     /// <summary>
     ///     Gets or sets the ID of the purchase.
@@ -65,6 +65,8 @@ public sealed class Purchase
     [Id(8)]
     public string? BoughtBy { get; set; }
 
+    #region Update methods
+
     /// <summary>
     ///     Updates the name and picture URL of the snack.
     /// </summary>
@@ -76,4 +78,6 @@ public sealed class Purchase
         SnackName = name;
         SnackPictureUrl = pictureUrl;
     }
+
+    #endregion
 }
