@@ -20,7 +20,7 @@ public sealed class Purchase
     public Guid MachineId { get; set; }
 
     /// <summary>
-    ///     The position of slot.
+    ///     The position of machineSlot.
     /// </summary>
     [Id(2)]
     public int Position { get; set; }

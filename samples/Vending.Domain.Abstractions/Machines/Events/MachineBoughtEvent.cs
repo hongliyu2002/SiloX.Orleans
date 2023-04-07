@@ -7,7 +7,7 @@ public sealed record MachineBoughtEvent
     (Guid MachineId,
      int Version,
      decimal AmountInTransaction,
-     Slot Slot,
+     MachineSlot Slot,
      int SnackQuantity,
      decimal SnackAmount,
      Guid TraceId,

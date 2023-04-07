@@ -24,7 +24,7 @@ public sealed class Purchase
     public Guid MachineId { get; set; }
 
     /// <summary>
-    ///     Gets or sets the position of the slot in the snack machine where the snack was bought.
+    ///     Gets or sets the position of the machineSlot in the snack machine where the snack was bought.
     /// </summary>
     [Id(2)]
     public int Position { get; set; }

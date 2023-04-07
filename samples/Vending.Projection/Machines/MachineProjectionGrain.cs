@@ -405,7 +405,7 @@ public sealed class MachineProjectionGrain : SubscriberGrainWithGuidKey<MachineE
             {
                 var machineId = machineEvent.MachineId;
                 var machineGrain = GrainFactory.GetGrain<IMachineGrain>(machineId);
-                var machineInGrain = await machineGrain.GetStateAsync();
+                var machineInGrain = await machineGrain.GetMachineAsync();
                 var machine = await _dbContext.Machines.FindAsync(machineId);
                 if (machineInGrain == null)
                 {

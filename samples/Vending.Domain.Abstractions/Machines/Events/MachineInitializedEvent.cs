@@ -9,7 +9,7 @@ public sealed record MachineInitializedEvent
     (Guid MachineId,
      int Version,
      Money MoneyInside,
-     IList<Slot> Slots,
+     IList<MachineSlot> Slots,
      int SlotsCount,
      int SnackCount,
      int SnackQuantity,

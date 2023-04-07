@@ -43,7 +43,7 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
     }
 
     /// <inheritdoc />
-    public Task<Machine> GetStateAsync()
+    public Task<Machine> GetMachineAsync()
     {
         return Task.FromResult(State);
     }
@@ -67,7 +67,7 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
     }
 
     /// <inheritdoc />
-    public Task<ImmutableList<Slot>> GetSlotsAsync()
+    public Task<ImmutableList<MachineSlot>> GetSlotsAsync()
     {
         return Task.FromResult(State.Slots.ToImmutableList());
     }
@@ -258,7 +258,7 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
                      .Verify(command.SnackPile != null, "Snack pile to load should not be empty.")
                      .Verify(command.SnackPile!.Quantity > 0, "Snack pile quantity to load should be greater than zero.")
                      .Verify(slot!.SnackPile == null || slot.SnackPile.SnackId == command.SnackPile.SnackId,
-                             $"Snack pile to load should be of the same type as the one already in the slot at position {command.Position} in the snack machine {machineId}.")
+                             $"Snack pile to load should be of the same type as the one already in the machineSlot at position {command.Position} in the snack machine {machineId}.")
                      .Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
     }
 
@@ -320,9 +320,9 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
                      .Verify(State.IsCreated, $"Snack machine {machineId} is not initialized.")
                      .Verify(State.TryGetSlot(command.Position, out var slot),
                              $"Slot at position {command.Position} in the snack machine {machineId} does not exist.")
-                     .Verify(slot?.SnackPile != null, $"Snack pile of the slot at position {command.Position} in the snack machine {machineId} does not exist.")
+                     .Verify(slot?.SnackPile != null, $"Snack pile of the machineSlot at position {command.Position} in the snack machine {machineId} does not exist.")
                      .Verify(slot?.SnackPile != null && slot.SnackPile.CanSubtractOne(),
-                             $"Not enough snack in the snack pile of the slot at position {command.Position} in the snack machine {machineId}.")
+                             $"Not enough snack in the snack pile of the machineSlot at position {command.Position} in the snack machine {machineId}.")
                      .Verify(State.AmountInTransaction >= (slot?.SnackPile?.Price ?? 0),
                              $"Not enough money (￥{State.AmountInTransaction}) to buy the snack {slot?.SnackPile?.SnackId} (￥{slot?.SnackPile?.Price}) in the snack machine {machineId}.")
                      .Verify(State.MoneyInside.CanAllocate(State.AmountInTransaction - (slot?.SnackPile?.Price ?? 0), out _),

@@ -7,23 +7,23 @@ namespace Vending.Domain.Abstractions.Machines;
 /// </summary>
 [Serializable]
 [GenerateSerializer]
-public sealed class SnackStat
+public sealed class MachineSnackStat
 {
     /// <summary>
-    ///     Creates a new instance of the <see cref="SnackStat" /> class.
+    ///     Creates a new instance of the <see cref="MachineSnackStat" /> class.
     /// </summary>
-    public SnackStat()
+    public MachineSnackStat()
     {
     }
 
     /// <summary>
-    ///     Creates a new instance of the <see cref="SnackStat" /> class.
+    ///     Creates a new instance of the <see cref="MachineSnackStat" /> class.
     /// </summary>
     /// <param name="machineId">The machine id.</param>
     /// <param name="snackId">The snack id.</param>
     /// <param name="totalQuantity">The total quantity of snacks in the machine.</param>
     /// <param name="totalAmount">The total amount of the snacks in the machine.</param>
-    public SnackStat(Guid machineId, Guid snackId, int totalQuantity, decimal totalAmount)
+    public MachineSnackStat(Guid machineId, Guid snackId, int totalQuantity, decimal totalAmount)
         : this()
     {
         MachineId = Guard.Against.Empty(machineId, nameof(machineId));
@@ -59,6 +59,6 @@ public sealed class SnackStat
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"SnackStat with MachineId:'{MachineId}' SnackId:'{SnackId}' TotalQuantity:'{TotalQuantity}' Amount:'{TotalAmount}'";
+        return $"MachineSnackStat with MachineId:'{MachineId}' SnackId:'{SnackId}' TotalQuantity:'{TotalQuantity}' Amount:'{TotalAmount}'";
     }
 }

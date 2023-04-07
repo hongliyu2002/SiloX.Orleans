@@ -1,7 +1,7 @@
 ﻿using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
-using Vending.Domain.Abstractions.Purchases;
 using Vending.Domain.Abstractions.Machines;
+using Vending.Domain.Abstractions.Purchases;
 using Vending.Domain.Abstractions.Snacks;
 
 namespace Vending.Domain.EntityFrameworkCore;
@@ -9,7 +9,8 @@ namespace Vending.Domain.EntityFrameworkCore;
 [PublicAPI]
 public class DomainDbContext : DbContext
 {
-    public DomainDbContext(DbContextOptions<DomainDbContext> options) : base(options)
+    public DomainDbContext(DbContextOptions<DomainDbContext> options)
+        : base(options)
     {
     }
 
@@ -26,49 +27,58 @@ public class DomainDbContext : DbContext
                                    {
                                        builder.ToTable("Snacks");
                                        builder.HasKey(s => s.Id);
-                                       builder.Property(s => s.CreatedBy).HasMaxLength(128);
-                                       builder.Property(s => s.LastModifiedBy).HasMaxLength(128);
-                                       builder.Property(s => s.DeletedBy).HasMaxLength(128);
                                        builder.Property(s => s.Name).HasMaxLength(128);
-                                       builder.Property(s => s.PictureUrl).HasMaxLength(512);
+                                       builder.Ignore(s => s.CreatedAt);
+                                       builder.Ignore(s => s.CreatedBy);
+                                       builder.Ignore(s => s.LastModifiedAt);
+                                       builder.Ignore(s => s.LastModifiedBy);
+                                       builder.Ignore(s => s.DeletedAt);
+                                       builder.Ignore(s => s.DeletedBy);
+                                       builder.Ignore(s => s.PictureUrl);
+                                       builder.Property(s => s.Name).HasMaxLength(128);
                                        builder.HasIndex(s => new { s.IsDeleted, s.Name });
                                    });
         // Configures the Machine entity
         modelBuilder.Entity<Machine>(builder =>
-                                          {
-                                              builder.ToTable("Machines");
-                                              builder.HasKey(sm => sm.Id);
-                                              builder.Property(sm => sm.CreatedBy).HasMaxLength(128);
-                                              builder.Property(sm => sm.LastModifiedBy).HasMaxLength(128);
-                                              builder.Property(sm => sm.DeletedBy).HasMaxLength(128);
-                                              builder.OwnsOne(sm => sm.MoneyInside, navigation =>
-                                                                                    {
-                                                                                        navigation.Property(m => m.Amount).HasPrecision(10, 2);
-                                                                                    });
-                                              builder.Property(sm => sm.AmountInTransaction).HasPrecision(10, 2);
-                                              builder.Property(sm => sm.SnackAmount).HasPrecision(10, 2);
-                                          });
+                                     {
+                                         builder.ToTable("Machines");
+                                         builder.HasKey(m => m.Id);
+                                         builder.OwnsOne(m => m.MoneyInside, navigation =>
+                                                                             {
+                                                                                 navigation.Property(m => m.Amount).HasPrecision(10, 2);
+                                                                             });
+                                         builder.Property(m => m.AmountInTransaction).HasPrecision(10, 2);
+                                         builder.Property(m => m.SnackAmount).HasPrecision(10, 2);
+                                         builder.Ignore(m => m.CreatedAt);
+                                         builder.Ignore(m => m.CreatedBy);
+                                         builder.Ignore(m => m.LastModifiedAt);
+                                         builder.Ignore(m => m.LastModifiedBy);
+                                         builder.Ignore(m => m.DeletedAt);
+                                         builder.Ignore(m => m.DeletedBy);
+                                         builder.HasIndex(s => new { s.IsDeleted });
+                                     });
         // Configures the Slot entity
-        modelBuilder.Entity<Slot>(builder =>
-                                  {
-                                      builder.ToTable("Slots");
-                                      builder.HasKey(sl => new { sl.MachineId, sl.Position });
-                                      builder.HasOne<Machine>().WithMany(sm => sm.Slots).HasForeignKey(sl => sl.MachineId).OnDelete(DeleteBehavior.Cascade);
-                                      builder.OwnsOne(sl => sl.SnackPile, navigationBuilder =>
-                                                                        {
-                                                                            navigationBuilder.HasOne<Snack>().WithMany().HasForeignKey(sp => sp.SnackId).OnDelete(DeleteBehavior.Cascade);
-                                                                            navigationBuilder.Property(sp => sp.Price).HasPrecision(10, 2);
-                                                                            navigationBuilder.Property(sp => sp.Amount).HasPrecision(10, 2);
-                                                                        });
-                                  });
-        // Configures the SnackStat entity
-        modelBuilder.Entity<SnackStat>(builder =>
-                                        {
-                                            builder.HasKey(ss => new { ss.MachineId, ss.SnackId });
-                                            builder.HasOne<Machine>().WithMany(sm => sm.SnackStats).HasForeignKey(ss => ss.MachineId).OnDelete(DeleteBehavior.Cascade);
-                                            builder.HasOne<Snack>().WithMany().HasForeignKey(ss => ss.SnackId).OnDelete(DeleteBehavior.Cascade);
-                                            builder.Property(ss => ss.TotalAmount).HasPrecision(10, 2);
-                                        });
+        modelBuilder.Entity<MachineSlot>(builder =>
+                                         {
+                                             builder.ToTable("MachineSlots");
+                                             builder.HasKey(ms => new { ms.MachineId, ms.Position });
+                                             builder.HasOne<Machine>().WithMany(m => m.Slots).HasForeignKey(ms => ms.MachineId).OnDelete(DeleteBehavior.Cascade);
+                                             builder.OwnsOne(ms => ms.SnackPile, navigationBuilder =>
+                                                                                 {
+                                                                                     navigationBuilder.HasOne<Snack>().WithMany().HasForeignKey(sp => sp.SnackId).OnDelete(DeleteBehavior.Cascade);
+                                                                                     navigationBuilder.Property(sp => sp.Price).HasPrecision(10, 2);
+                                                                                     navigationBuilder.Property(sp => sp.Amount).HasPrecision(10, 2);
+                                                                                 });
+                                         });
+        // Configures the MachineSnackStat entity
+        modelBuilder.Entity<MachineSnackStat>(builder =>
+                                              {
+                                                  builder.ToTable("MachineSnackStats");
+                                                  builder.HasKey(ss => new { ss.MachineId, ss.SnackId });
+                                                  builder.HasOne<Machine>().WithMany(m => m.SnackStats).HasForeignKey(ss => ss.MachineId).OnDelete(DeleteBehavior.Cascade);
+                                                  builder.HasOne<Snack>().WithMany().HasForeignKey(ss => ss.SnackId).OnDelete(DeleteBehavior.Cascade);
+                                                  builder.Property(ss => ss.TotalAmount).HasPrecision(10, 2);
+                                              });
         // Configures the Purchase entity
         modelBuilder.Entity<Purchase>(builder =>
                                       {

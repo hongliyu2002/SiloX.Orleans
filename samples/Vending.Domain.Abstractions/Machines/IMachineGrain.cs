@@ -1,5 +1,4 @@
-﻿using System.Collections.Immutable;
-using Orleans.Concurrency;
+﻿using Orleans.Concurrency;
 using Orleans.FluentResults;
 
 namespace Vending.Domain.Abstractions.Machines;
@@ -13,31 +12,13 @@ public interface IMachineGrain : IGrainWithGuidKey
     ///     Asynchronously retrieves the current state of the machine.
     /// </summary>
     [AlwaysInterleave]
-    Task<Machine> GetStateAsync();
+    Task<Machine> GetMachineAsync();
 
     /// <summary>
     ///     Asynchronously retrieves the current version number of the machine.
     /// </summary>
     [AlwaysInterleave]
     Task<int> GetVersionAsync();
-
-    /// <summary>
-    ///     Asynchronously retrieves the current amount of money inside the Machine.
-    /// </summary>
-    [AlwaysInterleave]
-    Task<Money> GetMoneyInsideAsync();
-
-    /// <summary>
-    ///     Asynchronously retrieves the current amount of money in transaction.
-    /// </summary>
-    [AlwaysInterleave]
-    Task<decimal> GetAmountInTransactionAsync();
-
-    /// <summary>
-    ///     Asynchronously retrieves the current list of slots in the Machine.
-    /// </summary>
-    [AlwaysInterleave]
-    Task<ImmutableList<Slot>> GetSlotsAsync();
 
     /// <summary>
     ///     Asynchronously checks whether the Machine can be initialized with the given command.

@@ -10,7 +10,7 @@ public sealed record MachineRemovedEvent
      int Version,
      Money MoneyInside,
      decimal AmountInTransaction,
-     IList<Slot> Slots,
+     IList<MachineSlot> Slots,
      int SlotsCount,
      int SnackCount,
      int SnackQuantity,
