@@ -43,7 +43,7 @@ public class ProjectionDbContext : DbContext
                                          {
                                              builder.ToTable("Machines");
                                              builder.HasKey(m => m.Id);
-                                             builder.OwnsOne(m => m.MoneyInfoInside, navigation =>
+                                             builder.OwnsOne(m => m.MoneyInside, navigation =>
                                                                                      {
                                                                                          navigation.Property(m => m.Amount).HasPrecision(10, 2);
                                                                                      });

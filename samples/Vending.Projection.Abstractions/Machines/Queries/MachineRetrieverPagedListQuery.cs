@@ -9,7 +9,9 @@ namespace Vending.Projection.Abstractions.Machines;
 [Serializable]
 [GenerateSerializer]
 public sealed record MachineRetrieverPagedListQuery
-    (Int32Range? SlotsCountRange,
+    (DecimalRange? MoneyInsideAmountRange,
+     DecimalRange? AmountInTransactionRange,
+     Int32Range? SlotsCountRange,
      Int32Range? SnackCountRange,
      Int32Range? SnackQuantityRange,
      DecimalRange? SnackAmountRange,

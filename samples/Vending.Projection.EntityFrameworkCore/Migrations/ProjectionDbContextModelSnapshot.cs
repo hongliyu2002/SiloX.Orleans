@@ -219,7 +219,7 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
 
             modelBuilder.Entity("Vending.Projection.Abstractions.Machines.MachineInfo", b =>
                 {
-                    b.OwnsOne("Vending.Projection.Abstractions.Machines.MoneyInfo", "MoneyInfoInside", b1 =>
+                    b.OwnsOne("Vending.Projection.Abstractions.Machines.MoneyInfo", "MoneyInside", b1 =>
                         {
                             b1.Property<Guid>("MachineInfoId")
                                 .HasColumnType("uniqueidentifier");
@@ -257,7 +257,7 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
                                 .HasForeignKey("MachineInfoId");
                         });
 
-                    b.Navigation("MoneyInfoInside")
+                    b.Navigation("MoneyInside")
                         .IsRequired();
                 });
 

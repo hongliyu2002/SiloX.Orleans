@@ -25,6 +25,10 @@ public class MachineRetrieverGrain : Grain, IMachineRetrieverGrain
     /// <inheritdoc />
     public Task<Result<ImmutableList<MachineInfo>>> ListAsync(MachineRetrieverListQuery query)
     {
+        var moneyInsideAmountRangeStart = query.MoneyInsideAmountRange?.Start;
+        var moneyInsideAmountRangeEnd = query.MoneyInsideAmountRange?.End;
+        var amountInTransactionRangeStart = query.AmountInTransactionRange?.Start;
+        var amountInTransactionRangeEnd = query.AmountInTransactionRange?.End;
         var slotsCountRangeStart = query.SlotsCountRange?.Start;
         var slotsCountRangeEnd = query.SlotsCountRange?.End;
         var snackCountRangeStart = query.SnackCountRange?.Start;
@@ -49,6 +53,10 @@ public class MachineRetrieverGrain : Grain, IMachineRetrieverGrain
         var isDeleted = query.IsDeleted;
         var sortings = query.Sortings?.ToSortStrinng();
         return Result.Ok(_dbContext.Machines.AsNoTracking())
+                     .MapIf(moneyInsideAmountRangeStart != null, snacks => snacks.Where(sm => sm.MoneyInside.Amount >= moneyInsideAmountRangeStart))
+                     .MapIf(moneyInsideAmountRangeEnd != null, snacks => snacks.Where(sm => sm.MoneyInside.Amount < moneyInsideAmountRangeEnd))
+                     .MapIf(amountInTransactionRangeStart != null, snacks => snacks.Where(sm => sm.AmountInTransaction >= amountInTransactionRangeStart))
+                     .MapIf(amountInTransactionRangeEnd != null, snacks => snacks.Where(sm => sm.AmountInTransaction < amountInTransactionRangeEnd))
                      .MapIf(slotsCountRangeStart != null, snacks => snacks.Where(sm => sm.SlotsCount >= slotsCountRangeStart))
                      .MapIf(slotsCountRangeEnd != null, snacks => snacks.Where(sm => sm.SlotsCount < slotsCountRangeEnd))
                      .MapIf(snackCountRangeStart != null, snacks => snacks.Where(sm => sm.SnackCount >= snackCountRangeStart))
@@ -78,6 +86,10 @@ public class MachineRetrieverGrain : Grain, IMachineRetrieverGrain
     /// <inheritdoc />
     public Task<Result<ImmutableList<MachineInfo>>> PagedListAsync(MachineRetrieverPagedListQuery query)
     {
+        var moneyInsideAmountRangeStart = query.MoneyInsideAmountRange?.Start;
+        var moneyInsideAmountRangeEnd = query.MoneyInsideAmountRange?.End;
+        var amountInTransactionRangeStart = query.AmountInTransactionRange?.Start;
+        var amountInTransactionRangeEnd = query.AmountInTransactionRange?.End;
         var slotsCountRangeStart = query.SlotsCountRange?.Start;
         var slotsCountRangeEnd = query.SlotsCountRange?.End;
         var snackCountRangeStart = query.SnackCountRange?.Start;
@@ -104,6 +116,10 @@ public class MachineRetrieverGrain : Grain, IMachineRetrieverGrain
         var skipCount = query.SkipCount;
         var maxResultCount = query.MaxResultCount;
         return Result.Ok(_dbContext.Machines.AsNoTracking())
+                     .MapIf(moneyInsideAmountRangeStart != null, snacks => snacks.Where(sm => sm.MoneyInside.Amount >= moneyInsideAmountRangeStart))
+                     .MapIf(moneyInsideAmountRangeEnd != null, snacks => snacks.Where(sm => sm.MoneyInside.Amount < moneyInsideAmountRangeEnd))
+                     .MapIf(amountInTransactionRangeStart != null, snacks => snacks.Where(sm => sm.AmountInTransaction >= amountInTransactionRangeStart))
+                     .MapIf(amountInTransactionRangeEnd != null, snacks => snacks.Where(sm => sm.AmountInTransaction < amountInTransactionRangeEnd))
                      .MapIf(slotsCountRangeStart != null, snacks => snacks.Where(sm => sm.SlotsCount >= slotsCountRangeStart))
                      .MapIf(slotsCountRangeEnd != null, snacks => snacks.Where(sm => sm.SlotsCount < slotsCountRangeEnd))
                      .MapIf(snackCountRangeStart != null, snacks => snacks.Where(sm => sm.SnackCount >= snackCountRangeStart))

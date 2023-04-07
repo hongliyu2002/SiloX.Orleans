@@ -46,7 +46,7 @@ public sealed class PurchaseProjectionGrain : SubscriberGrainWithStringKey<Purch
     /// <inheritdoc />
     protected override Task HandLeErrorEventAsync(PurchaseErrorEvent errorEvent)
     {
-        _logger.LogWarning($"PurchaseErrorEvent received: {string.Join(';', errorEvent.Reasons)}");
+        _logger.LogWarning("PurchaseErrorEvent received: {Reasons}", string.Join(';', errorEvent.Reasons));
         return Task.CompletedTask;
     }
 
@@ -68,27 +68,28 @@ public sealed class PurchaseProjectionGrain : SubscriberGrainWithStringKey<Purch
     {
         try
         {
-            var purchase = await _dbContext.Purchases.FindAsync(purchaseEvent.PurchaseId);
-            if (purchase == null)
+            var purchaseInfo = await _dbContext.Purchases.FindAsync(purchaseEvent.PurchaseId);
+            if (purchaseInfo == null)
             {
-                purchase = new PurchaseInfo
-                           {
-                               Id = purchaseEvent.PurchaseId,
-                               MachineId = purchaseEvent.MachineId,
-                               Position = purchaseEvent.Position,
-                               SnackId = purchaseEvent.SnackId,
-                               BoughtPrice = purchaseEvent.BoughtPrice,
-                               BoughtAt = purchaseEvent.OperatedAt,
-                               BoughtBy = purchaseEvent.OperatedBy
-                           };
-                _dbContext.Purchases.Add(purchase);
+                purchaseInfo = new PurchaseInfo
+                               {
+                                   Id = purchaseEvent.PurchaseId,
+                                   MachineId = purchaseEvent.MachineId,
+                                   Position = purchaseEvent.Position,
+                                   SnackId = purchaseEvent.SnackId,
+                                   BoughtPrice = purchaseEvent.BoughtPrice,
+                                   BoughtAt = purchaseEvent.OperatedAt,
+                                   BoughtBy = purchaseEvent.OperatedBy
+                               };
+                _dbContext.Purchases.Add(purchaseInfo);
             }
-            if (_dbContext.Entry(purchase).State != EntityState.Added)
+            if (_dbContext.Entry(purchaseInfo).State != EntityState.Added)
             {
-                _logger.LogWarning($"Apply PurchaseInitializedEvent: PurchaseInfo {purchaseEvent.PurchaseId} is already in the database. Try to execute full update...");
+                _logger.LogWarning("Apply PurchaseInitializedEvent: PurchaseInfo {PurchaseId} is already in the database. Try to execute full update...", purchaseEvent.PurchaseId);
                 await ApplyFullUpdateAsync(purchaseEvent);
                 return;
             }
+            await purchaseInfo.UpdateSnackNameAndPictureUrlAsync(GetSnackNameAndPictureUrlAsync);
             await _dbContext.SaveChangesAsync();
         }
         catch (Exception ex)
@@ -107,24 +108,24 @@ public sealed class PurchaseProjectionGrain : SubscriberGrainWithStringKey<Purch
             try
             {
                 var purchaseGrain = GrainFactory.GetGrain<IPurchaseGrain>(purchaseEvent.PurchaseId);
-                var purchaseInGrain = await purchaseGrain.GetStateAsync();
-                var purchase = await _dbContext.Purchases.FindAsync(purchaseEvent.PurchaseId);
-                if (purchaseInGrain == null)
+                var purchase = await purchaseGrain.GetStateAsync();
+                var purchaseInfo = await _dbContext.Purchases.FindAsync(purchaseEvent.PurchaseId);
+                if (purchase == null)
                 {
-                    if (purchase == null)
+                    if (purchaseInfo == null)
                     {
                         return;
                     }
-                    _dbContext.Remove(purchase);
+                    _dbContext.Remove(purchaseInfo);
                     await _dbContext.SaveChangesAsync();
                     return;
                 }
-                if (purchase == null)
+                if (purchaseInfo == null)
                 {
-                    purchase = new PurchaseInfo();
-                    _dbContext.Purchases.Add(purchase);
+                    purchaseInfo = new PurchaseInfo();
+                    _dbContext.Purchases.Add(purchaseInfo);
                 }
-                await purchaseInGrain.ToProjection(GetSnackNameAndPictureUrlAsync, purchase);
+                await purchase.ToProjection(GetSnackNameAndPictureUrlAsync, purchaseInfo);
                 await _dbContext.SaveChangesAsync();
                 return;
             }
@@ -133,13 +134,13 @@ public sealed class PurchaseProjectionGrain : SubscriberGrainWithStringKey<Purch
                 retryNeeded = ++attempts <= 3;
                 if (retryNeeded)
                 {
-                    _logger.LogWarning(ex, $"ApplyFullUpdateAsync: DbUpdateConcurrencyException is occurred when try to write data to the database. Retrying {attempts}...");
+                    _logger.LogWarning(ex, "ApplyFullUpdateAsync: DbUpdateConcurrencyException is occurred when try to write data to the database. Retrying {Attempts}...", attempts);
                     await Task.Delay(TimeSpan.FromSeconds(attempts));
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "ApplyFullUpdateAsync: Exception is occurred when try to write data to the database.");
+                _logger.LogError(ex, "ApplyFullUpdateAsync: Exception is occurred when try to write data to the database");
                 retryNeeded = false;
             }
         }

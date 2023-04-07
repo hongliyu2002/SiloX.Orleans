@@ -27,7 +27,7 @@ public sealed class MachineInfo : IAuditedObject, ISoftDeleteObject
     ///     The amount of money currently inside the machine.
     /// </summary>
     [Id(2)]
-    public MoneyInfo MoneyInfoInside { get; set; } = new();
+    public MoneyInfo MoneyInside { get; set; } = new();
 
     /// <summary>
     ///     The amount of money currently in the transaction.
