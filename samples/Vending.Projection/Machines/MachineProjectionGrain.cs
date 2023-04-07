@@ -284,7 +284,7 @@ public sealed class MachineProjectionGrain : SubscriberGrainWithGuidKey<MachineE
     {
         try
         {
-            var machineInfo = await _dbContext.Machines.Include(sm => sm.Slots).FirstOrDefaultAsync(sm => sm.Id == machineSnacksEvent.MachineId);
+            var machineInfo = await _dbContext.Machines.Include(m => m.Slots).FirstOrDefaultAsync(m => m.Id == machineSnacksEvent.MachineId);
             if (machineInfo == null)
             {
                 _logger.LogWarning("Apply MachineSnacksLoadedEvent: Machine {MachineId} does not exist in the database. Try to execute full update...", machineSnacksEvent.MachineId);
@@ -325,7 +325,7 @@ public sealed class MachineProjectionGrain : SubscriberGrainWithGuidKey<MachineE
     {
         try
         {
-            var machineInfo = await _dbContext.Machines.Include(sm => sm.Slots).FirstOrDefaultAsync(sm => sm.Id == machineSnacksEvent.MachineId);
+            var machineInfo = await _dbContext.Machines.Include(m => m.Slots).FirstOrDefaultAsync(m => m.Id == machineSnacksEvent.MachineId);
             if (machineInfo == null)
             {
                 _logger.LogWarning("Apply MachineSnacksUnloadedEvent: Machine {MachineId} does not exist in the database. Try to execute full update...", machineSnacksEvent.MachineId);
@@ -366,7 +366,7 @@ public sealed class MachineProjectionGrain : SubscriberGrainWithGuidKey<MachineE
     {
         try
         {
-            var machineInfo = await _dbContext.Machines.Include(sm => sm.Slots).FirstOrDefaultAsync(sm => sm.Id == machineSnackEvent.MachineId);
+            var machineInfo = await _dbContext.Machines.Include(m => m.Slots).FirstOrDefaultAsync(m => m.Id == machineSnackEvent.MachineId);
             if (machineInfo == null)
             {
                 _logger.LogWarning("Apply MachineSnackBoughtEvent: Machine {MachineId} does not exist in the database. Try to execute full update...", machineSnackEvent.MachineId);
@@ -455,7 +455,7 @@ public sealed class MachineProjectionGrain : SubscriberGrainWithGuidKey<MachineE
                 var machineId = machineEvent.MachineId;
                 var machineGrain = GrainFactory.GetGrain<IMachineGrain>(machineId);
                 var machine = await machineGrain.GetMachineAsync();
-                var machineInfo = await _dbContext.Machines.FindAsync(machineId);
+                var machineInfo = await _dbContext.Machines.Include(m => m.Slots).FirstOrDefaultAsync(m => m.Id == machineId);
                 if (machine == null)
                 {
                     if (machineInfo == null)

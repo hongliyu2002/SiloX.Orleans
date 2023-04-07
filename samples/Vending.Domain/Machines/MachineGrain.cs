@@ -306,7 +306,7 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
 
     private async Task PersistAsync()
     {
-        var machine = await _dbContext.Machines.Include(sm => sm.Slots).Include(sm => sm.SnackStats).FirstOrDefaultAsync(sm => sm.Id == State.Id);
+        var machine = await _dbContext.Machines.Include(m => m.Slots).Include(m => m.SnackStats).FirstOrDefaultAsync(m => m.Id == State.Id);
         if (machine != null)
         {
             _dbContext.Entry(machine).CurrentValues.SetValues(State);

@@ -36,7 +36,7 @@ public sealed class MachineRepoGrain : Grain, IMachineRepoGrain
     public Task<Result> DeleteAsync(MachineRepoDeleteCommand command)
     {
         return Result.Ok()
-                     .MapTryAsync(() => _dbContext.Machines.Where(sm => sm.IsDeleted == false).AnyAsync(sm => sm.Id == command.MachineId))
+                     .MapTryAsync(() => _dbContext.Machines.Where(m => m.IsDeleted == false).AnyAsync(m => m.Id == command.MachineId))
                      .EnsureAsync(exists => exists, $"Snack machine {command.MachineId} does not exist or has already been deleted.")
                      .MapTryAsync(() => GrainFactory.GetGrain<IMachineGrain>(command.MachineId))
                      .BindTryAsync(grain => grain.RemoveAsync(new MachineRemoveCommand(command.TraceId, command.OperatedAt, command.OperatedBy)));
@@ -46,7 +46,7 @@ public sealed class MachineRepoGrain : Grain, IMachineRepoGrain
     public Task<Result> DeleteManyAsync(MachineRepoDeleteManyCommand command)
     {
         return Result.Ok()
-                     .MapTryAsync(() => _dbContext.Machines.Where(sm => sm.IsDeleted == false).Select(sm => sm.Id).Intersect(command.MachineIds).ToListAsync())
+                     .MapTryAsync(() => _dbContext.Machines.Where(m => m.IsDeleted == false).Select(m => m.Id).Intersect(command.MachineIds).ToListAsync())
                      .EnsureAsync(machineIds => machineIds.Count == command.MachineIds.Count, "Some machines do not exist or have already been deleted.")
                      .MapTryAsync(machineIds => machineIds.Select(machineId => GrainFactory.GetGrain<IMachineGrain>(machineId)))
                      .MapTryAsync(grains => grains.Select(grain => grain.RemoveAsync(new MachineRemoveCommand(command.TraceId, command.OperatedAt, command.OperatedBy))))
