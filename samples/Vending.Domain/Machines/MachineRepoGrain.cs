@@ -23,13 +23,14 @@ public sealed class MachineRepoGrain : Grain, IMachineRepoGrain
     }
 
     /// <inheritdoc />
-    public Task<Result<Guid>> CreateAsync(MachineRepoCreateCommand command)
+    public Task<Result<Machine>> CreateAsync(MachineRepoCreateCommand command)
     {
         var machineId = _guidGenerator.Create();
+        IMachineGrain grain = null!;
         return Result.Ok()
-                     .MapTry(() => GrainFactory.GetGrain<IMachineGrain>(machineId))
-                     .MapTryAsync(grain => grain.InitializeAsync(new MachineInitializeCommand(machineId, command.MoneyInside, command.Slots, command.TraceId, command.OperatedAt, command.OperatedBy)))
-                     .MapAsync(() => machineId);
+                     .MapTry(() => grain = GrainFactory.GetGrain<IMachineGrain>(machineId))
+                     .BindTryAsync(() => grain.InitializeAsync(new MachineInitializeCommand(machineId, command.MoneyInside, command.Slots, command.TraceId, command.OperatedAt, command.OperatedBy)))
+                     .MapAsync(() => grain.GetMachineAsync());
     }
 
     /// <inheritdoc />

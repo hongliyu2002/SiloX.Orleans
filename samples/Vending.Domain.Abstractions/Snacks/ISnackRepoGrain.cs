@@ -12,7 +12,14 @@ public interface ISnackRepoGrain : IGrainWithStringKey
     /// </summary>
     /// <param name="command"></param>
     /// <returns></returns>
-    Task<Result<Guid>> CreateAsync(SnackRepoCreateCommand command);
+    Task<Result<Snack>> CreateAsync(SnackRepoCreateCommand command);
+
+    /// <summary>
+    ///     Asynchronously updates a snack.
+    /// </summary>
+    /// <param name="command"></param>
+    /// <returns></returns>
+    Task<Result<Snack>> UpdateAsync(SnackRepoUpdateCommand command);
 
     /// <summary>
     ///     Asynchronously deletes a snack.

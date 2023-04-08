@@ -30,8 +30,8 @@ public class SnackItemViewModel : ReactiveObject
     public void LoadWith(SnackInfo snackInfo)
     {
         Id = snackInfo.Id;
-        IsDeleted = snackInfo.IsDeleted;
         Name = snackInfo.Name;
         PictureUrl = snackInfo.PictureUrl.IsNotNullOrEmpty() ? new Uri(snackInfo.PictureUrl!) : new Uri(DefaultUrl);
+        IsDeleted = snackInfo.IsDeleted;
     }
 }

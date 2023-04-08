@@ -1,5 +1,6 @@
 ﻿using Fluxera.Guards;
 using Fluxera.Utilities.Extensions;
+using Microsoft.EntityFrameworkCore;
 using Orleans.FluentResults;
 using Orleans.Providers;
 using SiloX.Domain.Abstractions;
@@ -38,7 +39,7 @@ public sealed class PurchaseGrain : StatefulGrainWithStringKey<Purchase, Purchas
     }
 
     /// <inheritdoc />
-    public Task<Purchase> GetStateAsync()
+    public Task<Purchase> GetPurchaseAsync()
     {
         return Task.FromResult(State);
     }
@@ -84,20 +85,15 @@ public sealed class PurchaseGrain : StatefulGrainWithStringKey<Purchase, Purchas
 
     private async Task PersistAsync()
     {
-        var purchaseInGrain = State;
-        var purchase = await _dbContext.Purchases.FindAsync(purchaseInGrain.Id);
-        if (purchase == null)
+        var purchase = await _dbContext.Purchases.FirstOrDefaultAsync(p => p.Id == State.Id);
+        if (purchase != null)
         {
-            purchase = new Purchase();
-            _dbContext.Purchases.Add(purchase);
+            _dbContext.Entry(purchase).CurrentValues.SetValues(State);
         }
-        purchase.Id = purchaseInGrain.Id;
-        purchase.MachineId = purchaseInGrain.MachineId;
-        purchase.Position = purchaseInGrain.Position;
-        purchase.SnackId = purchaseInGrain.SnackId;
-        purchase.BoughtPrice = purchaseInGrain.BoughtPrice;
-        purchase.BoughtAt = purchaseInGrain.BoughtAt;
-        purchase.BoughtBy = purchaseInGrain.BoughtBy;
+        else
+        {
+            _dbContext.Purchases.Add(State);
+        }
         await _dbContext.SaveChangesAsync();
     }
 

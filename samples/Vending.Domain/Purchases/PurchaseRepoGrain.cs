@@ -19,12 +19,13 @@ public sealed class PurchaseRepoGrain : Grain, IPurchaseRepoGrain
     }
 
     /// <inheritdoc />
-    public Task<Result<Guid>> CreateAsync(PurchaseRepoCreateCommand command)
+    public Task<Result<Purchase>> CreateAsync(PurchaseRepoCreateCommand command)
     {
         var purchaseId = _guidGenerator.Create();
+        IPurchaseGrain grain = null!;
         return Result.Ok()
-                     .MapTry(() => GrainFactory.GetGrain<IPurchaseGrain>(purchaseId))
-                     .MapTryAsync(grain => grain.InitializeAsync(new PurchaseInitializeCommand(purchaseId, command.MachineId, command.Position, command.SnackId, command.BoughtPrice, command.TraceId, command.OperatedAt, command.OperatedBy)))
-                     .MapAsync(() => purchaseId);
+                     .MapTry(() => grain = GrainFactory.GetGrain<IPurchaseGrain>(purchaseId))
+                     .BindTryAsync(() => grain.InitializeAsync(new PurchaseInitializeCommand(purchaseId, command.MachineId, command.Position, command.SnackId, command.BoughtPrice, command.TraceId, command.OperatedAt, command.OperatedBy)))
+                     .MapAsync(() => grain.GetPurchaseAsync());
     }
 }

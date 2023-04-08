@@ -12,7 +12,7 @@ public interface IPurchaseGrain : IGrainWithGuidKey
     ///     Asynchronously retrieves the current state of the machine snack purchase grain.
     /// </summary>
     [AlwaysInterleave]
-    Task<Purchase> GetStateAsync();
+    Task<Purchase> GetPurchaseAsync();
 
     /// <summary>
     ///     Asynchronously checks whether the machine snack purchase grain can be initialized with the given command.

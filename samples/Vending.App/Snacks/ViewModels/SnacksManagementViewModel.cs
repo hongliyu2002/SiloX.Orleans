@@ -32,21 +32,23 @@ public class SnacksManagementViewModel : ReactiveObject
         _clusterClient = Locator.Current.GetService<IClusterClient>();
         this.WhenAnyValue(vm => vm.SearchTerm, vm => vm.Initialized)
             .Throttle(TimeSpan.FromMilliseconds(500))
-            .Where(pair => pair.Item2)
-            .Select(pair => pair.Item1.Trim())
+            .Where(termAndInited => termAndInited.Item2)
+            .Select(termAndInited => termAndInited.Item1.Trim())
             .DistinctUntilChanged()
             .SelectMany(GetSnackItemsAsync)
             .ObserveOn(RxApp.MainThreadScheduler)
             .ToPropertyEx(this, vm => vm.SnackItems);
-        this.WhenAnyValue(vm => vm.SnackItems).Select(items => items.IsNotNullOrEmpty()).ToPropertyEx(this, vm => vm.SnackItemsAvailable);
-        this.WhenAnyValue(vm => vm.SelectedSnackItem, vm => vm.Initialized)
-            .Where(pair => pair.Item2)
-            .Select(pair => pair.Item1?.Id)
+        this.WhenAnyValue(vm => vm.SnackItems)
+            .Select(items => items.IsNotNullOrEmpty())
+            .ToPropertyEx(this, vm => vm.SnackItemsAvailable);
+        this.WhenAnyValue(vm => vm.CurrentSnackItem, vm => vm.Initialized)
+            .Where(vmAndInited => vmAndInited.Item2)
+            .Select(vmAndInited => vmAndInited.Item1?.Id)
             .DistinctUntilChanged()
             .SelectMany(GetSnackEditAsync)
             .ObserveOn(RxApp.MainThreadScheduler)
-            .ToPropertyEx(this, vm => vm.SelectedSnackEdit);
-        AddSnackCommand = ReactiveCommand.Create(AddSnack);
+            .ToPropertyEx(this, vm => vm.CurrentSnackEdit);
+        AddSnackCommand = ReactiveCommand.CreateFromTask(AddSnackAsync);
         RemoveSnackCommand = ReactiveCommand.Create(RemoveSnack);
         MoveNavigationSideCommand = ReactiveCommand.Create(MoveNavigationSide);
     }
@@ -58,13 +60,12 @@ public class SnacksManagementViewModel : ReactiveObject
             return Enumerable.Empty<SnackItemViewModel>();
         }
         var sortings = new Dictionary<string, bool> { { "CreatedAt", true } };
+        ISnackRetrieverGrain grain = null!;
         var result = await Result.Ok()
                                  .Ensure(_clusterClient != null, "Cluster client is not available")
-                                 .MapTry(() => _clusterClient!.GetGrain<ISnackRetrieverGrain>("Manager"))
-                                 .BindTryAsync(grain => grain.SearchingListAsync(new SnackRetrieverSearchingListQuery(searchTerm, null, null, null, null, null, null, null,
-                                                                                                                      null, null, null, null, false, sortings,
-                                                                                                                      Guid.NewGuid(), DateTimeOffset.UtcNow,
-                                                                                                                      "Manager")))
+                                 .MapTry(() => grain = _clusterClient!.GetGrain<ISnackRetrieverGrain>("Manager"))
+                                 .BindTryAsync(()=> grain.SearchingListAsync(new SnackRetrieverSearchingListQuery(searchTerm, null, null, null, null, null, null, null, null, null, null, null, false, sortings, Guid.NewGuid(),
+                                                                                                                  DateTimeOffset.UtcNow, "Manager")))
                                  .MapAsync(snacks => snacks.Select(snack => new SnackItemViewModel(snack)));
         return result.IsSuccess ? result.Value : Enumerable.Empty<SnackItemViewModel>();
     }
@@ -100,10 +101,10 @@ public class SnacksManagementViewModel : ReactiveObject
     public bool SnackItemsAvailable { get; }
 
     [Reactive]
-    public SnackItemViewModel? SelectedSnackItem { get; set; }
+    public SnackItemViewModel? CurrentSnackItem { get; set; }
 
-    [ObservableAsProperty]
-    public SnackEditViewModel? SelectedSnackEdit { get; }
+    [Reactive]
+    public SnackEditViewModel? CurrentSnackEdit { get; set; }
 
     #endregion
 
@@ -111,18 +112,20 @@ public class SnacksManagementViewModel : ReactiveObject
 
     public ReactiveCommand<Unit, Unit> AddSnackCommand { get; }
 
-    private void AddSnack()
+    private async Task AddSnackAsync()
     {
         if (!Initialized)
         {
             return;
         }
-        var snack = new SnackInfo { Name = "New SnackInfo" };
-        var snackItem = new SnackItemViewModel(snack);
-        // var result = await Result.Ok()
-        //                          .Ensure(_clusterClient != null, "Cluster client is not available")
-        //                          .MapTry(() => _clusterClient!.GetGrain<ISnackRepoGrain>(string.Empty))
-        //                          .BindTryAsync(grain => grain.CreateAsync(new SnackRepoCreateCommand()))
+        ISnackRepoGrain grain = null!;
+        var result = await Result.Ok()
+                                 .Ensure(_clusterClient != null, "Cluster client is not available")
+                                 .MapTry(() => grain = _clusterClient!.GetGrain<ISnackRepoGrain>(string.Empty))
+                                 .BindTryAsync(() => grain.CreateAsync(new SnackRepoCreateCommand($"Snack{Guid.NewGuid()}", null, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")));
+
+        // var snack = new SnackInfo { Name = "New SnackInfo" };
+        // var snackItem = new SnackItemViewModel(snack);
     }
 
     public ReactiveCommand<Unit, Unit> RemoveSnackCommand { get; }

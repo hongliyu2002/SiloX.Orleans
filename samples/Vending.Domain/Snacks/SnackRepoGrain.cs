@@ -23,15 +23,29 @@ public sealed class SnackRepoGrain : Grain, ISnackRepoGrain
     }
 
     /// <inheritdoc />
-    public Task<Result<Guid>> CreateAsync(SnackRepoCreateCommand command)
+    public Task<Result<Snack>> CreateAsync(SnackRepoCreateCommand command)
     {
         var snackId = _guidGenerator.Create();
+        ISnackGrain grain = null!;
         return Result.Ok()
                      .MapTryAsync(() => _dbContext.Snacks.Where(s => s.IsDeleted == false).AllAsync(s => s.Name != command.Name))
                      .EnsureAsync(notExist => notExist, $"Snack with name '{command.Name}' already exists.")
-                     .MapTryAsync(() => GrainFactory.GetGrain<ISnackGrain>(snackId))
-                     .MapTryAsync(grain => grain.InitializeAsync(new SnackInitializeCommand(snackId, command.Name, command.PictureUrl, command.TraceId, command.OperatedAt, command.OperatedBy)))
-                     .MapAsync(() => snackId);
+                     .MapTryAsync(() => grain = GrainFactory.GetGrain<ISnackGrain>(snackId))
+                     .BindTryAsync(() => grain.InitializeAsync(new SnackInitializeCommand(snackId, command.Name, command.PictureUrl, command.TraceId, command.OperatedAt, command.OperatedBy)))
+                     .MapAsync(() => grain.GetSnackAsync());
+    }
+
+    /// <inheritdoc />
+    public Task<Result<Snack>> UpdateAsync(SnackRepoUpdateCommand command)
+    {
+        var snackId = command.SnackId;
+        ISnackGrain grain = null!;
+        return Result.Ok()
+                     .MapTryAsync(() => _dbContext.Snacks.Where(s => s.IsDeleted == false).AllAsync(s => s.Name != command.Name))
+                     .EnsureAsync(notExist => notExist, $"Snack with name '{command.Name}' already exists.")
+                     .MapTryAsync(() => grain = GrainFactory.GetGrain<ISnackGrain>(snackId))
+                     .BindTryAsync(() => grain.UpdateAsync(new SnackUpdateCommand(command.Name, command.PictureUrl, command.TraceId, command.OperatedAt, command.OperatedBy)))
+                     .MapAsync(() => grain.GetSnackAsync());
     }
 
     /// <inheritdoc />

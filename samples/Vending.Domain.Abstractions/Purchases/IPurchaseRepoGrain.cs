@@ -14,5 +14,5 @@ public interface IPurchaseRepoGrain : IGrainWithStringKey
     /// </summary>
     /// <param name="command"></param>
     /// <returns></returns>
-    Task<Result<Guid>> CreateAsync(PurchaseRepoCreateCommand command);
+    Task<Result<Purchase>> CreateAsync(PurchaseRepoCreateCommand command);
 }

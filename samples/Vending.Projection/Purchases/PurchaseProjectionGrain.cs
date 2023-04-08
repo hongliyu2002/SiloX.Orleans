@@ -123,7 +123,7 @@ public sealed class PurchaseProjectionGrain : SubscriberPublisherGrainWithGuidKe
             try
             {
                 var purchaseGrain = GrainFactory.GetGrain<IPurchaseGrain>(purchaseEvent.PurchaseId);
-                var purchase = await purchaseGrain.GetStateAsync();
+                var purchase = await purchaseGrain.GetPurchaseAsync();
                 var purchaseInfo = await _dbContext.Purchases.FindAsync(purchaseEvent.PurchaseId);
                 if (purchase == null)
                 {
