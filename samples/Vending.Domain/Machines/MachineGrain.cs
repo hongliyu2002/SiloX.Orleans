@@ -1,5 +1,4 @@
-﻿using System.Collections.Immutable;
-using Fluxera.Extensions.Common;
+﻿using Fluxera.Extensions.Common;
 using Fluxera.Guards;
 using Fluxera.Utilities.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -76,9 +75,9 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
         return ValidateInitialize(command)
               .MapTryAsync(() => RaiseConditionalEvent(command))
               .MapTryIfAsync(persisted => persisted, PersistAsync)
-              .MapTryAsync(() => PublishAsync(new MachineInitializedEvent(State.Id, Version, State.MoneyInside, State.Slots.ToImmutableList(), State.SlotsCount, State.SnackCount, State.SnackQuantity, State.SnackAmount, command.TraceId, DateTimeOffset.UtcNow,
+              .MapTryAsync(() => PublishAsync(new MachineInitializedEvent(State.Id, Version, State.MoneyInside, State.Slots, State.SlotsCount, State.SnackCount, State.SnackQuantity, State.SnackAmount, command.TraceId, DateTimeOffset.UtcNow,
                                                                           command.OperatedBy)))
-              .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(this.GetPrimaryKey(), Version, 201, errors.ToReasonStrings(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
+              .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(this.GetPrimaryKey(), Version, 201, errors.ToListStrings(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
     private Result ValidateRemove(MachineRemoveCommand command)
@@ -103,9 +102,9 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
         return ValidateRemove(command)
               .MapTryAsync(() => RaiseConditionalEvent(command))
               .MapTryIfAsync(persisted => persisted, PersistAsync)
-              .MapTryAsync(() => PublishAsync(new MachineRemovedEvent(State.Id, Version, State.MoneyInside, State.AmountInTransaction, State.Slots.ToImmutableList(), State.SlotsCount, State.SnackCount, State.SnackQuantity, State.SnackAmount, command.TraceId,
+              .MapTryAsync(() => PublishAsync(new MachineRemovedEvent(State.Id, Version, State.MoneyInside, State.AmountInTransaction, State.Slots, State.SlotsCount, State.SnackCount, State.SnackQuantity, State.SnackAmount, command.TraceId,
                                                                       State.DeletedAt ?? DateTimeOffset.UtcNow, State.DeletedBy ?? command.OperatedBy)))
-              .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(this.GetPrimaryKey(), Version, 202, errors.ToReasonStrings(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
+              .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(this.GetPrimaryKey(), Version, 202, errors.ToListStrings(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
     private Result ValidateLoadMoney(MachineLoadMoneyCommand command)
@@ -131,7 +130,7 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
               .MapTryAsync(() => RaiseConditionalEvent(command))
               .MapTryIfAsync(persisted => persisted, PersistAsync)
               .MapTryAsync(() => PublishAsync(new MachineMoneyLoadedEvent(State.Id, Version, State.MoneyInside, command.TraceId, State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? command.OperatedBy)))
-              .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(this.GetPrimaryKey(), Version, 203, errors.ToReasonStrings(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
+              .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(this.GetPrimaryKey(), Version, 203, errors.ToListStrings(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
     private Result ValidateUnloadMoney(MachineUnloadMoneyCommand command)
@@ -156,7 +155,7 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
               .MapTryAsync(() => RaiseConditionalEvent(command))
               .MapTryIfAsync(persisted => persisted, PersistAsync)
               .MapTryAsync(() => PublishAsync(new MachineMoneyUnloadedEvent(State.Id, Version, State.MoneyInside, command.TraceId, State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? command.OperatedBy)))
-              .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(this.GetPrimaryKey(), Version, 204, errors.ToReasonStrings(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
+              .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(this.GetPrimaryKey(), Version, 204, errors.ToListStrings(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
     private Result ValidateInsertMoney(MachineInsertMoneyCommand command)
@@ -182,7 +181,7 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
               .MapTryAsync(() => RaiseConditionalEvent(command))
               .MapTryIfAsync(persisted => persisted, PersistAsync)
               .MapTryAsync(() => PublishAsync(new MachineMoneyInsertedEvent(State.Id, Version, State.MoneyInside, State.AmountInTransaction, command.TraceId, State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? command.OperatedBy)))
-              .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(this.GetPrimaryKey(), Version, 205, errors.ToReasonStrings(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
+              .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(this.GetPrimaryKey(), Version, 205, errors.ToListStrings(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
     private Result ValidateReturnMoney(MachineReturnMoneyCommand command)
@@ -208,7 +207,7 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
               .MapTryAsync(() => RaiseConditionalEvent(command))
               .MapTryIfAsync(persisted => persisted, PersistAsync)
               .MapTryAsync(() => PublishAsync(new MachineMoneyReturnedEvent(State.Id, Version, State.MoneyInside, State.AmountInTransaction, command.TraceId, State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? command.OperatedBy)))
-              .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(this.GetPrimaryKey(), Version, 206, errors.ToReasonStrings(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
+              .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(this.GetPrimaryKey(), Version, 206, errors.ToListStrings(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
     private Result ValidateLoadSnacks(MachineLoadSnacksCommand snacksCommand)
@@ -239,7 +238,7 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
               .MapTryIfAsync(persisted => persisted, PersistAsync)
               .MapTryAsync(() => PublishAsync(new MachineSnacksLoadedEvent(State.Id, Version, State.Slots.Single(ms => ms.Position == snacksCommand.Position), State.SlotsCount, State.SnackCount, State.SnackQuantity, State.SnackAmount, snacksCommand.TraceId,
                                                                            State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? snacksCommand.OperatedBy)))
-              .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(this.GetPrimaryKey(), Version, 207, errors.ToReasonStrings(), snacksCommand.TraceId, DateTimeOffset.UtcNow, snacksCommand.OperatedBy)));
+              .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(this.GetPrimaryKey(), Version, 207, errors.ToListStrings(), snacksCommand.TraceId, DateTimeOffset.UtcNow, snacksCommand.OperatedBy)));
     }
 
     private Result ValidateUnloadSnacks(MachineUnloadSnacksCommand snacksCommand)
@@ -266,7 +265,7 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
               .MapTryIfAsync(persisted => persisted, PersistAsync)
               .MapTryAsync(() => PublishAsync(new MachineSnacksUnloadedEvent(State.Id, Version, State.Slots.Single(ms => ms.Position == snacksCommand.Position), State.SlotsCount, State.SnackCount, State.SnackQuantity, State.SnackAmount, snacksCommand.TraceId,
                                                                              State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? snacksCommand.OperatedBy)))
-              .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(this.GetPrimaryKey(), Version, 208, errors.ToReasonStrings(), snacksCommand.TraceId, DateTimeOffset.UtcNow, snacksCommand.OperatedBy)));
+              .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(this.GetPrimaryKey(), Version, 208, errors.ToListStrings(), snacksCommand.TraceId, DateTimeOffset.UtcNow, snacksCommand.OperatedBy)));
     }
 
     private Result ValidateBuySnack(MachineBuySnackCommand snackCommand)
@@ -299,7 +298,7 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
               .MapTryIfAsync(initialized => initialized,
                              () => PublishAsync(new MachineSnackBoughtEvent(State.Id, Version, State.AmountInTransaction, State.Slots.Single(ms => ms.Position == snackCommand.Position), State.SnackQuantity, State.SnackAmount, snackCommand.TraceId,
                                                                             State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? snackCommand.OperatedBy)))
-              .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(this.GetPrimaryKey(), Version, 209, errors.ToReasonStrings(), snackCommand.TraceId, DateTimeOffset.UtcNow, snackCommand.OperatedBy)));
+              .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(this.GetPrimaryKey(), Version, 209, errors.ToListStrings(), snackCommand.TraceId, DateTimeOffset.UtcNow, snackCommand.OperatedBy)));
     }
 
     #region Persistence

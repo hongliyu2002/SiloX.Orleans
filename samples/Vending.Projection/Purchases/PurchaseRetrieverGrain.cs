@@ -33,7 +33,7 @@ public class PurchaseRetrieverGrain : Grain, IPurchaseRetrieverGrain
         var boughtAtRangeStart = query.BoughtAtRange?.Start;
         var boughtAtRangeEnd = query.BoughtAtRange?.End;
         var boughtBy = query.BoughtBy;
-        var sortings = query.Sortings?.ToSortStrinng();
+        var sortings = query.Sortings?.ToOrderByString();
         return Result.Ok(_dbContext.Purchases.AsNoTracking())
                      .MapIf(machineId != null, purchases => purchases.Where(p => p.MachineId == machineId))
                      .MapIf(snackId != null, purchases => purchases.Where(p => p.SnackId == snackId))
@@ -56,7 +56,7 @@ public class PurchaseRetrieverGrain : Grain, IPurchaseRetrieverGrain
         var boughtAtRangeStart = query.BoughtAtRange?.Start;
         var boughtAtRangeEnd = query.BoughtAtRange?.End;
         var boughtBy = query.BoughtBy;
-        var sortings = query.Sortings?.ToSortStrinng();
+        var sortings = query.Sortings?.ToOrderByString();
         var skipCount = query.SkipCount;
         var maxResultCount = query.MaxResultCount;
         return Result.Ok(_dbContext.Purchases.AsNoTracking())
@@ -84,7 +84,7 @@ public class PurchaseRetrieverGrain : Grain, IPurchaseRetrieverGrain
         var boughtAtRangeStart = query.BoughtAtRange?.Start;
         var boughtAtRangeEnd = query.BoughtAtRange?.End;
         var boughtBy = query.BoughtBy;
-        var sortings = query.Sortings?.ToSortStrinng();
+        var sortings = query.Sortings?.ToOrderByString();
         return Result.Ok(_dbContext.Purchases.AsNoTracking())
                      .MapIf(searchTerm.IsNotNullOrEmpty(), purchases => purchases.Where(p => EF.Functions.Like(p.SnackName, $"%{searchTerm}%")))
                      .MapIf(machineId != null, purchases => purchases.Where(p => p.MachineId == machineId))
@@ -109,7 +109,7 @@ public class PurchaseRetrieverGrain : Grain, IPurchaseRetrieverGrain
         var boughtAtRangeStart = query.BoughtAtRange?.Start;
         var boughtAtRangeEnd = query.BoughtAtRange?.End;
         var boughtBy = query.BoughtBy;
-        var sortings = query.Sortings?.ToSortStrinng();
+        var sortings = query.Sortings?.ToOrderByString();
         var skipCount = query.SkipCount;
         var maxResultCount = query.MaxResultCount;
         return Result.Ok(_dbContext.Purchases.AsNoTracking())

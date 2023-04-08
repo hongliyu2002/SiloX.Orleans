@@ -46,7 +46,7 @@ public class SnackRetrieverGrain : Grain, ISnackRetrieverGrain
         var deletedAtRangeEnd = query.DeletedAtRange?.End;
         var deletedBy = query.DeletedBy;
         var isDeleted = query.IsDeleted;
-        var sortings = query.Sortings?.ToSortStrinng();
+        var sortings = query.Sortings?.ToOrderByString();
         return Result.Ok(_dbContext.Snacks.AsNoTracking())
                      .MapIf(machineCountRangeStart != null, snacks => snacks.Where(s => s.MachineCount >= machineCountRangeStart))
                      .MapIf(machineCountRangeEnd != null, snacks => snacks.Where(s => s.MachineCount < machineCountRangeEnd))
@@ -95,7 +95,7 @@ public class SnackRetrieverGrain : Grain, ISnackRetrieverGrain
         var deletedAtRangeEnd = query.DeletedAtRange?.End;
         var deletedBy = query.DeletedBy;
         var isDeleted = query.IsDeleted;
-        var sortings = query.Sortings?.ToSortStrinng();
+        var sortings = query.Sortings?.ToOrderByString();
         var skipCount = query.SkipCount;
         var maxResultCount = query.MaxResultCount;
         return Result.Ok(_dbContext.Snacks.AsNoTracking())
@@ -149,7 +149,7 @@ public class SnackRetrieverGrain : Grain, ISnackRetrieverGrain
         var deletedAtRangeEnd = query.DeletedAtRange?.End;
         var deletedBy = query.DeletedBy;
         var isDeleted = query.IsDeleted;
-        var sortings = query.Sortings?.ToSortStrinng();
+        var sortings = query.Sortings?.ToOrderByString();
         return Result.Ok(_dbContext.Snacks.AsNoTracking())
                      .MapIf(searchTerm.IsNotNullOrEmpty(), snacks => snacks.Where(s => EF.Functions.Like(s.Name, $"%{searchTerm}%")))
                      .MapIf(machineCountRangeStart != null, snacks => snacks.Where(s => s.MachineCount >= machineCountRangeStart))
@@ -200,7 +200,7 @@ public class SnackRetrieverGrain : Grain, ISnackRetrieverGrain
         var deletedAtRangeEnd = query.DeletedAtRange?.End;
         var deletedBy = query.DeletedBy;
         var isDeleted = query.IsDeleted;
-        var sortings = query.Sortings?.ToSortStrinng();
+        var sortings = query.Sortings?.ToOrderByString();
         var skipCount = query.SkipCount;
         var maxResultCount = query.MaxResultCount;
         return Result.Ok(_dbContext.Snacks.AsNoTracking())

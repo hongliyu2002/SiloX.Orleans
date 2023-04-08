@@ -51,7 +51,7 @@ public class MachineRetrieverGrain : Grain, IMachineRetrieverGrain
         var deletedAtRangeEnd = query.DeletedAtRange?.End;
         var deletedBy = query.DeletedBy;
         var isDeleted = query.IsDeleted;
-        var sortings = query.Sortings?.ToSortStrinng();
+        var sortings = query.Sortings?.ToOrderByString();
         return Result.Ok(_dbContext.Machines.AsNoTracking())
                      .MapIf(moneyInsideAmountRangeStart != null, machines => machines.Where(m => m.MoneyInside.Amount >= moneyInsideAmountRangeStart))
                      .MapIf(moneyInsideAmountRangeEnd != null, machines => machines.Where(m => m.MoneyInside.Amount < moneyInsideAmountRangeEnd))
@@ -112,7 +112,7 @@ public class MachineRetrieverGrain : Grain, IMachineRetrieverGrain
         var deletedAtRangeEnd = query.DeletedAtRange?.End;
         var deletedBy = query.DeletedBy;
         var isDeleted = query.IsDeleted;
-        var sortings = query.Sortings?.ToSortStrinng();
+        var sortings = query.Sortings?.ToOrderByString();
         var skipCount = query.SkipCount;
         var maxResultCount = query.MaxResultCount;
         return Result.Ok(_dbContext.Machines.AsNoTracking())
