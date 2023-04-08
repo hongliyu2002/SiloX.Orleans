@@ -18,51 +18,57 @@ public sealed class PurchaseInfo
     public Guid Id { get; set; }
 
     /// <summary>
-    ///     Gets or sets the ID of the machine where the snack was bought.
+    ///     Gets or sets the version of the purchase.(Concurrency token)
     /// </summary>
     [Id(1)]
+    public int Version { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the ID of the machine where the snack was bought.
+    /// </summary>
+    [Id(2)]
     public Guid MachineId { get; set; }
 
     /// <summary>
     ///     Gets or sets the position of the machineSlot in the machine where the snack was bought.
     /// </summary>
-    [Id(2)]
+    [Id(3)]
     public int Position { get; set; }
 
     /// <summary>
     ///     Gets or sets the ID of the snack that was bought.
     /// </summary>
-    [Id(3)]
+    [Id(4)]
     public Guid SnackId { get; set; }
 
     /// <summary>
     ///     Gets or sets the name of the snack that was bought.
     /// </summary>
-    [Id(4)]
+    [Id(5)]
     public string SnackName { get; set; } = null!;
 
     /// <summary>
     ///     Gets or sets the URL of the picture for the snack that was bought.
     /// </summary>
-    [Id(5)]
+    [Id(6)]
     public string? SnackPictureUrl { get; set; }
 
     /// <summary>
     ///     Gets or sets the price of the snack that was bought.
     /// </summary>
-    [Id(6)]
+    [Id(7)]
     public decimal BoughtPrice { get; set; }
 
     /// <summary>
     ///     Gets or sets the date and time when the snack was bought.
     /// </summary>
-    [Id(7)]
+    [Id(8)]
     public DateTimeOffset? BoughtAt { get; set; }
 
     /// <summary>
     ///     Gets or sets the name of the user who bought the snack.
     /// </summary>
-    [Id(8)]
+    [Id(9)]
     public string? BoughtBy { get; set; }
 
     #region Update methods

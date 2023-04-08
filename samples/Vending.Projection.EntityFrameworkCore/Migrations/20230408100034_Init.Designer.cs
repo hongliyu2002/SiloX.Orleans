@@ -12,7 +12,7 @@ using Vending.Projection.EntityFrameworkCore;
 namespace Vending.Projection.EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(ProjectionDbContext))]
-    [Migration("20230407133613_Init")]
+    [Migration("20230408100034_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -138,6 +138,9 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
                     b.Property<string>("SnackPictureUrl")
                         .HasMaxLength(512)
                         .HasColumnType("nvarchar(512)");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

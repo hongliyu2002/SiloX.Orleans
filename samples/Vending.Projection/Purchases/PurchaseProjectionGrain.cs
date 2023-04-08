@@ -12,7 +12,7 @@ using Vending.Projection.EntityFrameworkCore;
 namespace Vending.Projection.Purchases;
 
 [ImplicitStreamSubscription(Constants.PurchasesNamespace)]
-public sealed class PurchaseProjectionGrain : SubscriberGrainWithStringKey<PurchaseEvent, PurchaseErrorEvent>, IPurchaseProjectionGrain
+public sealed class PurchaseProjectionGrain : SubscriberPublisherGrainWithGuidKey<PurchaseEvent, PurchaseErrorEvent, PurchaseInfoEvent, PurchaseInfoErrorEvent>, IPurchaseProjectionGrain
 {
     private readonly ProjectionDbContext _dbContext;
     private readonly ILogger<PurchaseProjectionGrain> _logger;
@@ -29,6 +29,18 @@ public sealed class PurchaseProjectionGrain : SubscriberGrainWithStringKey<Purch
     protected override string GetSubStreamNamespace()
     {
         return Constants.PurchasesNamespace;
+    }
+
+    /// <inheritdoc />
+    protected override string GetPubStreamNamespace()
+    {
+        return Constants.PurchaseInfosNamespace;
+    }
+
+    /// <inheritdoc />
+    protected override string GetPubBroadcastStreamNamespace()
+    {
+        return Constants.PurchaseInfosBroadcastNamespace;
     }
 
     /// <inheritdoc />
@@ -79,7 +91,8 @@ public sealed class PurchaseProjectionGrain : SubscriberGrainWithStringKey<Purch
                                    SnackId = purchaseEvent.SnackId,
                                    BoughtPrice = purchaseEvent.BoughtPrice,
                                    BoughtAt = purchaseEvent.OperatedAt,
-                                   BoughtBy = purchaseEvent.OperatedBy
+                                   BoughtBy = purchaseEvent.OperatedBy,
+                                   Version = purchaseEvent.Version
                                };
                 _dbContext.Purchases.Add(purchaseInfo);
             }
@@ -91,10 +104,12 @@ public sealed class PurchaseProjectionGrain : SubscriberGrainWithStringKey<Purch
             }
             await purchaseInfo.UpdateSnackNameAndPictureUrlAsync(GetSnackNameAndPictureUrlAsync);
             await _dbContext.SaveChangesAsync();
+            await PublishAsync(new PurchaseInfoSavedEvent(purchaseInfo.Id, purchaseInfo.Version, purchaseEvent.TraceId, DateTimeOffset.UtcNow, purchaseEvent.OperatedBy));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Apply PurchaseInitializedEvent: Exception is occurred when try to write data to the database. Try to execute full update...");
+            await PublishErrorAsync(new PurchaseInfoErrorEvent(purchaseEvent.PurchaseId, purchaseEvent.Version, 301, new[] { ex.Message }, purchaseEvent.TraceId, DateTimeOffset.UtcNow, purchaseEvent.OperatedBy));
             await ApplyFullUpdateAsync(purchaseEvent);
         }
     }
@@ -127,6 +142,7 @@ public sealed class PurchaseProjectionGrain : SubscriberGrainWithStringKey<Purch
                 }
                 await purchase.ToProjection(GetSnackNameAndPictureUrlAsync, purchaseInfo);
                 await _dbContext.SaveChangesAsync();
+                await PublishAsync(new PurchaseInfoSavedEvent(purchaseInfo.Id, purchaseInfo.Version, purchaseEvent.TraceId, DateTimeOffset.UtcNow, purchaseEvent.OperatedBy));
                 return;
             }
             catch (DbUpdateConcurrencyException ex)
@@ -141,6 +157,7 @@ public sealed class PurchaseProjectionGrain : SubscriberGrainWithStringKey<Purch
             catch (Exception ex)
             {
                 _logger.LogError(ex, "ApplyFullUpdateAsync: Exception is occurred when try to write data to the database");
+                await PublishErrorAsync(new PurchaseInfoErrorEvent(purchaseEvent.PurchaseId, purchaseEvent.Version, 300, new[] { ex.Message }, purchaseEvent.TraceId, DateTimeOffset.UtcNow, purchaseEvent.OperatedBy));
                 retryNeeded = false;
             }
         }

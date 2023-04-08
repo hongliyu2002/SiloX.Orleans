@@ -106,6 +106,7 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Version = table.Column<int>(type: "int", nullable: false),
                     MachineId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Position = table.Column<int>(type: "int", nullable: false),
                     SnackId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
