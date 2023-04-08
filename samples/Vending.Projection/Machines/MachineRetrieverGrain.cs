@@ -51,7 +51,7 @@ public class MachineRetrieverGrain : Grain, IMachineRetrieverGrain
         var deletedAtRangeEnd = query.DeletedAtRange?.End;
         var deletedBy = query.DeletedBy;
         var isDeleted = query.IsDeleted;
-        var sortings = query.Sortings?.ToOrderByString();
+        var orderBy = query.OrderBy?.ToOrderByString();
         return Result.Ok(_dbContext.Machines.AsNoTracking())
                      .MapIf(moneyInsideAmountRangeStart != null, machines => machines.Where(m => m.MoneyInside.Amount >= moneyInsideAmountRangeStart))
                      .MapIf(moneyInsideAmountRangeEnd != null, machines => machines.Where(m => m.MoneyInside.Amount < moneyInsideAmountRangeEnd))
@@ -79,7 +79,7 @@ public class MachineRetrieverGrain : Grain, IMachineRetrieverGrain
                      .MapIf(deletedAtRangeEnd != null, machines => machines.Where(m => m.DeletedAt < deletedAtRangeEnd))
                      .MapIf(deletedBy != null, machines => machines.Where(m => m.DeletedBy == deletedBy))
                      .MapIf(isDeleted != null, machines => machines.Where(m => m.IsDeleted == isDeleted))
-                     .MapIf(sortings != null, machines => machines.OrderBy(sortings!))
+                     .MapIf(orderBy != null, machines => machines.OrderBy(orderBy!))
                      .MapTryAsync(machines => machines.ToImmutableListAsync());
     }
 
@@ -112,7 +112,7 @@ public class MachineRetrieverGrain : Grain, IMachineRetrieverGrain
         var deletedAtRangeEnd = query.DeletedAtRange?.End;
         var deletedBy = query.DeletedBy;
         var isDeleted = query.IsDeleted;
-        var sortings = query.Sortings?.ToOrderByString();
+        var orderBy = query.OrderBy?.ToOrderByString();
         var skipCount = query.SkipCount;
         var maxResultCount = query.MaxResultCount;
         return Result.Ok(_dbContext.Machines.AsNoTracking())
@@ -142,7 +142,7 @@ public class MachineRetrieverGrain : Grain, IMachineRetrieverGrain
                      .MapIf(deletedAtRangeEnd != null, machines => machines.Where(m => m.DeletedAt < deletedAtRangeEnd))
                      .MapIf(deletedBy != null, machines => machines.Where(m => m.DeletedBy == deletedBy))
                      .MapIf(isDeleted != null, machines => machines.Where(m => m.IsDeleted == isDeleted))
-                     .MapIf(sortings != null, machines => machines.OrderBy(sortings!))
+                     .MapIf(orderBy != null, machines => machines.OrderBy(orderBy!))
                      .MapIf(skipCount is >= 0, machines => machines.Skip(skipCount!.Value))
                      .MapIf(maxResultCount is >= 1, machines => machines.Take(maxResultCount!.Value))
                      .MapTryAsync(machines => machines.ToImmutableListAsync());

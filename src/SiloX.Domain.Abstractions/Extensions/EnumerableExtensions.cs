@@ -41,20 +41,20 @@ public static class EnumerableExtensions
     /// <summary>
     ///     Converts a collection of key-value pairs into a string representing the sorting criteria for a query.
     /// </summary>
-    /// <param name="sortings">The collection of key-value pairs representing the sorting criteria.</param>
+    /// <param name="orderBy">The collection of key-value pairs representing the sorting criteria.</param>
     /// <returns>A string representing the sorting criteria for a query.</returns>
-    public static string ToOrderByString(this IEnumerable<KeyValuePair<string, bool>> sortings)
+    public static string ToOrderByString(this IEnumerable<KeyValuePair<string, bool>> orderBy)
     {
-        return string.Join(',', sortings.Select(x => $"{x.Key}{(x.Value ? " DESC" : "")}"));
+        return string.Join(',', orderBy.Select(x => $"{x.Key}{(x.Value ? " DESC" : "")}"));
     }
     
     /// <summary>
     ///     Converts a collection of key-value pairs into a string representing the sorting criteria for a query.
     /// </summary>
-    /// <param name="sortings">The collection of key-value pairs representing the sorting criteria.</param>
+    /// <param name="orderBy">The collection of key-value pairs representing the sorting criteria.</param>
     /// <returns>A string representing the sorting criteria for a query.</returns>
-    public static string ToOrderByString(this IDictionary<string, bool> sortings)
+    public static string ToOrderByString(this IDictionary<string, bool> orderBy)
     {
-        return string.Join(',', sortings.Select(x => $"{x.Key}{(x.Value ? " DESC" : "")}"));
+        return string.Join(',', orderBy.Select(x => $"{x.Key}{(x.Value ? " DESC" : "")}"));
     }
 }

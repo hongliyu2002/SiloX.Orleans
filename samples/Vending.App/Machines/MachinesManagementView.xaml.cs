@@ -1,6 +1,4 @@
-﻿using Vending.App.ViewModels;
-
-namespace Vending.App.Views;
+﻿namespace Vending.App.Machines;
 
 public partial class MachinesManagementView
 {

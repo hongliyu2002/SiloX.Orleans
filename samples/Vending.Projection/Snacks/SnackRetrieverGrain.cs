@@ -46,7 +46,7 @@ public class SnackRetrieverGrain : Grain, ISnackRetrieverGrain
         var deletedAtRangeEnd = query.DeletedAtRange?.End;
         var deletedBy = query.DeletedBy;
         var isDeleted = query.IsDeleted;
-        var sortings = query.Sortings?.ToOrderByString();
+        var orderBy = query.OrderBy?.ToOrderByString();
         return Result.Ok(_dbContext.Snacks.AsNoTracking())
                      .MapIf(machineCountRangeStart != null, snacks => snacks.Where(s => s.MachineCount >= machineCountRangeStart))
                      .MapIf(machineCountRangeEnd != null, snacks => snacks.Where(s => s.MachineCount < machineCountRangeEnd))
@@ -68,7 +68,7 @@ public class SnackRetrieverGrain : Grain, ISnackRetrieverGrain
                      .MapIf(deletedAtRangeEnd != null, snacks => snacks.Where(s => s.DeletedAt < deletedAtRangeEnd))
                      .MapIf(deletedBy != null, snacks => snacks.Where(s => s.DeletedBy == deletedBy))
                      .MapIf(isDeleted != null, snacks => snacks.Where(s => s.IsDeleted == isDeleted))
-                     .MapIf(sortings != null, snacks => snacks.OrderBy(sortings!))
+                     .MapIf(orderBy != null, snacks => snacks.OrderBy(orderBy!))
                      .MapTryAsync(snacks => snacks.ToImmutableListAsync());
     }
 
@@ -95,7 +95,7 @@ public class SnackRetrieverGrain : Grain, ISnackRetrieverGrain
         var deletedAtRangeEnd = query.DeletedAtRange?.End;
         var deletedBy = query.DeletedBy;
         var isDeleted = query.IsDeleted;
-        var sortings = query.Sortings?.ToOrderByString();
+        var orderBy = query.OrderBy?.ToOrderByString();
         var skipCount = query.SkipCount;
         var maxResultCount = query.MaxResultCount;
         return Result.Ok(_dbContext.Snacks.AsNoTracking())
@@ -119,7 +119,7 @@ public class SnackRetrieverGrain : Grain, ISnackRetrieverGrain
                      .MapIf(deletedAtRangeEnd != null, snacks => snacks.Where(s => s.DeletedAt < deletedAtRangeEnd))
                      .MapIf(deletedBy != null, snacks => snacks.Where(s => s.DeletedBy == deletedBy))
                      .MapIf(isDeleted != null, snacks => snacks.Where(s => s.IsDeleted == isDeleted))
-                     .MapIf(sortings != null, snacks => snacks.OrderBy(sortings!))
+                     .MapIf(orderBy != null, snacks => snacks.OrderBy(orderBy!))
                      .MapIf(skipCount is >= 0, snacks => snacks.Skip(skipCount!.Value))
                      .MapIf(maxResultCount is >= 1, snacks => snacks.Take(maxResultCount!.Value))
                      .MapTryAsync(snacks => snacks.ToImmutableListAsync());
@@ -149,7 +149,7 @@ public class SnackRetrieverGrain : Grain, ISnackRetrieverGrain
         var deletedAtRangeEnd = query.DeletedAtRange?.End;
         var deletedBy = query.DeletedBy;
         var isDeleted = query.IsDeleted;
-        var sortings = query.Sortings?.ToOrderByString();
+        var orderBy = query.OrderBy?.ToOrderByString();
         return Result.Ok(_dbContext.Snacks.AsNoTracking())
                      .MapIf(searchTerm.IsNotNullOrEmpty(), snacks => snacks.Where(s => EF.Functions.Like(s.Name, $"%{searchTerm}%")))
                      .MapIf(machineCountRangeStart != null, snacks => snacks.Where(s => s.MachineCount >= machineCountRangeStart))
@@ -172,7 +172,7 @@ public class SnackRetrieverGrain : Grain, ISnackRetrieverGrain
                      .MapIf(deletedAtRangeEnd != null, snacks => snacks.Where(s => s.DeletedAt < deletedAtRangeEnd))
                      .MapIf(deletedBy != null, snacks => snacks.Where(s => s.DeletedBy == deletedBy))
                      .MapIf(isDeleted != null, snacks => snacks.Where(s => s.IsDeleted == isDeleted))
-                     .MapIf(sortings != null, snacks => snacks.OrderBy(sortings!))
+                     .MapIf(orderBy != null, snacks => snacks.OrderBy(orderBy!))
                      .MapTryAsync(snacks => snacks.ToImmutableListAsync());
     }
 
@@ -200,7 +200,7 @@ public class SnackRetrieverGrain : Grain, ISnackRetrieverGrain
         var deletedAtRangeEnd = query.DeletedAtRange?.End;
         var deletedBy = query.DeletedBy;
         var isDeleted = query.IsDeleted;
-        var sortings = query.Sortings?.ToOrderByString();
+        var orderBy = query.OrderBy?.ToOrderByString();
         var skipCount = query.SkipCount;
         var maxResultCount = query.MaxResultCount;
         return Result.Ok(_dbContext.Snacks.AsNoTracking())
@@ -225,7 +225,7 @@ public class SnackRetrieverGrain : Grain, ISnackRetrieverGrain
                      .MapIf(deletedAtRangeEnd != null, snacks => snacks.Where(s => s.DeletedAt < deletedAtRangeEnd))
                      .MapIf(deletedBy != null, snacks => snacks.Where(s => s.DeletedBy == deletedBy))
                      .MapIf(isDeleted != null, snacks => snacks.Where(s => s.IsDeleted == isDeleted))
-                     .MapIf(sortings != null, snacks => snacks.OrderBy(sortings!))
+                     .MapIf(orderBy != null, snacks => snacks.OrderBy(orderBy!))
                      .MapIf(skipCount is >= 0, snacks => snacks.Skip(skipCount!.Value))
                      .MapIf(maxResultCount is >= 1, snacks => snacks.Take(maxResultCount!.Value))
                      .MapTryAsync(snacks => snacks.ToImmutableListAsync());

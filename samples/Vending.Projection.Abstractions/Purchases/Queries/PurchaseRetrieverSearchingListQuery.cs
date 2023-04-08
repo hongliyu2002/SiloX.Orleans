@@ -10,12 +10,12 @@ namespace Vending.Projection.Abstractions.Purchases;
 [GenerateSerializer]
 public sealed record PurchaseRetrieverSearchingListQuery
     (string? SearchTerm,
-     Guid? MachineId,
-     Guid? SnackId,
-     DecimalRange? BoughtPriceRange,
-     DateTimeOffsetRange? BoughtAtRange,
-     string? BoughtBy,
-     IDictionary<string, bool>? Sortings,
+     IDictionary<string, bool>? OrderBy,
      Guid TraceId,
      DateTimeOffset OperatedAt,
-     string OperatedBy) : DomainSearchingListQuery(SearchTerm, Sortings, TraceId, OperatedAt, OperatedBy);
+     string OperatedBy,
+     Guid? MachineId = null,
+     Guid? SnackId = null,
+     DecimalRange? BoughtPriceRange = null,
+     DateTimeOffsetRange? BoughtAtRange = null,
+     string? BoughtBy = null) : DomainSearchingListQuery(SearchTerm, OrderBy, TraceId, OperatedAt, OperatedBy);

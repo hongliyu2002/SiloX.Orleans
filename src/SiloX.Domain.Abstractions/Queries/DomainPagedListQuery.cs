@@ -8,7 +8,7 @@ namespace SiloX.Domain.Abstractions;
 /// </summary>
 /// <param name="SkipCount">An integer representing the number of items to skip from the beginning of the list.</param>
 /// <param name="MaxResultCount">An integer representing the maximum number of items to return.</param>
-/// <param name="Sortings">TAn immutable list of key-value pairs representing the sorting criteria.</param>
+/// <param name="OrderBy">TAn immutable list of key-value pairs representing the sorting criteria.</param>
 /// <param name="TraceId">The unique identifier for the trace.</param>
 /// <param name="OperatedAt">The date and time when the operation was performed.</param>
 /// <param name="OperatedBy">The name of the operator who performed the operation.</param>
@@ -18,7 +18,7 @@ namespace SiloX.Domain.Abstractions;
 public abstract record DomainPagedListQuery
     (int? SkipCount,
      int? MaxResultCount,
-     IDictionary<string, bool>? Sortings,
+     IDictionary<string, bool>? OrderBy,
      Guid TraceId,
      DateTimeOffset OperatedAt,
-     string OperatedBy) : DomainListQuery(Sortings, TraceId, OperatedAt, OperatedBy);
+     string OperatedBy) : DomainListQuery(OrderBy, TraceId, OperatedAt, OperatedBy);

@@ -1,4 +1,4 @@
-﻿namespace Vending.App.ViewModels;
+﻿namespace Vending.App.Snacks;
 
 public enum NavigationSide
 {

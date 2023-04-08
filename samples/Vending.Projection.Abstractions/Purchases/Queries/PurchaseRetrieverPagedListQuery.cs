@@ -9,14 +9,14 @@ namespace Vending.Projection.Abstractions.Purchases;
 [Serializable]
 [GenerateSerializer]
 public sealed record PurchaseRetrieverPagedListQuery
-    (Guid? MachineId,
-     Guid? SnackId,
-     DecimalRange? BoughtPriceRange,
-     DateTimeOffsetRange? BoughtAtRange,
-     string? BoughtBy,
-     int? SkipCount,
+    (int? SkipCount,
      int? MaxResultCount,
-     IDictionary<string, bool>? Sortings,
+     IDictionary<string, bool>? OrderBy,
      Guid TraceId,
      DateTimeOffset OperatedAt,
-     string OperatedBy) : DomainPagedListQuery(SkipCount, MaxResultCount, Sortings, TraceId, OperatedAt, OperatedBy);
+     string OperatedBy,
+     Guid? MachineId = null,
+     Guid? SnackId = null,
+     DecimalRange? BoughtPriceRange = null,
+     DateTimeOffsetRange? BoughtAtRange = null,
+     string? BoughtBy = null) : DomainPagedListQuery(SkipCount, MaxResultCount, OrderBy, TraceId, OperatedAt, OperatedBy);

@@ -9,7 +9,7 @@ namespace SiloX.Domain.Abstractions;
 /// <param name="SearchTerm">The criteria for searching.</param>
 /// <param name="SkipCount">An integer representing the number of items to skip from the beginning of the list.</param>
 /// <param name="MaxResultCount">An integer representing the maximum number of items to return.</param>
-/// <param name="Sortings">The sorting criteria.</param>
+/// <param name="OrderBy">The sorting criteria.</param>
 /// <param name="TraceId">The unique identifier for the trace.</param>
 /// <param name="OperatedAt">The date and time when the operation was performed.</param>
 /// <param name="OperatedBy">The name of the operator who performed the operation.</param>
@@ -20,7 +20,7 @@ public abstract record DomainSearchingPagedListQuery
     (string? SearchTerm,
      int? SkipCount,
      int? MaxResultCount,
-     IDictionary<string, bool>? Sortings,
+     IDictionary<string, bool>? OrderBy,
      Guid TraceId,
      DateTimeOffset OperatedAt,
-     string OperatedBy) : DomainPagedListQuery(SkipCount, MaxResultCount, Sortings, TraceId, OperatedAt, OperatedBy);
+     string OperatedBy) : DomainPagedListQuery(SkipCount, MaxResultCount, OrderBy, TraceId, OperatedAt, OperatedBy);

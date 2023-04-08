@@ -5,13 +5,16 @@ using Orleans;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Splat;
+using Vending.App.Machines;
+using Vending.App.Purchases;
+using Vending.App.Snacks;
 
-namespace Vending.App.ViewModels;
+namespace Vending.App;
 
-public class MainViewModel : ReactiveObject
+public class MainWindowModel : ReactiveObject
 {
 
-    public MainViewModel()
+    public MainWindowModel()
     {
         var appLifetime = Locator.Current.GetService<IHostApplicationLifetime>();
         if (appLifetime != null)
@@ -22,20 +25,22 @@ public class MainViewModel : ReactiveObject
         var viewModels = new Dictionary<string, ReactiveObject>
                          {
                              { "Snacks", new SnacksManagementViewModel(this) },
-                             { "Machines", new MachinesManagementViewModel(this) }
+                             { "Machines", new MachinesManagementViewModel(this) },
+                             { "Purchases", new PurchasesManagementViewModel(this) }
                          };
         CurrentViewModel ??= viewModels["Snacks"];
         GoSnacksManagementCommand = ReactiveCommand.Create(() => CurrentViewModel = viewModels["Snacks"]);
         GoMachinesManagementCommand = ReactiveCommand.Create(() => CurrentViewModel = viewModels["Machines"]);
+        GoPurchasesManagementCommand = ReactiveCommand.Create(() => CurrentViewModel = viewModels["Purchases"]);
     }
 
     #region Properties
 
     [Reactive]
-    public IClusterClient? ClusterClient { get; set; }
+    public IClusterClient? ClusterClient { get; private set; }
 
     [Reactive]
-    public ReactiveObject? CurrentViewModel { get; set; }
+    public ReactiveObject? CurrentViewModel { get; private set; }
 
     #endregion
 
@@ -44,6 +49,8 @@ public class MainViewModel : ReactiveObject
     public ReactiveCommand<Unit, ReactiveObject> GoSnacksManagementCommand { get; }
 
     public ReactiveCommand<Unit, ReactiveObject> GoMachinesManagementCommand { get; }
+
+    public ReactiveCommand<Unit, ReactiveObject> GoPurchasesManagementCommand { get; }
 
     #endregion
 

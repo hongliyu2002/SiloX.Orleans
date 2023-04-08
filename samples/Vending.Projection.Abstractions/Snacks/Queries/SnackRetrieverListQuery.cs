@@ -9,19 +9,19 @@ namespace Vending.Projection.Abstractions.Snacks;
 [Serializable]
 [GenerateSerializer]
 public sealed record SnackRetrieverListQuery
-    (Int32Range? MachineCountRange,
-     Int32Range? TotalQuantityRange,
-     DecimalRange? TotalAmountRange,
-     Int32Range? BoughtCountRange,
-     DecimalRange? BoughtAmountRange,
-     DateTimeOffsetRange? CreatedAtRange,
-     string? CreatedBy,
-     DateTimeOffsetRange? LastModifiedAtRange,
-     string? LastModifiedBy,
-     DateTimeOffsetRange? DeletedAtRange,
-     string? DeletedBy,
-     bool? IsDeleted,
-     IDictionary<string, bool>? Sortings,
+    (IDictionary<string, bool>? OrderBy,
      Guid TraceId,
      DateTimeOffset OperatedAt,
-     string OperatedBy) : DomainListQuery(Sortings, TraceId, OperatedAt, OperatedBy);
+     string OperatedBy,
+     Int32Range? MachineCountRange = null,
+     Int32Range? TotalQuantityRange = null,
+     DecimalRange? TotalAmountRange = null,
+     Int32Range? BoughtCountRange = null,
+     DecimalRange? BoughtAmountRange = null,
+     DateTimeOffsetRange? CreatedAtRange = null,
+     string? CreatedBy = null,
+     DateTimeOffsetRange? LastModifiedAtRange = null,
+     string? LastModifiedBy = null,
+     DateTimeOffsetRange? DeletedAtRange = null,
+     string? DeletedBy = null,
+     bool? IsDeleted = null) : DomainListQuery(OrderBy, TraceId, OperatedAt, OperatedBy);
