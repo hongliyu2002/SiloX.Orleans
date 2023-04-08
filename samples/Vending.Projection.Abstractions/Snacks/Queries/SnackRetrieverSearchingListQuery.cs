@@ -25,4 +25,4 @@ public sealed record SnackRetrieverSearchingListQuery
      string? LastModifiedBy = null,
      DateTimeOffsetRange? DeletedAtRange = null,
      string? DeletedBy = null,
-     bool? IsDeleted = null) : DomainSearchingListQuery(SearchTerm, OrderBy, TraceId, OperatedAt, OperatedBy);
+     bool? IsDeleted = false) : DomainSearchingListQuery(SearchTerm, OrderBy, TraceId, OperatedAt, OperatedBy);

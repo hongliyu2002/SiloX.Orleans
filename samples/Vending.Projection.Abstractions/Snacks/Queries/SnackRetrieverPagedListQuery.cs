@@ -26,4 +26,4 @@ public sealed record SnackRetrieverPagedListQuery
      string? LastModifiedBy = null,
      DateTimeOffsetRange? DeletedAtRange = null,
      string? DeletedBy = null,
-     bool? IsDeleted = null) : DomainPagedListQuery(SkipCount, MaxResultCount, OrderBy, TraceId, OperatedAt, OperatedBy);
+     bool? IsDeleted = false) : DomainPagedListQuery(SkipCount, MaxResultCount, OrderBy, TraceId, OperatedAt, OperatedBy);

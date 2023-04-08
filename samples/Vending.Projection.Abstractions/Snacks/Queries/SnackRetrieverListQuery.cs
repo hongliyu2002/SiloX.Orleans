@@ -24,4 +24,4 @@ public sealed record SnackRetrieverListQuery
      string? LastModifiedBy = null,
      DateTimeOffsetRange? DeletedAtRange = null,
      string? DeletedBy = null,
-     bool? IsDeleted = null) : DomainListQuery(OrderBy, TraceId, OperatedAt, OperatedBy);
+     bool? IsDeleted = false) : DomainListQuery(OrderBy, TraceId, OperatedAt, OperatedBy);
