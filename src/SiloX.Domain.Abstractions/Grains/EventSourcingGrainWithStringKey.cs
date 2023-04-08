@@ -1,6 +1,5 @@
 ﻿using Fluxera.Guards;
 using Orleans.EventSourcing;
-using Orleans.FluentResults;
 using Orleans.Runtime;
 using Orleans.Streams;
 
@@ -67,10 +66,13 @@ public abstract class EventSourcingGrainWithStringKey<TState, TCommand, TPubEven
     ///     Publishes a domain event to the stream after domain command has been successfully persisted.
     /// </summary>
     /// <param name="event">The domain event to publish and broadcast.</param>
-    /// <returns>A <see cref="Result{T}" /> that represents the result of the operation.</returns>
-    protected async Task PublishAsync(TPubEvent @event)
+    /// <param name="broadcastOnly">Whether to broadcast the event.</param>
+    protected async Task PublishAsync(TPubEvent @event, bool broadcastOnly = false)
     {
-        await GetPubStream().OnNextAsync(@event);
+        if (!broadcastOnly)
+        {
+            await GetPubStream().OnNextAsync(@event);
+        }
         await GetPubBroadcastStream().OnNextAsync(@event);
     }
 
@@ -78,10 +80,13 @@ public abstract class EventSourcingGrainWithStringKey<TState, TCommand, TPubEven
     ///     Publishes a domain error event to the stream.
     /// </summary>
     /// <param name="errorEvent">The domain error event to publish and broadcast.</param>
-    /// <returns>A <see cref="Result" /> that represents the result of the operation.</returns>
-    protected async Task PublishErrorAsync(TPubErrorEvent errorEvent)
+    /// <param name="broadcastOnly">Whether to broadcast the event.</param>
+    protected async Task PublishErrorAsync(TPubErrorEvent errorEvent, bool broadcastOnly = false)
     {
-        await GetPubStream().OnNextAsync(errorEvent);
+        if (!broadcastOnly)
+        {
+            await GetPubStream().OnNextAsync(errorEvent);
+        }
         await GetPubBroadcastStream().OnNextAsync(errorEvent);
     }
 }

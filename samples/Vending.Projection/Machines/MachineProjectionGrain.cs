@@ -129,7 +129,7 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
                 return;
             }
             await _dbContext.SaveChangesAsync();
-            await PublishAsync(new MachineInfoSavedEvent(machineInfo.Id, machineInfo.Version, machineEvent.TraceId, DateTimeOffset.UtcNow, machineEvent.OperatedBy));
+            await PublishAsync(new MachineInfoSavedEvent(machineInfo.Id, machineInfo.Version, machineInfo, machineEvent.TraceId, DateTimeOffset.UtcNow, machineEvent.OperatedBy));
         }
         catch (Exception ex)
         {
@@ -168,7 +168,7 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
             machineInfo.IsDeleted = true;
             machineInfo.Version = machineEvent.Version;
             await _dbContext.SaveChangesAsync();
-            await PublishAsync(new MachineInfoSavedEvent(machineInfo.Id, machineInfo.Version, machineEvent.TraceId, DateTimeOffset.UtcNow, machineEvent.OperatedBy));
+            await PublishAsync(new MachineInfoSavedEvent(machineInfo.Id, machineInfo.Version, machineInfo, machineEvent.TraceId, DateTimeOffset.UtcNow, machineEvent.OperatedBy));
         }
         catch (Exception ex)
         {
@@ -212,7 +212,7 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
             machineInfo.LastModifiedBy = machineEvent.OperatedBy;
             machineInfo.Version = machineEvent.Version;
             await _dbContext.SaveChangesAsync();
-            await PublishAsync(new MachineInfoSavedEvent(machineInfo.Id, machineInfo.Version, machineEvent.TraceId, DateTimeOffset.UtcNow, machineEvent.OperatedBy));
+            await PublishAsync(new MachineInfoSavedEvent(machineInfo.Id, machineInfo.Version, machineInfo, machineEvent.TraceId, DateTimeOffset.UtcNow, machineEvent.OperatedBy));
         }
         catch (Exception ex)
         {
@@ -255,7 +255,7 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
             machineInfo.LastModifiedBy = machineEvent.OperatedBy;
             machineInfo.Version = machineEvent.Version;
             await _dbContext.SaveChangesAsync();
-            await PublishAsync(new MachineInfoSavedEvent(machineInfo.Id, machineInfo.Version, machineEvent.TraceId, DateTimeOffset.UtcNow, machineEvent.OperatedBy));
+            await PublishAsync(new MachineInfoSavedEvent(machineInfo.Id, machineInfo.Version, machineInfo, machineEvent.TraceId, DateTimeOffset.UtcNow, machineEvent.OperatedBy));
         }
         catch (Exception ex)
         {
@@ -287,7 +287,7 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
             machineInfo.LastModifiedBy = machineEvent.OperatedBy;
             machineInfo.Version = machineEvent.Version;
             await _dbContext.SaveChangesAsync();
-            await PublishAsync(new MachineInfoSavedEvent(machineInfo.Id, machineInfo.Version, machineEvent.TraceId, DateTimeOffset.UtcNow, machineEvent.OperatedBy));
+            await PublishAsync(new MachineInfoSavedEvent(machineInfo.Id, machineInfo.Version, machineInfo, machineEvent.TraceId, DateTimeOffset.UtcNow, machineEvent.OperatedBy));
         }
         catch (Exception ex)
         {
@@ -319,7 +319,7 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
             machineInfo.LastModifiedBy = machineEvent.OperatedBy;
             machineInfo.Version = machineEvent.Version;
             await _dbContext.SaveChangesAsync();
-            await PublishAsync(new MachineInfoSavedEvent(machineInfo.Id, machineInfo.Version, machineEvent.TraceId, DateTimeOffset.UtcNow, machineEvent.OperatedBy));
+            await PublishAsync(new MachineInfoSavedEvent(machineInfo.Id, machineInfo.Version, machineInfo, machineEvent.TraceId, DateTimeOffset.UtcNow, machineEvent.OperatedBy));
         }
         catch (Exception ex)
         {
@@ -352,7 +352,7 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
             machineInfo.LastModifiedBy = machineEvent.OperatedBy;
             machineInfo.Version = machineEvent.Version;
             await _dbContext.SaveChangesAsync();
-            await PublishAsync(new MachineInfoSavedEvent(machineInfo.Id, machineInfo.Version, machineEvent.TraceId, DateTimeOffset.UtcNow, machineEvent.OperatedBy));
+            await PublishAsync(new MachineInfoSavedEvent(machineInfo.Id, machineInfo.Version, machineInfo, machineEvent.TraceId, DateTimeOffset.UtcNow, machineEvent.OperatedBy));
         }
         catch (Exception ex)
         {
@@ -385,7 +385,7 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
             machineInfo.LastModifiedBy = machineEvent.OperatedBy;
             machineInfo.Version = machineEvent.Version;
             await _dbContext.SaveChangesAsync();
-            await PublishAsync(new MachineInfoSavedEvent(machineInfo.Id, machineInfo.Version, machineEvent.TraceId, DateTimeOffset.UtcNow, machineEvent.OperatedBy));
+            await PublishAsync(new MachineInfoSavedEvent(machineInfo.Id, machineInfo.Version, machineInfo, machineEvent.TraceId, DateTimeOffset.UtcNow, machineEvent.OperatedBy));
         }
         catch (Exception ex)
         {
@@ -428,7 +428,7 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
             machineInfo.LastModifiedBy = machineEvent.OperatedBy;
             machineInfo.Version = machineEvent.Version;
             await _dbContext.SaveChangesAsync();
-            await PublishAsync(new MachineInfoSavedEvent(machineInfo.Id, machineInfo.Version, machineEvent.TraceId, DateTimeOffset.UtcNow, machineEvent.OperatedBy));
+            await PublishAsync(new MachineInfoSavedEvent(machineInfo.Id, machineInfo.Version, machineInfo, machineEvent.TraceId, DateTimeOffset.UtcNow, machineEvent.OperatedBy));
         }
         catch (Exception ex)
         {
@@ -471,7 +471,7 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
             machineInfo.LastModifiedBy = machineEvent.OperatedBy;
             machineInfo.Version = machineEvent.Version;
             await _dbContext.SaveChangesAsync();
-            await PublishAsync(new MachineInfoSavedEvent(machineInfo.Id, machineInfo.Version, machineEvent.TraceId, DateTimeOffset.UtcNow, machineEvent.OperatedBy));
+            await PublishAsync(new MachineInfoSavedEvent(machineInfo.Id, machineInfo.Version, machineInfo, machineEvent.TraceId, DateTimeOffset.UtcNow, machineEvent.OperatedBy));
         }
         catch (Exception ex)
         {
@@ -513,7 +513,7 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
             machineInfo.LastModifiedBy = machineEvent.OperatedBy;
             machineInfo.Version = machineEvent.Version;
             await _dbContext.SaveChangesAsync();
-            await PublishAsync(new MachineInfoSavedEvent(machineInfo.Id, machineInfo.Version, machineEvent.TraceId, DateTimeOffset.UtcNow, machineEvent.OperatedBy));
+            await PublishAsync(new MachineInfoSavedEvent(machineInfo.Id, machineInfo.Version, machineInfo, machineEvent.TraceId, DateTimeOffset.UtcNow, machineEvent.OperatedBy));
         }
         catch (Exception ex)
         {
@@ -536,7 +536,7 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
             }
             machineInfo.BoughtCount = machineEvent.BoughtCount;
             await _dbContext.SaveChangesAsync();
-            await PublishAsync(new MachineInfoSavedEvent(machineInfo.Id, machineInfo.Version, machineEvent.TraceId, DateTimeOffset.UtcNow, machineEvent.OperatedBy));
+            await PublishAsync(new MachineInfoSavedEvent(machineInfo.Id, machineInfo.Version, machineInfo, machineEvent.TraceId, DateTimeOffset.UtcNow, machineEvent.OperatedBy));
         }
         catch (Exception ex)
         {
@@ -559,7 +559,7 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
             }
             machineInfo.BoughtAmount = machineEvent.BoughtAmount;
             await _dbContext.SaveChangesAsync();
-            await PublishAsync(new MachineInfoSavedEvent(machineInfo.Id, machineInfo.Version, machineEvent.TraceId, DateTimeOffset.UtcNow, machineEvent.OperatedBy));
+            await PublishAsync(new MachineInfoSavedEvent(machineInfo.Id, machineInfo.Version, machineInfo, machineEvent.TraceId, DateTimeOffset.UtcNow, machineEvent.OperatedBy));
         }
         catch (Exception ex)
         {
@@ -602,7 +602,7 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
                 machineInfo.BoughtCount = await statsOfPurchasesGrain.GetBoughtCountAsync();
                 machineInfo.BoughtAmount = await statsOfPurchasesGrain.GetBoughtAmountAsync();
                 await _dbContext.SaveChangesAsync();
-                await PublishAsync(new MachineInfoSavedEvent(machineInfo.Id, machineInfo.Version, machineEvent.TraceId, DateTimeOffset.UtcNow, machineEvent.OperatedBy));
+                await PublishAsync(new MachineInfoSavedEvent(machineInfo.Id, machineInfo.Version, machineInfo, machineEvent.TraceId, DateTimeOffset.UtcNow, machineEvent.OperatedBy));
                 return;
             }
             catch (DbUpdateConcurrencyException ex)
@@ -630,13 +630,14 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
 
     private async Task<(string SnackName, string? SnackPictureUrl)> GetSnackNameAndPictureUrlAsync(Guid snackId)
     {
-        if (!_snackNamePictureCache.TryGetValue(snackId, out var snackNamePicture))
+        if (_snackNamePictureCache.TryGetValue(snackId, out var snackNamePicture))
         {
-            var snackGrain = GrainFactory.GetGrain<ISnackGrain>(snackId);
-            var snackInGrain = await snackGrain.GetSnackAsync();
-            snackNamePicture = (snackInGrain.Name, snackInGrain.PictureUrl);
-            _snackNamePictureCache.TryAdd(snackId, snackNamePicture);
+            return snackNamePicture;
         }
+        var snackGrain = GrainFactory.GetGrain<ISnackGrain>(snackId);
+        var snackInGrain = await snackGrain.GetSnackAsync();
+        snackNamePicture = (snackInGrain.Name, snackInGrain.PictureUrl);
+        _snackNamePictureCache.TryAdd(snackId, snackNamePicture);
         return snackNamePicture;
     }
 

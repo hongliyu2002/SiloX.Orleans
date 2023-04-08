@@ -1,61 +1,49 @@
 ﻿using System.Collections.Generic;
 using System.Reactive;
-using System.Reactive.Linq;
+using Microsoft.Extensions.Hosting;
+using Orleans;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using Splat;
 
 namespace Vending.App.ViewModels;
 
 public class MainViewModel : ReactiveObject
 {
+
     public MainViewModel()
     {
-        this.WhenAnyValue(vm => vm.SelectedName).Select(GetSelectedViewModel).ToPropertyEx(this, vm => vm.SelectedViewModel);
-        ManageSnacksCommand = ReactiveCommand.Create(ManageSnacks);
-        ManageMachinesCommand = ReactiveCommand.Create(ManageMachines);
-    }
-
-    private readonly Dictionary<string, ReactiveObject> _viewModels = new()
-                                                                      {
-                                                                          { "Snacks", new SnacksManagementViewModel() },
-                                                                          { "Machines", new MachinesManagementViewModel() }
-                                                                      };
-
-    private ReactiveObject GetSelectedViewModel(string? name)
-    {
-        name ??= "Snacks";
-        if (!_viewModels.TryGetValue(name, out var viewModel))
+        var appLifetime = Locator.Current.GetService<IHostApplicationLifetime>();
+        if (appLifetime != null)
         {
-            viewModel = _viewModels["Snacks"];
+            appLifetime.ApplicationStarted.Register(() => ClusterClient = Locator.Current.GetService<IClusterClient>());
+            appLifetime.ApplicationStopped.Register(() => ClusterClient = null);
         }
-        return viewModel;
+        var viewModels = new Dictionary<string, ReactiveObject>
+                         {
+                             { "Snacks", new SnacksManagementViewModel(this) },
+                             { "Machines", new MachinesManagementViewModel(this) }
+                         };
+        CurrentViewModel ??= viewModels["Snacks"];
+        GoSnacksManagementCommand = ReactiveCommand.Create(() => CurrentViewModel = viewModels["Snacks"]);
+        GoMachinesManagementCommand = ReactiveCommand.Create(() => CurrentViewModel = viewModels["Machines"]);
     }
 
     #region Properties
 
-    [ObservableAsProperty]
-    public ReactiveObject? SelectedViewModel { get; }
+    [Reactive]
+    public IClusterClient? ClusterClient { get; set; }
 
     [Reactive]
-    public string? SelectedName { get; set; }
+    public ReactiveObject? CurrentViewModel { get; set; }
 
     #endregion
 
     #region Commands
 
-    public ReactiveCommand<Unit, Unit> ManageSnacksCommand { get; }
+    public ReactiveCommand<Unit, ReactiveObject> GoSnacksManagementCommand { get; }
 
-    private void ManageSnacks()
-    {
-        SelectedName = "Snacks";
-    }
-
-    public ReactiveCommand<Unit, Unit> ManageMachinesCommand { get; }
-
-    private void ManageMachines()
-    {
-        SelectedName = "Machines";
-    }
+    public ReactiveCommand<Unit, ReactiveObject> GoMachinesManagementCommand { get; }
 
     #endregion
 

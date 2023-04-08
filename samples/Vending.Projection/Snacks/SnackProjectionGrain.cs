@@ -113,7 +113,7 @@ public sealed class SnackProjectionGrain : SubscriberPublisherGrainWithGuidKey<S
                 return;
             }
             await _dbContext.SaveChangesAsync();
-            await PublishAsync(new SnackInfoSavedEvent(snackInfo.Id, snackInfo.Version, snackEvent.TraceId, DateTimeOffset.UtcNow, snackEvent.OperatedBy));
+            await PublishAsync(new SnackInfoSavedEvent(snackInfo.Id, snackInfo.Version, snackInfo, snackEvent.TraceId, DateTimeOffset.UtcNow, snackEvent.OperatedBy));
         }
         catch (Exception ex)
         {
@@ -145,7 +145,7 @@ public sealed class SnackProjectionGrain : SubscriberPublisherGrainWithGuidKey<S
             snackInfo.IsDeleted = true;
             snackInfo.Version = snackEvent.Version;
             await _dbContext.SaveChangesAsync();
-            await PublishAsync(new SnackInfoSavedEvent(snackInfo.Id, snackInfo.Version, snackEvent.TraceId, DateTimeOffset.UtcNow, snackEvent.OperatedBy));
+            await PublishAsync(new SnackInfoSavedEvent(snackInfo.Id, snackInfo.Version, snackInfo, snackEvent.TraceId, DateTimeOffset.UtcNow, snackEvent.OperatedBy));
         }
         catch (Exception ex)
         {
@@ -178,7 +178,7 @@ public sealed class SnackProjectionGrain : SubscriberPublisherGrainWithGuidKey<S
             snackInfo.LastModifiedBy = snackEvent.OperatedBy;
             snackInfo.Version = snackEvent.Version;
             await _dbContext.SaveChangesAsync();
-            await PublishAsync(new SnackInfoSavedEvent(snackInfo.Id, snackInfo.Version, snackEvent.TraceId, DateTimeOffset.UtcNow, snackEvent.OperatedBy));
+            await PublishAsync(new SnackInfoSavedEvent(snackInfo.Id, snackInfo.Version, snackInfo, snackEvent.TraceId, DateTimeOffset.UtcNow, snackEvent.OperatedBy));
         }
         catch (Exception ex)
         {
@@ -201,7 +201,7 @@ public sealed class SnackProjectionGrain : SubscriberPublisherGrainWithGuidKey<S
             }
             snackInfo.MachineCount = snackEvent.MachineCount;
             await _dbContext.SaveChangesAsync();
-            await PublishAsync(new SnackInfoSavedEvent(snackInfo.Id, snackInfo.Version, snackEvent.TraceId, DateTimeOffset.UtcNow, snackEvent.OperatedBy));
+            await PublishAsync(new SnackInfoSavedEvent(snackInfo.Id, snackInfo.Version, snackInfo, snackEvent.TraceId, DateTimeOffset.UtcNow, snackEvent.OperatedBy));
         }
         catch (Exception ex)
         {
@@ -224,7 +224,7 @@ public sealed class SnackProjectionGrain : SubscriberPublisherGrainWithGuidKey<S
             }
             snackInfo.TotalQuantity = snackEvent.TotalQuantity;
             await _dbContext.SaveChangesAsync();
-            await PublishAsync(new SnackInfoSavedEvent(snackInfo.Id, snackInfo.Version, snackEvent.TraceId, DateTimeOffset.UtcNow, snackEvent.OperatedBy));
+            await PublishAsync(new SnackInfoSavedEvent(snackInfo.Id, snackInfo.Version, snackInfo, snackEvent.TraceId, DateTimeOffset.UtcNow, snackEvent.OperatedBy));
         }
         catch (Exception ex)
         {
@@ -247,7 +247,7 @@ public sealed class SnackProjectionGrain : SubscriberPublisherGrainWithGuidKey<S
             }
             snackInfo.TotalAmount = snackEvent.TotalAmount;
             await _dbContext.SaveChangesAsync();
-            await PublishAsync(new SnackInfoSavedEvent(snackInfo.Id, snackInfo.Version, snackEvent.TraceId, DateTimeOffset.UtcNow, snackEvent.OperatedBy));
+            await PublishAsync(new SnackInfoSavedEvent(snackInfo.Id, snackInfo.Version, snackInfo, snackEvent.TraceId, DateTimeOffset.UtcNow, snackEvent.OperatedBy));
         }
         catch (Exception ex)
         {
@@ -270,7 +270,7 @@ public sealed class SnackProjectionGrain : SubscriberPublisherGrainWithGuidKey<S
             }
             snackInfo.BoughtCount = snackEvent.BoughtCount;
             await _dbContext.SaveChangesAsync();
-            await PublishAsync(new SnackInfoSavedEvent(snackInfo.Id, snackInfo.Version, snackEvent.TraceId, DateTimeOffset.UtcNow, snackEvent.OperatedBy));
+            await PublishAsync(new SnackInfoSavedEvent(snackInfo.Id, snackInfo.Version, snackInfo, snackEvent.TraceId, DateTimeOffset.UtcNow, snackEvent.OperatedBy));
         }
         catch (Exception ex)
         {
@@ -293,7 +293,7 @@ public sealed class SnackProjectionGrain : SubscriberPublisherGrainWithGuidKey<S
             }
             snackInfo.BoughtAmount = snackEvent.BoughtAmount;
             await _dbContext.SaveChangesAsync();
-            await PublishAsync(new SnackInfoSavedEvent(snackInfo.Id, snackInfo.Version, snackEvent.TraceId, DateTimeOffset.UtcNow, snackEvent.OperatedBy));
+            await PublishAsync(new SnackInfoSavedEvent(snackInfo.Id, snackInfo.Version, snackInfo, snackEvent.TraceId, DateTimeOffset.UtcNow, snackEvent.OperatedBy));
         }
         catch (Exception ex)
         {
@@ -340,7 +340,7 @@ public sealed class SnackProjectionGrain : SubscriberPublisherGrainWithGuidKey<S
                 snackInfo.BoughtCount = await statsOfPurchasesGrain.GetBoughtCountAsync();
                 snackInfo.BoughtAmount = await statsOfPurchasesGrain.GetBoughtAmountAsync();
                 await _dbContext.SaveChangesAsync();
-                await PublishAsync(new SnackInfoSavedEvent(snackInfo.Id, snackInfo.Version, snackEvent.TraceId, DateTimeOffset.UtcNow, snackEvent.OperatedBy));
+                await PublishAsync(new SnackInfoSavedEvent(snackInfo.Id, snackInfo.Version, snackInfo, snackEvent.TraceId, DateTimeOffset.UtcNow, snackEvent.OperatedBy));
                 return;
             }
             catch (DbUpdateConcurrencyException ex)

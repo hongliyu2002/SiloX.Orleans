@@ -104,7 +104,7 @@ public sealed class PurchaseProjectionGrain : SubscriberPublisherGrainWithGuidKe
             }
             await purchaseInfo.UpdateSnackNameAndPictureUrlAsync(GetSnackNameAndPictureUrlAsync);
             await _dbContext.SaveChangesAsync();
-            await PublishAsync(new PurchaseInfoSavedEvent(purchaseInfo.Id, purchaseInfo.Version, purchaseEvent.TraceId, DateTimeOffset.UtcNow, purchaseEvent.OperatedBy));
+            await PublishAsync(new PurchaseInfoSavedEvent(purchaseInfo.Id, purchaseInfo.Version, purchaseInfo, purchaseEvent.TraceId, DateTimeOffset.UtcNow, purchaseEvent.OperatedBy));
         }
         catch (Exception ex)
         {
@@ -142,7 +142,7 @@ public sealed class PurchaseProjectionGrain : SubscriberPublisherGrainWithGuidKe
                 }
                 await purchase.ToProjection(GetSnackNameAndPictureUrlAsync, purchaseInfo);
                 await _dbContext.SaveChangesAsync();
-                await PublishAsync(new PurchaseInfoSavedEvent(purchaseInfo.Id, purchaseInfo.Version, purchaseEvent.TraceId, DateTimeOffset.UtcNow, purchaseEvent.OperatedBy));
+                await PublishAsync(new PurchaseInfoSavedEvent(purchaseInfo.Id, purchaseInfo.Version, purchaseInfo, purchaseEvent.TraceId, DateTimeOffset.UtcNow, purchaseEvent.OperatedBy));
                 return;
             }
             catch (DbUpdateConcurrencyException ex)
@@ -170,13 +170,14 @@ public sealed class PurchaseProjectionGrain : SubscriberPublisherGrainWithGuidKe
 
     private async Task<(string SnackName, string? SnackPictureUrl)> GetSnackNameAndPictureUrlAsync(Guid snackId)
     {
-        if (!_snackNamePictureCache.TryGetValue(snackId, out var snackNamePicture))
+        if (_snackNamePictureCache.TryGetValue(snackId, out var snackNamePicture))
         {
-            var snackGrain = GrainFactory.GetGrain<ISnackGrain>(snackId);
-            var snackInGrain = await snackGrain.GetSnackAsync();
-            snackNamePicture = (snackInGrain.Name, snackInGrain.PictureUrl);
-            _snackNamePictureCache.TryAdd(snackId, snackNamePicture);
+            return snackNamePicture;
         }
+        var snackGrain = GrainFactory.GetGrain<ISnackGrain>(snackId);
+        var snackInGrain = await snackGrain.GetSnackAsync();
+        snackNamePicture = (snackInGrain.Name, snackInGrain.PictureUrl);
+        _snackNamePictureCache.TryAdd(snackId, snackNamePicture);
         return snackNamePicture;
     }
 

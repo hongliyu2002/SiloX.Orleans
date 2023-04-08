@@ -7,6 +7,5 @@ public partial class MachinesManagementView
     public MachinesManagementView()
     {
         InitializeComponent();
-        ViewModel = new MachinesManagementViewModel();
     }
 }
