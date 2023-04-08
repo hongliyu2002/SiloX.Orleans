@@ -143,11 +143,7 @@ public sealed class Machine
                                             ms.SnackPile.Quantity,
                                             TotalAmount = ms.SnackPile.Amount
                                         })
-                          .GroupBy(r => new
-                                        {
-                                            r.MachineId,
-                                            r.SnackId
-                                        })
+                          .GroupBy(r => new { r.MachineId, r.SnackId })
                           .Select(g => new MachineSnackStat(g.Key.MachineId, g.Key.SnackId, g.Sum(r => r.Quantity), g.Sum(r => r.TotalAmount)))
                           .ToList();
         SnackCount = SnackStats.Select(ss => ss.SnackId).Count();
@@ -169,11 +165,34 @@ public sealed class Machine
         CreatedBy = command.OperatedBy;
     }
 
-    public void Apply(MachineRemoveCommand command)
+    public void Apply(MachineDeleteCommand command)
     {
         DeletedAt = command.OperatedAt;
         DeletedBy = command.OperatedBy;
         IsDeleted = true;
+    }
+
+    public void Apply(MachineAddSlotCommand command)
+    {
+        var slot = Slots.FirstOrDefault(ms => ms.Position == command.Position);
+        if (slot == null)
+        {
+            Slots.Add(new MachineSlot(Id, command.Position, command.SnackPile));
+            UpdateStats();
+            LastModifiedAt = command.OperatedAt;
+            LastModifiedBy = command.OperatedBy;
+        }
+    }
+
+    public void Apply(MachineRemoveSlotCommand command)
+    {
+        var slot = Slots.FirstOrDefault(ms => ms.Position == command.Position);
+        if (slot != null && Slots.Remove(slot))
+        {
+            UpdateStats();
+            LastModifiedAt = command.OperatedAt;
+            LastModifiedBy = command.OperatedBy;
+        }
     }
 
     public void Apply(MachineLoadMoneyCommand command)
@@ -209,54 +228,50 @@ public sealed class Machine
         }
     }
 
-    public void Apply(MachineLoadSnacksCommand snacksCommand)
+    public void Apply(MachineLoadSnacksCommand command)
     {
-        var slot = Slots.FirstOrDefault(ms => ms.Position == snacksCommand.Position);
+        var slot = Slots.FirstOrDefault(ms => ms.Position == command.Position);
         if (slot != null)
         {
             if (slot.SnackPile != null)
             {
-                if (slot.SnackPile.SnackId == snacksCommand.SnackPile.SnackId)
+                if (slot.SnackPile.SnackId == command.SnackPile.SnackId)
                 {
-                    slot.SnackPile.Add(snacksCommand.SnackPile.Quantity);
+                    slot.SnackPile.Add(command.SnackPile.Quantity);
                 }
             }
             else
             {
-                slot.SnackPile = snacksCommand.SnackPile;
+                slot.SnackPile = command.SnackPile;
             }
+            UpdateStats();
+            LastModifiedAt = command.OperatedAt;
+            LastModifiedBy = command.OperatedBy;
         }
-        else
-        {
-            Slots.Add(new MachineSlot(Id, snacksCommand.Position, snacksCommand.SnackPile));
-        }
-        UpdateStats();
-        LastModifiedAt = snacksCommand.OperatedAt;
-        LastModifiedBy = snacksCommand.OperatedBy;
     }
 
-    public void Apply(MachineUnloadSnacksCommand snacksCommand)
+    public void Apply(MachineUnloadSnacksCommand command)
     {
-        var slot = Slots.FirstOrDefault(ms => ms.Position == snacksCommand.Position);
+        var slot = Slots.FirstOrDefault(ms => ms.Position == command.Position);
         if (slot != null)
         {
             slot.SnackPile = null;
+            UpdateStats();
+            LastModifiedAt = command.OperatedAt;
+            LastModifiedBy = command.OperatedBy;
         }
-        UpdateStats();
-        LastModifiedAt = snacksCommand.OperatedAt;
-        LastModifiedBy = snacksCommand.OperatedBy;
     }
 
-    public void Apply(MachineBuySnackCommand snackCommand)
+    public void Apply(MachineBuySnackCommand command)
     {
-        var slot = Slots.FirstOrDefault(ms => ms.Position == snackCommand.Position);
+        var slot = Slots.FirstOrDefault(ms => ms.Position == command.Position);
         if (slot is { SnackPile: not null })
         {
             slot.SnackPile.Subtract(1);
             AmountInTransaction -= slot.SnackPile.Price;
             UpdateStats();
-            LastModifiedAt = snackCommand.OperatedAt;
-            LastModifiedBy = snackCommand.OperatedBy;
+            LastModifiedAt = command.OperatedAt;
+            LastModifiedBy = command.OperatedBy;
         }
     }
 

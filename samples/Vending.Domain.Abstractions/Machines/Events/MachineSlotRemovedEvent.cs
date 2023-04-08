@@ -1,16 +1,12 @@
-﻿using System.Collections.Immutable;
-
-namespace Vending.Domain.Abstractions.Machines;
+﻿namespace Vending.Domain.Abstractions.Machines;
 
 [Immutable]
 [Serializable]
 [GenerateSerializer]
-public sealed record MachineRemovedEvent
+public sealed record MachineSlotRemovedEvent
     (Guid MachineId,
      int Version,
-     Money MoneyInside,
-     decimal AmountInTransaction,
-     IList<MachineSlot> Slots,
+     int Position,
      int SlotsCount,
      int SnackCount,
      int SnackQuantity,

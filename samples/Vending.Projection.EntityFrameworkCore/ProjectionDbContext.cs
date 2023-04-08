@@ -38,7 +38,7 @@ public class ProjectionDbContext : DbContext
                                            builder.HasIndex(s => new { s.IsDeleted, s.LastModifiedAt });
                                            builder.HasIndex(s => new { s.IsDeleted, s.Name });
                                        });
-        // Configures the MachineInfo entity
+        // Configures the machineInfo entity
         modelBuilder.Entity<MachineInfo>(builder =>
                                          {
                                              builder.ToTable("Machines");
@@ -56,7 +56,7 @@ public class ProjectionDbContext : DbContext
                                              builder.HasIndex(m => new { m.IsDeleted, m.CreatedAt });
                                              builder.HasIndex(m => new { m.IsDeleted, m.LastModifiedAt });
                                          });
-        // Configures the MachineSlotInfo entity
+        // Configures the machineSlotInfo entity
         modelBuilder.Entity<MachineSlotInfo>(builder =>
                                              {
                                                  builder.ToTable("MachineSlots");

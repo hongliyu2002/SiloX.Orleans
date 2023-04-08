@@ -37,7 +37,7 @@ public class DomainDbContext : DbContext
                                        builder.Ignore(s => s.PictureUrl);
                                        builder.HasIndex(s => new { s.IsDeleted, s.Name });
                                    });
-        // Configures the Machine entity
+        // Configures the machine entity
         modelBuilder.Entity<Machine>(builder =>
                                      {
                                          builder.ToTable("Machines");
@@ -69,7 +69,7 @@ public class DomainDbContext : DbContext
                                                                                      navigationBuilder.Property(sp => sp.Amount).HasPrecision(10, 2);
                                                                                  });
                                          });
-        // Configures the MachineSnackStat entity
+        // Configures the machineSnackStat entity
         modelBuilder.Entity<MachineSnackStat>(builder =>
                                               {
                                                   builder.ToTable("MachineSnackStats");

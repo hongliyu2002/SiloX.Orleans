@@ -38,7 +38,7 @@ public sealed class MachineProjectionGrain : SubscriberGrainWithGuidKey<MachineE
         {
             case MachineInitializedEvent machineEvent:
                 return ApplyEventAsync(machineEvent);
-            case MachineRemovedEvent machineEvent:
+            case MachineDeletedEvent machineEvent:
                 return ApplyEventAsync(machineEvent);
             case MachineMoneyLoadedEvent machineEvent:
                 return ApplyEventAsync(machineEvent);
@@ -121,20 +121,20 @@ public sealed class MachineProjectionGrain : SubscriberGrainWithGuidKey<MachineE
         }
     }
 
-    private async Task ApplyEventAsync(MachineRemovedEvent machineEvent)
+    private async Task ApplyEventAsync(MachineDeletedEvent machineEvent)
     {
         try
         {
             var machineInfo = await _dbContext.Machines.FindAsync(machineEvent.MachineId);
             if (machineInfo == null)
             {
-                _logger.LogWarning("Apply MachineRemovedEvent: Machine {MachineId} does not exist in the database. Try to execute full update...", machineEvent.MachineId);
+                _logger.LogWarning("Apply MachineDeletedEvent: Machine {MachineId} does not exist in the database. Try to execute full update...", machineEvent.MachineId);
                 await ApplyFullUpdateAsync(machineEvent);
                 return;
             }
             if (machineInfo.Version != machineEvent.Version - 1)
             {
-                _logger.LogWarning("Apply MachineRemovedEvent: Machine {MachineId} version {Version}) in the database should be {MachineVersion}. Try to execute full update...", machineEvent.MachineId, machineInfo.Version, machineEvent.Version - 1);
+                _logger.LogWarning("Apply MachineDeletedEvent: Machine {MachineId} version {Version}) in the database should be {MachineVersion}. Try to execute full update...", machineEvent.MachineId, machineInfo.Version, machineEvent.Version - 1);
                 await ApplyFullUpdateAsync(machineEvent);
                 return;
             }
@@ -153,7 +153,7 @@ public sealed class MachineProjectionGrain : SubscriberGrainWithGuidKey<MachineE
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Apply MachineRemovedEvent: Exception is occurred when try to write data to the database. Try to execute full update...");
+            _logger.LogError(ex, "Apply MachineDeletedEvent: Exception is occurred when try to write data to the database. Try to execute full update...");
             await ApplyFullUpdateAsync(machineEvent);
         }
     }

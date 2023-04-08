@@ -33,7 +33,7 @@ public class MachineEventHubGrain : ReceiverGrainWithStringKey<MachineEvent, Mac
         {
             case MachineInitializedEvent machineEvent:
                 return DispatchTasksAsync(machineEvent);
-            case MachineRemovedEvent machineEvent:
+            case MachineDeletedEvent machineEvent:
                 return DispatchTasksAsync(machineEvent);
             // case MachineMoneyLoadedEvent machineEvent:
             //     return DispatchTasksAsync(machineEvent);
@@ -97,7 +97,7 @@ public class MachineEventHubGrain : ReceiverGrainWithStringKey<MachineEvent, Mac
         }
     }
 
-    private async Task DispatchTasksAsync(MachineRemovedEvent machineEvent)
+    private async Task DispatchTasksAsync(MachineDeletedEvent machineEvent)
     {
         try
         {
@@ -111,11 +111,11 @@ public class MachineEventHubGrain : ReceiverGrainWithStringKey<MachineEvent, Mac
                                                                            snackStatsGrain.UpdateTotalAmountAsync(-1)
                                                                        });
             var results = await Task.WhenAll(tasks);
-            _logger.LogInformation("Handle MachineRemovedEvent: Machine {MachineId} tasks is dispatched. With success： {SuccessCount} failed： {FailedCount}", this.GetPrimaryKey(), results.Count(r => r.IsSuccess), results.Count(r => r.IsFailed));
+            _logger.LogInformation("Handle MachineDeletedEvent: Machine {MachineId} tasks is dispatched. With success： {SuccessCount} failed： {FailedCount}", this.GetPrimaryKey(), results.Count(r => r.IsSuccess), results.Count(r => r.IsFailed));
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Handle MachineRemovedEvent: Exception is occurred when dispatching");
+            _logger.LogError(ex, "Handle MachineDeletedEvent: Exception is occurred when dispatching");
         }
     }
 
