@@ -48,7 +48,7 @@ public sealed class SnackProjectionGrain : SubscriberPublisherGrainWithGuidKey<S
         {
             case SnackInitializedEvent snackEvent:
                 return ApplyEventAsync(snackEvent);
-            case SnackRemovedEvent snackEvent:
+            case SnackDeletedEvent snackEvent:
                 return ApplyEventAsync(snackEvent);
             case SnackUpdatedEvent snackEvent:
                 return ApplyEventAsync(snackEvent);
@@ -123,20 +123,20 @@ public sealed class SnackProjectionGrain : SubscriberPublisherGrainWithGuidKey<S
         }
     }
 
-    private async Task ApplyEventAsync(SnackRemovedEvent snackEvent)
+    private async Task ApplyEventAsync(SnackDeletedEvent snackEvent)
     {
         try
         {
             var snackInfo = await _dbContext.Snacks.FindAsync(snackEvent.SnackId);
             if (snackInfo == null)
             {
-                _logger.LogWarning("Apply SnackRemovedEvent: Snack {SnackId} does not exist in the database. Try to execute full update...", snackEvent.SnackId);
+                _logger.LogWarning("Apply SnackDeletedEvent: Snack {SnackId} does not exist in the database. Try to execute full update...", snackEvent.SnackId);
                 await ApplyFullUpdateAsync(snackEvent);
                 return;
             }
             if (snackInfo.Version != snackEvent.Version - 1)
             {
-                _logger.LogWarning("Apply SnackRemovedEvent: Snack {SnackId} version {Version}) in the database should be {SnackVersion}. Try to execute full update...", snackEvent.SnackId, snackInfo.Version, snackEvent.Version - 1);
+                _logger.LogWarning("Apply SnackDeletedEvent: Snack {SnackId} version {Version}) in the database should be {SnackVersion}. Try to execute full update...", snackEvent.SnackId, snackInfo.Version, snackEvent.Version - 1);
                 await ApplyFullUpdateAsync(snackEvent);
                 return;
             }
@@ -149,7 +149,7 @@ public sealed class SnackProjectionGrain : SubscriberPublisherGrainWithGuidKey<S
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Apply SnackRemovedEvent: Exception is occurred when try to write data to the database. Try to execute full update...");
+            _logger.LogError(ex, "Apply SnackDeletedEvent: Exception is occurred when try to write data to the database. Try to execute full update...");
             await PublishErrorAsync(new SnackInfoErrorEvent(snackEvent.SnackId, snackEvent.Version, 102, new[] { ex.Message }, snackEvent.TraceId, DateTimeOffset.UtcNow, snackEvent.OperatedBy));
             await ApplyFullUpdateAsync(snackEvent);
         }

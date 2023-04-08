@@ -3,7 +3,7 @@
 [Immutable]
 [Serializable]
 [GenerateSerializer]
-public sealed record SnackRemovedEvent
+public sealed record SnackDeletedEvent
     (Guid SnackId,
      int Version,
      Guid TraceId,

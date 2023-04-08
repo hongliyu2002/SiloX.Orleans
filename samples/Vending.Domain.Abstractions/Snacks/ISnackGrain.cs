@@ -35,12 +35,12 @@ public interface ISnackGrain : IGrainWithGuidKey
     ///     Asynchronously checks whether the Snack can be removed with the given command
     /// </summary>
     [AlwaysInterleave]
-    Task<bool> CanRemoveAsync(SnackRemoveCommand command);
+    Task<bool> CanDeleteAsync(SnackDeleteCommand command);
 
     /// <summary>
     ///     Asynchronously removes the Snack with the given command
     /// </summary>
-    Task<Result> RemoveAsync(SnackRemoveCommand command);
+    Task<Result> DeleteAsync(SnackDeleteCommand command);
 
     /// <summary>
     ///     Asynchronously checks whether the snack's name and picture url can be changed with the given command

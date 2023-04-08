@@ -41,7 +41,7 @@ public sealed class SnackRepoGrain : Grain, ISnackRepoGrain
                      .MapTryAsync(() => _dbContext.Snacks.Where(s => s.IsDeleted == false).AnyAsync(s => s.Id == command.SnackId))
                      .EnsureAsync(exists => exists, $"Snack {command.SnackId} does not exist or has already been deleted.")
                      .MapTryAsync(() => GrainFactory.GetGrain<ISnackGrain>(command.SnackId))
-                     .BindTryAsync(grain => grain.RemoveAsync(new SnackRemoveCommand(command.TraceId, command.OperatedAt, command.OperatedBy)));
+                     .BindTryAsync(grain => grain.DeleteAsync(new SnackDeleteCommand(command.TraceId, command.OperatedAt, command.OperatedBy)));
     }
 
     /// <inheritdoc />
@@ -51,7 +51,7 @@ public sealed class SnackRepoGrain : Grain, ISnackRepoGrain
                      .MapTryAsync(() => _dbContext.Snacks.Where(s => s.IsDeleted == false).Select(s => s.Id).Intersect(command.SnackIds).ToListAsync())
                      .EnsureAsync(snackIds => snackIds.Count == command.SnackIds.Count, "Some snacks do not exist or have already been deleted.")
                      .MapTryAsync(snackIds => snackIds.Select(snackId => GrainFactory.GetGrain<ISnackGrain>(snackId)))
-                     .MapTryAsync(grains => grains.Select(grain => grain.RemoveAsync(new SnackRemoveCommand(command.TraceId, command.OperatedAt, command.OperatedBy))))
+                     .MapTryAsync(grains => grains.Select(grain => grain.DeleteAsync(new SnackDeleteCommand(command.TraceId, command.OperatedAt, command.OperatedBy))))
                      .MapTryAsync(Task.WhenAll)
                      .BindTryAsync(Result.Combine);
     }

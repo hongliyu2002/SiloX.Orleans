@@ -88,7 +88,7 @@ public sealed class Snack
         CreatedBy = command.OperatedBy;
     }
 
-    public void Apply(SnackRemoveCommand command)
+    public void Apply(SnackDeleteCommand command)
     {
         DeletedAt = command.OperatedAt;
         DeletedBy = command.OperatedBy;
