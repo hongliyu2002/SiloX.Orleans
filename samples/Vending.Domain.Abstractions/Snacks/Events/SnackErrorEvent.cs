@@ -1,5 +1,4 @@
-﻿using System.Collections.Immutable;
-using SiloX.Domain.Abstractions;
+﻿using SiloX.Domain.Abstractions;
 
 namespace Vending.Domain.Abstractions.Snacks;
 
@@ -10,7 +9,7 @@ public sealed record SnackErrorEvent
     (Guid SnackId,
      int Version,
      int Code,
-     IImmutableList<string> Reasons,
+     IList<string> Reasons,
      Guid TraceId,
      DateTimeOffset OperatedAt,
      string OperatedBy) : SnackEvent(SnackId, Version, TraceId, OperatedAt, OperatedBy), IDomainErrorEvent;

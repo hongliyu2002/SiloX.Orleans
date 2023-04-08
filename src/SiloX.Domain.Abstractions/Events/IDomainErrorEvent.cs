@@ -1,6 +1,4 @@
-﻿using System.Collections.Immutable;
-
-namespace SiloX.Domain.Abstractions;
+﻿namespace SiloX.Domain.Abstractions;
 
 /// <summary>
 ///     An interface represents a domain error event.
@@ -15,5 +13,5 @@ public interface IDomainErrorEvent : IDomainEvent
     /// <summary>
     ///     List of strings containing the reasons for the error.
     /// </summary>
-    IImmutableList<string> Reasons { get; init; }
+    IList<string> Reasons { get; init; }
 }

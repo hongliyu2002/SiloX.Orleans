@@ -1,5 +1,4 @@
-﻿using System.Collections.Immutable;
-using SiloX.Domain.Abstractions;
+﻿using SiloX.Domain.Abstractions;
 
 namespace Vending.Domain.Abstractions.Purchases;
 
@@ -12,7 +11,7 @@ public sealed record PurchaseErrorEvent
      int Position,
      Guid SnackId,
      int Code,
-     IImmutableList<string> Reasons,
+     IList<string> Reasons,
      Guid TraceId,
      DateTimeOffset OperatedAt,
      string OperatedBy) : PurchaseEvent(PurchaseId, MachineId, Position, SnackId, TraceId, OperatedAt, OperatedBy), IDomainErrorEvent;

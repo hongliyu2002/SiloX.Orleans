@@ -18,9 +18,4 @@
         <ProjectReference Include="..\Vending.Domain.Abstractions\Vending.Domain.Abstractions.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Machines\Events\" />
-      <Folder Include="Purchases\Events\" />
-    </ItemGroup>
-
 </Project>
