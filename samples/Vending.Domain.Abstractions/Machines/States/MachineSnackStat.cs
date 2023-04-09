@@ -36,13 +36,13 @@ public sealed class MachineSnackStat
     ///     The machine id.
     /// </summary>
     [Id(0)]
-    public Guid MachineId { get; private set; }
+    public Guid MachineId { get; set; }
 
     /// <summary>
     ///     The snack id.
     /// </summary>
     [Id(1)]
-    public Guid SnackId { get; private set; }
+    public Guid SnackId { get; set; }
 
     /// <summary>
     ///     The total quantity of snacks in the machine.

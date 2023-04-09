@@ -11,43 +11,43 @@ public sealed class Machine
     ///     The unique identifier of the snack mMachine.
     /// </summary>
     [Id(0)]
-    public Guid Id { get; private set; }
+    public Guid Id { get; set; }
 
     /// <summary>
     ///     The money inside the snack mMachine.
     /// </summary>
     [Id(1)]
-    public Money MoneyInside { get; private set; } = Money.Zero;
+    public Money MoneyInside { get; set; } = Money.Zero;
 
     /// <summary>
     ///     The amount of money in the transaction.
     /// </summary>
     [Id(2)]
-    public decimal AmountInTransaction { get; private set; }
+    public decimal AmountInTransaction { get; set; }
 
     /// <summary>
     ///     The slots of the snack mMachine.
     /// </summary>
     [Id(3)]
-    public IList<MachineSlot> Slots { get; private set; } = new List<MachineSlot>();
+    public IList<MachineSlot> Slots { get; set; } = new List<MachineSlot>();
 
     /// <summary>
     ///     The snack statistics of the snack mMachine.
     /// </summary>
     [Id(4)]
-    public IList<MachineSnackStat> SnackStats { get; private set; } = new List<MachineSnackStat>();
+    public IList<MachineSnackStat> SnackStats { get; set; } = new List<MachineSnackStat>();
 
     /// <summary>
     ///     The date and time when the snack mMachine was created.
     /// </summary>
     [Id(5)]
-    public DateTimeOffset? CreatedAt { get; private set; }
+    public DateTimeOffset? CreatedAt { get; set; }
 
     /// <summary>
     ///     The user who created the snack mMachine.
     /// </summary>
     [Id(6)]
-    public string? CreatedBy { get; private set; }
+    public string? CreatedBy { get; set; }
 
     /// <summary>
     ///     Indicates whether the snack mMachine has been created.
@@ -58,55 +58,55 @@ public sealed class Machine
     ///     The date and time when the snack mMachine was last modified.
     /// </summary>
     [Id(7)]
-    public DateTimeOffset? LastModifiedAt { get; private set; }
+    public DateTimeOffset? LastModifiedAt { get; set; }
 
     /// <summary>
     ///     The user who last modified the snack mMachine.
     /// </summary>
     [Id(8)]
-    public string? LastModifiedBy { get; private set; }
+    public string? LastModifiedBy { get; set; }
 
     /// <summary>
     ///     The date and time when the snack mMachine was deleted.
     /// </summary>
     [Id(9)]
-    public DateTimeOffset? DeletedAt { get; private set; }
+    public DateTimeOffset? DeletedAt { get; set; }
 
     /// <summary>
     ///     The user who deleted the snack mMachine.
     /// </summary>
     [Id(10)]
-    public string? DeletedBy { get; private set; }
+    public string? DeletedBy { get; set; }
 
     /// <summary>
     ///     Indicates whether the snack mMachine has been deleted.
     /// </summary>
     [Id(11)]
-    public bool IsDeleted { get; private set; }
+    public bool IsDeleted { get; set; }
 
     /// <summary>
     ///     The number of slots in the snack mMachine.
     /// </summary>
     [Id(12)]
-    public int SlotsCount { get; private set; }
+    public int SlotsCount { get; set; }
 
     /// <summary>
     ///     The number of snacks in the snack mMachine.
     /// </summary>
     [Id(13)]
-    public int SnackCount { get; private set; }
+    public int SnackCount { get; set; }
 
     /// <summary>
     ///     The quantity of snacks in the snack mMachine.
     /// </summary>
     [Id(14)]
-    public int SnackQuantity { get; private set; }
+    public int SnackQuantity { get; set; }
 
     /// <summary>
     ///     The amount of snacks in the snack mMachine.
     /// </summary>
     [Id(15)]
-    public decimal SnackAmount { get; private set; }
+    public decimal SnackAmount { get; set; }
 
     /// <inheritdoc />
     public override string ToString()

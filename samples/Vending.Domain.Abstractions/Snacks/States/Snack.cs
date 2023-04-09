@@ -11,31 +11,31 @@ public sealed class Snack
     ///     The unique identifier of the snack.
     /// </summary>
     [Id(0)]
-    public Guid Id { get; private set; }
+    public Guid Id { get; set; }
 
     /// <summary>
     ///     The name of the snack.
     /// </summary>
     [Id(1)]
-    public string Name { get; private set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
 
     /// <summary>
     ///     The URL of the picture of the snack.
     /// </summary>
     [Id(2)]
-    public string? PictureUrl { get; private set; }
+    public string? PictureUrl { get; set; }
 
     /// <summary>
     ///     The date and time when the snack was created.
     /// </summary>
     [Id(3)]
-    public DateTimeOffset? CreatedAt { get; private set; }
+    public DateTimeOffset? CreatedAt { get; set; }
 
     /// <summary>
     ///     The user who created the snack.
     /// </summary>
     [Id(4)]
-    public string? CreatedBy { get; private set; }
+    public string? CreatedBy { get; set; }
 
     /// <summary>
     ///     Indicates whether the snack has been created.
@@ -46,31 +46,31 @@ public sealed class Snack
     ///     The date and time when the snack was last modified.
     /// </summary>
     [Id(5)]
-    public DateTimeOffset? LastModifiedAt { get; private set; }
+    public DateTimeOffset? LastModifiedAt { get; set; }
 
     /// <summary>
     ///     The user who last modified the snack.
     /// </summary>
     [Id(6)]
-    public string? LastModifiedBy { get; private set; }
+    public string? LastModifiedBy { get; set; }
 
     /// <summary>
     ///     The date and time when the snack was deleted.
     /// </summary>
     [Id(7)]
-    public DateTimeOffset? DeletedAt { get; private set; }
+    public DateTimeOffset? DeletedAt { get; set; }
 
     /// <summary>
     ///     The user who deleted the snack.
     /// </summary>
     [Id(8)]
-    public string? DeletedBy { get; private set; }
+    public string? DeletedBy { get; set; }
 
     /// <summary>
     ///     Indicates whether the snack has been deleted.
     /// </summary>
     [Id(9)]
-    public bool IsDeleted { get; private set; }
+    public bool IsDeleted { get; set; }
 
     public override string ToString()
     {

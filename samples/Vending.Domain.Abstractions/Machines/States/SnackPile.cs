@@ -35,25 +35,25 @@ public sealed class SnackPile
     ///     The snack id.
     /// </summary>
     [Id(0)]
-    public Guid SnackId { get; private set; }
+    public Guid SnackId { get; set; }
 
     /// <summary>
     ///     The quantity of snacks in the pile.
     /// </summary>
     [Id(1)]
-    public int Quantity { get; private set; }
+    public int Quantity { get; set; }
 
     /// <summary>
     ///     The price of the snack. This is the price of a single snack, not the total price of the pile.
     /// </summary>
     [Id(2)]
-    public decimal Price { get; private set; }
+    public decimal Price { get; set; }
 
     /// <summary>
     ///     The amount of the snack pile.
     /// </summary>
     [Id(3)]
-    public decimal Amount { get; private set; }
+    public decimal Amount { get; set; }
 
     /// <inheritdoc />
     public override string ToString()

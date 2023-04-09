@@ -62,49 +62,49 @@ public sealed class Money
     ///     The number of ￥1 coins.
     /// </summary>
     [Id(0)]
-    public int Yuan1 { get; private set; }
+    public int Yuan1 { get; set; }
 
     /// <summary>
     ///     The number of ￥2 coins.
     /// </summary>
     [Id(1)]
-    public int Yuan2 { get; private set; }
+    public int Yuan2 { get; set; }
 
     /// <summary>
     ///     The number of ￥5 coins.
     /// </summary>
     [Id(2)]
-    public int Yuan5 { get; private set; }
+    public int Yuan5 { get; set; }
 
     /// <summary>
     ///     The number of ￥10 notes.
     /// </summary>
     [Id(3)]
-    public int Yuan10 { get; private set; }
+    public int Yuan10 { get; set; }
 
     /// <summary>
     ///     The number of ￥20 notes.
     /// </summary>
     [Id(4)]
-    public int Yuan20 { get; private set; }
+    public int Yuan20 { get; set; }
 
     /// <summary>
     ///     The number of ￥50 notes.
     /// </summary>
     [Id(5)]
-    public int Yuan50 { get; private set; }
+    public int Yuan50 { get; set; }
 
     /// <summary>
     ///     The number of ￥100 notes.
     /// </summary>
     [Id(6)]
-    public int Yuan100 { get; private set; }
+    public int Yuan100 { get; set; }
 
     /// <summary>
     ///     The total amount of money.
     /// </summary>
     [Id(7)]
-    public decimal Amount { get; private set; }
+    public decimal Amount { get; set; }
 
     /// <inheritdoc />
     public override string ToString()

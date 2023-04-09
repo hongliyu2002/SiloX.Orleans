@@ -34,13 +34,13 @@ public sealed class MachineSlot
     ///     The machine id.
     /// </summary>
     [Id(0)]
-    public Guid MachineId { get; private set; }
+    public Guid MachineId { get; set; }
 
     /// <summary>
     ///     The position of the machineSlot.
     /// </summary>
     [Id(1)]
-    public int Position { get; private set; }
+    public int Position { get; set; }
 
     /// <summary>
     ///     The snack pile.
