@@ -2,7 +2,7 @@
                                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:reactiveUi="http://reactiveui.net"
-                                xmlns:vm="clr-namespace:Vending.App.Snacks" mc:Ignorable="d" d:DesignHeight="320" d:DesignWidth="480">
+                                xmlns:vm="clr-namespace:Vending.App.Snacks" mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="480">
     <StackPanel Orientation="Vertical" Background=" Linen">
         <Label>Id:</Label>
         <TextBox x:Name="IdTextBox" Margin="5" IsReadOnly="True" />
@@ -14,12 +14,9 @@
             <Image x:Name="PictureImage" Margin="5" Width="64" Height="64" />
         </Border>
         <CheckBox x:Name="IsDeletedCheckBox" Content="Deleted" Margin="5" IsEnabled="False" />
-        <StackPanel Orientation="Horizontal" Margin="5">
+        <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" Margin="5">
             <Button x:Name="SaveButton" Width="120" Margin="5">
                 <TextBlock Text="Save" FontSize="13" />
-            </Button>
-            <Button x:Name="DeleteButton" Width="120" Margin="5">
-                <TextBlock Text="Remove" FontSize="13" />
             </Button>
         </StackPanel>
     </StackPanel>

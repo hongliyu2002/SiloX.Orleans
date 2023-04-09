@@ -1,8 +1,8 @@
-﻿<reactiveUi:ReactiveUserControl x:TypeArguments="viewModels:SnacksManagementViewModel" x:Class="Vending.App.Views.SnacksManagementView"
+﻿<reactiveUi:ReactiveUserControl x:TypeArguments="vm:SnacksManagementViewModel" x:Class="Vending.App.Snacks.SnacksManagementView"
                                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:reactiveUi="http://reactiveui.net"
-                                xmlns:viewModels="clr-namespace:Vending.App.ViewModels" mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="600">
+                                xmlns:vm="clr-namespace:Vending.App.Snacks" mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="600">
     <Grid ShowGridLines="True" Background="LightCyan">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
