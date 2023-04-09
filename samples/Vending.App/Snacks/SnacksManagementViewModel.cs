@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using DynamicData;
@@ -20,40 +21,25 @@ using Vending.Projection.Abstractions.Snacks;
 
 namespace Vending.App.Snacks;
 
-public class SnacksManagementViewModel : ReactiveObject
+public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel
 {
     private readonly SourceCache<SnackItemViewModel, Guid> _snackItemsCache;
-    private readonly ReadOnlyObservableCollection<SnackItemViewModel>? _snackItems;
-    private StreamSubscriptionHandle<SnackInfoSavedEvent>? _subscription;
+    private ReadOnlyObservableCollection<SnackItemViewModel>? _snackItems;
+    private StreamSubscriptionHandle<SnackInfoEvent>? _subscription;
 
     /// <inheritdoc />
     public SnacksManagementViewModel(MainWindowModel mainModel)
     {
         Guard.Against.Null(mainModel, nameof(mainModel));
-        // Get the cluster client from the main view model.
-        mainModel.WhenAnyValue(vm => vm.ClusterClient)
-                 .Where(client => client != null)
-                 .ToPropertyEx(this, vm => vm.ClusterClient);
         // Create the cache for the snack items.
         _snackItemsCache = new SourceCache<SnackItemViewModel, Guid>(snack => snack.Id);
-        // Connect to the cache and bind to the snack items.
-        _snackItemsCache.Connect()
-                        .Filter(snack => SearchTerm.IsNullOrEmpty() || snack.Name.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase))
-                        .ObserveOn(RxApp.MainThreadScheduler)
-                        .Bind(out _snackItems)
-                        .Subscribe();
-        // Disposable.Create(() => _subscription?.UnsubscribeAsync()
-        //                                       .Wait())
-        //           .DisposeWith(disposable);
-        // Subscribe to snack info saved events.
         this.WhenAnyValue(vm => vm.ClusterClient)
             .Where(client => client != null)
             .Select(client => client!.GetStreamProvider(Constants.StreamProviderName))
-            .Select(streamProvider => streamProvider.GetStream<SnackInfoSavedEvent>(StreamId.Create(Constants.SnackInfosBroadcastNamespace, string.Empty)))
-            .SelectMany(stream => stream.SubscribeAsync(HandleEvents, HandleError, HandleCompleted))
-            .SubscribeOn(RxApp.MainThreadScheduler)
+            .Select(streamProvider => streamProvider.GetStream<SnackInfoEvent>(StreamId.Create(Constants.SnackInfosBroadcastNamespace, Guid.Empty)))
+            .SelectMany(stream => stream.SubscribeAsync(HandleEventAsync, HandleErrorAsync, HandleCompletedAsync))
             .ObserveOn(RxApp.MainThreadScheduler)
-            .Subscribe(handle => _subscription = handle);
+            .Subscribe(subscription => _subscription = subscription);
         // Search snack items and update the cache.
         this.WhenAnyValue(vm => vm.SearchTerm, vm => vm.ClusterClient)
             .Where(termAndClient => termAndClient.Item2 != null)
@@ -72,6 +58,29 @@ public class SnacksManagementViewModel : ReactiveObject
             .SelectMany(snackGrain => snackGrain.GetSnackAsync())
             .ObserveOn(RxApp.MainThreadScheduler)
             .Subscribe(snack => CurrentSnackEdit = new SnackEditViewModel(snack, ClusterClient!.GetGrain<ISnackRepoGrain>("Manager")));
+        this.WhenActivated(disposable =>
+                           {
+                               // Get the cluster client from the main view model.
+                               mainModel.WhenAnyValue(vm => vm.ClusterClient)
+                                        .Where(client => client != null)
+                                        .ToPropertyEx(this, vm => vm.ClusterClient)
+                                        .DisposeWith(disposable);
+                               // Connect to the cache and bind to the snack items.
+                               var searchTermObs = this.WhenAnyValue(vm => vm.SearchTerm)
+                                                       .Throttle(TimeSpan.FromMilliseconds(500))
+                                                       .DistinctUntilChanged()
+                                                       .Select(term => new Func<SnackItemViewModel, bool>(item => term.IsNullOrEmpty() || item.Name.Contains(term, StringComparison.OrdinalIgnoreCase)));
+                               _snackItemsCache.Connect()
+                                               .Filter(searchTermObs)
+                                               .ObserveOn(RxApp.MainThreadScheduler)
+                                               .Bind(out _snackItems)
+                                               .Subscribe()
+                                               .DisposeWith(disposable);
+                               // Subscribe to snack info saved events.
+                               Disposable.Create(() => _subscription?.UnsubscribeAsync()
+                                                                     .Wait())
+                                         .DisposeWith(disposable);
+                           });
         AddSnackCommand = ReactiveCommand.Create(AddSnackAsync);
         RemoveSnackCommand = ReactiveCommand.CreateFromTask(RemoveSnackAsync, CanRemoveSnack);
         MoveNavigationSideCommand = ReactiveCommand.Create(MoveNavigationSide);
@@ -79,28 +88,39 @@ public class SnacksManagementViewModel : ReactiveObject
 
     #region Stream Handlers
 
-    private Task HandleEvents(IList<SequentialItem<SnackInfoSavedEvent>> events)
+    private Task HandleEventAsync(SnackInfoEvent projectionEvent, StreamSequenceToken sequenceToken)
     {
-        foreach (var evt in events.Select(evtItem => evtItem.Item))
+        switch (projectionEvent)
         {
-            _snackItemsCache.Edit(updater => updater.AddOrUpdate(new SnackItemViewModel(evt.Snack)));
+            case SnackInfoSavedEvent snackInfoEvent:
+                return ApplyEventAsync(snackInfoEvent);
+            default:
+                return Task.CompletedTask;
         }
-        return Task.CompletedTask;
     }
 
-    private Task HandleError(Exception exception)
+    private Task HandleErrorAsync(Exception exception)
     {
         return Task.CompletedTask;
     }
 
-    private Task HandleCompleted()
+    private Task HandleCompletedAsync()
     {
+        return Task.CompletedTask;
+    }
+
+    private Task ApplyEventAsync(SnackInfoSavedEvent snackEvent)
+    {
+        _snackItemsCache.Edit(updater => updater.AddOrUpdate(new SnackItemViewModel(snackEvent.Snack)));
         return Task.CompletedTask;
     }
 
     #endregion
 
     #region Properties
+
+    /// <inheritdoc />
+    public ViewModelActivator Activator { get; } = new();
 
     [ObservableAsProperty]
     public IClusterClient? ClusterClient { get; }

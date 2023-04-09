@@ -41,7 +41,7 @@ public sealed class SnackRepoGrain : Grain, ISnackRepoGrain
         var snackId = command.SnackId;
         ISnackGrain grain = null!;
         return Result.Ok()
-                     .MapTryAsync(() => _dbContext.Snacks.Where(s => s.IsDeleted == false).AllAsync(s => s.Name != command.Name))
+                     .MapTryAsync(() => _dbContext.Snacks.Where(s => s.IsDeleted == false && s.Id != command.SnackId).AllAsync(s => s.Name != command.Name))
                      .EnsureAsync(notExist => notExist, $"Snack with name '{command.Name}' already exists.")
                      .MapTryAsync(() => grain = GrainFactory.GetGrain<ISnackGrain>(snackId))
                      .BindTryAsync(() => grain.UpdateAsync(new SnackUpdateCommand(command.Name, command.PictureUrl, command.TraceId, command.OperatedAt, command.OperatedBy)))
