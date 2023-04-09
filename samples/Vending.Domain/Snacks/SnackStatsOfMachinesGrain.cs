@@ -75,7 +75,7 @@ public class SnackStatsOfMachinesGrain : StatefulGrainWithGuidKey<StatsOfMachine
         return Result.Ok()
                      .MapTryAsync(() => ApplyMachineCountAsync(machineCount))
                      .MapTryAsync(() => PublishAsync(new SnackMachineCountUpdatedEvent(snackId, State.MachineCount, traceId, operationAt, operationBy)))
-                     .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(snackId, 0, 121, errors.ToListStrings(), traceId, operationAt, operationBy)));
+                     .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(snackId, 0, 121, errors.ToListMessages(), traceId, operationAt, operationBy)));
     }
 
     /// <inheritdoc />
@@ -88,7 +88,7 @@ public class SnackStatsOfMachinesGrain : StatefulGrainWithGuidKey<StatsOfMachine
         return Result.Ok()
                      .MapTryAsync(() => ApplyTotalQuantityAsync(totalQuantity))
                      .MapTryAsync(() => PublishAsync(new SnackTotalQuantityUpdatedEvent(snackId, State.TotalQuantity, traceId, operationAt, operationBy)))
-                     .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(snackId, 0, 122, errors.ToListStrings(), traceId, operationAt, operationBy)));
+                     .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(snackId, 0, 122, errors.ToListMessages(), traceId, operationAt, operationBy)));
     }
 
     /// <inheritdoc />
@@ -101,7 +101,7 @@ public class SnackStatsOfMachinesGrain : StatefulGrainWithGuidKey<StatsOfMachine
         return Result.Ok()
                      .MapTryAsync(() => ApplyTotalAmountAsync(totalAmount))
                      .MapTryAsync(() => PublishAsync(new SnackTotalAmountUpdatedEvent(snackId, State.TotalAmount, traceId, operationAt, operationBy)))
-                     .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(snackId, 0, 123, errors.ToListStrings(), traceId, operationAt, operationBy)));
+                     .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(snackId, 0, 123, errors.ToListMessages(), traceId, operationAt, operationBy)));
     }
 
     #region Persistence

@@ -13,6 +13,7 @@ namespace Vending.App;
 
 public class MainWindowModel : ReactiveObject
 {
+    private readonly Dictionary<string, ReactiveObject> _viewModels;
 
     public MainWindowModel()
     {
@@ -22,16 +23,16 @@ public class MainWindowModel : ReactiveObject
             appLifetime.ApplicationStarted.Register(() => ClusterClient = Locator.Current.GetService<IClusterClient>());
             appLifetime.ApplicationStopped.Register(() => ClusterClient = null);
         }
-        var viewModels = new Dictionary<string, ReactiveObject>
-                         {
-                             { "Snacks", new SnacksManagementViewModel(this) },
-                             { "Machines", new MachinesManagementViewModel(this) },
-                             { "Purchases", new PurchasesManagementViewModel(this) }
-                         };
-        CurrentViewModel ??= viewModels["Snacks"];
-        GoSnacksManagementCommand = ReactiveCommand.Create(() => CurrentViewModel = viewModels["Snacks"]);
-        GoMachinesManagementCommand = ReactiveCommand.Create(() => CurrentViewModel = viewModels["Machines"]);
-        GoPurchasesManagementCommand = ReactiveCommand.Create(() => CurrentViewModel = viewModels["Purchases"]);
+        _viewModels = new Dictionary<string, ReactiveObject>
+                      {
+                          { "Snacks", new SnacksManagementViewModel(this) },
+                          { "Machines", new MachinesManagementViewModel(this) },
+                          { "Purchases", new PurchasesManagementViewModel(this) }
+                      };
+        CurrentViewModel ??= _viewModels["Snacks"];
+        GoSnacksManagementCommand = ReactiveCommand.Create(GoSnacksManagement);
+        GoMachinesManagementCommand = ReactiveCommand.Create(GoMachinesManagement);
+        GoPurchasesManagementCommand = ReactiveCommand.Create(GoPurchasesManagement);
     }
 
     #region Properties
@@ -46,11 +47,26 @@ public class MainWindowModel : ReactiveObject
 
     #region Commands
 
-    public ReactiveCommand<Unit, ReactiveObject> GoSnacksManagementCommand { get; }
+    public ReactiveCommand<Unit, Unit> GoSnacksManagementCommand { get; }
 
-    public ReactiveCommand<Unit, ReactiveObject> GoMachinesManagementCommand { get; }
+    private void GoSnacksManagement()
+    {
+        CurrentViewModel = _viewModels["Snacks"];
+    }
 
-    public ReactiveCommand<Unit, ReactiveObject> GoPurchasesManagementCommand { get; }
+    public ReactiveCommand<Unit, Unit> GoMachinesManagementCommand { get; }
+
+    private void GoMachinesManagement()
+    {
+        CurrentViewModel = _viewModels["Machines"];
+    }
+
+    public ReactiveCommand<Unit, Unit> GoPurchasesManagementCommand { get; }
+
+    private void GoPurchasesManagement()
+    {
+        CurrentViewModel = _viewModels["Purchases"];
+    }
 
     #endregion
 

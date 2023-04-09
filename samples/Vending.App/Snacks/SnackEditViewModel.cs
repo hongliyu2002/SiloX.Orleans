@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Reactive;
 using System.Threading.Tasks;
+using System.Windows;
 using Fluxera.Guards;
 using Orleans.FluentResults;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using SiloX.Domain.Abstractions.Extensions;
 using Vending.Domain.Abstractions.Snacks;
 
 namespace Vending.App.Snacks;
@@ -54,6 +56,10 @@ public class SnackEditViewModel : ReactiveObject
                                                   PictureUrl = snack.PictureUrl;
                                                   IsDeleted = snack.IsDeleted;
                                               });
+        if (result.IsFailed)
+        {
+            MessageBox.Show(result.Errors.ToMessage(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
     }
 
     #endregion

@@ -69,7 +69,7 @@ public class SnackStatsOfPurchasesGrain : StatefulGrainWithGuidKey<StatsOfPurcha
         return Result.Ok()
                      .MapTryAsync(() => ApplyBoughtCountAsync(boughtCount))
                      .MapTryAsync(() => PublishAsync(new SnackBoughtCountUpdatedEvent(snackId, State.BoughtCount, traceId, operationAt, operationBy)))
-                     .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(snackId, 0, 131, errors.ToListStrings(), traceId, operationAt, operationBy)));
+                     .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(snackId, 0, 131, errors.ToListMessages(), traceId, operationAt, operationBy)));
     }
 
     /// <inheritdoc />
@@ -82,7 +82,7 @@ public class SnackStatsOfPurchasesGrain : StatefulGrainWithGuidKey<StatsOfPurcha
         return Result.Ok()
                      .MapTryAsync(() => ApplyBoughtAmountAsync(boughtAmount))
                      .MapTryAsync(() => PublishAsync(new SnackBoughtAmountUpdatedEvent(snackId, State.BoughtAmount, traceId, operationAt, operationBy)))
-                     .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(snackId, 0, 132, errors.ToListStrings(), traceId, operationAt, operationBy)));
+                     .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(snackId, 0, 132, errors.ToListMessages(), traceId, operationAt, operationBy)));
     }
 
     #region Persistence

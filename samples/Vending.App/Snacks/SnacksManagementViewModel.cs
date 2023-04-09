@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
-using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using DynamicData;
@@ -21,39 +20,31 @@ using Vending.Projection.Abstractions.Snacks;
 
 namespace Vending.App.Snacks;
 
-public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel
+public class SnacksManagementViewModel : ReactiveObject
 {
     private readonly SourceCache<SnackItemViewModel, Guid> _snackItemsCache;
-    private ReadOnlyObservableCollection<SnackItemViewModel>? _snackItems;
-
+    private readonly ReadOnlyObservableCollection<SnackItemViewModel>? _snackItems;
     private StreamSubscriptionHandle<SnackInfoSavedEvent>? _subscription;
 
     /// <inheritdoc />
     public SnacksManagementViewModel(MainWindowModel mainModel)
     {
-        Activator = new ViewModelActivator();
         Guard.Against.Null(mainModel, nameof(mainModel));
+        // Get the cluster client from the main view model.
+        mainModel.WhenAnyValue(vm => vm.ClusterClient)
+                 .Where(client => client != null)
+                 .ToPropertyEx(this, vm => vm.ClusterClient);
         // Create the cache for the snack items.
         _snackItemsCache = new SourceCache<SnackItemViewModel, Guid>(snack => snack.Id);
-        this.WhenActivated(disposable =>
-                           {
-                               // Get the cluster client from the main view model.
-                               mainModel.WhenAnyValue(vm => vm.ClusterClient)
-                                        .Where(client => client != null)
-                                        .ToPropertyEx(this, vm => vm.ClusterClient)
-                                        .DisposeWith(disposable);
-                               _snackItemsCache.DisposeWith(disposable);
-                               // Connect to the cache and bind to the snack items.
-                               _snackItemsCache.Connect()
-                                               .Filter(snack => SearchTerm.IsNullOrEmpty() || snack.Name.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase))
-                                               .ObserveOn(RxApp.MainThreadScheduler)
-                                               .Bind(out _snackItems)
-                                               .Subscribe()
-                                               .DisposeWith(disposable);
-                               Disposable.Create(() => _subscription?.UnsubscribeAsync()
-                                                                     .Wait())
-                                         .DisposeWith(disposable);
-                           });
+        // Connect to the cache and bind to the snack items.
+        _snackItemsCache.Connect()
+                        .Filter(snack => SearchTerm.IsNullOrEmpty() || snack.Name.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase))
+                        .ObserveOn(RxApp.MainThreadScheduler)
+                        .Bind(out _snackItems)
+                        .Subscribe();
+        // Disposable.Create(() => _subscription?.UnsubscribeAsync()
+        //                                       .Wait())
+        //           .DisposeWith(disposable);
         // Subscribe to snack info saved events.
         this.WhenAnyValue(vm => vm.ClusterClient)
             .Where(client => client != null)
@@ -110,9 +101,6 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel
     #endregion
 
     #region Properties
-
-    /// <inheritdoc />
-    public ViewModelActivator Activator { get; }
 
     [ObservableAsProperty]
     public IClusterClient? ClusterClient { get; }
