@@ -25,30 +25,30 @@ public class SnackItemViewModel : ReactiveObject
         IsDeleted = snackInfo.IsDeleted;
     }
 
-    [Reactive]
-    public Guid Id { get; set; }
+        [Reactive]
+        public Guid Id { get; set; }
 
-    [Reactive]
-    public string Name { get; set; }
+        [Reactive]
+        public string Name { get; set; }
 
-    [Reactive]
-    public Uri PictureUrl { get; set; }
+        [Reactive]
+        public Uri PictureUrl { get; set; }
 
-    [Reactive]
-    public int MachineCount { get; set; }
+        [Reactive]
+        public int MachineCount { get; set; }
 
-    [Reactive]
-    public int TotalQuantity { get; set; }
+        [Reactive]
+        public int TotalQuantity { get; set; }
 
-    [Reactive]
-    public decimal TotalAmount { get; set; }
+        [Reactive]
+        public decimal TotalAmount { get; set; }
 
-    [Reactive]
-    public int BoughtCount { get; set; }
+        [Reactive]
+        public int BoughtCount { get; set; }
 
-    [Reactive]
-    public decimal BoughtAmount { get; set; }
+        [Reactive]
+        public decimal BoughtAmount { get; set; }
 
-    [Reactive]
-    public bool IsDeleted { get; set; }
+        [Reactive]
+        public bool IsDeleted { get; set; }
 }

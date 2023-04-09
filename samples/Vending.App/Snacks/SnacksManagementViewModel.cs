@@ -46,20 +46,20 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
                         .Subscribe();
         // Search snack items and update the cache.
         this.WhenAnyValue(vm => vm.SearchTerm, vm => vm.ClusterClient)
-            .Where(termAndClient => termAndClient.Item2 != null)
+            .Where(tc => tc.Item2 != null)
             .Throttle(TimeSpan.FromMilliseconds(500))
             .DistinctUntilChanged()
-            .Select(termAndClient => (termAndClient.Item1.Trim(), termAndClient.Item2!.GetGrain<ISnackRetrieverGrain>("Manager")))
-            .SelectMany(termAndGrain => termAndGrain.Item2.SearchingListAsync(new SnackRetrieverSearchingListQuery(termAndGrain.Item1, new Dictionary<string, bool> { { "Name", false } }, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")))
+            .Select(termClient => (termClient.Item1.Trim(), termClient.Item2!.GetGrain<ISnackRetrieverGrain>("Manager")))
+            .SelectMany(termGrain => termGrain.Item2.SearchingListAsync(new SnackRetrieverSearchingListQuery(termGrain.Item1, new Dictionary<string, bool> { { "Id", false } }, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")))
             .Where(result => result.IsSuccess)
             .Select(result => result.Value)
             .ObserveOn(RxApp.MainThreadScheduler)
             .Subscribe(snacks => _snackItemsCache.Edit(updater => updater.AddOrUpdate(snacks.Select(snack => new SnackItemViewModel(snack)))));
         // When the current snack item changes, get the snack edit view model.
         this.WhenAnyValue(vm => vm.CurrentSnackItem, vm => vm.ClusterClient)
-            .Where(itemAndClient => itemAndClient is { Item1: not null, Item2: not null })
-            .Select(itemAndClient => itemAndClient.Item2!.GetGrain<ISnackGrain>(itemAndClient.Item1!.Id))
-            .SelectMany(snackGrain => snackGrain.GetSnackAsync())
+            .Where(itemClient => itemClient is { Item1: not null, Item2: not null })
+            .Select(itemClient => itemClient.Item2!.GetGrain<ISnackGrain>(itemClient.Item1!.Id))
+            .SelectMany(grain => grain.GetSnackAsync())
             .ObserveOn(RxApp.MainThreadScheduler)
             .Subscribe(snack => CurrentSnackEdit = new SnackEditViewModel(snack, ClusterClient!.GetGrain<ISnackRepoGrain>("Manager")));
         this.WhenActivated(disposable =>
@@ -178,6 +178,13 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
     public ReactiveCommand<Unit, Unit> RemoveSnackCommand { get; }
 
     /// <summary>
+    ///     Gets the observable that indicates whether the remove snack command can be executed.
+    /// </summary>
+    private IObservable<bool> CanRemoveSnack =>
+        this.WhenAnyValue(vm => vm.CurrentSnackItem, vm => vm.ClusterClient)
+            .Select(itemClient => itemClient is { Item1: not null, Item2: not null });
+
+    /// <summary>
     ///     Removes the current snack.
     /// </summary>
     private async Task RemoveSnackAsync()
@@ -189,13 +196,6 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
                     .Ensure(CurrentSnackItem != null, "Snack item should be selected.")
                     .BindTryAsync(() => repoGrain.DeleteAsync(new SnackRepoDeleteCommand(CurrentSnackItem!.Id, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")));
     }
-
-    /// <summary>
-    ///     Gets the observable that indicates whether the remove snack command can be executed.
-    /// </summary>
-    private IObservable<bool> CanRemoveSnack =>
-        this.WhenAnyValue(vm => vm.CurrentSnackItem, vm => vm.ClusterClient)
-            .Select(itemAndClient => itemAndClient is { Item1: not null, Item2: not null });
 
     /// <summary>
     ///     Gets the command that moves the navigation side.
