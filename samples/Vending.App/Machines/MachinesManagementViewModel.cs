@@ -1,15 +1,15 @@
-﻿using Fluxera.Guards;
+﻿using Orleans;
 using ReactiveUI;
 
 namespace Vending.App.Machines;
 
-public class MachinesManagementViewModel : ReactiveObject
+public class MachinesManagementViewModel : ReactiveObject, IHasClusterClient
 {
-    private readonly MainWindowModel _mainModel;
+    /// <inheritdoc />
+    public MachinesManagementViewModel()
+    {
+    }
 
     /// <inheritdoc />
-    public MachinesManagementViewModel(MainWindowModel mainModel)
-    {
-        _mainModel = Guard.Against.Null(mainModel, nameof(mainModel));
-    }
+    public IClusterClient? ClusterClient { get; set; }
 }

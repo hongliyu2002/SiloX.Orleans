@@ -1,15 +1,16 @@
-﻿using Fluxera.Guards;
+﻿using Orleans;
 using ReactiveUI;
 
 namespace Vending.App.Purchases;
 
-public class PurchasesManagementViewModel : ReactiveObject
+public class PurchasesManagementViewModel : ReactiveObject, IHasClusterClient
 {
-    private readonly MainWindowModel _mainModel;
 
     /// <inheritdoc />
-    public PurchasesManagementViewModel(MainWindowModel mainModel)
+    public PurchasesManagementViewModel()
     {
-        _mainModel = Guard.Against.Null(mainModel, nameof(mainModel));
     }
+
+    /// <inheritdoc />
+    public IClusterClient? ClusterClient { get; set; }
 }

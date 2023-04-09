@@ -13,35 +13,43 @@ namespace Vending.App;
 
 public class MainWindowModel : ReactiveObject
 {
-    private readonly Dictionary<string, ReactiveObject> _viewModels;
+    private readonly Dictionary<string, IHasClusterClient> _viewModels;
 
     public MainWindowModel()
     {
-        var appLifetime = Locator.Current.GetService<IHostApplicationLifetime>();
-        if (appLifetime != null)
-        {
-            appLifetime.ApplicationStarted.Register(() => ClusterClient = Locator.Current.GetService<IClusterClient>());
-            appLifetime.ApplicationStopped.Register(() => ClusterClient = null);
-        }
-        _viewModels = new Dictionary<string, ReactiveObject>
+        _viewModels = new Dictionary<string, IHasClusterClient>
                       {
-                          { "Snacks", new SnacksManagementViewModel(this) },
-                          { "Machines", new MachinesManagementViewModel(this) },
-                          { "Purchases", new PurchasesManagementViewModel(this) }
+                          { "Snacks", new SnacksManagementViewModel() },
+                          { "Machines", new MachinesManagementViewModel() },
+                          { "Purchases", new PurchasesManagementViewModel() }
                       };
         CurrentViewModel ??= _viewModels["Snacks"];
         GoSnacksManagementCommand = ReactiveCommand.Create(GoSnacksManagement);
         GoMachinesManagementCommand = ReactiveCommand.Create(GoMachinesManagement);
         GoPurchasesManagementCommand = ReactiveCommand.Create(GoPurchasesManagement);
+        var appLifetime = Locator.Current.GetService<IHostApplicationLifetime>();
+        if (appLifetime != null)
+        {
+            var clusterClient = Locator.Current.GetService<IClusterClient>();
+            appLifetime.ApplicationStarted.Register(() =>
+                                                    {
+                                                        _viewModels["Snacks"].ClusterClient = clusterClient;
+                                                        _viewModels["Machines"].ClusterClient = clusterClient;
+                                                        _viewModels["Purchases"].ClusterClient = clusterClient;
+                                                    });
+            appLifetime.ApplicationStopped.Register(() =>
+                                                    {
+                                                        _viewModels["Snacks"].ClusterClient = null;
+                                                        _viewModels["Machines"].ClusterClient = null;
+                                                        _viewModels["Purchases"].ClusterClient = null;
+                                                    });
+        }
     }
 
     #region Properties
 
     [Reactive]
-    public IClusterClient? ClusterClient { get; private set; }
-
-    [Reactive]
-    public ReactiveObject? CurrentViewModel { get; private set; }
+    public IHasClusterClient? CurrentViewModel { get; set; }
 
     #endregion
 
