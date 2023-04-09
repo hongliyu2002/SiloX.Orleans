@@ -9,7 +9,7 @@ namespace Vending.App.Snacks;
 
 public class SnackItemViewModel : ReactiveObject
 {
-    private const string DefaultUrl = "pack://application:,,,/Vending.App;component/Images/snackInfo.png";
+    private const string DefaultUrl = "pack://application:,,,/Vending.App;component/Images/snack.png";
 
     public SnackItemViewModel(SnackInfo snackInfo)
     {
