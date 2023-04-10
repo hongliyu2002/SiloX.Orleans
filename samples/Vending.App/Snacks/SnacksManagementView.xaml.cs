@@ -1,4 +1,5 @@
 ﻿using System.Reactive.Disposables;
+using System.Windows;
 using System.Windows.Controls;
 using ReactiveUI;
 
@@ -19,7 +20,14 @@ public partial class SnacksManagementView
                                this.BindCommand(ViewModel, vm => vm.AddSnackCommand, v => v.AddSnackButton).DisposeWith(disposable);
                                this.BindCommand(ViewModel, vm => vm.RemoveSnackCommand, v => v.RemoveSnackButton).DisposeWith(disposable);
                                this.BindCommand(ViewModel, vm => vm.MoveNavigationSideCommand, v => v.MoveNavigationSideButton).DisposeWith(disposable);
+                               ViewModel?.ConfirmRemoveSnack.RegisterHandler(ShowMessageBox).DisposeWith(disposable);
                            });
+    }
+
+    private void ShowMessageBox(InteractionContext<string, bool> confirmRemoveSnack)
+    {
+        var result = MessageBox.Show($"Are you sure you want to remove {confirmRemoveSnack.Input}?", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question);
+        confirmRemoveSnack.SetOutput(result == MessageBoxResult.Yes);
     }
 
     public int NavigationGridGridColumn

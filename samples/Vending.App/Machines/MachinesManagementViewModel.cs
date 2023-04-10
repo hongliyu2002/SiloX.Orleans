@@ -15,7 +15,6 @@ using Orleans.Runtime;
 using Orleans.Streams;
 using ReactiveUI;
 using SiloX.Domain.Abstractions;
-using SiloX.Domain.Abstractions.Extensions;
 using Vending.Domain.Abstractions;
 using Vending.Domain.Abstractions.Machines;
 using Vending.Projection.Abstractions.Machines;
@@ -239,7 +238,7 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     }
 
     public ReadOnlyObservableCollection<MachineItemViewModel>? MachineItems => _machineItems;
-    
+
     #endregion
 
     #region Commands
@@ -277,17 +276,34 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
             .Select(itemClient => itemClient is { Item1: not null, Item2: not null });
 
     /// <summary>
+    ///     Gets the interaction that asks the user to confirm the removal of the current machine.
+    /// </summary>
+    public Interaction<string, bool> ConfirmRemoveMachine { get; } = new();
+
+    /// <summary>
     ///     Removes the current machine.
     /// </summary>
     private async Task RemoveMachineAsync()
     {
-        var result = await Result.Ok()
-                                 .MapTry(() => ClusterClient!.GetGrain<IMachineRepoGrain>(string.Empty))
-                                 .BindTryAsync(grain => grain.DeleteAsync(new MachineRepoDeleteCommand(CurrentMachineItem!.Id, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")));
-        if (result.IsFailed)
+        var confirm = await ConfirmRemoveMachine.Handle(CurrentMachineItem!.Id.ToString());
+        if (!confirm)
         {
-            MessageBox.Show(result.Errors.ToMessage(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
         }
+        bool retry;
+        do
+        {
+            var result = await Result.Ok()
+                                     .MapTry(() => ClusterClient!.GetGrain<IMachineRepoGrain>(string.Empty))
+                                     .BindTryAsync(grain => grain.DeleteAsync(new MachineRepoDeleteCommand(CurrentMachineItem!.Id, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")));
+            if (result.IsSuccess)
+            {
+                return;
+            }
+            var errorRecovery = await Interactions.Errors.Handle(result.Errors);
+            retry = errorRecovery == ErrorRecoveryOption.Retry;
+        }
+        while (retry);
     }
 
     /// <summary>

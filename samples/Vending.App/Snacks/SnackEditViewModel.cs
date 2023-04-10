@@ -11,7 +11,6 @@ using Orleans.FluentResults;
 using Orleans.Runtime;
 using Orleans.Streams;
 using ReactiveUI;
-using SiloX.Domain.Abstractions.Extensions;
 using Vending.Domain.Abstractions;
 using Vending.Domain.Abstractions.Snacks;
 
@@ -238,16 +237,23 @@ public class SnackEditViewModel : ReactiveObject, IActivatableViewModel, IOrlean
 
     private async Task SaveSnackAsync()
     {
-        ISnackRepoGrain repoGrain = null!;
-        var result = await Result.Ok()
-                                 .MapTry(() => repoGrain = ClusterClient!.GetGrain<ISnackRepoGrain>("Manager"))
-                                 .BindTryIfAsync(Id == Guid.Empty, () => repoGrain.CreateAsync(new SnackRepoCreateCommand(Name, PictureUrl, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")))
-                                 .BindTryIfAsync<Snack>(Id != Guid.Empty, () => repoGrain.UpdateAsync(new SnackRepoUpdateCommand(Id, Name, PictureUrl, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")))
-                                 .TapTryAsync(LoadSnack);
-        if (result.IsFailed)
+        bool retry;
+        do
         {
-            MessageBox.Show(result.Errors.ToMessage(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            ISnackRepoGrain repoGrain = null!;
+            var result = await Result.Ok()
+                                     .MapTry(() => repoGrain = ClusterClient!.GetGrain<ISnackRepoGrain>("Manager"))
+                                     .BindTryIfAsync(Id == Guid.Empty, () => repoGrain.CreateAsync(new SnackRepoCreateCommand(Name, PictureUrl, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")))
+                                     .BindTryIfAsync<Snack>(Id != Guid.Empty, () => repoGrain.UpdateAsync(new SnackRepoUpdateCommand(Id, Name, PictureUrl, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")))
+                                     .TapTryAsync(LoadSnack);
+            if (result.IsSuccess)
+            {
+                return;
+            }
+            var errorRecovery = await Interactions.Errors.Handle(result.Errors);
+            retry = errorRecovery == ErrorRecoveryOption.Retry;
         }
+        while (retry);
     }
 
     #endregion

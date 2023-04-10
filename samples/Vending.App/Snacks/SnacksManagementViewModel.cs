@@ -15,7 +15,6 @@ using Orleans.FluentResults;
 using Orleans.Runtime;
 using Orleans.Streams;
 using ReactiveUI;
-using SiloX.Domain.Abstractions.Extensions;
 using Vending.Domain.Abstractions;
 using Vending.Domain.Abstractions.Snacks;
 using Vending.Projection.Abstractions.Snacks;
@@ -78,7 +77,7 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
                                          .DisposeWith(disposable);
                            });
         // Create the commands.
-        AddSnackCommand = ReactiveCommand.Create(AddSnack, CanAddSnack);
+        AddSnackCommand = ReactiveCommand.CreateFromTask(AddSnackAsync, CanAddSnack);
         RemoveSnackCommand = ReactiveCommand.CreateFromTask(RemoveSnackAsync, CanRemoveSnack);
         MoveNavigationSideCommand = ReactiveCommand.Create(MoveNavigationSide);
     }
@@ -147,7 +146,7 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
         return Task.CompletedTask;
     }
 
-    private Task ApplyErrorEventAsync(SnackInfoErrorEvent snackErrorEvent)
+    private Task ApplyErrorEventAsync(SnackInfoErrorEvent errorEvent)
     {
         return Task.CompletedTask;
     }
@@ -207,7 +206,7 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
     }
 
     public ReadOnlyObservableCollection<SnackItemViewModel>? SnackItems => _snackItems;
-    
+
     #endregion
 
     #region Commands
@@ -217,18 +216,31 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
     /// </summary>
     public ReactiveCommand<Unit, Unit> AddSnackCommand { get; }
 
+    /// <summary>
+    ///     Gets the observable that determines whether the add snack command can be executed.
+    /// </summary>
     private IObservable<bool> CanAddSnack =>
         this.WhenAnyValue(vm => vm.ClusterClient)
             .Select(client => client != null);
 
-    private void AddSnack()
+    /// <summary>
+    ///     Adds a new snack.
+    /// </summary>
+    private async Task AddSnackAsync()
     {
-        var result = Result.Ok()
-                           .Map(() => CurrentSnackEdit = new SnackEditViewModel(new Snack(), ClusterClient!));
-        if (result.IsFailed)
+        bool retry;
+        do
         {
-            MessageBox.Show(result.Errors.ToMessage(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            var result = Result.Ok()
+                               .Map(() => CurrentSnackEdit = new SnackEditViewModel(new Snack(), ClusterClient!));
+            if (result.IsSuccess)
+            {
+                return;
+            }
+            var errorRecovery = await Interactions.Errors.Handle(result.Errors);
+            retry = errorRecovery == ErrorRecoveryOption.Retry;
         }
+        while (retry);
     }
 
     /// <summary>
@@ -236,22 +248,42 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
     /// </summary>
     public ReactiveCommand<Unit, Unit> RemoveSnackCommand { get; }
 
+    /// <summary>
+    ///     Gets the observable that indicates whether the remove snack command can be executed.
+    /// </summary>
     private IObservable<bool> CanRemoveSnack =>
         this.WhenAnyValue(vm => vm.CurrentSnackItem, vm => vm.ClusterClient)
             .Select(itemClient => itemClient is { Item1: not null, Item2: not null });
+
+    /// <summary>
+    ///     Gets the interaction that asks the user to confirm the removal of the current snack.
+    /// </summary>
+    public Interaction<string, bool> ConfirmRemoveSnack { get; } = new();
 
     /// <summary>
     ///     Removes the current snack.
     /// </summary>
     private async Task RemoveSnackAsync()
     {
-        var result = await Result.Ok()
-                                 .MapTry(() => ClusterClient!.GetGrain<ISnackRepoGrain>(string.Empty))
-                                 .BindTryAsync(repoGrain => repoGrain.DeleteAsync(new SnackRepoDeleteCommand(CurrentSnackItem!.Id, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")));
-        if (result.IsFailed)
+        var confirm = await ConfirmRemoveSnack.Handle(CurrentSnackItem!.Name);
+        if (!confirm)
         {
-            MessageBox.Show(result.Errors.ToMessage(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
         }
+        bool retry;
+        do
+        {
+            var result = await Result.Ok()
+                                     .MapTry(() => ClusterClient!.GetGrain<ISnackRepoGrain>(string.Empty))
+                                     .BindTryAsync(repoGrain => repoGrain.DeleteAsync(new SnackRepoDeleteCommand(CurrentSnackItem!.Id, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")));
+            if (result.IsSuccess)
+            {
+                return;
+            }
+            var errorRecovery = await Interactions.Errors.Handle(result.Errors);
+            retry = errorRecovery == ErrorRecoveryOption.Retry;
+        }
+        while (retry);
     }
 
     /// <summary>

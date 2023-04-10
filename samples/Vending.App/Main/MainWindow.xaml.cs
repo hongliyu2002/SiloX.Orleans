@@ -1,6 +1,11 @@
-﻿using System.Reactive.Disposables;
+﻿using System;
+using System.Collections.Generic;
+using System.Reactive.Disposables;
+using System.Windows;
 using Fluxera.Extensions.Hosting;
+using Orleans.FluentResults;
 using ReactiveUI;
+using SiloX.Domain.Abstractions.Extensions;
 
 namespace Vending.App;
 
@@ -20,5 +25,24 @@ public partial class MainWindow : IMainWindow
                                this.BindCommand(ViewModel, vm => vm.GoMachinesManagementCommand, v => v.MachinesManagementMenuItem).DisposeWith(disposable);
                                this.BindCommand(ViewModel, vm => vm.GoPurchasesManagementCommand, v => v.PurchasesManagementMenuItem).DisposeWith(disposable);
                            });
+        Interactions.Exception.RegisterHandler(HandleException);
+        Interactions.Errors.RegisterHandler(HandleErrors);
+    }
+
+    private static void HandleException(InteractionContext<Exception, ErrorRecoveryOption> exceptionInteraction)
+    {
+        var exception = exceptionInteraction.Input;
+        var message = exception.Message;
+        var title = $"Exception occurred in {exception.GetType().Name}";
+        var result = MessageBox.Show($"{message}.\nRetry or cancel?", title, MessageBoxButton.OKCancel, MessageBoxImage.Error);
+        exceptionInteraction.SetOutput(result == MessageBoxResult.OK ? ErrorRecoveryOption.Retry : ErrorRecoveryOption.Abort);
+    }
+    
+    private static void HandleErrors(InteractionContext<IEnumerable<IError>, ErrorRecoveryOption> errorsInteraction)
+    {
+        var errors = errorsInteraction.Input;
+        var message = errors.ToMessage();
+        var result = MessageBox.Show($"{message}.\nRetry or cancel?", "Errors occurred when operating", MessageBoxButton.OKCancel, MessageBoxImage.Error);
+        errorsInteraction.SetOutput(result == MessageBoxResult.OK ? ErrorRecoveryOption.Retry : ErrorRecoveryOption.Abort);
     }
 }
