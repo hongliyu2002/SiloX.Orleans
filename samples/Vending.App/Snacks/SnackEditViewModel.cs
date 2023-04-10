@@ -15,7 +15,6 @@ public class SnackEditViewModel : ReactiveObject
 {
     private readonly ISnackRepoGrain _snackRepoGrain;
 
-
     public SnackEditViewModel(Snack snack, ISnackRepoGrain snackRepoGrain)
     {
         snack = Guard.Against.Null(snack, nameof(snack));

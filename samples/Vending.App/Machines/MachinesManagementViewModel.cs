@@ -6,6 +6,7 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using DynamicData;
 using DynamicData.Binding;
 using Orleans;
@@ -15,6 +16,7 @@ using Orleans.Streams;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using SiloX.Domain.Abstractions;
+using SiloX.Domain.Abstractions.Extensions;
 using Vending.Domain.Abstractions;
 using Vending.Domain.Abstractions.Machines;
 using Vending.Projection.Abstractions.Machines;
@@ -34,18 +36,28 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
         // Create the cache for the machine items.
         _machineItemsCache = new SourceCache<MachineItemViewModel, Guid>(machine => machine.Id);
         // Connect to the cache and bind to the machine items.
-        var queryConditionObs = this.WhenAnyValue(vm => vm.PageSize, vm => vm.CurrentPage, vm => vm.MoneyAmountStart, vm => vm.MoneyAmountEnd)
+        var queryConditionObs = this.WhenAnyValue(vm => vm.PageSize, vm => vm.PageNumber, vm => vm.MoneyAmountStart, vm => vm.MoneyAmountEnd)
                                     .Throttle(TimeSpan.FromMilliseconds(500))
                                     .DistinctUntilChanged()
                                     .Select(query => new Func<MachineItemViewModel, bool>(item => (query.Item3 == null || item.MoneyInside.Amount >= query.Item3) && (query.Item4 == null || item.MoneyInside.Amount < query.Item4)));
         _machineItemsCache.Connect()
                           .Filter(queryConditionObs)
                           .Sort(SortExpressionComparer<MachineItemViewModel>.Ascending(item => item.Id))
-                          .Skip(PageSize * (CurrentPage - 1))
+                          .Skip(PageSize * (PageNumber - 1))
                           .Take(PageSize)
                           .ObserveOn(RxApp.MainThreadScheduler)
                           .Bind(out _machineItems)
                           .Subscribe();
+        // Recalculate the page number when the page size or page count changes.
+        this.WhenAnyValue(vm => vm.PageSize, vm => vm.PageCount)
+            .Throttle(TimeSpan.FromMilliseconds(500))
+            .DistinctUntilChanged()
+            .Subscribe(page =>
+                       {
+                           var oldOffset = _oldPageSize * (PageNumber - 1);
+                           var newPageOfOldOffset = (int)Math.Ceiling((double)oldOffset / PageSize);
+                           PageNumber = Math.Min(newPageOfOldOffset, page.Item2);
+                       });
         // Search machine items and update the cache.
         this.WhenAnyValue(vm => vm.MoneyAmountStart, vm => vm.MoneyAmountEnd, vm => vm.ClusterClient)
             .Where(moneyClient => moneyClient.Item3 != null)
@@ -56,7 +68,11 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
             .Where(result => result.IsSuccess)
             .Select(result => result.Value)
             .ObserveOn(RxApp.MainThreadScheduler)
-            .Subscribe(machines => _machineItemsCache.Edit(updater => updater.AddOrUpdate(machines.Select(machine => new MachineItemViewModel(machine)))));
+            .Subscribe(machines =>
+                       {
+                           _machineItemsCache.Edit(updater => updater.AddOrUpdate(machines.Select(machine => new MachineItemViewModel(machine))));
+                           PageCount = (int)Math.Ceiling((double)machines.Count / PageSize);
+                       });
         this.WhenActivated(disposable =>
                            {
                                // When the cluster client changes, subscribe to the machine info stream.
@@ -72,10 +88,10 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
                                          .DisposeWith(disposable);
                            });
         // Create the commands.
-        AddMachineCommand = ReactiveCommand.Create(AddMachineAsync);
+        AddMachineCommand = ReactiveCommand.Create(AddMachineAsync, CanAddMachine);
         RemoveMachineCommand = ReactiveCommand.CreateFromTask(RemoveMachineAsync, CanRemoveMachine);
         GoPreviousPageCommand = ReactiveCommand.Create(GoPreviousPage, CanGoPreviousPage);
-        GoNextPageCommand = ReactiveCommand.Create(GoNextPage);
+        GoNextPageCommand = ReactiveCommand.Create(GoNextPage, CanGoNextPage);
     }
 
     #region Stream Handlers
@@ -118,7 +134,7 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
         return Task.CompletedTask;
     }
 
-    private Task ApplyErrorEventAsync(MachineInfoErrorEvent machineEvent)
+    private Task ApplyErrorEventAsync(MachineInfoErrorEvent machineErrorEvent)
     {
         return Task.CompletedTask;
     }
@@ -133,19 +149,32 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     [Reactive]
     public IClusterClient? ClusterClient { get; set; }
 
-    [Reactive]
-    public int PageSize { get; set; } = 10;
+    private int _pageSize;
+    private int _oldPageSize;
+
+    public int PageSize
+    {
+        get => _pageSize;
+        set
+        {
+            _oldPageSize = _pageSize;
+            this.RaiseAndSetIfChanged(ref _pageSize, value);
+        }
+    }
 
     [Reactive]
-    public int CurrentPage { get; set; } = 1;
+    public int PageCount { get; set; }
+
+    [Reactive]
+    public int PageNumber { get; set; }
 
     [Reactive]
     public decimal? MoneyAmountStart { get; set; } = 0;
 
     [Reactive]
-    public decimal? MoneyAmountEnd { get; set; } = 10000;
+    public decimal? MoneyAmountEnd { get; set; } = 1000;
 
-    public ReadOnlyObservableCollection<MachineItemViewModel>? MachineItems { get; }
+    public ReadOnlyObservableCollection<MachineItemViewModel>? MachineItems => _machineItems;
 
     [Reactive]
     public MachineItemViewModel? CurrentMachineItem { get; set; }
@@ -159,6 +188,10 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     /// </summary>
     public ReactiveCommand<Unit, Unit> AddMachineCommand { get; }
 
+    private IObservable<bool> CanAddMachine =>
+        this.WhenAnyValue(vm => vm.ClusterClient)
+            .Select(client => client != null);
+
     /// <summary>
     ///     Gets the command that moves the navigation side.
     /// </summary>
@@ -166,7 +199,6 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     {
         // IMachineRepoGrain repoGrain = null!;
         // Result.Ok()
-        //       .Ensure(ClusterClient != null, "Cluster client is not available.")
         //       .MapTry(() => repoGrain = ClusterClient!.GetGrain<IMachineRepoGrain>(string.Empty))
         //       .Map(() => CurrentMachineEdit = new MachineEditViewModel(new Machine(), repoGrain));
     }
@@ -188,12 +220,13 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     /// </summary>
     private async Task RemoveMachineAsync()
     {
-        IMachineRepoGrain repoGrain = null!;
-        await Result.Ok()
-                    .Ensure(ClusterClient != null, "Cluster client is not available.")
-                    .MapTry(() => repoGrain = ClusterClient!.GetGrain<IMachineRepoGrain>(string.Empty))
-                    .Ensure(CurrentMachineItem != null, "Machine item should be selected.")
-                    .BindTryAsync(() => repoGrain.DeleteAsync(new MachineRepoDeleteCommand(CurrentMachineItem!.Id, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")));
+        var result = await Result.Ok()
+                                 .MapTry(() => ClusterClient!.GetGrain<IMachineRepoGrain>(string.Empty))
+                                 .BindTryAsync(grain => grain.DeleteAsync(new MachineRepoDeleteCommand(CurrentMachineItem!.Id, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")));
+        if (result.IsFailed)
+        {
+            MessageBox.Show(result.Errors.ToMessage(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
     }
 
     /// <summary>
@@ -202,14 +235,15 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     public ReactiveCommand<Unit, Unit> GoPreviousPageCommand { get; }
 
     private IObservable<bool> CanGoPreviousPage =>
-        this.WhenAnyValue(vm => vm.CurrentPage, vm => vm.ClusterClient)
-            .Select(pageClient => pageClient is { Item1: > 1, Item2: not null });
+        this.WhenAnyValue(vm => vm.PageNumber)
+            .Select(page => page > 1);
 
     /// <summary>
     ///     Moves to the previous page.
     /// </summary>
     private void GoPreviousPage()
     {
+        PageNumber--;
     }
 
     /// <summary>
@@ -217,11 +251,16 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     /// </summary>
     public ReactiveCommand<Unit, Unit> GoNextPageCommand { get; }
 
+    private IObservable<bool> CanGoNextPage =>
+        this.WhenAnyValue(vm => vm.PageNumber, vm => vm.PageCount)
+            .Select(page => page.Item1 < page.Item2);
+
     /// <summary>
     ///     Moves to the next page.
     /// </summary>
     private void GoNextPage()
     {
+        PageNumber++;
     }
 
     #endregion

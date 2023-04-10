@@ -6,6 +6,7 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using DynamicData;
 using DynamicData.Binding;
 using Fluxera.Utilities.Extensions;
@@ -15,6 +16,7 @@ using Orleans.Runtime;
 using Orleans.Streams;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using SiloX.Domain.Abstractions.Extensions;
 using Vending.Domain.Abstractions;
 using Vending.Domain.Abstractions.Snacks;
 using Vending.Projection.Abstractions.Snacks;
@@ -77,7 +79,7 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
                                          .DisposeWith(disposable);
                            });
         // Create the commands.
-        AddSnackCommand = ReactiveCommand.Create(AddSnackAsync);
+        AddSnackCommand = ReactiveCommand.Create(AddSnack, CanAddSnack);
         RemoveSnackCommand = ReactiveCommand.CreateFromTask(RemoveSnackAsync, CanRemoveSnack);
         MoveNavigationSideCommand = ReactiveCommand.Create(MoveNavigationSide);
     }
@@ -122,7 +124,7 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
         return Task.CompletedTask;
     }
 
-    private Task ApplyErrorEventAsync(SnackInfoErrorEvent snackEvent)
+    private Task ApplyErrorEventAsync(SnackInfoErrorEvent snackErrorEvent)
     {
         return Task.CompletedTask;
     }
@@ -160,16 +162,19 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
     /// </summary>
     public ReactiveCommand<Unit, Unit> AddSnackCommand { get; }
 
-    /// <summary>
-    ///     Gets the command that moves the navigation side.
-    /// </summary>
-    private void AddSnackAsync()
+    private IObservable<bool> CanAddSnack =>
+        this.WhenAnyValue(vm => vm.ClusterClient)
+            .Select(client => client != null);
+
+    private void AddSnack()
     {
-        ISnackRepoGrain repoGrain = null!;
-        Result.Ok()
-              .Ensure(ClusterClient != null, "Cluster client is not available.")
-              .MapTry(() => repoGrain = ClusterClient!.GetGrain<ISnackRepoGrain>(string.Empty))
-              .Map(() => CurrentSnackEdit = new SnackEditViewModel(new Snack(), repoGrain));
+        var result = Result.Ok()
+                           .MapTry(() => ClusterClient!.GetGrain<ISnackRepoGrain>(string.Empty))
+                           .Map(repoGrain => CurrentSnackEdit = new SnackEditViewModel(new Snack(), repoGrain));
+        if (result.IsFailed)
+        {
+            MessageBox.Show(result.Errors.ToMessage(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
     }
 
     /// <summary>
@@ -177,9 +182,6 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
     /// </summary>
     public ReactiveCommand<Unit, Unit> RemoveSnackCommand { get; }
 
-    /// <summary>
-    ///     Gets the observable that indicates whether the remove snack command can be executed.
-    /// </summary>
     private IObservable<bool> CanRemoveSnack =>
         this.WhenAnyValue(vm => vm.CurrentSnackItem, vm => vm.ClusterClient)
             .Select(itemClient => itemClient is { Item1: not null, Item2: not null });
@@ -189,12 +191,13 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
     /// </summary>
     private async Task RemoveSnackAsync()
     {
-        ISnackRepoGrain repoGrain = null!;
-        await Result.Ok()
-                    .Ensure(ClusterClient != null, "Cluster client is not available.")
-                    .MapTry(() => repoGrain = ClusterClient!.GetGrain<ISnackRepoGrain>(string.Empty))
-                    .Ensure(CurrentSnackItem != null, "Snack item should be selected.")
-                    .BindTryAsync(() => repoGrain.DeleteAsync(new SnackRepoDeleteCommand(CurrentSnackItem!.Id, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")));
+        var result = await Result.Ok()
+                                 .MapTry(() => ClusterClient!.GetGrain<ISnackRepoGrain>(string.Empty))
+                                 .BindTryAsync(repoGrain => repoGrain.DeleteAsync(new SnackRepoDeleteCommand(CurrentSnackItem!.Id, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")));
+        if (result.IsFailed)
+        {
+            MessageBox.Show(result.Errors.ToMessage(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
     }
 
     /// <summary>
