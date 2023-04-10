@@ -14,6 +14,13 @@ public interface IMachineRepoGrain : IGrainWithStringKey
     Task<Result<Machine>> CreateAsync(MachineRepoCreateCommand command);
 
     /// <summary>
+    ///     Asynchronously updates a machine.
+    /// </summary>
+    /// <param name="command"></param>
+    /// <returns></returns>
+    Task<Result<Machine>> UpdateAsync(MachineRepoUpdateCommand command);
+
+    /// <summary>
     ///     Asynchronously deletes a machine.
     /// </summary>
     /// <param name="command"></param>

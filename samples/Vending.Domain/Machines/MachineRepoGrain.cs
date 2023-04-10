@@ -34,6 +34,17 @@ public sealed class MachineRepoGrain : Grain, IMachineRepoGrain
     }
 
     /// <inheritdoc />
+    public Task<Result<Machine>> UpdateAsync(MachineRepoUpdateCommand command)
+    {
+        var machineId = command.MachineId;
+        IMachineGrain grain = null!;
+        return Result.Ok()
+                     .MapTry(() => grain = GrainFactory.GetGrain<IMachineGrain>(machineId))
+                     .BindTryAsync(() => grain.UpdateAsync(new MachineUpdateCommand(command.MoneyInside, command.Slots, command.TraceId, command.OperatedAt, command.OperatedBy)))
+                     .MapAsync(() => grain.GetMachineAsync());
+    }
+
+    /// <inheritdoc />
     public Task<Result> DeleteAsync(MachineRepoDeleteCommand command)
     {
         return Result.Ok()

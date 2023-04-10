@@ -66,8 +66,7 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
     /// <inheritdoc />
     public Task<bool> CanInitializeAsync(MachineInitializeCommand command)
     {
-        return Task.FromResult(ValidateInitialize(command)
-                                  .IsSuccess);
+        return Task.FromResult(ValidateInitialize(command).IsSuccess);
     }
 
     /// <inheritdoc />
@@ -94,8 +93,7 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
     /// <inheritdoc />
     public Task<bool> CanDeleteAsync(MachineDeleteCommand command)
     {
-        return Task.FromResult(ValidateDelete(command)
-                                  .IsSuccess);
+        return Task.FromResult(ValidateDelete(command).IsSuccess);
     }
 
     /// <inheritdoc />
@@ -123,8 +121,7 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
     /// <inheritdoc />
     public Task<bool> CanUpdateAsync(MachineUpdateCommand command)
     {
-        return Task.FromResult(ValidateUpdate(command)
-                                  .IsSuccess);
+        return Task.FromResult(ValidateUpdate(command).IsSuccess);
     }
 
     /// <inheritdoc />
@@ -150,8 +147,7 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
     /// <inheritdoc />
     public Task<bool> CanAddSlotAsync(MachineAddSlotCommand command)
     {
-        return Task.FromResult(ValidateAddSlot(command)
-                                  .IsSuccess);
+        return Task.FromResult(ValidateAddSlot(command).IsSuccess);
     }
 
     /// <inheritdoc />
@@ -178,8 +174,7 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
     /// <inheritdoc />
     public Task<bool> CanRemoveSlotAsync(MachineRemoveSlotCommand command)
     {
-        return Task.FromResult(ValidateDeleteSlot(command)
-                                  .IsSuccess);
+        return Task.FromResult(ValidateDeleteSlot(command).IsSuccess);
     }
 
     /// <inheritdoc />
@@ -206,8 +201,7 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
     /// <inheritdoc />
     public Task<bool> CanLoadMoneyAsync(MachineLoadMoneyCommand command)
     {
-        return Task.FromResult(ValidateLoadMoney(command)
-                                  .IsSuccess);
+        return Task.FromResult(ValidateLoadMoney(command).IsSuccess);
     }
 
     /// <inheritdoc />
@@ -232,8 +226,7 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
     /// <inheritdoc />
     public Task<bool> CanUnloadMoneyAsync(MachineUnloadMoneyCommand command)
     {
-        return Task.FromResult(ValidateUnloadMoney(command)
-                                  .IsSuccess);
+        return Task.FromResult(ValidateUnloadMoney(command).IsSuccess);
     }
 
     /// <inheritdoc />
@@ -259,8 +252,7 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
     /// <inheritdoc />
     public Task<bool> CanInsertMoneyAsync(MachineInsertMoneyCommand command)
     {
-        return Task.FromResult(ValidateInsertMoney(command)
-                                  .IsSuccess);
+        return Task.FromResult(ValidateInsertMoney(command).IsSuccess);
     }
 
     /// <inheritdoc />
@@ -286,8 +278,7 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
     /// <inheritdoc />
     public Task<bool> CanReturnMoneyAsync(MachineReturnMoneyCommand command)
     {
-        return Task.FromResult(ValidateReturnMoney(command)
-                                  .IsSuccess);
+        return Task.FromResult(ValidateReturnMoney(command).IsSuccess);
     }
 
     /// <inheritdoc />
@@ -316,8 +307,7 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
     /// <inheritdoc />
     public Task<bool> CanLoadSnacksAsync(MachineLoadSnacksCommand command)
     {
-        return Task.FromResult(ValidateLoadSnacks(command)
-                                  .IsSuccess);
+        return Task.FromResult(ValidateLoadSnacks(command).IsSuccess);
     }
 
     /// <inheritdoc />
@@ -344,8 +334,7 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
     /// <inheritdoc />
     public Task<bool> CanUnloadSnacksAsync(MachineUnloadSnacksCommand command)
     {
-        return Task.FromResult(ValidateUnloadSnacks(command)
-                                  .IsSuccess);
+        return Task.FromResult(ValidateUnloadSnacks(command).IsSuccess);
     }
 
     /// <inheritdoc />
@@ -376,8 +365,7 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
     /// <inheritdoc />
     public Task<bool> CanBuySnackAsync(MachineBuySnackCommand command)
     {
-        return Task.FromResult(ValidateBuySnack(command)
-                                  .IsSuccess);
+        return Task.FromResult(ValidateBuySnack(command).IsSuccess);
     }
 
     /// <inheritdoc />
@@ -397,13 +385,10 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
 
     private async Task PersistAsync()
     {
-        var machine = await _dbContext.Machines.Include(m => m.Slots)
-                                      .Include(m => m.SnackStats)
-                                      .FirstOrDefaultAsync(m => m.Id == State.Id);
+        var machine = await _dbContext.Machines.Include(m => m.Slots).Include(m => m.SnackStats).FirstOrDefaultAsync(m => m.Id == State.Id);
         if (machine != null)
         {
-            _dbContext.Entry(machine)
-                      .CurrentValues.SetValues(State);
+            _dbContext.Entry(machine).CurrentValues.SetValues(State);
         }
         else
         {

@@ -63,8 +63,7 @@ public sealed class SnackGrain : EventSourcingGrainWithGuidKey<Snack, SnackComma
     /// <inheritdoc />
     public Task<bool> CanInitializeAsync(SnackInitializeCommand command)
     {
-        return Task.FromResult(ValidateInitialize(command)
-                                  .IsSuccess);
+        return Task.FromResult(ValidateInitialize(command).IsSuccess);
     }
 
     /// <inheritdoc />
@@ -89,8 +88,7 @@ public sealed class SnackGrain : EventSourcingGrainWithGuidKey<Snack, SnackComma
     /// <inheritdoc />
     public Task<bool> CanDeleteAsync(SnackDeleteCommand command)
     {
-        return Task.FromResult(ValidateDelete(command)
-                                  .IsSuccess);
+        return Task.FromResult(ValidateDelete(command).IsSuccess);
     }
 
     /// <inheritdoc />
@@ -118,8 +116,7 @@ public sealed class SnackGrain : EventSourcingGrainWithGuidKey<Snack, SnackComma
     /// <inheritdoc />
     public Task<bool> CanUpdateAsync(SnackUpdateCommand command)
     {
-        return Task.FromResult(ValidateUpdate(command)
-                                  .IsSuccess);
+        return Task.FromResult(ValidateUpdate(command).IsSuccess);
     }
 
     /// <inheritdoc />
@@ -139,8 +136,7 @@ public sealed class SnackGrain : EventSourcingGrainWithGuidKey<Snack, SnackComma
         var snack = await _dbContext.Snacks.FirstOrDefaultAsync(s => s.Id == State.Id);
         if (snack != null)
         {
-            _dbContext.Entry(snack)
-                      .CurrentValues.SetValues(State);
+            _dbContext.Entry(snack).CurrentValues.SetValues(State);
         }
         else
         {
