@@ -10,6 +10,7 @@ public class MachineItemViewModel : ReactiveObject
     public MachineItemViewModel(MachineInfo machineInfo)
     {
         Guard.Against.Null(machineInfo, nameof(machineInfo));
+        // Load the machine info.
         LoadMachine(machineInfo);
     }
 

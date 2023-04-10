@@ -10,6 +10,7 @@ public class SnackItemViewModel : ReactiveObject
     public SnackItemViewModel(SnackInfo snackInfo)
     {
         Guard.Against.Null(snackInfo, nameof(snackInfo));
+        // Load the snack info.
         LoadSnack(snackInfo);
     }
 

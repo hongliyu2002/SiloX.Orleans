@@ -23,29 +23,29 @@ namespace Vending.App.Machines;
 
 public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel, IOrleansObject
 {
-    private readonly SourceCache<MachineItemViewModel, Guid> _machineItemsCache;
-    private readonly ReadOnlyObservableCollection<MachineItemViewModel>? _machineItems;
+    private readonly SourceCache<MachineItemViewModel, Guid> _machinesCache;
+    private readonly ReadOnlyObservableCollection<MachineItemViewModel> _machines;
     private StreamSubscriptionHandle<MachineInfoEvent>? _subscription;
     private StreamSequenceToken? _lastSequenceToken;
 
     /// <inheritdoc />
     public MachinesManagementViewModel()
     {
-        // Create the cache for the machine items.
-        _machineItemsCache = new SourceCache<MachineItemViewModel, Guid>(machine => machine.Id);
-        // Connect to the cache and bind to the machine items.
-        var queryConditionObs = this.WhenAnyValue(vm => vm.PageSize, vm => vm.PageNumber, vm => vm.MoneyAmountStart, vm => vm.MoneyAmountEnd)
-                                    .Throttle(TimeSpan.FromMilliseconds(500))
-                                    .DistinctUntilChanged()
-                                    .Select(query => new Func<MachineItemViewModel, bool>(item => (query.Item3 == null || item.MoneyInside.Amount >= query.Item3) && (query.Item4 == null || item.MoneyInside.Amount < query.Item4) && item.IsDeleted == false));
-        _machineItemsCache.Connect()
-                          .Filter(queryConditionObs)
-                          .Sort(SortExpressionComparer<MachineItemViewModel>.Ascending(item => item.Id))
-                          .Skip(PageSize * (PageNumber - 1))
-                          .Take(PageSize)
-                          .ObserveOn(RxApp.MainThreadScheduler)
-                          .Bind(out _machineItems)
-                          .Subscribe();
+        // Create the cache for the machines.
+        _machinesCache = new SourceCache<MachineItemViewModel, Guid>(machine => machine.Id);
+        _machinesCache.Connect()
+                      .Filter(this.WhenAnyValue(vm => vm.PageSize, vm => vm.PageNumber, vm => vm.MoneyAmountStart, vm => vm.MoneyAmountEnd)
+                                  .Throttle(TimeSpan.FromMilliseconds(500))
+                                  .DistinctUntilChanged()
+                                  .Select(query => new Func<MachineItemViewModel, bool>(machine => (query.Item3 == null || machine.MoneyInside.Amount >= query.Item3)
+                                                                                                && (query.Item4 == null || machine.MoneyInside.Amount < query.Item4)
+                                                                                                && machine.IsDeleted == false)))
+                      .Sort(SortExpressionComparer<MachineItemViewModel>.Ascending(machine => machine.Id))
+                      .Skip(PageSize * (PageNumber - 1))
+                      .Take(PageSize)
+                      .ObserveOn(RxApp.MainThreadScheduler)
+                      .Bind(out _machines)
+                      .Subscribe();
         // Recalculate the page number when the page size or page count changes.
         this.WhenAnyValue(vm => vm.PageSize, vm => vm.PageCount)
             .Throttle(TimeSpan.FromMilliseconds(500))
@@ -57,7 +57,7 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
                            var newPageOfOldOffset = (int)Math.Ceiling((double)oldOffset / PageSize);
                            PageNumber = Math.Min(newPageOfOldOffset, page.Item2);
                        });
-        // Search machine items and update the cache.
+        // Search machines and update the cache.
         this.WhenAnyValue(vm => vm.MoneyAmountStart, vm => vm.MoneyAmountEnd, vm => vm.ClusterClient)
             .Where(moneyClient => moneyClient.Item3 != null)
             .Throttle(TimeSpan.FromMilliseconds(500))
@@ -69,7 +69,7 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
             .ObserveOn(RxApp.MainThreadScheduler)
             .Subscribe(machines =>
                        {
-                           _machineItemsCache.Edit(updater => updater.AddOrUpdate(machines.Select(machine => new MachineItemViewModel(machine))));
+                           _machinesCache.Edit(updater => updater.AddOrUpdate(machines.Select(machine => new MachineItemViewModel(machine))));
                            PageCount = (int)Math.Ceiling((double)machines.Count / PageSize);
                        });
         this.WhenActivated(disposable =>
@@ -153,7 +153,7 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
 
     private Task ApplyEventAsync(MachineInfoSavedEvent machineEvent)
     {
-        _machineItemsCache.Edit(updater => updater.AddOrUpdate(new MachineItemViewModel(machineEvent.Machine)));
+        _machinesCache.Edit(updater => updater.AddOrUpdate(new MachineItemViewModel(machineEvent.Machine)));
         return Task.CompletedTask;
     }
 
@@ -237,7 +237,7 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
         set => this.RaiseAndSetIfChanged(ref _currentMachineItem, value);
     }
 
-    public ReadOnlyObservableCollection<MachineItemViewModel>? MachineItems => _machineItems;
+    public ReadOnlyObservableCollection<MachineItemViewModel> Machines => _machines;
 
     #endregion
 
@@ -273,7 +273,7 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     /// </summary>
     private IObservable<bool> CanRemoveMachine =>
         this.WhenAnyValue(vm => vm.CurrentMachineItem, vm => vm.ClusterClient)
-            .Select(itemClient => itemClient is { Item1: not null, Item2: not null });
+            .Select(machineClient => machineClient is { Item1: not null, Item2: not null });
 
     /// <summary>
     ///     Gets the interaction that asks the user to confirm the removal of the current machine.

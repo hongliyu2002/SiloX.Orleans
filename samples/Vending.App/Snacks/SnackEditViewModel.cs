@@ -25,7 +25,6 @@ public class SnackEditViewModel : ReactiveObject, IActivatableViewModel, IOrlean
     {
         Guard.Against.Null(snack, nameof(snack));
         ClusterClient = Guard.Against.Null(clusterClient, nameof(clusterClient));
-        LoadSnack(snack);
         this.WhenActivated(disposable =>
                            {
                                // When the cluster client changes, subscribe to the snack info stream.
@@ -42,6 +41,8 @@ public class SnackEditViewModel : ReactiveObject, IActivatableViewModel, IOrlean
                            });
         // Create the commands.
         SaveSnackCommand = ReactiveCommand.CreateFromTask(SaveSnackAsync, CanSaveSnack);
+        // Load the snack.
+        LoadSnack(snack);
     }
 
     #region Stream Handlers
