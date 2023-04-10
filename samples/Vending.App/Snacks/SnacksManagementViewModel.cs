@@ -54,7 +54,7 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
             .ObserveOn(RxApp.MainThreadScheduler)
             .Subscribe(snacks => _snacksCache.Edit(updater => updater.AddOrUpdate(snacks.Select(snack => new SnackItemViewModel(snack)))));
         // When the current snack snack changes, get the snack edit view model.
-        this.WhenAnyValue(vm => vm.CurrentSnackItem, vm => vm.ClusterClient)
+        this.WhenAnyValue(vm => vm.CurrentSnack, vm => vm.ClusterClient)
             .Where(snackClient => snackClient is { Item1: not null, Item2: not null })
             .Select(snackClient => snackClient.Item2!.GetGrain<ISnackGrain>(snackClient.Item1!.Id))
             .SelectMany(grain => grain.GetSnackAsync())
@@ -146,6 +146,7 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
 
     private Task ApplyErrorEventAsync(SnackInfoErrorEvent errorEvent)
     {
+        // return Interactions.Errors.Handle(result.Errors);
         return Task.CompletedTask;
     }
 
@@ -187,12 +188,12 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
         set => this.RaiseAndSetIfChanged(ref _searchTerm, value);
     }
 
-    private SnackItemViewModel? _currentSnackItem;
+    private SnackItemViewModel? _currentSnack;
 
-    public SnackItemViewModel? CurrentSnackItem
+    public SnackItemViewModel? CurrentSnack
     {
-        get => _currentSnackItem;
-        set => this.RaiseAndSetIfChanged(ref _currentSnackItem, value);
+        get => _currentSnack;
+        set => this.RaiseAndSetIfChanged(ref _currentSnack, value);
     }
 
     private SnackEditViewModel? _currentSnackEdit;
@@ -203,7 +204,7 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
         set => this.RaiseAndSetIfChanged(ref _currentSnackEdit, value);
     }
 
-    public ReadOnlyObservableCollection<SnackItemViewModel> SnackItems => _snacks;
+    public ReadOnlyObservableCollection<SnackItemViewModel> Snacks => _snacks;
 
     #endregion
 
@@ -250,7 +251,7 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
     ///     Gets the observable that indicates whether the remove snack command can be executed.
     /// </summary>
     private IObservable<bool> CanRemoveSnack =>
-        this.WhenAnyValue(vm => vm.CurrentSnackItem, vm => vm.ClusterClient)
+        this.WhenAnyValue(vm => vm.CurrentSnack, vm => vm.ClusterClient)
             .Select(snackClient => snackClient is { Item1: not null, Item2: not null });
 
     /// <summary>
@@ -263,7 +264,7 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
     /// </summary>
     private async Task RemoveSnackAsync()
     {
-        var confirm = await ConfirmRemoveSnack.Handle(CurrentSnackItem!.Name);
+        var confirm = await ConfirmRemoveSnack.Handle(CurrentSnack!.Name);
         if (!confirm)
         {
             return;
@@ -273,7 +274,7 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
         {
             var result = await Result.Ok()
                                      .MapTry(() => ClusterClient!.GetGrain<ISnackRepoGrain>(string.Empty))
-                                     .BindTryAsync(repoGrain => repoGrain.DeleteAsync(new SnackRepoDeleteCommand(CurrentSnackItem!.Id, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")));
+                                     .BindTryAsync(repoGrain => repoGrain.DeleteAsync(new SnackRepoDeleteCommand(CurrentSnack!.Id, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")));
             if (result.IsSuccess)
             {
                 return;

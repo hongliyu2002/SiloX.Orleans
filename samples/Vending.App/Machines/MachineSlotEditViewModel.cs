@@ -1,24 +1,70 @@
 ﻿using System;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Windows;
+using DynamicData;
+using DynamicData.Binding;
 using Fluxera.Guards;
+using Fluxera.Utilities.Extensions;
 using ReactiveUI;
+using Vending.App.Snacks;
 using Vending.Domain.Abstractions.Machines;
 
 namespace Vending.App.Machines;
 
 public class MachineSlotEditViewModel : ReactiveObject
 {
-    public MachineSlotEditViewModel(MachineSlot slot)
+    private readonly ReadOnlyObservableCollection<SnackItemViewModel> _snacks;
+
+    public MachineSlotEditViewModel(MachineSlot slot, SourceCache<SnackItemViewModel, Guid> snacksCache)
     {
         Guard.Against.Null(slot, nameof(slot));
+        Guard.Against.Null(snacksCache, nameof(snacksCache));
+        // Get the cache for the snacks.
+        snacksCache.Connect()
+                   .Sort(SortExpressionComparer<SnackItemViewModel>.Ascending(snack => snack.Name))
+                   .ObserveOn(RxApp.MainThreadScheduler)
+                   .Bind(out _snacks)
+                   .Subscribe();
+        // Set the current snack when the snack id changes.
+        this.WhenAnyValue(vm => vm.SnackId, vm => vm.Snacks, vm => vm.CurrentSnack)
+            .Where(pile => pile.Item1 != null && pile.Item1 != Guid.Empty && pile.Item2.IsNotNullOrEmpty() && (pile.Item3 == null || pile.Item3.Id != pile.Item1))
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .Subscribe(pile =>
+                       {
+                           var snack = pile.Item2.FirstOrDefault(snack => snack.Id == pile.Item1);
+                           CurrentSnack = snack;
+                       });
+        // Set the snack properties to null when the current snack is null.
+        this.WhenAnyValue(vm => vm.CurrentSnack)
+            .Where(snack => snack == null)
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .Subscribe(_ =>
+                       {
+                           SnackPile = null;
+                           SnackId = null;
+                           Quantity = null;
+                           Price = null;
+                           Amount = null;
+                       });
+        // Set the snack properties when the current snack is not null.
+        this.WhenAnyValue(vm => vm.CurrentSnack)
+            .Where(snack => snack != null)
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .Subscribe(snack =>
+                       {
+                           SnackId = snack!.Id;
+                           Quantity ??= 1;
+                           Price ??= 0;
+                       });
         // Recreate the SnackPile when any of the properties change.
-        this.WhenAnyValue(vm => vm.SnackId, vm => vm.Quantity, vm => vm.Price)
+        this.WhenAnyValue(vm => vm.CurrentSnack, vm => vm.Quantity, vm => vm.Price)
             .Where(pile => pile is { Item1: not null, Item2: not null, Item3: not null })
             .ObserveOn(RxApp.MainThreadScheduler)
-            .Subscribe(yuan =>
+            .Subscribe(pile =>
                        {
-                           SnackPile = new SnackPile(SnackId!.Value, Quantity!.Value, Price!.Value);
+                           SnackPile = new SnackPile(pile.Item1!.Id, pile.Item2!.Value, pile.Item3!.Value);
                            Amount = SnackPile.Amount;
                        });
         // Load the slot.
@@ -42,7 +88,6 @@ public class MachineSlotEditViewModel : ReactiveObject
     }
 
     private SnackPile? _snackPile;
-
     public SnackPile? SnackPile
     {
         get => _snackPile;
@@ -111,6 +156,15 @@ public class MachineSlotEditViewModel : ReactiveObject
                                });
         }
     }
+    
+    private SnackItemViewModel? _currentSnack;
+    public SnackItemViewModel? CurrentSnack
+    {
+        get => _currentSnack;
+        set => this.RaiseAndSetIfChanged(ref _currentSnack, value);
+    }
+
+    public ReadOnlyObservableCollection<SnackItemViewModel> Snacks => _snacks;
 
     #endregion
 

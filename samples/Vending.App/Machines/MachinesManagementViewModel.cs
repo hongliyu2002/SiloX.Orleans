@@ -229,12 +229,12 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
         set => this.RaiseAndSetIfChanged(ref _moneyAmountEnd, value);
     }
 
-    private MachineItemViewModel? _currentMachineItem;
+    private MachineItemViewModel? _currentMachine;
 
-    public MachineItemViewModel? CurrentMachineItem
+    public MachineItemViewModel? CurrentMachine
     {
-        get => _currentMachineItem;
-        set => this.RaiseAndSetIfChanged(ref _currentMachineItem, value);
+        get => _currentMachine;
+        set => this.RaiseAndSetIfChanged(ref _currentMachine, value);
     }
 
     public ReadOnlyObservableCollection<MachineItemViewModel> Machines => _machines;
@@ -272,7 +272,7 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     ///     Gets the observable that indicates whether the remove machine command can be executed.
     /// </summary>
     private IObservable<bool> CanRemoveMachine =>
-        this.WhenAnyValue(vm => vm.CurrentMachineItem, vm => vm.ClusterClient)
+        this.WhenAnyValue(vm => vm.CurrentMachine, vm => vm.ClusterClient)
             .Select(machineClient => machineClient is { Item1: not null, Item2: not null });
 
     /// <summary>
@@ -285,7 +285,7 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     /// </summary>
     private async Task RemoveMachineAsync()
     {
-        var confirm = await ConfirmRemoveMachine.Handle(CurrentMachineItem!.Id.ToString());
+        var confirm = await ConfirmRemoveMachine.Handle(CurrentMachine!.Id.ToString());
         if (!confirm)
         {
             return;
@@ -295,7 +295,7 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
         {
             var result = await Result.Ok()
                                      .MapTry(() => ClusterClient!.GetGrain<IMachineRepoGrain>(string.Empty))
-                                     .BindTryAsync(grain => grain.DeleteAsync(new MachineRepoDeleteCommand(CurrentMachineItem!.Id, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")));
+                                     .BindTryAsync(grain => grain.DeleteAsync(new MachineRepoDeleteCommand(CurrentMachine!.Id, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")));
             if (result.IsSuccess)
             {
                 return;

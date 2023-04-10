@@ -14,7 +14,7 @@ public partial class MachinesManagementView
                                this.Bind(ViewModel, vm => vm.PageSize, v => v.PageSizeTextBox.Text).DisposeWith(disposable);
                                this.Bind(ViewModel, vm => vm.MoneyAmountStart, v => v.MoneyAmountStartTextBox.Text).DisposeWith(disposable);
                                this.Bind(ViewModel, vm => vm.MoneyAmountEnd, v => v.MoneyAmountEndTextBox.Text).DisposeWith(disposable);
-                               this.Bind(ViewModel, vm => vm.CurrentMachineItem, v => v.MachineItemsDataGrid.SelectedItem).DisposeWith(disposable);
+                               this.Bind(ViewModel, vm => vm.CurrentMachine, v => v.MachineItemsDataGrid.SelectedItem).DisposeWith(disposable);
                                this.OneWayBind(ViewModel, vm => vm.Machines, v => v.MachineItemsDataGrid.ItemsSource).DisposeWith(disposable);
                                this.OneWayBind(ViewModel, vm => vm.PageNumber, v => v.CurrentPageText.Text).DisposeWith(disposable);
                                this.BindCommand(ViewModel, vm => vm.AddMachineCommand, v => v.AddMachineButton).DisposeWith(disposable);
