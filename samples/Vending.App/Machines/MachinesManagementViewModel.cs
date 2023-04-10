@@ -23,8 +23,8 @@ namespace Vending.App.Machines;
 
 public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel, IOrleansObject
 {
-    private readonly SourceCache<MachineItemViewModel, Guid> _machinesCache;
-    private readonly ReadOnlyObservableCollection<MachineItemViewModel> _machines;
+    private readonly SourceCache<MachineViewModel, Guid> _machinesCache;
+    private readonly ReadOnlyObservableCollection<MachineViewModel> _machines;
     private StreamSubscriptionHandle<MachineInfoEvent>? _subscription;
     private StreamSequenceToken? _lastSequenceToken;
 
@@ -32,15 +32,15 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     public MachinesManagementViewModel()
     {
         // Create the cache for the machines.
-        _machinesCache = new SourceCache<MachineItemViewModel, Guid>(machine => machine.Id);
+        _machinesCache = new SourceCache<MachineViewModel, Guid>(machine => machine.Id);
         _machinesCache.Connect()
                       .Filter(this.WhenAnyValue(vm => vm.PageSize, vm => vm.PageNumber, vm => vm.MoneyAmountStart, vm => vm.MoneyAmountEnd)
                                   .Throttle(TimeSpan.FromMilliseconds(500))
                                   .DistinctUntilChanged()
-                                  .Select(query => new Func<MachineItemViewModel, bool>(machine => (query.Item3 == null || machine.MoneyInside.Amount >= query.Item3)
+                                  .Select(query => new Func<MachineViewModel, bool>(machine => (query.Item3 == null || machine.MoneyInside.Amount >= query.Item3)
                                                                                                 && (query.Item4 == null || machine.MoneyInside.Amount < query.Item4)
                                                                                                 && machine.IsDeleted == false)))
-                      .Sort(SortExpressionComparer<MachineItemViewModel>.Ascending(machine => machine.Id))
+                      .Sort(SortExpressionComparer<MachineViewModel>.Ascending(machine => machine.Id))
                       .Skip(PageSize * (PageNumber - 1))
                       .Take(PageSize)
                       .ObserveOn(RxApp.MainThreadScheduler)
@@ -69,7 +69,7 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
             .ObserveOn(RxApp.MainThreadScheduler)
             .Subscribe(machines =>
                        {
-                           _machinesCache.Edit(updater => updater.AddOrUpdate(machines.Select(machine => new MachineItemViewModel(machine))));
+                           _machinesCache.Edit(updater => updater.AddOrUpdate(machines.Select(machine => new MachineViewModel(machine))));
                            PageCount = (int)Math.Ceiling((double)machines.Count / PageSize);
                        });
         this.WhenActivated(disposable =>
@@ -153,7 +153,7 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
 
     private Task ApplyEventAsync(MachineInfoSavedEvent machineEvent)
     {
-        _machinesCache.Edit(updater => updater.AddOrUpdate(new MachineItemViewModel(machineEvent.Machine)));
+        _machinesCache.Edit(updater => updater.AddOrUpdate(new MachineViewModel(machineEvent.Machine)));
         return Task.CompletedTask;
     }
 
@@ -229,15 +229,15 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
         set => this.RaiseAndSetIfChanged(ref _moneyAmountEnd, value);
     }
 
-    private MachineItemViewModel? _currentMachine;
+    private MachineViewModel? _currentMachine;
 
-    public MachineItemViewModel? CurrentMachine
+    public MachineViewModel? CurrentMachine
     {
         get => _currentMachine;
         set => this.RaiseAndSetIfChanged(ref _currentMachine, value);
     }
 
-    public ReadOnlyObservableCollection<MachineItemViewModel> Machines => _machines;
+    public ReadOnlyObservableCollection<MachineViewModel> Machines => _machines;
 
     #endregion
 

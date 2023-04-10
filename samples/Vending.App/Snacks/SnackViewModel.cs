@@ -5,9 +5,9 @@ using Vending.Projection.Abstractions.Snacks;
 
 namespace Vending.App.Snacks;
 
-public class SnackItemViewModel : ReactiveObject
+public class SnackViewModel : ReactiveObject
 {
-    public SnackItemViewModel(SnackInfo snackInfo)
+    public SnackViewModel(SnackInfo snackInfo)
     {
         Guard.Against.Null(snackInfo, nameof(snackInfo));
         // Load the snack info.

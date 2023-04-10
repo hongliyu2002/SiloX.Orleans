@@ -13,17 +13,17 @@ using Vending.Domain.Abstractions.Machines;
 
 namespace Vending.App.Machines;
 
-public class MachineSlotEditViewModel : ReactiveObject
+public class SlotEditViewModel : ReactiveObject
 {
-    private readonly ReadOnlyObservableCollection<SnackItemViewModel> _snacks;
+    private readonly ReadOnlyObservableCollection<SnackViewModel> _snacks;
 
-    public MachineSlotEditViewModel(MachineSlot slot, SourceCache<SnackItemViewModel, Guid> snacksCache)
+    public SlotEditViewModel(MachineSlot slot, SourceCache<SnackViewModel, Guid> snacksCache)
     {
         Guard.Against.Null(slot, nameof(slot));
         Guard.Against.Null(snacksCache, nameof(snacksCache));
         // Get the cache for the snacks.
         snacksCache.Connect()
-                   .Sort(SortExpressionComparer<SnackItemViewModel>.Ascending(snack => snack.Name))
+                   .Sort(SortExpressionComparer<SnackViewModel>.Ascending(snack => snack.Name))
                    .ObserveOn(RxApp.MainThreadScheduler)
                    .Bind(out _snacks)
                    .Subscribe();
@@ -157,14 +157,14 @@ public class MachineSlotEditViewModel : ReactiveObject
         }
     }
     
-    private SnackItemViewModel? _currentSnack;
-    public SnackItemViewModel? CurrentSnack
+    private SnackViewModel? _currentSnack;
+    public SnackViewModel? CurrentSnack
     {
         get => _currentSnack;
         set => this.RaiseAndSetIfChanged(ref _currentSnack, value);
     }
 
-    public ReadOnlyObservableCollection<SnackItemViewModel> Snacks => _snacks;
+    public ReadOnlyObservableCollection<SnackViewModel> Snacks => _snacks;
 
     #endregion
 

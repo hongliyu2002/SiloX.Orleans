@@ -5,9 +5,9 @@ using Vending.Projection.Abstractions.Machines;
 
 namespace Vending.App.Machines;
 
-public class MachineItemViewModel : ReactiveObject
+public class MachineViewModel : ReactiveObject
 {
-    public MachineItemViewModel(MachineInfo machineInfo)
+    public MachineViewModel(MachineInfo machineInfo)
     {
         Guard.Against.Null(machineInfo, nameof(machineInfo));
         // Load the machine info.

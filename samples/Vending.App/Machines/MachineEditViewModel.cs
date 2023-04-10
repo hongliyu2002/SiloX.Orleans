@@ -24,9 +24,9 @@ namespace Vending.App.Machines;
 
 public class MachineEditViewModel : ReactiveObject, IActivatableViewModel, IOrleansObject
 {
-    private readonly SourceCache<SnackItemViewModel, Guid> _snacksCache;
-    private readonly SourceCache<MachineSlotEditViewModel, int> _slotsCache;
-    private readonly ReadOnlyObservableCollection<MachineSlotEditViewModel> _slots;
+    private readonly SourceCache<SnackViewModel, Guid> _snacksCache;
+    private readonly SourceCache<SlotEditViewModel, int> _slotsCache;
+    private readonly ReadOnlyObservableCollection<SlotEditViewModel> _slots;
 
     private StreamSubscriptionHandle<MachineEvent>? _subscription;
     private StreamSequenceToken? _lastSequenceToken;
@@ -37,14 +37,14 @@ public class MachineEditViewModel : ReactiveObject, IActivatableViewModel, IOrle
         ClusterClient = Guard.Against.Null(clusterClient, nameof(clusterClient));
 
         // Create the cache for the slots.
-        _slotsCache = new SourceCache<MachineSlotEditViewModel, int>(slot => slot.Position);
+        _slotsCache = new SourceCache<SlotEditViewModel, int>(slot => slot.Position);
         _slotsCache.Connect()
-                   .Sort(SortExpressionComparer<MachineSlotEditViewModel>.Ascending(slot => slot.Position))
+                   .Sort(SortExpressionComparer<SlotEditViewModel>.Ascending(slot => slot.Position))
                    .ObserveOn(RxApp.MainThreadScheduler)
                    .Bind(out _slots)
                    .Subscribe();
         // Create the cache for the snacks.
-        _snacksCache = new SourceCache<SnackItemViewModel, Guid>(snack => snack.Id);
+        _snacksCache = new SourceCache<SnackViewModel, Guid>(snack => snack.Id);
         // Search snacks and update the cache.
         this.WhenAnyValue(vm => vm.ClusterClient)
             .Where(client => client != null)
@@ -53,7 +53,7 @@ public class MachineEditViewModel : ReactiveObject, IActivatableViewModel, IOrle
             .Where(result => result.IsSuccess)
             .Select(result => result.Value)
             .ObserveOn(RxApp.MainThreadScheduler)
-            .Subscribe(snacks => _snacksCache.Edit(updater => updater.AddOrUpdate(snacks.Select(snack => new SnackItemViewModel(snack)))));
+            .Subscribe(snacks => _snacksCache.Edit(updater => updater.AddOrUpdate(snacks.Select(snack => new SnackViewModel(snack)))));
         // Recreate the money inside when any of the money properties change.
         this.WhenAnyValue(vm => vm.MoneyYuan1, vm => vm.MoneyYuan2, vm => vm.MoneyYuan5, vm => vm.MoneyYuan10, vm => vm.MoneyYuan20, vm => vm.MoneyYuan50, vm => vm.MoneyYuan100)
             .ObserveOn(RxApp.MainThreadScheduler)
@@ -174,7 +174,7 @@ public class MachineEditViewModel : ReactiveObject, IActivatableViewModel, IOrle
             MoneyYuan50 = machineEvent.MoneyInside.Yuan50;
             MoneyYuan100 = machineEvent.MoneyInside.Yuan100;
             MoneyAmount = machineEvent.MoneyInside.Amount;
-            _slotsCache.Edit(updater => updater.Load(machineEvent.Slots.Select(slot => new MachineSlotEditViewModel(slot, _snacksCache))));
+            _slotsCache.Edit(updater => updater.Load(machineEvent.Slots.Select(slot => new SlotEditViewModel(slot, _snacksCache))));
         }
         return Task.CompletedTask;
     }
@@ -191,7 +191,7 @@ public class MachineEditViewModel : ReactiveObject, IActivatableViewModel, IOrle
             MoneyYuan50 = machineEvent.MoneyInside.Yuan50;
             MoneyYuan100 = machineEvent.MoneyInside.Yuan100;
             MoneyAmount = machineEvent.MoneyInside.Amount;
-            _slotsCache.Edit(updater => updater.Load(machineEvent.Slots.Select(slot => new MachineSlotEditViewModel(slot, _snacksCache))));
+            _slotsCache.Edit(updater => updater.Load(machineEvent.Slots.Select(slot => new SlotEditViewModel(slot, _snacksCache))));
             IsDeleted = true;
         }
         return Task.CompletedTask;
@@ -209,7 +209,7 @@ public class MachineEditViewModel : ReactiveObject, IActivatableViewModel, IOrle
             MoneyYuan50 = machineEvent.MoneyInside.Yuan50;
             MoneyYuan100 = machineEvent.MoneyInside.Yuan100;
             MoneyAmount = machineEvent.MoneyInside.Amount;
-            _slotsCache.Edit(updater => updater.Load(machineEvent.Slots.Select(slot => new MachineSlotEditViewModel(slot, _snacksCache))));
+            _slotsCache.Edit(updater => updater.Load(machineEvent.Slots.Select(slot => new SlotEditViewModel(slot, _snacksCache))));
         }
         return Task.CompletedTask;
     }
@@ -218,7 +218,7 @@ public class MachineEditViewModel : ReactiveObject, IActivatableViewModel, IOrle
     {
         if (machineEvent.MachineId == Id)
         {
-            _slotsCache.Edit(updater => updater.AddOrUpdate(new MachineSlotEditViewModel(machineEvent.Slot, _snacksCache)));
+            _slotsCache.Edit(updater => updater.AddOrUpdate(new SlotEditViewModel(machineEvent.Slot, _snacksCache)));
         }
         return Task.CompletedTask;
     }
@@ -300,7 +300,7 @@ public class MachineEditViewModel : ReactiveObject, IActivatableViewModel, IOrle
     {
         if (machineEvent.MachineId == Id)
         {
-            _slotsCache.Edit(updater => updater.AddOrUpdate(new MachineSlotEditViewModel(machineEvent.Slot, _snacksCache)));
+            _slotsCache.Edit(updater => updater.AddOrUpdate(new SlotEditViewModel(machineEvent.Slot, _snacksCache)));
         }
         return Task.CompletedTask;
     }
@@ -309,7 +309,7 @@ public class MachineEditViewModel : ReactiveObject, IActivatableViewModel, IOrle
     {
         if (machineEvent.MachineId == Id)
         {
-            _slotsCache.Edit(updater => updater.AddOrUpdate(new MachineSlotEditViewModel(machineEvent.Slot, _snacksCache)));
+            _slotsCache.Edit(updater => updater.AddOrUpdate(new SlotEditViewModel(machineEvent.Slot, _snacksCache)));
         }
         return Task.CompletedTask;
     }
@@ -318,7 +318,7 @@ public class MachineEditViewModel : ReactiveObject, IActivatableViewModel, IOrle
     {
         if (machineEvent.MachineId == Id)
         {
-            _slotsCache.Edit(updater => updater.AddOrUpdate(new MachineSlotEditViewModel(machineEvent.Slot, _snacksCache)));
+            _slotsCache.Edit(updater => updater.AddOrUpdate(new SlotEditViewModel(machineEvent.Slot, _snacksCache)));
         }
         return Task.CompletedTask;
     }
@@ -512,7 +512,7 @@ public class MachineEditViewModel : ReactiveObject, IActivatableViewModel, IOrle
         }
     }
 
-    public ReadOnlyObservableCollection<MachineSlotEditViewModel> Slots => _slots;
+    public ReadOnlyObservableCollection<SlotEditViewModel> Slots => _slots;
 
     #endregion
 
@@ -565,7 +565,7 @@ public class MachineEditViewModel : ReactiveObject, IActivatableViewModel, IOrle
         MoneyYuan100 = machine.MoneyInside.Yuan100;
         MoneyAmount = machine.MoneyInside.Amount;
         IsDeleted = machine.IsDeleted;
-        _slotsCache.Edit(updater => updater.Load(machine.Slots.Select(slot => new MachineSlotEditViewModel(slot, _snacksCache))));
+        _slotsCache.Edit(updater => updater.Load(machine.Slots.Select(slot => new SlotEditViewModel(slot, _snacksCache))));
     }
 
     #endregion

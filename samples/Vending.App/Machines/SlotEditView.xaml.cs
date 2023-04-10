@@ -1,12 +1,11 @@
 ﻿using System.Reactive.Disposables;
-using System.Windows.Controls;
 using ReactiveUI;
 
 namespace Vending.App.Machines;
 
-public partial class MachineSlotEditView
+public partial class SlotEditView
 {
-    public MachineSlotEditView()
+    public SlotEditView()
     {
         InitializeComponent();
         this.WhenActivated(disposable =>

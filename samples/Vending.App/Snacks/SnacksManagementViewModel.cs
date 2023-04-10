@@ -23,8 +23,8 @@ namespace Vending.App.Snacks;
 
 public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, IOrleansObject
 {
-    private readonly SourceCache<SnackItemViewModel, Guid> _snacksCache;
-    private readonly ReadOnlyObservableCollection<SnackItemViewModel> _snacks;
+    private readonly SourceCache<SnackViewModel, Guid> _snacksCache;
+    private readonly ReadOnlyObservableCollection<SnackViewModel> _snacks;
     private StreamSubscriptionHandle<SnackInfoEvent>? _subscription;
     private StreamSequenceToken? _lastSequenceToken;
 
@@ -32,13 +32,13 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
     public SnacksManagementViewModel()
     {
         // Create the cache for the snacks.
-        _snacksCache = new SourceCache<SnackItemViewModel, Guid>(snack => snack.Id);
+        _snacksCache = new SourceCache<SnackViewModel, Guid>(snack => snack.Id);
         _snacksCache.Connect()
                     .Filter(this.WhenAnyValue(vm => vm.SearchTerm)
                                 .Throttle(TimeSpan.FromMilliseconds(500))
                                 .DistinctUntilChanged()
-                                .Select(term => new Func<SnackItemViewModel, bool>(snack => (term.IsNullOrEmpty() || snack.Name.Contains(term, StringComparison.OrdinalIgnoreCase)) && snack.IsDeleted == false)))
-                    .Sort(SortExpressionComparer<SnackItemViewModel>.Ascending(snack => snack.Name))
+                                .Select(term => new Func<SnackViewModel, bool>(snack => (term.IsNullOrEmpty() || snack.Name.Contains(term, StringComparison.OrdinalIgnoreCase)) && snack.IsDeleted == false)))
+                    .Sort(SortExpressionComparer<SnackViewModel>.Ascending(snack => snack.Name))
                     .ObserveOn(RxApp.MainThreadScheduler)
                     .Bind(out _snacks)
                     .Subscribe();
@@ -52,7 +52,7 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
             .Where(result => result.IsSuccess)
             .Select(result => result.Value)
             .ObserveOn(RxApp.MainThreadScheduler)
-            .Subscribe(snacks => _snacksCache.Edit(updater => updater.AddOrUpdate(snacks.Select(snack => new SnackItemViewModel(snack)))));
+            .Subscribe(snacks => _snacksCache.Edit(updater => updater.AddOrUpdate(snacks.Select(snack => new SnackViewModel(snack)))));
         // When the current snack snack changes, get the snack edit view model.
         this.WhenAnyValue(vm => vm.CurrentSnack, vm => vm.ClusterClient)
             .Where(snackClient => snackClient is { Item1: not null, Item2: not null })
@@ -140,7 +140,7 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
 
     private Task ApplyEventAsync(SnackInfoSavedEvent snackEvent)
     {
-        _snacksCache.Edit(updater => updater.AddOrUpdate(new SnackItemViewModel(snackEvent.Snack)));
+        _snacksCache.Edit(updater => updater.AddOrUpdate(new SnackViewModel(snackEvent.Snack)));
         return Task.CompletedTask;
     }
 
@@ -188,9 +188,9 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
         set => this.RaiseAndSetIfChanged(ref _searchTerm, value);
     }
 
-    private SnackItemViewModel? _currentSnack;
+    private SnackViewModel? _currentSnack;
 
-    public SnackItemViewModel? CurrentSnack
+    public SnackViewModel? CurrentSnack
     {
         get => _currentSnack;
         set => this.RaiseAndSetIfChanged(ref _currentSnack, value);
@@ -204,7 +204,7 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
         set => this.RaiseAndSetIfChanged(ref _currentSnackEdit, value);
     }
 
-    public ReadOnlyObservableCollection<SnackItemViewModel> Snacks => _snacks;
+    public ReadOnlyObservableCollection<SnackViewModel> Snacks => _snacks;
 
     #endregion
 

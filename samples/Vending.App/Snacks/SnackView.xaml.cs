@@ -7,13 +7,13 @@ using ReactiveUI;
 
 namespace Vending.App.Snacks;
 
-public partial class SnackItemView
+public partial class SnackView
 {
     private const string DefaultUrl = "pack://application:,,,/Vending.App;component/Images/snack.png";
     private static readonly TextDecorationCollection NormalDecorations = new();
     private static readonly TextDecorationCollection DeletedDecorations = new() { new TextDecoration(TextDecorationLocation.Strikethrough, null, 0, TextDecorationUnit.FontRecommended, TextDecorationUnit.FontRecommended) };
 
-    public SnackItemView()
+    public SnackView()
     {
         InitializeComponent();
         this.WhenActivated(disposable =>
