@@ -3,7 +3,7 @@
 [Immutable]
 [Serializable]
 [GenerateSerializer]
-public sealed record MachineInitializedEvent
+public sealed record MachineUpdatedEvent
     (Guid MachineId,
      int Version,
      Money MoneyInside,

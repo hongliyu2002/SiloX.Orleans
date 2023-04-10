@@ -32,16 +32,27 @@ public interface IMachineGrain : IGrainWithGuidKey
     Task<Result> InitializeAsync(MachineInitializeCommand command);
 
     /// <summary>
-    ///     Asynchronously checks whether the machine can be removed with the given command.
+    ///     Asynchronously checks whether the machine can be deleted with the given command.
     /// </summary>
     [AlwaysInterleave]
     Task<bool> CanDeleteAsync(MachineDeleteCommand command);
 
     /// <summary>
-    ///     Asynchronously removes the machine with the given command.
+    ///     Asynchronously deletes the machine with the given command.
     /// </summary>
     Task<Result> DeleteAsync(MachineDeleteCommand command);
 
+    /// <summary>
+    ///     Asynchronously checks whether the machine can be updated with the given command.
+    /// </summary>
+    [AlwaysInterleave]
+    Task<bool> CanUpdateAsync(MachineUpdateCommand command);
+
+    /// <summary>
+    ///     Asynchronously updates the machine with the given command.
+    /// </summary>
+    Task<Result> UpdateAsync(MachineUpdateCommand command);
+    
     /// <summary>
     ///     Asynchronously checks whether the machine can have slot added with the given command.
     /// </summary>
@@ -54,13 +65,13 @@ public interface IMachineGrain : IGrainWithGuidKey
     Task<Result> AddSlotAsync(MachineAddSlotCommand command);
 
     /// <summary>
-    ///     Asynchronously checks whether the machine can have slot removeed with the given command.
+    ///     Asynchronously checks whether the machine can have slot deleteed with the given command.
     /// </summary>
     [AlwaysInterleave]
     Task<bool> CanRemoveSlotAsync(MachineRemoveSlotCommand command);
 
     /// <summary>
-    ///     Asynchronously removes slot from the machine with the given command.
+    ///     Asynchronously deletes slot from the machine with the given command.
     /// </summary>
     Task<Result> RemoveSlotAsync(MachineRemoveSlotCommand command);
 

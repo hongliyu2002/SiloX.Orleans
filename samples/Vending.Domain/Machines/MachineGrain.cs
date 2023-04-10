@@ -56,7 +56,7 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
     {
         var machineId = this.GetPrimaryKey();
         return Result.Ok()
-                     .Verify(State.IsDeleted == false, $"Machine {machineId} has already been removed.")
+                     .Verify(State.IsDeleted == false, $"Machine {machineId} has already been deleted.")
                      .Verify(State.IsCreated == false, $"Machine {machineId} already exists.")
                      .Verify(command.MoneyInside != null, "Money inside should not be empty.")
                      .Verify(command.Slots.IsNotNullOrEmpty(), "Slots should not be empty.")
@@ -66,7 +66,8 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
     /// <inheritdoc />
     public Task<bool> CanInitializeAsync(MachineInitializeCommand command)
     {
-        return Task.FromResult(ValidateInitialize(command).IsSuccess);
+        return Task.FromResult(ValidateInitialize(command)
+                                  .IsSuccess);
     }
 
     /// <inheritdoc />
@@ -80,11 +81,11 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
               .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(this.GetPrimaryKey(), Version, 201, errors.ToListMessages(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
-    private Result ValidateRemove(MachineDeleteCommand command)
+    private Result ValidateDelete(MachineDeleteCommand command)
     {
         var machineId = this.GetPrimaryKey();
         return Result.Ok()
-                     .Verify(State.IsDeleted == false, $"Machine {machineId} has already been removed.")
+                     .Verify(State.IsDeleted == false, $"Machine {machineId} has already been deleted.")
                      .Verify(State.IsCreated, $"Machine {machineId} is not initialized.")
                      .Verify(State.AmountInTransaction == 0m, $"Machine {machineId} still in transaction with amount {State.AmountInTransaction}.")
                      .Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
@@ -93,13 +94,14 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
     /// <inheritdoc />
     public Task<bool> CanDeleteAsync(MachineDeleteCommand command)
     {
-        return Task.FromResult(ValidateRemove(command).IsSuccess);
+        return Task.FromResult(ValidateDelete(command)
+                                  .IsSuccess);
     }
 
     /// <inheritdoc />
     public Task<Result> DeleteAsync(MachineDeleteCommand command)
     {
-        return ValidateRemove(command)
+        return ValidateDelete(command)
               .MapTryAsync(() => RaiseConditionalEvent(command))
               .MapTryIfAsync(persisted => persisted, PersistAsync)
               .MapTryAsync(() => PublishAsync(new MachineDeletedEvent(State.Id, Version, State.MoneyInside, State.AmountInTransaction, State.Slots, State.SlotCount, State.SnackCount, State.SnackQuantity, State.SnackAmount, command.TraceId,
@@ -107,11 +109,39 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
               .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(this.GetPrimaryKey(), Version, 202, errors.ToListMessages(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
+    private Result ValidateUpdate(MachineUpdateCommand command)
+    {
+        var machineId = this.GetPrimaryKey();
+        return Result.Ok()
+                     .Verify(State.IsDeleted == false, $"Machine {machineId} has already been deleted.")
+                     .Verify(State.IsCreated, $"Machine {machineId} is not initialized.")
+                     .Verify(command.MoneyInside != null, "Money inside should not be empty.")
+                     .Verify(command.Slots.IsNotNullOrEmpty(), "Slots should not be empty.")
+                     .Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
+    }
+
+    /// <inheritdoc />
+    public Task<bool> CanUpdateAsync(MachineUpdateCommand command)
+    {
+        return Task.FromResult(ValidateUpdate(command)
+                                  .IsSuccess);
+    }
+
+    /// <inheritdoc />
+    public Task<Result> UpdateAsync(MachineUpdateCommand command)
+    {
+        return ValidateUpdate(command)
+              .MapTryAsync(() => RaiseConditionalEvent(command))
+              .MapTryIfAsync(persisted => persisted, PersistAsync)
+              .MapTryAsync(() => PublishAsync(new MachineUpdatedEvent(State.Id, Version, State.MoneyInside, State.Slots, State.SlotCount, State.SnackCount, State.SnackQuantity, State.SnackAmount, command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)))
+              .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(this.GetPrimaryKey(), Version, 203, errors.ToListMessages(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
+    }
+
     private Result ValidateAddSlot(MachineAddSlotCommand command)
     {
         var machineId = this.GetPrimaryKey();
         return Result.Ok()
-                     .Verify(State.IsDeleted == false, $"Machine {machineId} has already been removed.")
+                     .Verify(State.IsDeleted == false, $"Machine {machineId} has already been deleted.")
                      .Verify(State.IsCreated, $"Machine {machineId} is not initialized.")
                      .Verify(State.TryGetSlot(command.Position, out _) == false, $"Slot at position {command.Position} in the machine {machineId} already exists.")
                      .Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
@@ -120,7 +150,8 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
     /// <inheritdoc />
     public Task<bool> CanAddSlotAsync(MachineAddSlotCommand command)
     {
-        return Task.FromResult(ValidateAddSlot(command).IsSuccess);
+        return Task.FromResult(ValidateAddSlot(command)
+                                  .IsSuccess);
     }
 
     /// <inheritdoc />
@@ -131,14 +162,14 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
               .MapTryIfAsync(persisted => persisted, PersistAsync)
               .MapTryAsync(() => PublishAsync(new MachineSlotAddedEvent(State.Id, Version, State.Slots.Single(ms => ms.Position == command.Position), State.SlotCount, State.SnackCount, State.SnackQuantity, State.SnackAmount, command.TraceId,
                                                                         State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? command.OperatedBy)))
-              .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(this.GetPrimaryKey(), Version, 203, errors.ToListMessages(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
+              .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(this.GetPrimaryKey(), Version, 204, errors.ToListMessages(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
-    private Result ValidateRemoveSlot(MachineRemoveSlotCommand command)
+    private Result ValidateDeleteSlot(MachineRemoveSlotCommand command)
     {
         var machineId = this.GetPrimaryKey();
         return Result.Ok()
-                     .Verify(State.IsDeleted == false, $"Machine {machineId} has already been removed.")
+                     .Verify(State.IsDeleted == false, $"Machine {machineId} has already been deleted.")
                      .Verify(State.IsCreated, $"Machine {machineId} is not initialized.")
                      .Verify(State.TryGetSlot(command.Position, out _), $"Slot at position {command.Position} in the machine {machineId} does not exist.")
                      .Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
@@ -147,25 +178,26 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
     /// <inheritdoc />
     public Task<bool> CanRemoveSlotAsync(MachineRemoveSlotCommand command)
     {
-        return Task.FromResult(ValidateRemoveSlot(command).IsSuccess);
+        return Task.FromResult(ValidateDeleteSlot(command)
+                                  .IsSuccess);
     }
 
     /// <inheritdoc />
     public Task<Result> RemoveSlotAsync(MachineRemoveSlotCommand command)
     {
-        return ValidateRemoveSlot(command)
+        return ValidateDeleteSlot(command)
               .MapTryAsync(() => RaiseConditionalEvent(command))
               .MapTryIfAsync(persisted => persisted, PersistAsync)
               .MapTryAsync(() => PublishAsync(new MachineSlotRemovedEvent(State.Id, Version, command.Position, State.SlotCount, State.SnackCount, State.SnackQuantity, State.SnackAmount, command.TraceId, State.LastModifiedAt ?? DateTimeOffset.UtcNow,
                                                                           State.LastModifiedBy ?? command.OperatedBy)))
-              .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(this.GetPrimaryKey(), Version, 204, errors.ToListMessages(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
+              .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(this.GetPrimaryKey(), Version, 205, errors.ToListMessages(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
     private Result ValidateLoadMoney(MachineLoadMoneyCommand command)
     {
         var machineId = this.GetPrimaryKey();
         return Result.Ok()
-                     .Verify(State.IsDeleted == false, $"Machine {machineId} has already been removed.")
+                     .Verify(State.IsDeleted == false, $"Machine {machineId} has already been deleted.")
                      .Verify(State.IsCreated, $"Machine {machineId} is not initialized.")
                      .Verify(command.Money != Money.Zero, "Loading money should not be zero.")
                      .Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
@@ -174,7 +206,8 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
     /// <inheritdoc />
     public Task<bool> CanLoadMoneyAsync(MachineLoadMoneyCommand command)
     {
-        return Task.FromResult(ValidateLoadMoney(command).IsSuccess);
+        return Task.FromResult(ValidateLoadMoney(command)
+                                  .IsSuccess);
     }
 
     /// <inheritdoc />
@@ -184,14 +217,14 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
               .MapTryAsync(() => RaiseConditionalEvent(command))
               .MapTryIfAsync(persisted => persisted, PersistAsync)
               .MapTryAsync(() => PublishAsync(new MachineMoneyLoadedEvent(State.Id, Version, State.MoneyInside, command.TraceId, State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? command.OperatedBy)))
-              .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(this.GetPrimaryKey(), Version, 205, errors.ToListMessages(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
+              .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(this.GetPrimaryKey(), Version, 206, errors.ToListMessages(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
     private Result ValidateUnloadMoney(MachineUnloadMoneyCommand command)
     {
         var machineId = this.GetPrimaryKey();
         return Result.Ok()
-                     .Verify(State.IsDeleted == false, $"Machine {machineId} has already been removed.")
+                     .Verify(State.IsDeleted == false, $"Machine {machineId} has already been deleted.")
                      .Verify(State.IsCreated, $"Machine {machineId} is not initialized.")
                      .Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
     }
@@ -199,7 +232,8 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
     /// <inheritdoc />
     public Task<bool> CanUnloadMoneyAsync(MachineUnloadMoneyCommand command)
     {
-        return Task.FromResult(ValidateUnloadMoney(command).IsSuccess);
+        return Task.FromResult(ValidateUnloadMoney(command)
+                                  .IsSuccess);
     }
 
     /// <inheritdoc />
@@ -209,14 +243,14 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
               .MapTryAsync(() => RaiseConditionalEvent(command))
               .MapTryIfAsync(persisted => persisted, PersistAsync)
               .MapTryAsync(() => PublishAsync(new MachineMoneyUnloadedEvent(State.Id, Version, State.MoneyInside, command.TraceId, State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? command.OperatedBy)))
-              .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(this.GetPrimaryKey(), Version, 206, errors.ToListMessages(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
+              .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(this.GetPrimaryKey(), Version, 207, errors.ToListMessages(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
     private Result ValidateInsertMoney(MachineInsertMoneyCommand command)
     {
         var machineId = this.GetPrimaryKey();
         return Result.Ok()
-                     .Verify(State.IsDeleted == false, $"Machine {machineId} has already been removed.")
+                     .Verify(State.IsDeleted == false, $"Machine {machineId} has already been deleted.")
                      .Verify(State.IsCreated, $"Machine {machineId} is not initialized.")
                      .Verify(Money.CoinsAndNotes.Contains(command.Money), $"Only single coin or note should be inserted into the machine {machineId}.")
                      .Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
@@ -225,7 +259,8 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
     /// <inheritdoc />
     public Task<bool> CanInsertMoneyAsync(MachineInsertMoneyCommand command)
     {
-        return Task.FromResult(ValidateInsertMoney(command).IsSuccess);
+        return Task.FromResult(ValidateInsertMoney(command)
+                                  .IsSuccess);
     }
 
     /// <inheritdoc />
@@ -235,14 +270,14 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
               .MapTryAsync(() => RaiseConditionalEvent(command))
               .MapTryIfAsync(persisted => persisted, PersistAsync)
               .MapTryAsync(() => PublishAsync(new MachineMoneyInsertedEvent(State.Id, Version, State.MoneyInside, State.AmountInTransaction, command.TraceId, State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? command.OperatedBy)))
-              .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(this.GetPrimaryKey(), Version, 207, errors.ToListMessages(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
+              .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(this.GetPrimaryKey(), Version, 208, errors.ToListMessages(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
     private Result ValidateReturnMoney(MachineReturnMoneyCommand command)
     {
         var machineId = this.GetPrimaryKey();
         return Result.Ok()
-                     .Verify(State.IsDeleted == false, $"Machine {machineId} has already been removed.")
+                     .Verify(State.IsDeleted == false, $"Machine {machineId} has already been deleted.")
                      .Verify(State.IsCreated, $"Machine {machineId} is not initialized.")
                      .Verify(State.MoneyInside.CanAllocate(State.AmountInTransaction, out _), $"Not enough change in the machine {machineId}.")
                      .Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
@@ -251,7 +286,8 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
     /// <inheritdoc />
     public Task<bool> CanReturnMoneyAsync(MachineReturnMoneyCommand command)
     {
-        return Task.FromResult(ValidateReturnMoney(command).IsSuccess);
+        return Task.FromResult(ValidateReturnMoney(command)
+                                  .IsSuccess);
     }
 
     /// <inheritdoc />
@@ -261,14 +297,14 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
               .MapTryAsync(() => RaiseConditionalEvent(command))
               .MapTryIfAsync(persisted => persisted, PersistAsync)
               .MapTryAsync(() => PublishAsync(new MachineMoneyReturnedEvent(State.Id, Version, State.MoneyInside, State.AmountInTransaction, command.TraceId, State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? command.OperatedBy)))
-              .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(this.GetPrimaryKey(), Version, 208, errors.ToListMessages(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
+              .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(this.GetPrimaryKey(), Version, 209, errors.ToListMessages(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
     private Result ValidateLoadSnacks(MachineLoadSnacksCommand command)
     {
         var machineId = this.GetPrimaryKey();
         return Result.Ok()
-                     .Verify(State.IsDeleted == false, $"Machine {machineId} has already been removed.")
+                     .Verify(State.IsDeleted == false, $"Machine {machineId} has already been deleted.")
                      .Verify(State.IsCreated, $"Machine {machineId} is not initialized.")
                      .Verify(State.TryGetSlot(command.Position, out var slot), $"Slot at position {command.Position} in the machine {machineId} does not exist.")
                      .Verify(command.SnackPile != null, "Snack pile to load should not be empty.")
@@ -280,7 +316,8 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
     /// <inheritdoc />
     public Task<bool> CanLoadSnacksAsync(MachineLoadSnacksCommand command)
     {
-        return Task.FromResult(ValidateLoadSnacks(command).IsSuccess);
+        return Task.FromResult(ValidateLoadSnacks(command)
+                                  .IsSuccess);
     }
 
     /// <inheritdoc />
@@ -291,14 +328,14 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
               .MapTryIfAsync(persisted => persisted, PersistAsync)
               .MapTryAsync(() => PublishAsync(new MachineSnacksLoadedEvent(State.Id, Version, State.Slots.Single(ms => ms.Position == command.Position), State.SlotCount, State.SnackCount, State.SnackQuantity, State.SnackAmount, command.TraceId,
                                                                            State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? command.OperatedBy)))
-              .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(this.GetPrimaryKey(), Version, 209, errors.ToListMessages(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
+              .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(this.GetPrimaryKey(), Version, 210, errors.ToListMessages(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
     private Result ValidateUnloadSnacks(MachineUnloadSnacksCommand command)
     {
         var machineId = this.GetPrimaryKey();
         return Result.Ok()
-                     .Verify(State.IsDeleted == false, $"Machine {machineId} has already been removed.")
+                     .Verify(State.IsDeleted == false, $"Machine {machineId} has already been deleted.")
                      .Verify(State.IsCreated, $"Machine {machineId} is not initialized.")
                      .Verify(State.TryGetSlot(command.Position, out _), $"Slot at position {command.Position} in the machine {machineId} does not exist.")
                      .Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
@@ -307,7 +344,8 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
     /// <inheritdoc />
     public Task<bool> CanUnloadSnacksAsync(MachineUnloadSnacksCommand command)
     {
-        return Task.FromResult(ValidateUnloadSnacks(command).IsSuccess);
+        return Task.FromResult(ValidateUnloadSnacks(command)
+                                  .IsSuccess);
     }
 
     /// <inheritdoc />
@@ -318,14 +356,14 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
               .MapTryIfAsync(persisted => persisted, PersistAsync)
               .MapTryAsync(() => PublishAsync(new MachineSnacksUnloadedEvent(State.Id, Version, State.Slots.Single(ms => ms.Position == command.Position), State.SlotCount, State.SnackCount, State.SnackQuantity, State.SnackAmount, command.TraceId,
                                                                              State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? command.OperatedBy)))
-              .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(this.GetPrimaryKey(), Version, 210, errors.ToListMessages(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
+              .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(this.GetPrimaryKey(), Version, 211, errors.ToListMessages(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
     private Result ValidateBuySnack(MachineBuySnackCommand command)
     {
         var machineId = this.GetPrimaryKey();
         return Result.Ok()
-                     .Verify(State.IsDeleted == false, $"Machine {machineId} has already been removed.")
+                     .Verify(State.IsDeleted == false, $"Machine {machineId} has already been deleted.")
                      .Verify(State.IsCreated, $"Machine {machineId} is not initialized.")
                      .Verify(State.TryGetSlot(command.Position, out var slot), $"Slot at position {command.Position} in the machine {machineId} does not exist.")
                      .Verify(slot?.SnackPile != null, $"Snack pile of the machineSlot at position {command.Position} in the machine {machineId} does not exist.")
@@ -338,7 +376,8 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
     /// <inheritdoc />
     public Task<bool> CanBuySnackAsync(MachineBuySnackCommand command)
     {
-        return Task.FromResult(ValidateBuySnack(command).IsSuccess);
+        return Task.FromResult(ValidateBuySnack(command)
+                                  .IsSuccess);
     }
 
     /// <inheritdoc />
@@ -351,17 +390,20 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
               .MapTryIfAsync(initialized => initialized,
                              () => PublishAsync(new MachineSnackBoughtEvent(State.Id, Version, State.AmountInTransaction, State.Slots.Single(ms => ms.Position == command.Position), State.SnackQuantity, State.SnackAmount, command.TraceId,
                                                                             State.LastModifiedAt ?? DateTimeOffset.UtcNow, State.LastModifiedBy ?? command.OperatedBy)))
-              .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(this.GetPrimaryKey(), Version, 211, errors.ToListMessages(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
+              .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(this.GetPrimaryKey(), Version, 212, errors.ToListMessages(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
     #region Persistence
 
     private async Task PersistAsync()
     {
-        var machine = await _dbContext.Machines.Include(m => m.Slots).Include(m => m.SnackStats).FirstOrDefaultAsync(m => m.Id == State.Id);
+        var machine = await _dbContext.Machines.Include(m => m.Slots)
+                                      .Include(m => m.SnackStats)
+                                      .FirstOrDefaultAsync(m => m.Id == State.Id);
         if (machine != null)
         {
-            _dbContext.Entry(machine).CurrentValues.SetValues(State);
+            _dbContext.Entry(machine)
+                      .CurrentValues.SetValues(State);
         }
         else
         {

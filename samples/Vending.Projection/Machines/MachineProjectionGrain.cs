@@ -52,6 +52,8 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
                 return ApplyEventAsync(machineEvent);
             case MachineDeletedEvent machineEvent:
                 return ApplyEventAsync(machineEvent);
+            case MachineUpdatedEvent machineEvent:
+                return ApplyEventAsync(machineEvent);
             case MachineSlotAddedEvent machineEvent:
                 return ApplyEventAsync(machineEvent);
             case MachineSlotRemovedEvent machineEvent:
@@ -178,6 +180,43 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
         }
     }
 
+    private async Task ApplyEventAsync(MachineUpdatedEvent machineEvent)
+    {
+        try
+        {
+            var machineInfo = await _dbContext.Machines.Include(m => m.Slots).FirstOrDefaultAsync(m => m.Id == machineEvent.MachineId);
+            if (machineInfo == null)
+            {
+                _logger.LogWarning("Apply MachineUpdatedEvent: Machine {MachineId} does not exist in the database. Try to execute full update...", machineEvent.MachineId);
+                await ApplyFullUpdateAsync(machineEvent);
+                return;
+            }
+            if (machineInfo.Version != machineEvent.Version - 1)
+            {
+                _logger.LogWarning("Apply MachineUpdatedEvent: Machine {MachineId} version {MachineVersion}) in the database should be {Version}. Try to execute full update...", machineEvent.MachineId, machineInfo.Version, machineEvent.Version - 1);
+                await ApplyFullUpdateAsync(machineEvent);
+                return;
+            }
+            machineInfo.MoneyInside = machineEvent.MoneyInside.ToProjection(machineInfo.MoneyInside);
+            machineInfo.Slots = await Task.WhenAll(machineEvent.Slots.Select(slot => slot.ToProjection(GetSnackNameAndPictureUrlAsync, machineInfo.Slots.FirstOrDefault(ms => ms.MachineId == slot.MachineId && ms.Position == slot.Position))));
+            machineInfo.SlotCount = machineEvent.SlotCount;
+            machineInfo.SnackCount = machineEvent.SnackCount;
+            machineInfo.SnackQuantity = machineEvent.SnackQuantity;
+            machineInfo.SnackAmount = machineEvent.SnackAmount;
+            machineInfo.LastModifiedAt = machineEvent.OperatedAt;
+            machineInfo.LastModifiedBy = machineEvent.OperatedBy;
+            machineInfo.Version = machineEvent.Version;
+            await _dbContext.SaveChangesAsync();
+            await PublishAsync(new MachineInfoSavedEvent(machineInfo.Id, machineInfo.Version, machineInfo, machineEvent.TraceId, DateTimeOffset.UtcNow, machineEvent.OperatedBy));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Apply MachineUpdatedEvent: Exception is occurred when try to write data to the database. Try to execute full update...");
+            await PublishErrorAsync(new MachineInfoErrorEvent(machineEvent.MachineId, machineEvent.Version, 201, new[] { ex.Message }, machineEvent.TraceId, DateTimeOffset.UtcNow, machineEvent.OperatedBy));
+            await ApplyFullUpdateAsync(machineEvent);
+        }
+    }
+    
     private async Task ApplyEventAsync(MachineSlotAddedEvent machineEvent)
     {
         try

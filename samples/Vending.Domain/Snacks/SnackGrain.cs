@@ -63,7 +63,8 @@ public sealed class SnackGrain : EventSourcingGrainWithGuidKey<Snack, SnackComma
     /// <inheritdoc />
     public Task<bool> CanInitializeAsync(SnackInitializeCommand command)
     {
-        return Task.FromResult(ValidateInitialize(command).IsSuccess);
+        return Task.FromResult(ValidateInitialize(command)
+                                  .IsSuccess);
     }
 
     /// <inheritdoc />
@@ -76,22 +77,26 @@ public sealed class SnackGrain : EventSourcingGrainWithGuidKey<Snack, SnackComma
               .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(this.GetPrimaryKey(), Version, 101, errors.ToListMessages(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
-    private Result ValidateRemove(SnackDeleteCommand command)
+    private Result ValidateDelete(SnackDeleteCommand command)
     {
         var snackId = this.GetPrimaryKey();
-        return Result.Ok().Verify(State.IsDeleted == false, $"Snack {snackId} has already been removed.").Verify(State.IsCreated, $"Snack {snackId} is not initialized.").Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
+        return Result.Ok()
+                     .Verify(State.IsDeleted == false, $"Snack {snackId} has already been removed.")
+                     .Verify(State.IsCreated, $"Snack {snackId} is not initialized.")
+                     .Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
     }
 
     /// <inheritdoc />
     public Task<bool> CanDeleteAsync(SnackDeleteCommand command)
     {
-        return Task.FromResult(ValidateRemove(command).IsSuccess);
+        return Task.FromResult(ValidateDelete(command)
+                                  .IsSuccess);
     }
 
     /// <inheritdoc />
     public Task<Result> DeleteAsync(SnackDeleteCommand command)
     {
-        return ValidateRemove(command)
+        return ValidateDelete(command)
               .MapTryAsync(() => RaiseConditionalEvent(command))
               .MapTryIfAsync(persisted => persisted, PersistAsync)
               .MapTryAsync(() => PublishAsync(new SnackDeletedEvent(State.Id, Version, command.TraceId, State.DeletedAt ?? DateTimeOffset.UtcNow, State.DeletedBy ?? command.OperatedBy)))
@@ -113,7 +118,8 @@ public sealed class SnackGrain : EventSourcingGrainWithGuidKey<Snack, SnackComma
     /// <inheritdoc />
     public Task<bool> CanUpdateAsync(SnackUpdateCommand command)
     {
-        return Task.FromResult(ValidateUpdate(command).IsSuccess);
+        return Task.FromResult(ValidateUpdate(command)
+                                  .IsSuccess);
     }
 
     /// <inheritdoc />
@@ -133,7 +139,8 @@ public sealed class SnackGrain : EventSourcingGrainWithGuidKey<Snack, SnackComma
         var snack = await _dbContext.Snacks.FirstOrDefaultAsync(s => s.Id == State.Id);
         if (snack != null)
         {
-            _dbContext.Entry(snack).CurrentValues.SetValues(State);
+            _dbContext.Entry(snack)
+                      .CurrentValues.SetValues(State);
         }
         else
         {

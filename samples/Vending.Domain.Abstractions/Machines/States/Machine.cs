@@ -171,7 +171,16 @@ public sealed class Machine
         DeletedBy = command.OperatedBy;
         IsDeleted = true;
     }
-
+    
+    public void Apply(MachineUpdateCommand command)
+    {
+        MoneyInside = command.MoneyInside;
+        Slots = command.Slots.Select(pair => new MachineSlot(Id, pair.Key, pair.Value)).ToList();
+        UpdateStats();
+        LastModifiedAt = command.OperatedAt;
+        LastModifiedBy = command.OperatedBy;
+    }
+    
     public void Apply(MachineAddSlotCommand command)
     {
         var slot = Slots.FirstOrDefault(ms => ms.Position == command.Position);
