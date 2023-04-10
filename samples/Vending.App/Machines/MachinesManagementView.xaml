@@ -20,11 +20,11 @@
                 <TextBlock Text="Remove" FontSize="13" Margin="5" />
             </Button>
             <TextBlock Text="Page Size:" FontSize="13" Margin="5" VerticalAlignment="Center" />
-            <TextBox x:Name="PageSizeTextBox" Width="50" Height="25" Margin="5" />
+            <TextBox x:Name="PageSizeTextBox" Width="50" Height="20" Margin="5" />
             <TextBlock Text="Money Inside $:" FontSize="13" Margin="5" VerticalAlignment="Center" />
-            <TextBox x:Name="MoneyAmountStartTextBox" Width="50" Height="25" Margin="5" />
+            <TextBox x:Name="MoneyAmountStartTextBox" Width="50" Height="20" Margin="5" />
             <TextBlock Text="To" FontSize="13" Margin="5" VerticalAlignment="Center" />
-            <TextBox x:Name="MoneyAmountEndTextBox" Width="50" Height="25" Margin="5" />
+            <TextBox x:Name="MoneyAmountEndTextBox" Width="50" Height="20" Margin="5" />
         </StackPanel>
 
         <DataGrid x:Name="MachineItemsDataGrid" Grid.Row="1" AutoGenerateColumns="False">
@@ -70,7 +70,7 @@
             <Button x:Name="PreviousPageButton" Width="75" Margin="5">
                 <TextBlock Text="Previous" FontSize="13" Margin="5" />
             </Button>
-            <TextBlock x:Name="CurrentPageText" Width="50" Height="25" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            <TextBlock x:Name="CurrentPageText" Width="50" Height="20" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" />
             <Button x:Name="NextPageButton" Width="75" Margin="5">
                 <TextBlock Text="Next" FontSize="13" Margin="5" />
             </Button>
