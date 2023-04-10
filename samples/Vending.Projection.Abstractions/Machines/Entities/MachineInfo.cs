@@ -87,7 +87,7 @@ public sealed class MachineInfo : IAuditedObject, ISoftDeleteObject
     ///     The number of slots in the machine.
     /// </summary>
     [Id(12)]
-    public int SlotsCount { get; set; }
+    public int SlotCount { get; set; }
 
     /// <summary>
     ///     The number of distinct snacks in the machine.

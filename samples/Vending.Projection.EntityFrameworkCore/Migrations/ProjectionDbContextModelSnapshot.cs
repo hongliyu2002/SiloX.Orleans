@@ -63,7 +63,7 @@ namespace Vending.Projection.EntityFrameworkCore.Migrations
                         .HasMaxLength(128)
                         .HasColumnType("nvarchar(128)");
 
-                    b.Property<int>("SlotsCount")
+                    b.Property<int>("SlotCount")
                         .HasColumnType("int");
 
                     b.Property<decimal>("SnackAmount")

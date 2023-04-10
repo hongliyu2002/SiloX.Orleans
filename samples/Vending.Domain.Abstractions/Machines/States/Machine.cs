@@ -88,7 +88,7 @@ public sealed class Machine
     ///     The number of slots in the snack mMachine.
     /// </summary>
     [Id(12)]
-    public int SlotsCount { get; set; }
+    public int SlotCount { get; set; }
 
     /// <summary>
     ///     The number of snacks in the snack mMachine.
@@ -134,7 +134,7 @@ public sealed class Machine
 
     private void UpdateStats()
     {
-        SlotsCount = Slots.Count;
+        SlotCount = Slots.Count;
         SnackStats = Slots.Where(ms => ms.SnackPile != null)
                           .Select(ms => new
                                         {

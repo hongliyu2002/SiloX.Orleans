@@ -10,7 +10,7 @@ public sealed record MachineInitializedEvent
      int Version,
      Money MoneyInside,
      IList<MachineSlot> Slots,
-     int SlotsCount,
+     int SlotCount,
      int SnackCount,
      int SnackQuantity,
      decimal SnackAmount,

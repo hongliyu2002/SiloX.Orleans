@@ -3,7 +3,7 @@ using ReactiveUI;
 
 namespace Vending.App.Purchases;
 
-public class PurchasesManagementViewModel : ReactiveObject, IHasClusterClient
+public class PurchasesManagementViewModel : ReactiveObject, IOrleansObject
 {
 
     /// <inheritdoc />

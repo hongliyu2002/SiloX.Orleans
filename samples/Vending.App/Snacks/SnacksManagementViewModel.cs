@@ -15,7 +15,6 @@ using Orleans.FluentResults;
 using Orleans.Runtime;
 using Orleans.Streams;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 using SiloX.Domain.Abstractions.Extensions;
 using Vending.Domain.Abstractions;
 using Vending.Domain.Abstractions.Snacks;
@@ -23,7 +22,7 @@ using Vending.Projection.Abstractions.Snacks;
 
 namespace Vending.App.Snacks;
 
-public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, IHasClusterClient
+public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, IOrleansObject
 {
     private readonly SourceCache<SnackItemViewModel, Guid> _snackItemsCache;
     private readonly ReadOnlyObservableCollection<SnackItemViewModel>? _snackItems;
@@ -39,7 +38,7 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
         var searchTermObs = this.WhenAnyValue(vm => vm.SearchTerm)
                                 .Throttle(TimeSpan.FromMilliseconds(500))
                                 .DistinctUntilChanged()
-                                .Select(term => new Func<SnackItemViewModel, bool>(item => term.IsNullOrEmpty() || item.Name.Contains(term, StringComparison.OrdinalIgnoreCase)));
+                                .Select(term => new Func<SnackItemViewModel, bool>(item => (term.IsNullOrEmpty() || item.Name.Contains(term, StringComparison.OrdinalIgnoreCase)) && item.IsDeleted == false));
         _snackItemsCache.Connect()
                         .Filter(searchTermObs)
                         .Sort(SortExpressionComparer<SnackItemViewModel>.Ascending(item => item.Name))
@@ -63,7 +62,7 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
             .Select(itemClient => itemClient.Item2!.GetGrain<ISnackGrain>(itemClient.Item1!.Id))
             .SelectMany(grain => grain.GetSnackAsync())
             .ObserveOn(RxApp.MainThreadScheduler)
-            .Subscribe(snack => CurrentSnackEdit = new SnackEditViewModel(snack, ClusterClient!.GetGrain<ISnackRepoGrain>("Manager")));
+            .Subscribe(snack => CurrentSnackEdit = new SnackEditViewModel(snack, ClusterClient!));
         this.WhenActivated(disposable =>
                            {
                                // When the cluster client changes, subscribe to the snack info stream.
@@ -73,7 +72,7 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
                                    .Select(provider => provider.GetStream<SnackInfoEvent>(StreamId.Create(Constants.SnackInfosBroadcastNamespace, Guid.Empty)))
                                    .SelectMany(stream => stream.SubscribeAsync(HandleEventAsync, HandleErrorAsync, HandleCompletedAsync, _lastSequenceToken))
                                    .ObserveOn(RxApp.MainThreadScheduler)
-                                   .Subscribe(subscription => _subscription = subscription)
+                                   .Subscribe(HandleSubscriptionAsync)
                                    .DisposeWith(disposable);
                                Disposable.Create(HandleSubscriptionDisposeAsync)
                                          .DisposeWith(disposable);
@@ -86,11 +85,35 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
 
     #region Stream Handlers
 
-    private async void HandleSubscriptionDisposeAsync()
+    private async void HandleSubscriptionAsync(StreamSubscriptionHandle<SnackInfoEvent> subscription)
     {
         if (_subscription != null)
         {
+            try
+            {
+                await _subscription.UnsubscribeAsync();
+            }
+            catch
+            {
+                // ignored
+            }
+        }
+        _subscription = subscription;
+    }
+
+    private async void HandleSubscriptionDisposeAsync()
+    {
+        if (_subscription == null)
+        {
+            return;
+        }
+        try
+        {
             await _subscription.UnsubscribeAsync();
+        }
+        catch
+        {
+            // ignored
         }
     }
 
@@ -136,23 +159,55 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
     /// <inheritdoc />
     public ViewModelActivator Activator { get; } = new();
 
-    [Reactive]
-    public IClusterClient? ClusterClient { get; set; }
+    private IClusterClient? _clusterClient;
 
-    [Reactive]
-    public NavigationSide NavigationSide { get; set; }
+    public IClusterClient? ClusterClient
+    {
+        get => _clusterClient;
+        set
+        {
+            var dispatcher = Application.Current.Dispatcher;
+            dispatcher?.Invoke(() =>
+                               {
+                                   this.RaiseAndSetIfChanged(ref _clusterClient, value);
+                               });
+        }
+    }
 
-    [Reactive]
-    public string SearchTerm { get; set; } = string.Empty;
+    private NavigationSide _navigationSide;
+
+    public NavigationSide NavigationSide
+    {
+        get => _navigationSide;
+        set => this.RaiseAndSetIfChanged(ref _navigationSide, value);
+    }
+
+    private string _searchTerm = string.Empty;
+
+    public string SearchTerm
+    {
+        get => _searchTerm;
+        set => this.RaiseAndSetIfChanged(ref _searchTerm, value);
+    }
+
+    private SnackItemViewModel? _currentSnackItem;
+
+    public SnackItemViewModel? CurrentSnackItem
+    {
+        get => _currentSnackItem;
+        set => this.RaiseAndSetIfChanged(ref _currentSnackItem, value);
+    }
+
+    private SnackEditViewModel? _currentSnackEdit;
+
+    public SnackEditViewModel? CurrentSnackEdit
+    {
+        get => _currentSnackEdit;
+        set => this.RaiseAndSetIfChanged(ref _currentSnackEdit, value);
+    }
 
     public ReadOnlyObservableCollection<SnackItemViewModel>? SnackItems => _snackItems;
-
-    [Reactive]
-    public SnackItemViewModel? CurrentSnackItem { get; set; }
-
-    [Reactive]
-    public SnackEditViewModel? CurrentSnackEdit { get; set; }
-
+    
     #endregion
 
     #region Commands
@@ -169,8 +224,7 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
     private void AddSnack()
     {
         var result = Result.Ok()
-                           .MapTry(() => ClusterClient!.GetGrain<ISnackRepoGrain>(string.Empty))
-                           .Map(repoGrain => CurrentSnackEdit = new SnackEditViewModel(new Snack(), repoGrain));
+                           .Map(() => CurrentSnackEdit = new SnackEditViewModel(new Snack(), ClusterClient!));
         if (result.IsFailed)
         {
             MessageBox.Show(result.Errors.ToMessage(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);

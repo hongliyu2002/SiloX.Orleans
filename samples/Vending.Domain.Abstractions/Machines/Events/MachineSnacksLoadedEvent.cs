@@ -7,7 +7,7 @@ public sealed record MachineSnacksLoadedEvent
     (Guid MachineId,
      int Version,
      MachineSlot Slot,
-     int SlotsCount,
+     int SlotCount,
      int SnackCount,
      int SnackQuantity,
      decimal SnackAmount,

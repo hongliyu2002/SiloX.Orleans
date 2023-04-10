@@ -35,7 +35,7 @@ namespace Vending.Domain.EntityFrameworkCore.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int>("SlotsCount")
+                    b.Property<int>("SlotCount")
                         .HasColumnType("int");
 
                     b.Property<decimal>("SnackAmount")

@@ -20,7 +20,9 @@ public partial class SnackEditView
                                this.Bind(ViewModel, vm => vm.PictureUrl, v => v.PictureTextBox.Text).DisposeWith(disposable);
                                this.OneWayBind(ViewModel, vm => vm.PictureUrl, v => v.PictureImage.Source, url => new BitmapImage(new Uri(url.IsNullOrEmpty() ? DefaultUrl : url))).DisposeWith(disposable);
                                this.OneWayBind(ViewModel, vm => vm.IsDeleted, v => v.IsDeletedCheckBox.IsChecked).DisposeWith(disposable);
-                               this.BindCommand(ViewModel, vm => vm.SaveCommand, v => v.SaveButton).DisposeWith(disposable);
+                               this.OneWayBind(ViewModel, vm => vm.IsDeleted, v => v.NameTextBox.IsEnabled, deleted => !deleted).DisposeWith(disposable);
+                               this.OneWayBind(ViewModel, vm => vm.IsDeleted, v => v.PictureTextBox.IsEnabled, deleted => !deleted).DisposeWith(disposable);
+                               this.BindCommand(ViewModel, vm => vm.SaveSnackCommand, v => v.SaveButton).DisposeWith(disposable);
                            });
     }
 }

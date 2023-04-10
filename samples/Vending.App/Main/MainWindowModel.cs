@@ -3,7 +3,6 @@ using System.Reactive;
 using Microsoft.Extensions.Hosting;
 using Orleans;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 using Splat;
 using Vending.App.Machines;
 using Vending.App.Purchases;
@@ -13,43 +12,45 @@ namespace Vending.App;
 
 public class MainWindowModel : ReactiveObject
 {
-    private readonly Dictionary<string, IHasClusterClient> _viewModels;
+    private readonly Dictionary<string, IOrleansObject> _viewModels;
 
     public MainWindowModel()
     {
-        _viewModels = new Dictionary<string, IHasClusterClient>
+        _viewModels = new Dictionary<string, IOrleansObject>
                       {
                           { "Snacks", new SnacksManagementViewModel() },
                           { "Machines", new MachinesManagementViewModel() },
                           { "Purchases", new PurchasesManagementViewModel() }
                       };
         CurrentViewModel ??= _viewModels["Snacks"];
+        // Create commands
         GoSnacksManagementCommand = ReactiveCommand.Create(GoSnacksManagement);
         GoMachinesManagementCommand = ReactiveCommand.Create(GoMachinesManagement);
         GoPurchasesManagementCommand = ReactiveCommand.Create(GoPurchasesManagement);
+        // Register to application started event
         var appLifetime = Locator.Current.GetService<IHostApplicationLifetime>();
-        if (appLifetime != null)
+        if (appLifetime == null)
         {
-            var clusterClient = Locator.Current.GetService<IClusterClient>();
-            appLifetime.ApplicationStarted.Register(() =>
-                                                    {
-                                                        _viewModels["Snacks"].ClusterClient = clusterClient;
-                                                        _viewModels["Machines"].ClusterClient = clusterClient;
-                                                        _viewModels["Purchases"].ClusterClient = clusterClient;
-                                                    });
-            appLifetime.ApplicationStopped.Register(() =>
-                                                    {
-                                                        _viewModels["Snacks"].ClusterClient = null;
-                                                        _viewModels["Machines"].ClusterClient = null;
-                                                        _viewModels["Purchases"].ClusterClient = null;
-                                                    });
+            return;
         }
+        var clusterClient = Locator.Current.GetService<IClusterClient>();
+        appLifetime.ApplicationStarted.Register(() =>
+                                                {
+                                                    _viewModels["Snacks"].ClusterClient = clusterClient;
+                                                    _viewModels["Machines"].ClusterClient = clusterClient;
+                                                    _viewModels["Purchases"].ClusterClient = clusterClient;
+                                                });
     }
 
     #region Properties
 
-    [Reactive]
-    public IHasClusterClient? CurrentViewModel { get; set; }
+    private IOrleansObject? _currentViewModel;
+
+    public IOrleansObject? CurrentViewModel
+    {
+        get => _currentViewModel;
+        set => this.RaiseAndSetIfChanged(ref _currentViewModel, value);
+    }
 
     #endregion
 

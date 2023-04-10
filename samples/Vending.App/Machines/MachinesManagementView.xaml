@@ -57,7 +57,7 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 <DataGridTextColumn Header="Transaction $" Width="*" Binding="{Binding AmountInTransaction, StringFormat='C2'}" />
-                <DataGridTextColumn Header="Slots #" Width="*" Binding="{Binding SlotsCount}" />
+                <DataGridTextColumn Header="Slots #" Width="*" Binding="{Binding SlotCount}" />
                 <DataGridTextColumn Header="Snacks #" Width="*" Binding="{Binding SnackCount}" />
                 <DataGridTextColumn Header="Snacks *" Width="*" Binding="{Binding SnackQuantity}" />
                 <DataGridTextColumn Header="Snacks $" Width="*" Binding="{Binding SnackAmount}" />

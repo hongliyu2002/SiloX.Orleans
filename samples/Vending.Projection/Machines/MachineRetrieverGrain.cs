@@ -29,8 +29,8 @@ public class MachineRetrieverGrain : Grain, IMachineRetrieverGrain
         var moneyInsideAmountRangeEnd = query.MoneyInsideAmountRange?.End;
         var amountInTransactionRangeStart = query.AmountInTransactionRange?.Start;
         var amountInTransactionRangeEnd = query.AmountInTransactionRange?.End;
-        var slotsCountRangeStart = query.SlotsCountRange?.Start;
-        var slotsCountRangeEnd = query.SlotsCountRange?.End;
+        var slotCountRangeStart = query.SlotCountRange?.Start;
+        var slotCountRangeEnd = query.SlotCountRange?.End;
         var snackCountRangeStart = query.SnackCountRange?.Start;
         var snackCountRangeEnd = query.SnackCountRange?.End;
         var snackQuantityRangeStart = query.SnackQuantityRange?.Start;
@@ -57,8 +57,8 @@ public class MachineRetrieverGrain : Grain, IMachineRetrieverGrain
                      .MapIf(moneyInsideAmountRangeEnd != null, machines => machines.Where(m => m.MoneyInside.Amount < moneyInsideAmountRangeEnd))
                      .MapIf(amountInTransactionRangeStart != null, machines => machines.Where(m => m.AmountInTransaction >= amountInTransactionRangeStart))
                      .MapIf(amountInTransactionRangeEnd != null, machines => machines.Where(m => m.AmountInTransaction < amountInTransactionRangeEnd))
-                     .MapIf(slotsCountRangeStart != null, machines => machines.Where(m => m.SlotsCount >= slotsCountRangeStart))
-                     .MapIf(slotsCountRangeEnd != null, machines => machines.Where(m => m.SlotsCount < slotsCountRangeEnd))
+                     .MapIf(slotCountRangeStart != null, machines => machines.Where(m => m.SlotCount >= slotCountRangeStart))
+                     .MapIf(slotCountRangeEnd != null, machines => machines.Where(m => m.SlotCount < slotCountRangeEnd))
                      .MapIf(snackCountRangeStart != null, machines => machines.Where(m => m.SnackCount >= snackCountRangeStart))
                      .MapIf(snackCountRangeEnd != null, machines => machines.Where(m => m.SnackCount < snackCountRangeEnd))
                      .MapIf(snackQuantityRangeStart != null, machines => machines.Where(m => m.SnackQuantity >= snackQuantityRangeStart))
@@ -90,8 +90,8 @@ public class MachineRetrieverGrain : Grain, IMachineRetrieverGrain
         var moneyInsideAmountRangeEnd = query.MoneyInsideAmountRange?.End;
         var amountInTransactionRangeStart = query.AmountInTransactionRange?.Start;
         var amountInTransactionRangeEnd = query.AmountInTransactionRange?.End;
-        var slotsCountRangeStart = query.SlotsCountRange?.Start;
-        var slotsCountRangeEnd = query.SlotsCountRange?.End;
+        var slotCountRangeStart = query.SlotCountRange?.Start;
+        var slotCountRangeEnd = query.SlotCountRange?.End;
         var snackCountRangeStart = query.SnackCountRange?.Start;
         var snackCountRangeEnd = query.SnackCountRange?.End;
         var snackQuantityRangeStart = query.SnackQuantityRange?.Start;
@@ -120,8 +120,8 @@ public class MachineRetrieverGrain : Grain, IMachineRetrieverGrain
                      .MapIf(moneyInsideAmountRangeEnd != null, machines => machines.Where(m => m.MoneyInside.Amount < moneyInsideAmountRangeEnd))
                      .MapIf(amountInTransactionRangeStart != null, machines => machines.Where(m => m.AmountInTransaction >= amountInTransactionRangeStart))
                      .MapIf(amountInTransactionRangeEnd != null, machines => machines.Where(m => m.AmountInTransaction < amountInTransactionRangeEnd))
-                     .MapIf(slotsCountRangeStart != null, machines => machines.Where(m => m.SlotsCount >= slotsCountRangeStart))
-                     .MapIf(slotsCountRangeEnd != null, machines => machines.Where(m => m.SlotsCount < slotsCountRangeEnd))
+                     .MapIf(slotCountRangeStart != null, machines => machines.Where(m => m.SlotCount >= slotCountRangeStart))
+                     .MapIf(slotCountRangeEnd != null, machines => machines.Where(m => m.SlotCount < slotCountRangeEnd))
                      .MapIf(snackCountRangeStart != null, machines => machines.Where(m => m.SnackCount >= snackCountRangeStart))
                      .MapIf(snackCountRangeEnd != null, machines => machines.Where(m => m.SnackCount < snackCountRangeEnd))
                      .MapIf(snackQuantityRangeStart != null, machines => machines.Where(m => m.SnackQuantity >= snackQuantityRangeStart))

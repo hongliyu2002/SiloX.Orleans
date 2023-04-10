@@ -25,7 +25,7 @@ public static class MachineMapper
         machineInfo.LastModifiedBy = machine.LastModifiedBy;
         machineInfo.DeletedBy = machine.DeletedBy;
         machineInfo.IsDeleted = machine.IsDeleted;
-        machineInfo.SlotsCount = machine.SlotsCount;
+        machineInfo.SlotCount = machine.SlotCount;
         machineInfo.SnackCount = machine.SnackCount;
         machineInfo.SnackQuantity = machine.SnackQuantity;
         machineInfo.SnackAmount = machine.SnackAmount;

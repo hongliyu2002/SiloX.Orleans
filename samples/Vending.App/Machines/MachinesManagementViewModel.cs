@@ -14,7 +14,6 @@ using Orleans.FluentResults;
 using Orleans.Runtime;
 using Orleans.Streams;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 using SiloX.Domain.Abstractions;
 using SiloX.Domain.Abstractions.Extensions;
 using Vending.Domain.Abstractions;
@@ -23,7 +22,7 @@ using Vending.Projection.Abstractions.Machines;
 
 namespace Vending.App.Machines;
 
-public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel, IHasClusterClient
+public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel, IOrleansObject
 {
     private readonly SourceCache<MachineItemViewModel, Guid> _machineItemsCache;
     private readonly ReadOnlyObservableCollection<MachineItemViewModel>? _machineItems;
@@ -39,7 +38,7 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
         var queryConditionObs = this.WhenAnyValue(vm => vm.PageSize, vm => vm.PageNumber, vm => vm.MoneyAmountStart, vm => vm.MoneyAmountEnd)
                                     .Throttle(TimeSpan.FromMilliseconds(500))
                                     .DistinctUntilChanged()
-                                    .Select(query => new Func<MachineItemViewModel, bool>(item => (query.Item3 == null || item.MoneyInside.Amount >= query.Item3) && (query.Item4 == null || item.MoneyInside.Amount < query.Item4)));
+                                    .Select(query => new Func<MachineItemViewModel, bool>(item => (query.Item3 == null || item.MoneyInside.Amount >= query.Item3) && (query.Item4 == null || item.MoneyInside.Amount < query.Item4) && item.IsDeleted == false));
         _machineItemsCache.Connect()
                           .Filter(queryConditionObs)
                           .Sort(SortExpressionComparer<MachineItemViewModel>.Ascending(item => item.Id))
@@ -54,7 +53,8 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
             .DistinctUntilChanged()
             .Subscribe(page =>
                        {
-                           var oldOffset = _oldPageSize * (PageNumber - 1);
+                           var pageNumber = PageNumber <= 0 ? 1 : PageNumber;
+                           var oldOffset = _oldPageSize * (pageNumber - 1);
                            var newPageOfOldOffset = (int)Math.Ceiling((double)oldOffset / PageSize);
                            PageNumber = Math.Min(newPageOfOldOffset, page.Item2);
                        });
@@ -82,7 +82,7 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
                                    .Select(provider => provider.GetStream<MachineInfoEvent>(StreamId.Create(Constants.MachineInfosBroadcastNamespace, Guid.Empty)))
                                    .SelectMany(stream => stream.SubscribeAsync(HandleEventAsync, HandleErrorAsync, HandleCompletedAsync, _lastSequenceToken))
                                    .ObserveOn(RxApp.MainThreadScheduler)
-                                   .Subscribe(subscription => _subscription = subscription)
+                                   .Subscribe(HandleSubscriptionAsync)
                                    .DisposeWith(disposable);
                                Disposable.Create(HandleSubscriptionDisposeAsync)
                                          .DisposeWith(disposable);
@@ -96,11 +96,35 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
 
     #region Stream Handlers
 
-    private async void HandleSubscriptionDisposeAsync()
+    private async void HandleSubscriptionAsync(StreamSubscriptionHandle<MachineInfoEvent> subscription)
     {
         if (_subscription != null)
         {
+            try
+            {
+                await _subscription.UnsubscribeAsync();
+            }
+            catch
+            {
+                // ignored
+            }
+        }
+        _subscription = subscription;
+    }
+
+    private async void HandleSubscriptionDisposeAsync()
+    {
+        if (_subscription == null)
+        {
+            return;
+        }
+        try
+        {
             await _subscription.UnsubscribeAsync();
+        }
+        catch
+        {
+            // ignored
         }
     }
 
@@ -134,7 +158,7 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
         return Task.CompletedTask;
     }
 
-    private Task ApplyErrorEventAsync(MachineInfoErrorEvent machineErrorEvent)
+    private Task ApplyErrorEventAsync(MachineInfoErrorEvent errorEvent)
     {
         return Task.CompletedTask;
     }
@@ -146,10 +170,22 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     /// <inheritdoc />
     public ViewModelActivator Activator { get; } = new();
 
-    [Reactive]
-    public IClusterClient? ClusterClient { get; set; }
+    private IClusterClient? _clusterClient;
 
-    private int _pageSize;
+    public IClusterClient? ClusterClient
+    {
+        get => _clusterClient;
+        set
+        {
+            var dispatcher = Application.Current.Dispatcher;
+            dispatcher?.Invoke(() =>
+                               {
+                                   this.RaiseAndSetIfChanged(ref _clusterClient, value);
+                               });
+        }
+    }
+
+    private int _pageSize = 10;
     private int _oldPageSize;
 
     public int PageSize
@@ -162,23 +198,48 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
         }
     }
 
-    [Reactive]
-    public int PageCount { get; set; }
+    private int _pageCount;
 
-    [Reactive]
-    public int PageNumber { get; set; }
+    public int PageCount
+    {
+        get => _pageCount;
+        set => this.RaiseAndSetIfChanged(ref _pageCount, value);
+    }
 
-    [Reactive]
-    public decimal? MoneyAmountStart { get; set; } = 0;
+    private int _pageNumber = 1;
 
-    [Reactive]
-    public decimal? MoneyAmountEnd { get; set; } = 1000;
+    public int PageNumber
+    {
+        get => _pageNumber;
+        set => this.RaiseAndSetIfChanged(ref _pageNumber, value);
+    }
+
+    private decimal? _moneyAmountStart;
+
+    public decimal? MoneyAmountStart
+    {
+        get => _moneyAmountStart;
+        set => this.RaiseAndSetIfChanged(ref _moneyAmountStart, value);
+    }
+
+    private decimal? _moneyAmountEnd;
+
+    public decimal? MoneyAmountEnd
+    {
+        get => _moneyAmountEnd;
+        set => this.RaiseAndSetIfChanged(ref _moneyAmountEnd, value);
+    }
+
+    private MachineItemViewModel? _currentMachineItem;
+
+    public MachineItemViewModel? CurrentMachineItem
+    {
+        get => _currentMachineItem;
+        set => this.RaiseAndSetIfChanged(ref _currentMachineItem, value);
+    }
 
     public ReadOnlyObservableCollection<MachineItemViewModel>? MachineItems => _machineItems;
-
-    [Reactive]
-    public MachineItemViewModel? CurrentMachineItem { get; set; }
-
+    
     #endregion
 
     #region Commands

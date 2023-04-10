@@ -112,7 +112,7 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
                                   Id = machineEvent.MachineId,
                                   MoneyInside = machineEvent.MoneyInside.ToProjection(),
                                   Slots = await Task.WhenAll(machineEvent.Slots.Select(slot => slot.ToProjection(GetSnackNameAndPictureUrlAsync))),
-                                  SlotsCount = machineEvent.SlotsCount,
+                                  SlotCount = machineEvent.SlotCount,
                                   SnackCount = machineEvent.SnackCount,
                                   SnackQuantity = machineEvent.SnackQuantity,
                                   SnackAmount = machineEvent.SnackAmount,
@@ -159,7 +159,7 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
             machineInfo.MoneyInside = machineEvent.MoneyInside.ToProjection(machineInfo.MoneyInside);
             machineInfo.AmountInTransaction = machineEvent.AmountInTransaction;
             machineInfo.Slots = await Task.WhenAll(machineEvent.Slots.Select(slot => slot.ToProjection(GetSnackNameAndPictureUrlAsync, machineInfo.Slots.FirstOrDefault(ms => ms.MachineId == slot.MachineId && ms.Position == slot.Position))));
-            machineInfo.SlotsCount = machineEvent.SlotsCount;
+            machineInfo.SlotCount = machineEvent.SlotCount;
             machineInfo.SnackCount = machineEvent.SnackCount;
             machineInfo.SnackQuantity = machineEvent.SnackQuantity;
             machineInfo.SnackAmount = machineEvent.SnackAmount;
@@ -204,7 +204,7 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
             }
             slotInfo = await machineEvent.Slot.ToProjection(GetSnackNameAndPictureUrlAsync);
             machineInfo.Slots.Add(slotInfo);
-            machineInfo.SlotsCount = machineEvent.SlotsCount;
+            machineInfo.SlotCount = machineEvent.SlotCount;
             machineInfo.SnackCount = machineEvent.SnackCount;
             machineInfo.SnackQuantity = machineEvent.SnackQuantity;
             machineInfo.SnackAmount = machineEvent.SnackAmount;
@@ -247,7 +247,7 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
                 return;
             }
             machineInfo.Slots.Remove(slotInfo);
-            machineInfo.SlotsCount = machineEvent.SlotsCount;
+            machineInfo.SlotCount = machineEvent.SlotCount;
             machineInfo.SnackCount = machineEvent.SnackCount;
             machineInfo.SnackQuantity = machineEvent.SnackQuantity;
             machineInfo.SnackAmount = machineEvent.SnackAmount;
@@ -420,7 +420,7 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
                 return;
             }
             await machineEvent.Slot.ToProjection(GetSnackNameAndPictureUrlAsync, slotInfo);
-            machineInfo.SlotsCount = machineEvent.SlotsCount;
+            machineInfo.SlotCount = machineEvent.SlotCount;
             machineInfo.SnackCount = machineEvent.SnackCount;
             machineInfo.SnackQuantity = machineEvent.SnackQuantity;
             machineInfo.SnackAmount = machineEvent.SnackAmount;
@@ -463,7 +463,7 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
                 return;
             }
             await machineEvent.Slot.ToProjection(GetSnackNameAndPictureUrlAsync, slotInfo);
-            machineInfo.SlotsCount = machineEvent.SlotsCount;
+            machineInfo.SlotCount = machineEvent.SlotCount;
             machineInfo.SnackCount = machineEvent.SnackCount;
             machineInfo.SnackQuantity = machineEvent.SnackQuantity;
             machineInfo.SnackAmount = machineEvent.SnackAmount;

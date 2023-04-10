@@ -1,18 +1,22 @@
-﻿using System.Reactive.Disposables;
+﻿using System;
+using System.Reactive.Disposables;
 using System.Windows.Media.Imaging;
+using Fluxera.Utilities.Extensions;
 using ReactiveUI;
 
 namespace Vending.App.Snacks;
 
 public partial class SnackItemView
 {
+    private const string DefaultUrl = "pack://application:,,,/Vending.App;component/Images/snack.png";
+    
     public SnackItemView()
     {
         InitializeComponent();
         this.WhenActivated(disposable =>
                            {
                                this.OneWayBind(ViewModel, vm => vm.Name, v => v.NameRun.Text).DisposeWith(disposable);
-                               this.OneWayBind(ViewModel, vm => vm.PictureUrl, v => v.PictureImage.Source, uri => new BitmapImage(uri)).DisposeWith(disposable);
+                               this.OneWayBind(ViewModel, vm => vm.PictureUrl, v => v.PictureImage.Source, url => new BitmapImage(new Uri(url.IsNullOrEmpty() ? DefaultUrl : url))).DisposeWith(disposable);
                                this.OneWayBind(ViewModel, vm => vm.MachineCount, v => v.MachineCountRun.Text).DisposeWith(disposable);
                                this.OneWayBind(ViewModel, vm => vm.TotalQuantity, v => v.TotalQuantityRun.Text).DisposeWith(disposable);
                                this.OneWayBind(ViewModel, vm => vm.TotalAmount, v => v.TotalAmountRun.Text).DisposeWith(disposable);

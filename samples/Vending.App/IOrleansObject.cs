@@ -2,7 +2,7 @@
 
 namespace Vending.App;
 
-public interface IHasClusterClient
+public interface IOrleansObject
 {
     IClusterClient? ClusterClient { get; set; }
 }

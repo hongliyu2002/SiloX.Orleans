@@ -15,7 +15,7 @@ public sealed record MachineRetrieverListQuery
      string OperatedBy,
      DecimalRange? MoneyInsideAmountRange = null,
      DecimalRange? AmountInTransactionRange = null,
-     Int32Range? SlotsCountRange = null,
+     Int32Range? SlotCountRange = null,
      Int32Range? SnackCountRange = null,
      Int32Range? SnackQuantityRange = null,
      DecimalRange? SnackAmountRange = null,

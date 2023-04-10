@@ -26,7 +26,7 @@ namespace Vending.Domain.EntityFrameworkCore.Migrations
                     MoneyInside_Amount = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false),
                     AmountInTransaction = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    SlotsCount = table.Column<int>(type: "int", nullable: false),
+                    SlotCount = table.Column<int>(type: "int", nullable: false),
                     SnackCount = table.Column<int>(type: "int", nullable: false),
                     SnackQuantity = table.Column<int>(type: "int", nullable: false),
                     SnackAmount = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false)
