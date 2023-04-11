@@ -22,7 +22,7 @@ namespace Vending.App.Snacks;
 public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, IOrleansObject
 {
     private readonly SourceCache<SnackViewModel, Guid> _snacksCache;
-    private readonly ReadOnlyObservableCollection<SnackViewModel> _snacks;
+    
     private StreamSubscriptionHandle<SnackInfoEvent>? _subscription;
     private StreamSequenceToken? _lastSequenceToken;
 
@@ -36,7 +36,7 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
                                 .Throttle(TimeSpan.FromMilliseconds(500))
                                 .DistinctUntilChanged()
                                 .Select(_ => new Func<SnackViewModel, bool>(snack => (SearchTerm.IsNullOrEmpty() || snack.Name.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase)) && snack.IsDeleted == false)))
-                    .Sort(SortExpressionComparer<SnackViewModel>.Ascending(snack => snack.Name))
+                    .Sort(SortExpressionComparer<SnackViewModel>.Ascending(snack => snack.Id))
                     .ObserveOn(RxApp.MainThreadScheduler)
                     .Bind(out _snacks)
                     .Subscribe();
@@ -72,7 +72,7 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
                                          .DisposeWith(disposable);
                            });
         // Create the commands.
-        AddSnackCommand = ReactiveCommand.CreateFromTask(AddSnackAsync, CanAddSnack);
+        AddSnackCommand = ReactiveCommand.Create(AddSnack, CanAddSnack);
         RemoveSnackCommand = ReactiveCommand.CreateFromTask(RemoveSnackAsync, CanRemoveSnack);
         MoveNavigationSideCommand = ReactiveCommand.Create(MoveNavigationSide);
     }
@@ -117,6 +117,7 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
         set => this.RaiseAndSetIfChanged(ref _currentSnackEdit, value);
     }
 
+    private readonly ReadOnlyObservableCollection<SnackViewModel> _snacks;
     public ReadOnlyObservableCollection<SnackViewModel> Snacks => _snacks;
 
     #endregion
@@ -138,21 +139,9 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
     /// <summary>
     ///     Adds a new snack.
     /// </summary>
-    private async Task AddSnackAsync()
+    private void AddSnack()
     {
-        bool retry;
-        do
-        {
-            var result = Result.Ok()
-                               .Map(() => CurrentSnackEdit = new SnackEditViewModel(new Snack(), ClusterClient!));
-            if (result.IsSuccess)
-            {
-                return;
-            }
-            var errorRecovery = await Interactions.Errors.Handle(result.Errors);
-            retry = errorRecovery == ErrorRecoveryOption.Retry;
-        }
-        while (retry);
+        CurrentSnackEdit = new SnackEditViewModel(new Snack(), ClusterClient!);
     }
 
     /// <summary>

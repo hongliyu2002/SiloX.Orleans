@@ -2,10 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
-using DynamicData;
-using DynamicData.Binding;
 using Fluxera.Guards;
-using Fluxera.Utilities.Extensions;
 using ReactiveUI;
 using Vending.App.Snacks;
 using Vending.Domain.Abstractions.Machines;
@@ -14,30 +11,20 @@ namespace Vending.App.Machines;
 
 public class SlotEditViewModel : ReactiveObject
 {
-    private readonly ReadOnlyObservableCollection<SnackViewModel> _snacks;
-
-    public SlotEditViewModel(MachineSlot slot, SourceCache<SnackViewModel, Guid> snacksCache)
+    public SlotEditViewModel(MachineSlot slot, ReadOnlyObservableCollection<SnackViewModel> snacks)
     {
         Guard.Against.Null(slot, nameof(slot));
-        Guard.Against.Null(snacksCache, nameof(snacksCache));
-        // Get the cache for the snacks.
-        snacksCache.Connect()
-                   .Sort(SortExpressionComparer<SnackViewModel>.Ascending(snack => snack.Name))
-                   .ObserveOn(RxApp.MainThreadScheduler)
-                   .Bind(out _snacks)
-                   .Subscribe();
+        Snacks = Guard.Against.Null(snacks, nameof(snacks));
+
         // Set the current snack when the snack id changes.
-        this.WhenAnyValue(vm => vm.SnackId, vm => vm.Snacks, vm => vm.CurrentSnack)
-            .Where(tuple => tuple.Item1 != null && tuple.Item1 != Guid.Empty && tuple.Item2.IsNotNullOrEmpty() && (tuple.Item3 == null || tuple.Item3.Id != tuple.Item1))
+        this.WhenAnyValue(vm => vm.SnackId, vm => vm.CurrentSnack)
+            .Where(_ => SnackId != null && SnackId != Guid.Empty && (CurrentSnack == null || CurrentSnack.Id != SnackId))
             .ObserveOn(RxApp.MainThreadScheduler)
-            .Subscribe(tuple =>
-                       {
-                           var snack = tuple.Item2.FirstOrDefault(snack => snack.Id == tuple.Item1);
-                           CurrentSnack = snack;
-                       });
+            .Subscribe(_ => CurrentSnack = Snacks.FirstOrDefault(snack => snack.Id == SnackId));
+
         // Set the snack properties to null when the current snack is null.
         this.WhenAnyValue(vm => vm.CurrentSnack)
-            .Where(snack => snack == null)
+            .Where(_ => CurrentSnack == null)
             .ObserveOn(RxApp.MainThreadScheduler)
             .Subscribe(_ =>
                        {
@@ -47,9 +34,10 @@ public class SlotEditViewModel : ReactiveObject
                            Price = null;
                            Amount = null;
                        });
+
         // Set the snack properties when the current snack is not null.
         this.WhenAnyValue(vm => vm.CurrentSnack)
-            .Where(snack => snack != null)
+            .Where(_ => CurrentSnack != null)
             .ObserveOn(RxApp.MainThreadScheduler)
             .Subscribe(snack =>
                        {
@@ -57,13 +45,14 @@ public class SlotEditViewModel : ReactiveObject
                            Quantity ??= 1;
                            Price ??= 0;
                        });
-        // Recreate the SnackPile when any of the properties change.
+
+        // Recreate the snack pile when any of the properties change.
         this.WhenAnyValue(vm => vm.CurrentSnack, vm => vm.Quantity, vm => vm.Price)
-            .Where(tuple => tuple is { Item1: not null, Item2: not null, Item3: not null })
+            .Where(_ => CurrentSnack != null && Quantity != null && Price != null)
             .ObserveOn(RxApp.MainThreadScheduler)
-            .Subscribe(tuple =>
+            .Subscribe(_ =>
                        {
-                           SnackPile = new SnackPile(tuple.Item1!.Id, tuple.Item2!.Value, tuple.Item3!.Value);
+                           SnackPile = new SnackPile(CurrentSnack!.Id, Quantity!.Value, Price!.Value);
                            Amount = SnackPile.Amount;
                        });
         // Load the slot.
@@ -113,7 +102,7 @@ public class SlotEditViewModel : ReactiveObject
         get => _amount;
         set => this.RaiseAndSetIfChanged(ref _amount, value);
     }
-    
+
     private SnackViewModel? _currentSnack;
     public SnackViewModel? CurrentSnack
     {
@@ -121,7 +110,7 @@ public class SlotEditViewModel : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref _currentSnack, value);
     }
 
-    public ReadOnlyObservableCollection<SnackViewModel> Snacks => _snacks;
+    public ReadOnlyObservableCollection<SnackViewModel> Snacks { get; }
 
     #endregion
 
