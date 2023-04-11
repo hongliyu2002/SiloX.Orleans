@@ -8,7 +8,7 @@ public class ProjectionDbContextDesignFactory : IDesignTimeDbContextFactory<Proj
     /// <inheritdoc />
     public ProjectionDbContext CreateDbContext(string[] args)
     {
-        var connectionString = "Server=123.60.184.85;Integrated Security=False;User Id=sa;Password=Bosshong2010;TrustServerCertificate=True;Database=VendingProjection";
+        var connectionString = "Server=124.221.195.24;Integrated Security=False;User Id=sa;Password=Bosshong2010;TrustServerCertificate=True;Database=VendingProjection";
         var optionsBuilder = new DbContextOptionsBuilder<ProjectionDbContext>().UseSqlServer(connectionString);
         return new ProjectionDbContext(optionsBuilder.Options);
     }

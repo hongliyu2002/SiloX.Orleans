@@ -10,6 +10,7 @@ using System.Windows;
 using DynamicData;
 using DynamicData.Binding;
 using Fluxera.Guards;
+using Fluxera.Utilities.Extensions;
 using Orleans;
 using Orleans.FluentResults;
 using Orleans.Runtime;
@@ -236,8 +237,11 @@ public class MachineEditViewModel : ReactiveObject, IActivatableViewModel, IOrle
     public ReactiveCommand<Unit, Unit> SaveMachineCommand { get; }
 
     private IObservable<bool> CanSaveMachine =>
-        this.WhenAnyValue(vm => vm.IsDeleted, vm => vm.Slots, vm => vm.ClusterClient)
-            .Select(tuple => tuple.Item1 == false && tuple.Item2.Count > 0 && tuple.Item3 != null);
+        this.WhenAnyValue(vm => vm.Slots, vm => vm.IsDeleted, vm => vm.ClusterClient)
+            .Select(tuple => tuple.Item1.IsNotNullOrEmpty()
+                          && tuple.Item1.GroupBy(slot => slot.Position)
+                                  .All(g => g.Count() == 1)
+                          && tuple is { Item2: false, Item3: not null });
 
     private async Task SaveMachineAsync()
     {
