@@ -28,11 +28,11 @@ public class SlotEditViewModel : ReactiveObject
                    .Subscribe();
         // Set the current snack when the snack id changes.
         this.WhenAnyValue(vm => vm.SnackId, vm => vm.Snacks, vm => vm.CurrentSnack)
-            .Where(pile => pile.Item1 != null && pile.Item1 != Guid.Empty && pile.Item2.IsNotNullOrEmpty() && (pile.Item3 == null || pile.Item3.Id != pile.Item1))
+            .Where(tuple => tuple.Item1 != null && tuple.Item1 != Guid.Empty && tuple.Item2.IsNotNullOrEmpty() && (tuple.Item3 == null || tuple.Item3.Id != tuple.Item1))
             .ObserveOn(RxApp.MainThreadScheduler)
-            .Subscribe(pile =>
+            .Subscribe(tuple =>
                        {
-                           var snack = pile.Item2.FirstOrDefault(snack => snack.Id == pile.Item1);
+                           var snack = tuple.Item2.FirstOrDefault(snack => snack.Id == tuple.Item1);
                            CurrentSnack = snack;
                        });
         // Set the snack properties to null when the current snack is null.
@@ -59,11 +59,11 @@ public class SlotEditViewModel : ReactiveObject
                        });
         // Recreate the SnackPile when any of the properties change.
         this.WhenAnyValue(vm => vm.CurrentSnack, vm => vm.Quantity, vm => vm.Price)
-            .Where(pile => pile is { Item1: not null, Item2: not null, Item3: not null })
+            .Where(tuple => tuple is { Item1: not null, Item2: not null, Item3: not null })
             .ObserveOn(RxApp.MainThreadScheduler)
-            .Subscribe(pile =>
+            .Subscribe(tuple =>
                        {
-                           SnackPile = new SnackPile(pile.Item1!.Id, pile.Item2!.Value, pile.Item3!.Value);
+                           SnackPile = new SnackPile(tuple.Item1!.Id, tuple.Item2!.Value, tuple.Item3!.Value);
                            Amount = SnackPile.Amount;
                        });
         // Load the slot.

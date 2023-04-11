@@ -20,6 +20,7 @@ public partial class MachineEditView
                                this.Bind(ViewModel, vm => vm.MoneyYuan50, v => v.MoneyYuan50TextBox.Text).DisposeWith(disposable);
                                this.Bind(ViewModel, vm => vm.MoneyYuan100, v => v.MoneyYuan100TextBox.Text).DisposeWith(disposable);
                                this.OneWayBind(ViewModel, vm => vm.MoneyAmount, v => v.MoneyAmountText.Text).DisposeWith(disposable);
+                               this.Bind(ViewModel, vm => vm.CurrentSlot, v => v.SlotsListBox.SelectedItem).DisposeWith(disposable);
                                this.OneWayBind(ViewModel, vm => vm.Slots, v => v.SlotsListBox.ItemsSource).DisposeWith(disposable);
                                this.OneWayBind(ViewModel, vm => vm.IsDeleted, v => v.IsDeletedCheckBox.IsChecked).DisposeWith(disposable);
                                this.OneWayBind(ViewModel, vm => vm.IsDeleted, v => v.MoneyYuan1TextBox.IsEnabled, deleted => !deleted).DisposeWith(disposable);

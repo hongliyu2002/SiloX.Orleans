@@ -6,7 +6,6 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using System.Windows;
 using DynamicData;
 using DynamicData.Binding;
 using Orleans;
@@ -38,8 +37,8 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
                                   .Throttle(TimeSpan.FromMilliseconds(500))
                                   .DistinctUntilChanged()
                                   .Select(query => new Func<MachineViewModel, bool>(machine => (query.Item3 == null || machine.MoneyInside.Amount >= query.Item3)
-                                                                                                && (query.Item4 == null || machine.MoneyInside.Amount < query.Item4)
-                                                                                                && machine.IsDeleted == false)))
+                                                                                            && (query.Item4 == null || machine.MoneyInside.Amount < query.Item4)
+                                                                                            && machine.IsDeleted == false)))
                       .Sort(SortExpressionComparer<MachineViewModel>.Ascending(machine => machine.Id))
                       .Skip(PageSize * (PageNumber - 1))
                       .Take(PageSize)
@@ -57,13 +56,13 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
                            var newPageOfOldOffset = (int)Math.Ceiling((double)oldOffset / PageSize);
                            PageNumber = Math.Min(newPageOfOldOffset, page.Item2);
                        });
-        // Search machines and update the cache.
+        // Get machines and update the cache.
         this.WhenAnyValue(vm => vm.MoneyAmountStart, vm => vm.MoneyAmountEnd, vm => vm.ClusterClient)
-            .Where(moneyClient => moneyClient.Item3 != null)
+            .Where(tuple => tuple.Item3 != null)
             .Throttle(TimeSpan.FromMilliseconds(500))
             .DistinctUntilChanged()
-            .Select(moneyClient => (moneyClient.Item1, moneyClient.Item2, moneyClient.Item3!.GetGrain<IMachineRetrieverGrain>("Manager")))
-            .SelectMany(moneyGrain => moneyGrain.Item3.ListAsync(new MachineRetrieverListQuery(new Dictionary<string, bool> { { "Id", false } }, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager", new DecimalRange(moneyGrain.Item1, moneyGrain.Item2))))
+            .Select(tuple => (tuple.Item1, tuple.Item2, tuple.Item3!.GetGrain<IMachineRetrieverGrain>("Manager")))
+            .SelectMany(tuple => tuple.Item3.ListAsync(new MachineRetrieverListQuery(new Dictionary<string, bool> { { "Id", false } }, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager", new DecimalRange(tuple.Item1, tuple.Item2))))
             .Where(result => result.IsSuccess)
             .Select(result => result.Value)
             .ObserveOn(RxApp.MainThreadScheduler)
@@ -92,77 +91,6 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
         GoPreviousPageCommand = ReactiveCommand.Create(GoPreviousPage, CanGoPreviousPage);
         GoNextPageCommand = ReactiveCommand.Create(GoNextPage, CanGoNextPage);
     }
-
-    #region Stream Handlers
-
-    private async void HandleSubscriptionAsync(StreamSubscriptionHandle<MachineInfoEvent> subscription)
-    {
-        if (_subscription != null)
-        {
-            try
-            {
-                await _subscription.UnsubscribeAsync();
-            }
-            catch
-            {
-                // ignored
-            }
-        }
-        _subscription = subscription;
-    }
-
-    private async void HandleSubscriptionDisposeAsync()
-    {
-        if (_subscription == null)
-        {
-            return;
-        }
-        try
-        {
-            await _subscription.UnsubscribeAsync();
-        }
-        catch
-        {
-            // ignored
-        }
-    }
-
-    private Task HandleEventAsync(MachineInfoEvent projectionEvent, StreamSequenceToken sequenceToken)
-    {
-        _lastSequenceToken = sequenceToken;
-        switch (projectionEvent)
-        {
-            case MachineInfoSavedEvent machineEvent:
-                return ApplyEventAsync(machineEvent);
-            case MachineInfoErrorEvent machineEvent:
-                return ApplyErrorEventAsync(machineEvent);
-            default:
-                return Task.CompletedTask;
-        }
-    }
-
-    private Task HandleErrorAsync(Exception exception)
-    {
-        return Task.CompletedTask;
-    }
-
-    private Task HandleCompletedAsync()
-    {
-        return Task.CompletedTask;
-    }
-
-    private Task ApplyEventAsync(MachineInfoSavedEvent machineEvent)
-    {
-        _machinesCache.Edit(updater => updater.AddOrUpdate(new MachineViewModel(machineEvent.Machine)));
-        return Task.CompletedTask;
-    }
-
-    private Task ApplyErrorEventAsync(MachineInfoErrorEvent errorEvent)
-    {
-        return Task.CompletedTask;
-    }
-
-    #endregion
 
     #region Properties
 
@@ -259,7 +187,11 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     /// </summary>
     private IObservable<bool> CanRemoveMachine =>
         this.WhenAnyValue(vm => vm.CurrentMachine, vm => vm.ClusterClient)
-            .Select(machineClient => machineClient is { Item1: not null, Item2: not null });
+            .Select(machineClient => machineClient is
+                                     {
+                                         Item1: not null,
+                                         Item2: not null
+                                     });
 
     /// <summary>
     ///     Gets the interaction that asks the user to confirm the removal of the current machine.
@@ -324,6 +256,74 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     private void GoNextPage()
     {
         PageNumber++;
+    }
+
+    #endregion
+
+    #region Stream Handlers
+
+    private async void HandleSubscriptionAsync(StreamSubscriptionHandle<MachineInfoEvent> subscription)
+    {
+        if (_subscription != null)
+        {
+            try
+            {
+                await _subscription.UnsubscribeAsync();
+            }
+            catch
+            {
+                // ignored
+            }
+        }
+        _subscription = subscription;
+    }
+
+    private async void HandleSubscriptionDisposeAsync()
+    {
+        if (_subscription == null)
+        {
+            return;
+        }
+        try
+        {
+            await _subscription.UnsubscribeAsync();
+        }
+        catch
+        {
+            // ignored
+        }
+    }
+
+    private Task HandleEventAsync(MachineInfoEvent projectionEvent, StreamSequenceToken sequenceToken)
+    {
+        _lastSequenceToken = sequenceToken;
+        return projectionEvent switch
+               {
+                   MachineInfoSavedEvent machineEvent => ApplyEventAsync(machineEvent),
+                   MachineInfoErrorEvent machineEvent => ApplyErrorEventAsync(machineEvent),
+                   _ => Task.CompletedTask
+               };
+    }
+
+    private Task HandleErrorAsync(Exception exception)
+    {
+        return Task.CompletedTask;
+    }
+
+    private Task HandleCompletedAsync()
+    {
+        return Task.CompletedTask;
+    }
+
+    private Task ApplyEventAsync(MachineInfoSavedEvent machineEvent)
+    {
+        _machinesCache.Edit(updater => updater.AddOrUpdate(new MachineViewModel(machineEvent.Machine)));
+        return Task.CompletedTask;
+    }
+
+    private Task ApplyErrorEventAsync(MachineInfoErrorEvent errorEvent)
+    {
+        return Task.CompletedTask;
     }
 
     #endregion

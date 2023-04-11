@@ -14,8 +14,9 @@ public class MachineViewModel : ReactiveObject
         LoadMachine(machineInfo);
     }
 
-    private Guid _id;
+    #region Properties
 
+    private Guid _id;
     public Guid Id
     {
         get => _id;
@@ -23,7 +24,6 @@ public class MachineViewModel : ReactiveObject
     }
 
     private MoneyInfo _moneyInside = new();
-
     public MoneyInfo MoneyInside
     {
         get => _moneyInside;
@@ -31,7 +31,6 @@ public class MachineViewModel : ReactiveObject
     }
 
     private decimal _amountInTransaction;
-
     public decimal AmountInTransaction
     {
         get => _amountInTransaction;
@@ -39,7 +38,6 @@ public class MachineViewModel : ReactiveObject
     }
 
     private int _slotCount;
-
     public int SlotCount
     {
         get => _slotCount;
@@ -47,7 +45,6 @@ public class MachineViewModel : ReactiveObject
     }
 
     private int _snackCount;
-
     public int SnackCount
     {
         get => _snackCount;
@@ -55,7 +52,6 @@ public class MachineViewModel : ReactiveObject
     }
 
     private int _snackQuantity;
-
     public int SnackQuantity
     {
         get => _snackQuantity;
@@ -63,7 +59,6 @@ public class MachineViewModel : ReactiveObject
     }
 
     private decimal _snackAmount;
-
     public decimal SnackAmount
     {
         get => _snackAmount;
@@ -71,7 +66,6 @@ public class MachineViewModel : ReactiveObject
     }
 
     private int _boughtCount;
-
     public int BoughtCount
     {
         get => _boughtCount;
@@ -79,7 +73,6 @@ public class MachineViewModel : ReactiveObject
     }
 
     private decimal _boughtAmount;
-
     public decimal BoughtAmount
     {
         get => _boughtAmount;
@@ -87,12 +80,13 @@ public class MachineViewModel : ReactiveObject
     }
 
     private bool _isDeleted;
-
     public bool IsDeleted
     {
         get => _isDeleted;
         set => this.RaiseAndSetIfChanged(ref _isDeleted, value);
     }
+
+    #endregion
 
     #region Load Machine
 

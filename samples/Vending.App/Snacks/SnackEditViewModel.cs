@@ -29,9 +29,9 @@ public class SnackEditViewModel : ReactiveObject, IActivatableViewModel, IOrlean
                            {
                                // When the cluster client changes, subscribe to the snack info stream.
                                this.WhenAnyValue(vm => vm.Id, vm => vm.ClusterClient)
-                                   .Where(idClient => idClient.Item1 != Guid.Empty && idClient.Item2 != null)
-                                   .Select(idClient => (idClient.Item1, idClient.Item2!.GetStreamProvider(Constants.StreamProviderName)))
-                                   .Select(idProvider => idProvider.Item2.GetStream<SnackEvent>(StreamId.Create(Constants.SnacksNamespace, idProvider.Item1)))
+                                   .Where(tuple => tuple.Item1 != Guid.Empty && tuple.Item2 != null)
+                                   .Select(tuple => (tuple.Item1, tuple.Item2!.GetStreamProvider(Constants.StreamProviderName)))
+                                   .Select(tuple => tuple.Item2.GetStream<SnackEvent>(StreamId.Create(Constants.SnacksNamespace, tuple.Item1)))
                                    .SelectMany(stream => stream.SubscribeAsync(HandleEventAsync, HandleErrorAsync, HandleCompletedAsync, _lastSequenceToken))
                                    .ObserveOn(RxApp.MainThreadScheduler)
                                    .Subscribe(HandleSubscriptionAsync)
@@ -44,116 +44,6 @@ public class SnackEditViewModel : ReactiveObject, IActivatableViewModel, IOrlean
         // Load the snack.
         LoadSnack(snack);
     }
-
-    #region Stream Handlers
-
-    private async void HandleSubscriptionAsync(StreamSubscriptionHandle<SnackEvent> subscription)
-    {
-        if (_subscription != null)
-        {
-            try
-            {
-                await _subscription.UnsubscribeAsync();
-            }
-            catch
-            {
-                // ignored
-            }
-        }
-        _subscription = subscription;
-    }
-
-    private async void HandleSubscriptionDisposeAsync()
-    {
-        if (_subscription == null)
-        {
-            return;
-        }
-        try
-        {
-            await _subscription.UnsubscribeAsync();
-        }
-        catch
-        {
-            // ignored
-        }
-    }
-
-    private Task HandleEventAsync(SnackEvent domainEvent, StreamSequenceToken sequenceToken)
-    {
-        _lastSequenceToken = sequenceToken;
-        switch (domainEvent)
-        {
-            case SnackInitializedEvent snackEvent:
-                return ApplyEventAsync(snackEvent);
-            case SnackDeletedEvent snackEvent:
-                return ApplyEventAsync(snackEvent);
-            case SnackUpdatedEvent snackEvent:
-                return ApplyEventAsync(snackEvent);
-            case SnackErrorEvent snackEvent:
-                return ApplyErrorEventAsync(snackEvent);
-            default:
-                return Task.CompletedTask;
-        }
-    }
-
-    private Task HandleErrorAsync(Exception exception)
-    {
-        return Task.CompletedTask;
-    }
-
-    private Task HandleCompletedAsync()
-    {
-        return Task.CompletedTask;
-    }
-
-    private Task ApplyEventAsync(SnackInitializedEvent snackEvent)
-    {
-        if (snackEvent.SnackId == Id)
-        {
-            var dispatcher = Application.Current.Dispatcher;
-            dispatcher?.Invoke(() =>
-                               {
-                                   Name = snackEvent.Name;
-                                   PictureUrl = snackEvent.PictureUrl;
-                               });
-        }
-        return Task.CompletedTask;
-    }
-
-    private Task ApplyEventAsync(SnackDeletedEvent snackEvent)
-    {
-        if (snackEvent.SnackId == Id)
-        {
-            var dispatcher = Application.Current.Dispatcher;
-            dispatcher?.Invoke(() =>
-                               {
-                                   IsDeleted = true;
-                               });
-        }
-        return Task.CompletedTask;
-    }
-
-    private Task ApplyEventAsync(SnackUpdatedEvent snackEvent)
-    {
-        if (snackEvent.SnackId == Id)
-        {
-            var dispatcher = Application.Current.Dispatcher;
-            dispatcher?.Invoke(() =>
-                               {
-                                   Name = snackEvent.Name;
-                                   PictureUrl = snackEvent.PictureUrl;
-                               });
-        }
-        return Task.CompletedTask;
-    }
-
-    private Task ApplyErrorEventAsync(SnackErrorEvent errorEvent)
-    {
-        return Task.CompletedTask;
-    }
-
-    #endregion
 
     #region Properties
 
@@ -206,7 +96,7 @@ public class SnackEditViewModel : ReactiveObject, IActivatableViewModel, IOrlean
 
     private IObservable<bool> CanSaveSnack =>
         this.WhenAnyValue(vm => vm.Name, vm => vm.IsDeleted, vm => vm.ClusterClient)
-            .Select(nameClient => nameClient.Item1.IsNotNullOrEmpty() && nameClient is { Item2: false, Item3: not null });
+            .Select(tuple => tuple.Item1.IsNotNullOrEmpty() && tuple is { Item2: false, Item3: not null });
 
     private async Task SaveSnackAsync()
     {
@@ -239,6 +129,114 @@ public class SnackEditViewModel : ReactiveObject, IActivatableViewModel, IOrlean
         Name = snack.Name;
         PictureUrl = snack.PictureUrl;
         IsDeleted = snack.IsDeleted;
+    }
+
+    #endregion
+
+    #region Stream Handlers
+
+    private async void HandleSubscriptionAsync(StreamSubscriptionHandle<SnackEvent> subscription)
+    {
+        if (_subscription != null)
+        {
+            try
+            {
+                await _subscription.UnsubscribeAsync();
+            }
+            catch
+            {
+                // ignored
+            }
+        }
+        _subscription = subscription;
+    }
+
+    private async void HandleSubscriptionDisposeAsync()
+    {
+        if (_subscription == null)
+        {
+            return;
+        }
+        try
+        {
+            await _subscription.UnsubscribeAsync();
+        }
+        catch
+        {
+            // ignored
+        }
+    }
+
+    private Task HandleEventAsync(SnackEvent domainEvent, StreamSequenceToken sequenceToken)
+    {
+        _lastSequenceToken = sequenceToken;
+        return domainEvent switch
+               {
+                   SnackInitializedEvent snackEvent => ApplyEventAsync(snackEvent),
+                   SnackDeletedEvent snackEvent => ApplyEventAsync(snackEvent),
+                   SnackUpdatedEvent snackEvent => ApplyEventAsync(snackEvent),
+                   SnackErrorEvent snackEvent => ApplyErrorEventAsync(snackEvent),
+                   _ => Task.CompletedTask
+               };
+    }
+
+    private Task HandleErrorAsync(Exception exception)
+    {
+        return Task.CompletedTask;
+    }
+
+    private Task HandleCompletedAsync()
+    {
+        return Task.CompletedTask;
+    }
+
+    private Task ApplyEventAsync(SnackInitializedEvent snackEvent)
+    {
+        if (snackEvent.SnackId != Id)
+        {
+            return Task.CompletedTask;
+        }
+        var dispatcher = Application.Current.Dispatcher;
+        dispatcher?.Invoke(() =>
+                           {
+                               Name = snackEvent.Name;
+                               PictureUrl = snackEvent.PictureUrl;
+                           });
+        return Task.CompletedTask;
+    }
+
+    private Task ApplyEventAsync(SnackDeletedEvent snackEvent)
+    {
+        if (snackEvent.SnackId != Id)
+        {
+            return Task.CompletedTask;
+        }
+        var dispatcher = Application.Current.Dispatcher;
+        dispatcher?.Invoke(() =>
+                           {
+                               IsDeleted = true;
+                           });
+        return Task.CompletedTask;
+    }
+
+    private Task ApplyEventAsync(SnackUpdatedEvent snackEvent)
+    {
+        if (snackEvent.SnackId != Id)
+        {
+            return Task.CompletedTask;
+        }
+        var dispatcher = Application.Current.Dispatcher;
+        dispatcher?.Invoke(() =>
+                           {
+                               Name = snackEvent.Name;
+                               PictureUrl = snackEvent.PictureUrl;
+                           });
+        return Task.CompletedTask;
+    }
+
+    private Task ApplyErrorEventAsync(SnackErrorEvent errorEvent)
+    {
+        return Task.CompletedTask;
     }
 
     #endregion
