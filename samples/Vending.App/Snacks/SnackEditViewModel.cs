@@ -33,7 +33,6 @@ public class SnackEditViewModel : ReactiveObject, IActivatableViewModel, IOrlean
                                    .Select(_ => ClusterClient!.GetStreamProvider(Constants.StreamProviderName))
                                    .Select(streamProvider => streamProvider.GetStream<SnackEvent>(StreamId.Create(Constants.SnacksNamespace, Id)))
                                    .SelectMany(stream => stream.SubscribeAsync(HandleEventAsync, HandleErrorAsync, HandleCompletedAsync, _lastSequenceToken))
-                                   .ObserveOn(RxApp.MainThreadScheduler)
                                    .Subscribe(HandleSubscriptionAsync)
                                    .DisposeWith(disposable);
                                Disposable.Create(HandleSubscriptionDisposeAsync)

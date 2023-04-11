@@ -1,4 +1,5 @@
-﻿using System.Reactive.Disposables;
+﻿using System.Globalization;
+using System.Reactive.Disposables;
 using ReactiveUI;
 
 namespace Vending.App.Machines;
@@ -45,7 +46,7 @@ public partial class SlotEditView
 
     private string NullableDecimalToTextConverter(decimal? amount)
     {
-        return amount.HasValue ? amount.Value.ToString("C") : string.Empty;
+        return amount.HasValue ? amount.Value.ToString(CultureInfo.InvariantCulture) : string.Empty;
     }
 
     private decimal? TextToNullableDecimalConverter(string text)

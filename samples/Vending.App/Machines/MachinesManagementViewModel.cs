@@ -31,29 +31,36 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     {
         // Create the cache for the machines.
         _machinesCache = new SourceCache<MachineViewModel, Guid>(machine => machine.Id);
+        // Connect the cache to the machines observable collection.
         _machinesCache.Connect()
-                      .Filter(this.WhenAnyValue(vm => vm.PageSize, vm => vm.PageNumber, vm => vm.MoneyAmountStart, vm => vm.MoneyAmountEnd)
+                      .Filter(this.WhenAnyValue(vm => vm.MoneyAmountStart, vm => vm.MoneyAmountEnd)
                                   .Throttle(TimeSpan.FromMilliseconds(500))
                                   .DistinctUntilChanged()
                                   .Select(_ => new Func<MachineViewModel, bool>(machine => (MoneyAmountStart == null || machine.MoneyInside.Amount >= MoneyAmountStart)
                                                                                         && (MoneyAmountEnd == null || machine.MoneyInside.Amount < MoneyAmountEnd)
                                                                                         && machine.IsDeleted == false)))
                       .Sort(SortExpressionComparer<MachineViewModel>.Ascending(machine => machine.Id))
-                      .Skip(PageSize * (PageNumber - 1))
-                      .Take(PageSize)
+                      .Page(this.WhenAnyValue(vm => vm.PageNumber, vm => vm.PageSize)
+                                .DistinctUntilChanged()
+                                .Select(_ => new PageRequest(PageNumber, PageSize)))
                       .ObserveOn(RxApp.MainThreadScheduler)
                       .Bind(out _machines)
                       .Subscribe();
+        // Recalculate the page count when the cache changes.
+        _machinesCache.CountChanged.ObserveOn(RxApp.MainThreadScheduler)
+                      .Subscribe(count => PageCount = (int)Math.Ceiling((double)count / PageSize));
+        this.WhenAnyValue(vm => vm.PageSize)
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .Subscribe(_ => PageCount = (int)Math.Ceiling((double)_machinesCache.Count / PageSize));
         // Recalculate the page number when the page size or page count changes.
         this.WhenAnyValue(vm => vm.PageSize, vm => vm.PageCount)
-            .Throttle(TimeSpan.FromMilliseconds(500))
-            .DistinctUntilChanged()
+            .ObserveOn(RxApp.MainThreadScheduler)
             .Subscribe(_ =>
                        {
                            var pageNumber = PageNumber <= 0 ? 1 : PageNumber;
                            var oldOffset = _oldPageSize * (pageNumber - 1) + 1;
-                           var newPageOfOldOffset = (int)Math.Ceiling((double)oldOffset / PageSize);
-                           pageNumber = Math.Min(newPageOfOldOffset, PageCount);
+                           var newPageNumber = (int)Math.Ceiling((double)oldOffset / PageSize);
+                           pageNumber = Math.Min(newPageNumber, PageCount);
                            PageNumber = pageNumber <= 0 ? 1 : pageNumber;
                        });
         // Get machines and update the cache.
@@ -66,11 +73,7 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
             .Where(result => result.IsSuccess)
             .Select(result => result.Value)
             .ObserveOn(RxApp.MainThreadScheduler)
-            .Subscribe(machines =>
-                       {
-                           _machinesCache.Edit(updater => updater.AddOrUpdate(machines.Select(machine => new MachineViewModel(machine))));
-                           PageCount = (int)Math.Ceiling((double)machines.Count / PageSize);
-                       });
+            .Subscribe(machines => _machinesCache.Edit(updater => updater.AddOrUpdate(machines.Select(machine => new MachineViewModel(machine)))));
         // When the current machine changes, get the machine edit view model.
         this.WhenAnyValue(vm => vm.CurrentMachine, vm => vm.ClusterClient)
             .Where(_ => CurrentMachine != null && ClusterClient != null)
@@ -86,7 +89,6 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
                                    .Select(_ => ClusterClient!.GetStreamProvider(Constants.StreamProviderName))
                                    .Select(streamProvider => streamProvider.GetStream<MachineInfoEvent>(StreamId.Create(Constants.MachineInfosBroadcastNamespace, Guid.Empty)))
                                    .SelectMany(stream => stream.SubscribeAsync(HandleEventAsync, HandleErrorAsync, HandleCompletedAsync, _lastSequenceToken))
-                                   .ObserveOn(RxApp.MainThreadScheduler)
                                    .Subscribe(HandleSubscriptionAsync)
                                    .DisposeWith(disposable);
                                Disposable.Create(HandleSubscriptionDisposeAsync)
@@ -120,7 +122,7 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
         set
         {
             _oldPageSize = _pageSize;
-            this.RaiseAndSetIfChanged(ref _pageSize, value);
+            this.RaiseAndSetIfChanged(ref _pageSize, value < 1 ? 1 : value);
         }
     }
 
@@ -128,14 +130,14 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     public int PageCount
     {
         get => _pageCount;
-        set => this.RaiseAndSetIfChanged(ref _pageCount, value);
+        set => this.RaiseAndSetIfChanged(ref _pageCount, value < 1 ? 1 : value);
     }
 
     private int _pageNumber = 1;
     public int PageNumber
     {
         get => _pageNumber;
-        set => this.RaiseAndSetIfChanged(ref _pageNumber, value);
+        set => this.RaiseAndSetIfChanged(ref _pageNumber, value < 1 ? 1 : value);
     }
 
     private decimal? _moneyAmountStart;

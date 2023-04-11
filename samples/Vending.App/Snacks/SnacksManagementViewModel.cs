@@ -66,7 +66,6 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
                                    .Select(_ => ClusterClient!.GetStreamProvider(Constants.StreamProviderName))
                                    .Select(streamProvider => streamProvider.GetStream<SnackInfoEvent>(StreamId.Create(Constants.SnackInfosBroadcastNamespace, Guid.Empty)))
                                    .SelectMany(stream => stream.SubscribeAsync(HandleEventAsync, HandleErrorAsync, HandleCompletedAsync, _lastSequenceToken))
-                                   .ObserveOn(RxApp.MainThreadScheduler)
                                    .Subscribe(HandleSubscriptionAsync)
                                    .DisposeWith(disposable);
                                Disposable.Create(HandleSubscriptionDisposeAsync)

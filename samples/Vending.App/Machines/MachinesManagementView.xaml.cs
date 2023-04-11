@@ -1,4 +1,5 @@
-﻿using System.Reactive;
+﻿using System.Globalization;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Windows;
 using ReactiveUI;
@@ -17,7 +18,8 @@ public partial class MachinesManagementView
                                this.Bind(ViewModel, vm => vm.MoneyAmountEnd, v => v.MoneyAmountEndTextBox.Text, NullableDecimalToTextConverter, TextToNullableDecimalConverter).DisposeWith(disposable);
                                this.OneWayBind(ViewModel, vm => vm.Machines, v => v.MachineItemsDataGrid.ItemsSource).DisposeWith(disposable);
                                this.Bind(ViewModel, vm => vm.CurrentMachine, v => v.MachineItemsDataGrid.SelectedItem).DisposeWith(disposable);
-                               this.OneWayBind(ViewModel, vm => vm.PageNumber, v => v.CurrentPageText.Text).DisposeWith(disposable);
+                               this.OneWayBind(ViewModel, vm => vm.PageNumber, v => v.PageNumberText.Text).DisposeWith(disposable);
+                               this.OneWayBind(ViewModel, vm => vm.PageCount, v => v.PageCountText.Text).DisposeWith(disposable);
                                this.BindCommand(ViewModel, vm => vm.AddMachineCommand, v => v.AddMachineButton).DisposeWith(disposable);
                                this.BindCommand(ViewModel, vm => vm.EditMachineCommand, v => v.EditMachineButton).DisposeWith(disposable);
                                this.BindCommand(ViewModel, vm => vm.RemoveMachineCommand, v => v.RemoveMachineButton).DisposeWith(disposable);
@@ -40,7 +42,7 @@ public partial class MachinesManagementView
 
     private string NullableDecimalToTextConverter(decimal? amount)
     {
-        return amount.HasValue ? amount.Value.ToString("C") : string.Empty;
+        return amount.HasValue ? amount.Value.ToString(CultureInfo.InvariantCulture) : string.Empty;
     }
 
     private decimal? TextToNullableDecimalConverter(string text)

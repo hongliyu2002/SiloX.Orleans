@@ -19,7 +19,7 @@ public partial class MachineEditWindow
                                this.Bind(ViewModel, vm => vm.MoneyYuan20, v => v.MoneyYuan20TextBox.Text, IntToTextConverter, TextToIntConverter).DisposeWith(disposable);
                                this.Bind(ViewModel, vm => vm.MoneyYuan50, v => v.MoneyYuan50TextBox.Text, IntToTextConverter, TextToIntConverter).DisposeWith(disposable);
                                this.Bind(ViewModel, vm => vm.MoneyYuan100, v => v.MoneyYuan100TextBox.Text, IntToTextConverter, TextToIntConverter).DisposeWith(disposable);
-                               this.OneWayBind(ViewModel, vm => vm.MoneyAmount, v => v.MoneyAmountText.Text, DecimalToTextConverter).DisposeWith(disposable);
+                               this.OneWayBind(ViewModel, vm => vm.MoneyAmount, v => v.MoneyAmountText.Text).DisposeWith(disposable);
                                this.OneWayBind(ViewModel, vm => vm.Slots, v => v.SlotsListBox.ItemsSource).DisposeWith(disposable);
                                this.Bind(ViewModel, vm => vm.CurrentSlot, v => v.SlotsListBox.SelectedItem).DisposeWith(disposable);
                                this.OneWayBind(ViewModel, vm => vm.IsDeleted, v => v.IsDeletedCheckBox.IsChecked).DisposeWith(disposable);
@@ -45,11 +45,6 @@ public partial class MachineEditWindow
     private int TextToIntConverter(string text)
     {
         return int.TryParse(text, out var number) ? number : 0;
-    }
-
-    private string DecimalToTextConverter(decimal amount)
-    {
-        return amount.ToString("C");
     }
 
     private void ShowMessageBox(InteractionContext<string, bool> interaction)

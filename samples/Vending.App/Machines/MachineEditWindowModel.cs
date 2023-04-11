@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
@@ -70,7 +69,6 @@ public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel, IOr
                                    .Select(_ => ClusterClient!.GetStreamProvider(Constants.StreamProviderName))
                                    .Select(streamProvider => streamProvider.GetStream<MachineEvent>(StreamId.Create(Constants.MachinesNamespace, Id)))
                                    .SelectMany(stream => stream.SubscribeAsync(HandleEventAsync, HandleErrorAsync, HandleCompletedAsync, _lastSequenceToken))
-                                   .ObserveOn(RxApp.MainThreadScheduler)
                                    .Subscribe(HandleSubscriptionAsync)
                                    .DisposeWith(disposable);
                                Disposable.Create(HandleSubscriptionDisposeAsync)
