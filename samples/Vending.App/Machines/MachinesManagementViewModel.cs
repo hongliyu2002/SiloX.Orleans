@@ -81,6 +81,10 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
             .SelectMany(grain => grain.GetMachineAsync())
             .ObserveOn(RxApp.MainThreadScheduler)
             .Subscribe(machine => CurrentMachineEdit = new MachineEditWindowModel(machine, ClusterClient!));
+        this.WhenAnyValue(vm => vm.CurrentMachine, vm => vm.ClusterClient)
+            .Where(_ => CurrentMachine == null || ClusterClient == null)
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .Subscribe(machine => CurrentMachineEdit = null);
         this.WhenActivated(disposable =>
                            {
                                // When the cluster client changes, subscribe to the machine info stream.
