@@ -44,27 +44,18 @@ public sealed class SnackProjectionGrain : SubscriberPublisherGrainWithGuidKey<S
     /// <inheritdoc />
     protected override Task HandLeEventAsync(SnackEvent domainEvent)
     {
-        switch (domainEvent)
-        {
-            case SnackInitializedEvent snackEvent:
-                return ApplyEventAsync(snackEvent);
-            case SnackDeletedEvent snackEvent:
-                return ApplyEventAsync(snackEvent);
-            case SnackUpdatedEvent snackEvent:
-                return ApplyEventAsync(snackEvent);
-            case SnackMachineCountUpdatedEvent snackEvent:
-                return ApplyEventAsync(snackEvent);
-            case SnackTotalQuantityUpdatedEvent snackEvent:
-                return ApplyEventAsync(snackEvent);
-            case SnackTotalAmountUpdatedEvent snackEvent:
-                return ApplyEventAsync(snackEvent);
-            case SnackBoughtCountUpdatedEvent snackEvent:
-                return ApplyEventAsync(snackEvent);
-            case SnackBoughtAmountUpdatedEvent snackEvent:
-                return ApplyEventAsync(snackEvent);
-            default:
-                return Task.CompletedTask;
-        }
+        return domainEvent switch
+               {
+                   SnackInitializedEvent snackEvent => ApplyEventAsync(snackEvent),
+                   SnackDeletedEvent snackEvent => ApplyEventAsync(snackEvent),
+                   SnackUpdatedEvent snackEvent => ApplyEventAsync(snackEvent),
+                   SnackMachineCountUpdatedEvent snackEvent => ApplyEventAsync(snackEvent),
+                   SnackTotalQuantityUpdatedEvent snackEvent => ApplyEventAsync(snackEvent),
+                   SnackTotalAmountUpdatedEvent snackEvent => ApplyEventAsync(snackEvent),
+                   SnackBoughtCountUpdatedEvent snackEvent => ApplyEventAsync(snackEvent),
+                   SnackBoughtAmountUpdatedEvent snackEvent => ApplyEventAsync(snackEvent),
+                   _ => Task.CompletedTask
+               };
     }
 
     /// <inheritdoc />

@@ -24,10 +24,10 @@ public partial class SnacksManagementView
                            });
     }
 
-    private void ShowMessageBox(InteractionContext<string, bool> confirmRemoveSnack)
+    private void ShowMessageBox(InteractionContext<string, bool> interaction)
     {
-        var result = MessageBox.Show($"Are you sure you want to remove {confirmRemoveSnack.Input}?", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question);
-        confirmRemoveSnack.SetOutput(result == MessageBoxResult.Yes);
+        var result = MessageBox.Show($"Are you sure you want to remove {interaction.Input}?", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question);
+        interaction.SetOutput(result == MessageBoxResult.Yes);
     }
 
     public int NavigationGridGridColumn

@@ -23,7 +23,7 @@ using Vending.Projection.Abstractions.Snacks;
 
 namespace Vending.App.Machines;
 
-public class MachineEditViewModel : ReactiveObject, IActivatableViewModel, IOrleansObject
+public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel, IOrleansObject
 {
     private readonly SourceCache<SnackViewModel, Guid> _snacksCache;
     private readonly SourceCache<SlotEditViewModel, int> _slotsCache;
@@ -32,7 +32,7 @@ public class MachineEditViewModel : ReactiveObject, IActivatableViewModel, IOrle
     private StreamSubscriptionHandle<MachineEvent>? _subscription;
     private StreamSequenceToken? _lastSequenceToken;
 
-    public MachineEditViewModel(Machine machine, IClusterClient clusterClient)
+    public MachineEditWindowModel(Machine machine, IClusterClient clusterClient)
     {
         Guard.Against.Null(machine, nameof(machine));
         ClusterClient = Guard.Against.Null(clusterClient, nameof(clusterClient));

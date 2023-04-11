@@ -4,9 +4,9 @@ using ReactiveUI;
 
 namespace Vending.App.Machines;
 
-public partial class MachineEditView
+public partial class MachineEditWindow
 {
-    public MachineEditView()
+    public MachineEditWindow()
     {
         InitializeComponent();
         this.WhenActivated(disposable =>
@@ -41,9 +41,9 @@ public partial class MachineEditView
                            });
     }
 
-    private void ShowMessageBox(InteractionContext<string, bool> confirmRemoveSlot)
+    private void ShowMessageBox(InteractionContext<string, bool> interaction)
     {
-        var result = MessageBox.Show($"Are you sure you want to remove {confirmRemoveSlot.Input}?", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question);
-        confirmRemoveSlot.SetOutput(result == MessageBoxResult.Yes);
+        var result = MessageBox.Show($"Are you sure you want to remove {interaction.Input}?", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question);
+        interaction.SetOutput(result == MessageBoxResult.Yes);
     }
 }

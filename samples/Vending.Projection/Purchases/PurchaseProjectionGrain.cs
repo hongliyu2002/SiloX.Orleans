@@ -46,13 +46,11 @@ public sealed class PurchaseProjectionGrain : SubscriberPublisherGrainWithGuidKe
     /// <inheritdoc />
     protected override Task HandLeEventAsync(PurchaseEvent domainEvent)
     {
-        switch (domainEvent)
-        {
-            case PurchaseInitializedEvent purchaseEvent:
-                return ApplyEventAsync(purchaseEvent);
-            default:
-                return Task.CompletedTask;
-        }
+        return domainEvent switch
+               {
+                   PurchaseInitializedEvent purchaseEvent => ApplyEventAsync(purchaseEvent),
+                   _ => Task.CompletedTask
+               };
     }
 
     /// <inheritdoc />

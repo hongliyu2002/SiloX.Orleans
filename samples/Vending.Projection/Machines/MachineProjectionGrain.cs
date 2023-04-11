@@ -46,39 +46,24 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
     /// <inheritdoc />
     protected override Task HandLeEventAsync(MachineEvent domainEvent)
     {
-        switch (domainEvent)
-        {
-            case MachineInitializedEvent machineEvent:
-                return ApplyEventAsync(machineEvent);
-            case MachineDeletedEvent machineEvent:
-                return ApplyEventAsync(machineEvent);
-            case MachineUpdatedEvent machineEvent:
-                return ApplyEventAsync(machineEvent);
-            case MachineSlotAddedEvent machineEvent:
-                return ApplyEventAsync(machineEvent);
-            case MachineSlotRemovedEvent machineEvent:
-                return ApplyEventAsync(machineEvent);
-            case MachineMoneyLoadedEvent machineEvent:
-                return ApplyEventAsync(machineEvent);
-            case MachineMoneyUnloadedEvent machineEvent:
-                return ApplyEventAsync(machineEvent);
-            case MachineMoneyInsertedEvent machineEvent:
-                return ApplyEventAsync(machineEvent);
-            case MachineMoneyReturnedEvent machineEvent:
-                return ApplyEventAsync(machineEvent);
-            case MachineSnacksLoadedEvent machineEvent:
-                return ApplyEventAsync(machineEvent);
-            case MachineSnacksUnloadedEvent machineEvent:
-                return ApplyEventAsync(machineEvent);
-            case MachineSnackBoughtEvent machineEvent:
-                return ApplyEventAsync(machineEvent);
-            case MachineBoughtCountUpdatedEvent machineEvent:
-                return ApplyEventAsync(machineEvent);
-            case MachineBoughtAmountUpdatedEvent machineEvent:
-                return ApplyEventAsync(machineEvent);
-            default:
-                return Task.CompletedTask;
-        }
+        return domainEvent switch
+               {
+                   MachineInitializedEvent machineEvent => ApplyEventAsync(machineEvent),
+                   MachineDeletedEvent machineEvent => ApplyEventAsync(machineEvent),
+                   MachineUpdatedEvent machineEvent => ApplyEventAsync(machineEvent),
+                   MachineSlotAddedEvent machineEvent => ApplyEventAsync(machineEvent),
+                   MachineSlotRemovedEvent machineEvent => ApplyEventAsync(machineEvent),
+                   MachineMoneyLoadedEvent machineEvent => ApplyEventAsync(machineEvent),
+                   MachineMoneyUnloadedEvent machineEvent => ApplyEventAsync(machineEvent),
+                   MachineMoneyInsertedEvent machineEvent => ApplyEventAsync(machineEvent),
+                   MachineMoneyReturnedEvent machineEvent => ApplyEventAsync(machineEvent),
+                   MachineSnacksLoadedEvent machineEvent => ApplyEventAsync(machineEvent),
+                   MachineSnacksUnloadedEvent machineEvent => ApplyEventAsync(machineEvent),
+                   MachineSnackBoughtEvent machineEvent => ApplyEventAsync(machineEvent),
+                   MachineBoughtCountUpdatedEvent machineEvent => ApplyEventAsync(machineEvent),
+                   MachineBoughtAmountUpdatedEvent machineEvent => ApplyEventAsync(machineEvent),
+                   _ => Task.CompletedTask
+               };
     }
 
     /// <inheritdoc />

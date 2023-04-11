@@ -86,7 +86,7 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
                                          .DisposeWith(disposable);
                            });
         // Create the commands.
-        AddMachineCommand = ReactiveCommand.Create(AddMachineAsync, CanAddMachine);
+        AddMachineCommand = ReactiveCommand.CreateFromTask(AddMachineAsync, CanAddMachine);
         RemoveMachineCommand = ReactiveCommand.CreateFromTask(RemoveMachineAsync, CanRemoveMachine);
         GoPreviousPageCommand = ReactiveCommand.Create(GoPreviousPage, CanGoPreviousPage);
         GoNextPageCommand = ReactiveCommand.Create(GoNextPage, CanGoNextPage);
@@ -167,14 +167,18 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
             .Select(client => client != null);
 
     /// <summary>
+    ///     Gets the interaction that shows the machine edit dialog.
+    /// </summary>
+    public Interaction<MachineEditWindowModel, Unit> ShowEditMachine { get; } = new();
+
+    /// <summary>
     ///     Gets the command that moves the navigation side.
     /// </summary>
-    private void AddMachineAsync()
+    private async Task AddMachineAsync()
     {
-        // IMachineRepoGrain repoGrain = null!;
-        // Result.Ok()
-        //       .MapTry(() => repoGrain = ClusterClient!.GetGrain<IMachineRepoGrain>(string.Empty))
-        //       .Map(() => CurrentMachineEdit = new MachineEditViewModel(new Machine(), repoGrain));
+        var machine = new Machine();
+        machine.Slots.Add(new MachineSlot(machine.Id, 1));
+        await ShowEditMachine.Handle(new MachineEditWindowModel(machine, ClusterClient!));
     }
 
     /// <summary>
@@ -187,11 +191,7 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     /// </summary>
     private IObservable<bool> CanRemoveMachine =>
         this.WhenAnyValue(vm => vm.CurrentMachine, vm => vm.ClusterClient)
-            .Select(machineClient => machineClient is
-                                     {
-                                         Item1: not null,
-                                         Item2: not null
-                                     });
+            .Select(machineClient => machineClient is { Item1: not null, Item2: not null });
 
     /// <summary>
     ///     Gets the interaction that asks the user to confirm the removal of the current machine.
