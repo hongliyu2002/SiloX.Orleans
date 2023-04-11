@@ -1,0 +1,69 @@
+﻿<reactiveUi:ReactiveWindow  x:TypeArguments="vm:MachineEditViewModel" x:Class="Vending.App.Machines.MachineEditView" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                            xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:vm="clr-namespace:Vending.App.Machines" xmlns:reactiveUi="http://reactiveui.net" mc:Ignorable="d"
+                            d:DesignHeight="400" d:DesignWidth="480">
+    <Grid ShowGridLines="False" Background="LightCyan">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" ShowGridLines="False" Background="LightCyan">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Label Grid.Row="0" Grid.Column="0" VerticalAlignment="Center">Id:</Label>
+            <TextBox Grid.Row="0" Grid.Column="1" x:Name="IdTextBox" Margin="5" IsReadOnly="True" />
+            <Label Grid.Row="1" Grid.Column="0" VerticalAlignment="Center">Money Inside:</Label>
+            <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical" Margin="5">
+                <StackPanel Orientation="Horizontal" Margin="5">
+                    <Label Content="￥1:" />
+                    <TextBox x:Name="MoneyYuan1TextBox" Margin="5" Width="30" />
+                    <Label Content="￥2:" />
+                    <TextBox x:Name="MoneyYuan2TextBox" Margin="5" Width="30" />
+                    <Label Content="￥5:" />
+                    <TextBox x:Name="MoneyYuan5TextBox" Margin="5" Width="30" />
+                    <Label Content="￥10:" />
+                    <TextBox x:Name="MoneyYuan10TextBox" Margin="5" Width="30" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="5">
+                    <Label Content="￥20:" />
+                    <TextBox x:Name="MoneyYuan20TextBox" Margin="5" Width="30" />
+                    <Label Content="￥50:" />
+                    <TextBox x:Name="MoneyYuan50TextBox" Margin="5" Width="30" />
+                    <Label Content="￥100:" />
+                    <TextBox x:Name="MoneyYuan100TextBox" Margin="5" Width="30" />
+                    <Label Content="Total:" />
+                    <TextBlock x:Name="MoneyAmountText" Margin="5" Width="50" />
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <Button x:Name="AddSlotButton" Width="75" Height="25" Margin="5">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="/Images/add.png" Height="13" />
+                    <TextBlock Text="Add" FontSize="13" Margin="5, 0, 0,0" />
+                </StackPanel>
+            </Button>
+            <Button x:Name="RemoveSlotButton" Width="75" Height="25" Margin="5">
+                <TextBlock Text="Remove" FontSize="13" />
+            </Button>
+        </StackPanel>
+        <ListBox Grid.Row="2" x:Name="SlotsListBox" Margin="5" HorizontalContentAlignment="Stretch" />
+        <CheckBox Grid.Row="3" x:Name="IsDeletedCheckBox" Content="Deleted" Margin="5" IsEnabled="False" VerticalAlignment="Center" />
+        <StackPanel Grid.Row="3" Orientation="Horizontal" FlowDirection="RightToLeft" Margin="5">
+            <Button x:Name="CloseButton" Width="100" Height="25" Margin="5">
+                <TextBlock Text="Close" FontSize="13" />
+            </Button>
+            <Button x:Name="SaveMachineButton" Width="100" Height="25" Margin="5">
+                <TextBlock Text="Save" FontSize="13" />
+            </Button>
+        </StackPanel>
+    </Grid>
+</reactiveUi:ReactiveWindow>

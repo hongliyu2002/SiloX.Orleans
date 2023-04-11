@@ -111,8 +111,12 @@ public class SnackEditViewModel : ReactiveObject, IActivatableViewModel, IOrlean
     {
         if (snackEvent.SnackId == Id)
         {
-            Name = snackEvent.Name;
-            PictureUrl = snackEvent.PictureUrl;
+            var dispatcher = Application.Current.Dispatcher;
+            dispatcher?.Invoke(() =>
+                               {
+                                   Name = snackEvent.Name;
+                                   PictureUrl = snackEvent.PictureUrl;
+                               });
         }
         return Task.CompletedTask;
     }
@@ -121,7 +125,11 @@ public class SnackEditViewModel : ReactiveObject, IActivatableViewModel, IOrlean
     {
         if (snackEvent.SnackId == Id)
         {
-            IsDeleted = true;
+            var dispatcher = Application.Current.Dispatcher;
+            dispatcher?.Invoke(() =>
+                               {
+                                   IsDeleted = true;
+                               });
         }
         return Task.CompletedTask;
     }
@@ -130,8 +138,12 @@ public class SnackEditViewModel : ReactiveObject, IActivatableViewModel, IOrlean
     {
         if (snackEvent.SnackId == Id)
         {
-            Name = snackEvent.Name;
-            PictureUrl = snackEvent.PictureUrl;
+            var dispatcher = Application.Current.Dispatcher;
+            dispatcher?.Invoke(() =>
+                               {
+                                   Name = snackEvent.Name;
+                                   PictureUrl = snackEvent.PictureUrl;
+                               });
         }
         return Task.CompletedTask;
     }
@@ -149,78 +161,38 @@ public class SnackEditViewModel : ReactiveObject, IActivatableViewModel, IOrlean
     public ViewModelActivator Activator { get; } = new();
 
     private IClusterClient? _clusterClient;
-
     public IClusterClient? ClusterClient
     {
         get => _clusterClient;
-        set
-        {
-            var dispatcher = Application.Current.Dispatcher;
-            dispatcher?.Invoke(() =>
-                               {
-                                   this.RaiseAndSetIfChanged(ref _clusterClient, value);
-                               });
-        }
+        set => this.RaiseAndSetIfChanged(ref _clusterClient, value);
     }
 
     private Guid _id;
-
     public Guid Id
     {
         get => _id;
-        set
-        {
-            var dispatcher = Application.Current.Dispatcher;
-            dispatcher?.Invoke(() =>
-                               {
-                                   this.RaiseAndSetIfChanged(ref _id, value);
-                               });
-        }
+        set => this.RaiseAndSetIfChanged(ref _id, value);
     }
 
     private string _name = string.Empty;
-
     public string Name
     {
         get => _name;
-        set
-        {
-            var dispatcher = Application.Current.Dispatcher;
-            dispatcher?.Invoke(() =>
-                               {
-                                   this.RaiseAndSetIfChanged(ref _name, value);
-                               });
-        }
+        set => this.RaiseAndSetIfChanged(ref _name, value);
     }
 
     private string? _pictureUrl;
-
     public string? PictureUrl
     {
         get => _pictureUrl;
-        set
-        {
-            var dispatcher = Application.Current.Dispatcher;
-            dispatcher?.Invoke(() =>
-                               {
-                                   this.RaiseAndSetIfChanged(ref _pictureUrl, value);
-                               });
-        }
+        set => this.RaiseAndSetIfChanged(ref _pictureUrl, value);
     }
 
     private bool _isDeleted;
-
     public bool IsDeleted
     {
         get => _isDeleted;
-        set
-        {
-            var dispatcher = Application.Current.Dispatcher;
-            dispatcher?.Invoke(() =>
-                               {
-                                   this.RaiseAndSetIfChanged(ref _isDeleted, value);
-                               });
-        }
+        set => this.RaiseAndSetIfChanged(ref _isDeleted, value);
     }
 
     #endregion

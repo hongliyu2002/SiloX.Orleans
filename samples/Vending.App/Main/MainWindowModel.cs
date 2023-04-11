@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Reactive;
+using System.Windows;
 using Microsoft.Extensions.Hosting;
 using Orleans;
 using ReactiveUI;
@@ -36,16 +37,19 @@ public class MainWindowModel : ReactiveObject
         var clusterClient = Locator.Current.GetService<IClusterClient>();
         appLifetime.ApplicationStarted.Register(() =>
                                                 {
-                                                    _viewModels["Snacks"].ClusterClient = clusterClient;
-                                                    _viewModels["Machines"].ClusterClient = clusterClient;
-                                                    _viewModels["Purchases"].ClusterClient = clusterClient;
+                                                    var dispatcher = Application.Current.Dispatcher;
+                                                    dispatcher?.Invoke(() =>
+                                                                       {
+                                                                           _viewModels["Snacks"].ClusterClient = clusterClient;
+                                                                           _viewModels["Machines"].ClusterClient = clusterClient;
+                                                                           _viewModels["Purchases"].ClusterClient = clusterClient;
+                                                                       });
                                                 });
     }
 
     #region Properties
 
     private IOrleansObject? _currentViewModel;
-
     public IOrleansObject? CurrentViewModel
     {
         get => _currentViewModel;

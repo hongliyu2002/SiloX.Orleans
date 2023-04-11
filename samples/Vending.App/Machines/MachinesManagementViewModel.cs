@@ -170,23 +170,14 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     public ViewModelActivator Activator { get; } = new();
 
     private IClusterClient? _clusterClient;
-
     public IClusterClient? ClusterClient
     {
         get => _clusterClient;
-        set
-        {
-            var dispatcher = Application.Current.Dispatcher;
-            dispatcher?.Invoke(() =>
-                               {
-                                   this.RaiseAndSetIfChanged(ref _clusterClient, value);
-                               });
-        }
+        set => this.RaiseAndSetIfChanged(ref _clusterClient, value);
     }
 
     private int _pageSize = 10;
     private int _oldPageSize;
-
     public int PageSize
     {
         get => _pageSize;
@@ -198,7 +189,6 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     }
 
     private int _pageCount;
-
     public int PageCount
     {
         get => _pageCount;
@@ -206,7 +196,6 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     }
 
     private int _pageNumber = 1;
-
     public int PageNumber
     {
         get => _pageNumber;
@@ -214,7 +203,6 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     }
 
     private decimal? _moneyAmountStart;
-
     public decimal? MoneyAmountStart
     {
         get => _moneyAmountStart;
@@ -222,7 +210,6 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     }
 
     private decimal? _moneyAmountEnd;
-
     public decimal? MoneyAmountEnd
     {
         get => _moneyAmountEnd;
@@ -230,7 +217,6 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     }
 
     private MachineViewModel? _currentMachine;
-
     public MachineViewModel? CurrentMachine
     {
         get => _currentMachine;

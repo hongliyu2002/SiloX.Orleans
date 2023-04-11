@@ -10,12 +10,12 @@
         <TextBox x:Name="NameTextBox" Margin="5" />
         <Label>Picture Url:</Label>
         <TextBox x:Name="PictureTextBox" Margin="5" />
-        <Border BorderBrush="Black" BorderThickness="1" Width="128" Height="128" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Border BorderBrush="Black" BorderThickness="0" Width="128" Height="128" HorizontalAlignment="Center" VerticalAlignment="Center">
             <Image x:Name="PictureImage" Margin="5" Width="64" Height="64" />
         </Border>
         <CheckBox x:Name="IsDeletedCheckBox" Content="Deleted" Margin="5" IsEnabled="False" />
         <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" Margin="5">
-            <Button x:Name="SaveButton" Width="120" Margin="5">
+            <Button x:Name="SaveButton" Width="100" Height="25" Margin="5">
                 <TextBlock Text="Save" FontSize="13" />
             </Button>
         </StackPanel>

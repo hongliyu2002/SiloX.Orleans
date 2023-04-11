@@ -2,7 +2,6 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Windows;
 using DynamicData;
 using DynamicData.Binding;
 using Fluxera.Guards;
@@ -77,84 +76,42 @@ public class SlotEditViewModel : ReactiveObject
     public int Position
     {
         get => _position;
-        set
-        {
-            var dispatcher = Application.Current.Dispatcher;
-            dispatcher?.Invoke(() =>
-                               {
-                                   this.RaiseAndSetIfChanged(ref _position, value);
-                               });
-        }
+        set => this.RaiseAndSetIfChanged(ref _position, value);
     }
 
     private SnackPile? _snackPile;
     public SnackPile? SnackPile
     {
         get => _snackPile;
-        set
-        {
-            var dispatcher = Application.Current.Dispatcher;
-            dispatcher?.Invoke(() =>
-                               {
-                                   this.RaiseAndSetIfChanged(ref _snackPile, value);
-                               });
-        }
+        set => this.RaiseAndSetIfChanged(ref _snackPile, value);
     }
 
     private Guid? _snackId;
     public Guid? SnackId
     {
         get => _snackId;
-        set
-        {
-            var dispatcher = Application.Current.Dispatcher;
-            dispatcher?.Invoke(() =>
-                               {
-                                   this.RaiseAndSetIfChanged(ref _snackId, value);
-                               });
-        }
+        set => this.RaiseAndSetIfChanged(ref _snackId, value);
     }
 
     private int? _quantity;
     public int? Quantity
     {
         get => _quantity;
-        set
-        {
-            var dispatcher = Application.Current.Dispatcher;
-            dispatcher?.Invoke(() =>
-                               {
-                                   this.RaiseAndSetIfChanged(ref _quantity, value);
-                               });
-        }
+        set => this.RaiseAndSetIfChanged(ref _quantity, value);
     }
 
     private decimal? _price;
     public decimal? Price
     {
         get => _price;
-        set
-        {
-            var dispatcher = Application.Current.Dispatcher;
-            dispatcher?.Invoke(() =>
-                               {
-                                   this.RaiseAndSetIfChanged(ref _price, value);
-                               });
-        }
+        set => this.RaiseAndSetIfChanged(ref _price, value);
     }
 
     private decimal? _amount;
     public decimal? Amount
     {
         get => _amount;
-        set
-        {
-            var dispatcher = Application.Current.Dispatcher;
-            dispatcher?.Invoke(() =>
-                               {
-                                   this.RaiseAndSetIfChanged(ref _amount, value);
-                               });
-        }
+        set => this.RaiseAndSetIfChanged(ref _amount, value);
     }
     
     private SnackViewModel? _currentSnack;

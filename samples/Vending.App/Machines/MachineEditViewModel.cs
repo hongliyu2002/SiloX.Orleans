@@ -78,6 +78,7 @@ public class MachineEditViewModel : ReactiveObject, IActivatableViewModel, IOrle
                            });
         // Create the commands.
         SaveMachineCommand = ReactiveCommand.CreateFromTask(SaveMachineAsync, CanSaveMachine);
+        CloseCommand = ReactiveCommand.CreateFromTask(CloseAsync);
         // Load the machine.
         LoadMachine(machine);
     }
@@ -166,14 +167,18 @@ public class MachineEditViewModel : ReactiveObject, IActivatableViewModel, IOrle
     {
         if (machineEvent.MachineId == Id)
         {
-            MoneyYuan1 = machineEvent.MoneyInside.Yuan1;
-            MoneyYuan2 = machineEvent.MoneyInside.Yuan2;
-            MoneyYuan5 = machineEvent.MoneyInside.Yuan5;
-            MoneyYuan10 = machineEvent.MoneyInside.Yuan10;
-            MoneyYuan20 = machineEvent.MoneyInside.Yuan20;
-            MoneyYuan50 = machineEvent.MoneyInside.Yuan50;
-            MoneyYuan100 = machineEvent.MoneyInside.Yuan100;
-            MoneyAmount = machineEvent.MoneyInside.Amount;
+            var dispatcher = Application.Current.Dispatcher;
+            dispatcher?.Invoke(() =>
+                               {
+                                   MoneyYuan1 = machineEvent.MoneyInside.Yuan1;
+                                   MoneyYuan2 = machineEvent.MoneyInside.Yuan2;
+                                   MoneyYuan5 = machineEvent.MoneyInside.Yuan5;
+                                   MoneyYuan10 = machineEvent.MoneyInside.Yuan10;
+                                   MoneyYuan20 = machineEvent.MoneyInside.Yuan20;
+                                   MoneyYuan50 = machineEvent.MoneyInside.Yuan50;
+                                   MoneyYuan100 = machineEvent.MoneyInside.Yuan100;
+                                   MoneyAmount = machineEvent.MoneyInside.Amount;
+                               });
             _slotsCache.Edit(updater => updater.Load(machineEvent.Slots.Select(slot => new SlotEditViewModel(slot, _snacksCache))));
         }
         return Task.CompletedTask;
@@ -183,16 +188,20 @@ public class MachineEditViewModel : ReactiveObject, IActivatableViewModel, IOrle
     {
         if (machineEvent.MachineId == Id)
         {
-            MoneyYuan1 = machineEvent.MoneyInside.Yuan1;
-            MoneyYuan2 = machineEvent.MoneyInside.Yuan2;
-            MoneyYuan5 = machineEvent.MoneyInside.Yuan5;
-            MoneyYuan10 = machineEvent.MoneyInside.Yuan10;
-            MoneyYuan20 = machineEvent.MoneyInside.Yuan20;
-            MoneyYuan50 = machineEvent.MoneyInside.Yuan50;
-            MoneyYuan100 = machineEvent.MoneyInside.Yuan100;
-            MoneyAmount = machineEvent.MoneyInside.Amount;
+            var dispatcher = Application.Current.Dispatcher;
+            dispatcher?.Invoke(() =>
+                               {
+                                   MoneyYuan1 = machineEvent.MoneyInside.Yuan1;
+                                   MoneyYuan2 = machineEvent.MoneyInside.Yuan2;
+                                   MoneyYuan5 = machineEvent.MoneyInside.Yuan5;
+                                   MoneyYuan10 = machineEvent.MoneyInside.Yuan10;
+                                   MoneyYuan20 = machineEvent.MoneyInside.Yuan20;
+                                   MoneyYuan50 = machineEvent.MoneyInside.Yuan50;
+                                   MoneyYuan100 = machineEvent.MoneyInside.Yuan100;
+                                   MoneyAmount = machineEvent.MoneyInside.Amount;
+                                   IsDeleted = true;
+                               });
             _slotsCache.Edit(updater => updater.Load(machineEvent.Slots.Select(slot => new SlotEditViewModel(slot, _snacksCache))));
-            IsDeleted = true;
         }
         return Task.CompletedTask;
     }
@@ -201,14 +210,18 @@ public class MachineEditViewModel : ReactiveObject, IActivatableViewModel, IOrle
     {
         if (machineEvent.MachineId == Id)
         {
-            MoneyYuan1 = machineEvent.MoneyInside.Yuan1;
-            MoneyYuan2 = machineEvent.MoneyInside.Yuan2;
-            MoneyYuan5 = machineEvent.MoneyInside.Yuan5;
-            MoneyYuan10 = machineEvent.MoneyInside.Yuan10;
-            MoneyYuan20 = machineEvent.MoneyInside.Yuan20;
-            MoneyYuan50 = machineEvent.MoneyInside.Yuan50;
-            MoneyYuan100 = machineEvent.MoneyInside.Yuan100;
-            MoneyAmount = machineEvent.MoneyInside.Amount;
+            var dispatcher = Application.Current.Dispatcher;
+            dispatcher?.Invoke(() =>
+                               {
+                                   MoneyYuan1 = machineEvent.MoneyInside.Yuan1;
+                                   MoneyYuan2 = machineEvent.MoneyInside.Yuan2;
+                                   MoneyYuan5 = machineEvent.MoneyInside.Yuan5;
+                                   MoneyYuan10 = machineEvent.MoneyInside.Yuan10;
+                                   MoneyYuan20 = machineEvent.MoneyInside.Yuan20;
+                                   MoneyYuan50 = machineEvent.MoneyInside.Yuan50;
+                                   MoneyYuan100 = machineEvent.MoneyInside.Yuan100;
+                                   MoneyAmount = machineEvent.MoneyInside.Amount;
+                               });
             _slotsCache.Edit(updater => updater.Load(machineEvent.Slots.Select(slot => new SlotEditViewModel(slot, _snacksCache))));
         }
         return Task.CompletedTask;
@@ -236,14 +249,18 @@ public class MachineEditViewModel : ReactiveObject, IActivatableViewModel, IOrle
     {
         if (machineEvent.MachineId == Id)
         {
-            MoneyYuan1 = machineEvent.MoneyInside.Yuan1;
-            MoneyYuan2 = machineEvent.MoneyInside.Yuan2;
-            MoneyYuan5 = machineEvent.MoneyInside.Yuan5;
-            MoneyYuan10 = machineEvent.MoneyInside.Yuan10;
-            MoneyYuan20 = machineEvent.MoneyInside.Yuan20;
-            MoneyYuan50 = machineEvent.MoneyInside.Yuan50;
-            MoneyYuan100 = machineEvent.MoneyInside.Yuan100;
-            MoneyAmount = machineEvent.MoneyInside.Amount;
+            var dispatcher = Application.Current.Dispatcher;
+            dispatcher?.Invoke(() =>
+                               {
+                                   MoneyYuan1 = machineEvent.MoneyInside.Yuan1;
+                                   MoneyYuan2 = machineEvent.MoneyInside.Yuan2;
+                                   MoneyYuan5 = machineEvent.MoneyInside.Yuan5;
+                                   MoneyYuan10 = machineEvent.MoneyInside.Yuan10;
+                                   MoneyYuan20 = machineEvent.MoneyInside.Yuan20;
+                                   MoneyYuan50 = machineEvent.MoneyInside.Yuan50;
+                                   MoneyYuan100 = machineEvent.MoneyInside.Yuan100;
+                                   MoneyAmount = machineEvent.MoneyInside.Amount;
+                               });
         }
         return Task.CompletedTask;
     }
@@ -252,14 +269,18 @@ public class MachineEditViewModel : ReactiveObject, IActivatableViewModel, IOrle
     {
         if (machineEvent.MachineId == Id)
         {
-            MoneyYuan1 = machineEvent.MoneyInside.Yuan1;
-            MoneyYuan2 = machineEvent.MoneyInside.Yuan2;
-            MoneyYuan5 = machineEvent.MoneyInside.Yuan5;
-            MoneyYuan10 = machineEvent.MoneyInside.Yuan10;
-            MoneyYuan20 = machineEvent.MoneyInside.Yuan20;
-            MoneyYuan50 = machineEvent.MoneyInside.Yuan50;
-            MoneyYuan100 = machineEvent.MoneyInside.Yuan100;
-            MoneyAmount = machineEvent.MoneyInside.Amount;
+            var dispatcher = Application.Current.Dispatcher;
+            dispatcher?.Invoke(() =>
+                               {
+                                   MoneyYuan1 = machineEvent.MoneyInside.Yuan1;
+                                   MoneyYuan2 = machineEvent.MoneyInside.Yuan2;
+                                   MoneyYuan5 = machineEvent.MoneyInside.Yuan5;
+                                   MoneyYuan10 = machineEvent.MoneyInside.Yuan10;
+                                   MoneyYuan20 = machineEvent.MoneyInside.Yuan20;
+                                   MoneyYuan50 = machineEvent.MoneyInside.Yuan50;
+                                   MoneyYuan100 = machineEvent.MoneyInside.Yuan100;
+                                   MoneyAmount = machineEvent.MoneyInside.Amount;
+                               });
         }
         return Task.CompletedTask;
     }
@@ -268,14 +289,18 @@ public class MachineEditViewModel : ReactiveObject, IActivatableViewModel, IOrle
     {
         if (machineEvent.MachineId == Id)
         {
-            MoneyYuan1 = machineEvent.MoneyInside.Yuan1;
-            MoneyYuan2 = machineEvent.MoneyInside.Yuan2;
-            MoneyYuan5 = machineEvent.MoneyInside.Yuan5;
-            MoneyYuan10 = machineEvent.MoneyInside.Yuan10;
-            MoneyYuan20 = machineEvent.MoneyInside.Yuan20;
-            MoneyYuan50 = machineEvent.MoneyInside.Yuan50;
-            MoneyYuan100 = machineEvent.MoneyInside.Yuan100;
-            MoneyAmount = machineEvent.MoneyInside.Amount;
+            var dispatcher = Application.Current.Dispatcher;
+            dispatcher?.Invoke(() =>
+                               {
+                                   MoneyYuan1 = machineEvent.MoneyInside.Yuan1;
+                                   MoneyYuan2 = machineEvent.MoneyInside.Yuan2;
+                                   MoneyYuan5 = machineEvent.MoneyInside.Yuan5;
+                                   MoneyYuan10 = machineEvent.MoneyInside.Yuan10;
+                                   MoneyYuan20 = machineEvent.MoneyInside.Yuan20;
+                                   MoneyYuan50 = machineEvent.MoneyInside.Yuan50;
+                                   MoneyYuan100 = machineEvent.MoneyInside.Yuan100;
+                                   MoneyAmount = machineEvent.MoneyInside.Amount;
+                               });
         }
         return Task.CompletedTask;
     }
@@ -284,14 +309,18 @@ public class MachineEditViewModel : ReactiveObject, IActivatableViewModel, IOrle
     {
         if (machineEvent.MachineId == Id)
         {
-            MoneyYuan1 = machineEvent.MoneyInside.Yuan1;
-            MoneyYuan2 = machineEvent.MoneyInside.Yuan2;
-            MoneyYuan5 = machineEvent.MoneyInside.Yuan5;
-            MoneyYuan10 = machineEvent.MoneyInside.Yuan10;
-            MoneyYuan20 = machineEvent.MoneyInside.Yuan20;
-            MoneyYuan50 = machineEvent.MoneyInside.Yuan50;
-            MoneyYuan100 = machineEvent.MoneyInside.Yuan100;
-            MoneyAmount = machineEvent.MoneyInside.Amount;
+            var dispatcher = Application.Current.Dispatcher;
+            dispatcher?.Invoke(() =>
+                               {
+                                   MoneyYuan1 = machineEvent.MoneyInside.Yuan1;
+                                   MoneyYuan2 = machineEvent.MoneyInside.Yuan2;
+                                   MoneyYuan5 = machineEvent.MoneyInside.Yuan5;
+                                   MoneyYuan10 = machineEvent.MoneyInside.Yuan10;
+                                   MoneyYuan20 = machineEvent.MoneyInside.Yuan20;
+                                   MoneyYuan50 = machineEvent.MoneyInside.Yuan50;
+                                   MoneyYuan100 = machineEvent.MoneyInside.Yuan100;
+                                   MoneyAmount = machineEvent.MoneyInside.Amount;
+                               });
         }
         return Task.CompletedTask;
     }
@@ -340,183 +369,171 @@ public class MachineEditViewModel : ReactiveObject, IActivatableViewModel, IOrle
     public IClusterClient? ClusterClient
     {
         get => _clusterClient;
-        set
-        {
-            var dispatcher = Application.Current.Dispatcher;
-            dispatcher?.Invoke(() =>
-                               {
-                                   this.RaiseAndSetIfChanged(ref _clusterClient, value);
-                               });
-        }
+        set => this.RaiseAndSetIfChanged(ref _clusterClient, value);
     }
 
     private Guid _id;
-
     public Guid Id
     {
         get => _id;
-        set
-        {
-            var dispatcher = Application.Current.Dispatcher;
-            dispatcher?.Invoke(() =>
-                               {
-                                   this.RaiseAndSetIfChanged(ref _id, value);
-                               });
-        }
+        set => this.RaiseAndSetIfChanged(ref _id, value);
     }
 
     private Money _moneyInside = Money.Zero;
-
     public Money MoneyInside
     {
         get => _moneyInside;
-        set
-        {
-            var dispatcher = Application.Current.Dispatcher;
-            dispatcher?.Invoke(() =>
-                               {
-                                   this.RaiseAndSetIfChanged(ref _moneyInside, value);
-                               });
-        }
+        set => this.RaiseAndSetIfChanged(ref _moneyInside, value);
     }
 
     private int _moneyYuan1;
-
     public int MoneyYuan1
     {
         get => _moneyYuan1;
-        set
-        {
-            var dispatcher = Application.Current.Dispatcher;
-            dispatcher?.Invoke(() =>
-                               {
-                                   this.RaiseAndSetIfChanged(ref _moneyYuan1, value);
-                               });
-        }
+        set => this.RaiseAndSetIfChanged(ref _moneyYuan1, value);
     }
 
     private int _moneyYuan2;
-
     public int MoneyYuan2
     {
         get => _moneyYuan2;
-        set
-        {
-            var dispatcher = Application.Current.Dispatcher;
-            dispatcher?.Invoke(() =>
-                               {
-                                   this.RaiseAndSetIfChanged(ref _moneyYuan2, value);
-                               });
-        }
+        set => this.RaiseAndSetIfChanged(ref _moneyYuan2, value);
     }
+    
     private int _moneyYuan5;
-
     public int MoneyYuan5
     {
         get => _moneyYuan5;
-        set
-        {
-            var dispatcher = Application.Current.Dispatcher;
-            dispatcher?.Invoke(() =>
-                               {
-                                   this.RaiseAndSetIfChanged(ref _moneyYuan5, value);
-                               });
-        }
+        set => this.RaiseAndSetIfChanged(ref _moneyYuan5, value);
     }
+    
     private int _moneyYuan10;
-
     public int MoneyYuan10
     {
         get => _moneyYuan10;
-        set
-        {
-            var dispatcher = Application.Current.Dispatcher;
-            dispatcher?.Invoke(() =>
-                               {
-                                   this.RaiseAndSetIfChanged(ref _moneyYuan10, value);
-                               });
-        }
+        set => this.RaiseAndSetIfChanged(ref _moneyYuan10, value);
     }
 
     private int _moneyYuan20;
-
     public int MoneyYuan20
     {
         get => _moneyYuan20;
-        set
-        {
-            var dispatcher = Application.Current.Dispatcher;
-            dispatcher?.Invoke(() =>
-                               {
-                                   this.RaiseAndSetIfChanged(ref _moneyYuan20, value);
-                               });
-        }
+        set => this.RaiseAndSetIfChanged(ref _moneyYuan20, value);
     }
+    
     private int _moneyYuan50;
-
     public int MoneyYuan50
     {
         get => _moneyYuan50;
-        set
-        {
-            var dispatcher = Application.Current.Dispatcher;
-            dispatcher?.Invoke(() =>
-                               {
-                                   this.RaiseAndSetIfChanged(ref _moneyYuan50, value);
-                               });
-        }
+        set => this.RaiseAndSetIfChanged(ref _moneyYuan50, value);
     }
 
     private int _moneyYuan100;
-
     public int MoneyYuan100
     {
         get => _moneyYuan100;
-        set
-        {
-            var dispatcher = Application.Current.Dispatcher;
-            dispatcher?.Invoke(() =>
-                               {
-                                   this.RaiseAndSetIfChanged(ref _moneyYuan100, value);
-                               });
-        }
+        set => this.RaiseAndSetIfChanged(ref _moneyYuan100, value);
     }
 
     private decimal _moneyAmount;
-
     public decimal MoneyAmount
     {
         get => _moneyAmount;
-        set
-        {
-            var dispatcher = Application.Current.Dispatcher;
-            dispatcher?.Invoke(() =>
-                               {
-                                   this.RaiseAndSetIfChanged(ref _moneyAmount, value);
-                               });
-        }
+        set => this.RaiseAndSetIfChanged(ref _moneyAmount, value);
     }
 
     private bool _isDeleted;
-
     public bool IsDeleted
     {
         get => _isDeleted;
-        set
-        {
-            var dispatcher = Application.Current.Dispatcher;
-            dispatcher?.Invoke(() =>
-                               {
-                                   this.RaiseAndSetIfChanged(ref _isDeleted, value);
-                               });
-        }
+        set => this.RaiseAndSetIfChanged(ref _isDeleted, value);
     }
 
+    private SlotEditViewModel? _currentSlotEdit;
+    public SlotEditViewModel? CurrentSlotEdit
+    {
+        get => _currentSlotEdit;
+        set => this.RaiseAndSetIfChanged(ref _currentSlotEdit, value);
+    }
+    
     public ReadOnlyObservableCollection<SlotEditViewModel> Slots => _slots;
 
     #endregion
 
     #region Commands
+
+    /// <summary>
+    ///     Gets the command that adds a new slot.
+    /// </summary>
+    public ReactiveCommand<Unit, Unit> AddSlotCommand { get; }
+
+    /// <summary>
+    ///     Gets the observable that determines whether the add slot command can be executed.
+    /// </summary>
+    private IObservable<bool> CanAddSlot =>
+        this.WhenAnyValue(vm => vm.ClusterClient)
+            .Select(client => client != null);
+
+    /// <summary>
+    ///     Adds a new slot.
+    /// </summary>
+    private async Task AddSlotAsync()
+    {
+        bool retry;
+        do
+        {
+            var result = Result.Ok()
+                               .Map(() => _slotsCache.Edit(updater => updater.AddOrUpdate(new SlotEditViewModel(new MachineSlot(), _snacksCache))));
+            if (result.IsSuccess)
+            {
+                return;
+            }
+            var errorRecovery = await Interactions.Errors.Handle(result.Errors);
+            retry = errorRecovery == ErrorRecoveryOption.Retry;
+        }
+        while (retry);
+    }
+
+    /// <summary>
+    ///     Gets the command that removes the current slot.
+    /// </summary>
+    public ReactiveCommand<Unit, Unit> RemoveSlotCommand { get; }
+
+    /// <summary>
+    ///     Gets the observable that indicates whether the remove slot command can be executed.
+    /// </summary>
+    private IObservable<bool> CanRemoveSlot =>
+        this.WhenAnyValue(vm => vm.CurrentSlotEdit, vm => vm.ClusterClient)
+            .Select(slotClient => slotClient is { Item1: not null, Item2: not null });
+
+    /// <summary>
+    ///     Gets the interaction that asks the user to confirm the removal of the current slot.
+    /// </summary>
+    public Interaction<string, bool> ConfirmRemoveSlot { get; } = new();
+
+    /// <summary>
+    ///     Removes the current slot.
+    /// </summary>
+    private async Task RemoveSlotAsync()
+    {
+        var confirm = await ConfirmRemoveSlot.Handle(CurrentSlotEdit!.Position.ToString());
+        if (!confirm)
+        {
+            return;
+        }
+        bool retry;
+        do
+        {
+            var result = Result.Ok();
+            if (result.IsSuccess)
+            {
+                return;
+            }
+            var errorRecovery = await Interactions.Errors.Handle(result.Errors);
+            retry = errorRecovery == ErrorRecoveryOption.Retry;
+        }
+        while (retry);
+    }
 
     /// <summary>
     ///     Gets the command to save the machine.
@@ -547,6 +564,17 @@ public class MachineEditViewModel : ReactiveObject, IActivatableViewModel, IOrle
             retry = errorRecovery == ErrorRecoveryOption.Retry;
         }
         while (retry);
+    }
+    
+    
+    /// <summary>
+    ///     Gets the command to close the window.
+    /// </summary>
+    public ReactiveCommand<Unit, Unit> CloseCommand { get; }
+    
+    private async Task CloseAsync()
+    {
+        // await Interactions.Machines.Close(this);
     }
 
     #endregion

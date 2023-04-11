@@ -158,22 +158,13 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
     public ViewModelActivator Activator { get; } = new();
 
     private IClusterClient? _clusterClient;
-
     public IClusterClient? ClusterClient
     {
         get => _clusterClient;
-        set
-        {
-            var dispatcher = Application.Current.Dispatcher;
-            dispatcher?.Invoke(() =>
-                               {
-                                   this.RaiseAndSetIfChanged(ref _clusterClient, value);
-                               });
-        }
+        set => this.RaiseAndSetIfChanged(ref _clusterClient, value);
     }
 
     private NavigationSide _navigationSide;
-
     public NavigationSide NavigationSide
     {
         get => _navigationSide;
@@ -181,7 +172,6 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
     }
 
     private string _searchTerm = string.Empty;
-
     public string SearchTerm
     {
         get => _searchTerm;
@@ -189,7 +179,6 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
     }
 
     private SnackViewModel? _currentSnack;
-
     public SnackViewModel? CurrentSnack
     {
         get => _currentSnack;
@@ -197,7 +186,6 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
     }
 
     private SnackEditViewModel? _currentSnackEdit;
-
     public SnackEditViewModel? CurrentSnackEdit
     {
         get => _currentSnackEdit;

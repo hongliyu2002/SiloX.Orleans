@@ -17,15 +17,15 @@
             <StackPanel Grid.Row="0" Orientation="Horizontal">
                 <Button x:Name="AddSnackButton" Width="75" Margin="5">
                     <StackPanel Orientation="Horizontal">
-                        <Image Source="/Images/add.png" Height="13" Margin="5" />
-                        <TextBlock Text="Add" FontSize="13" Margin="5" />
+                        <Image Source="/Images/add.png" Height="13" />
+                        <TextBlock Text="Add" FontSize="13" Margin="5,0,0,0" />
                     </StackPanel>
                 </Button>
                 <Button x:Name="RemoveSnackButton" Width="75" Margin="5">
-                    <TextBlock Text="Remove" FontSize="13" Margin="5" />
+                    <TextBlock Text="Remove" FontSize="13" />
                 </Button>
                 <Button x:Name="MoveNavigationSideButton" Width="75" Margin="5">
-                    <Image Source="/Images/move.png" Height="13" Margin="5" />
+                    <Image Source="/Images/move.png" Height="13" />
                 </Button>
             </StackPanel>
             <StackPanel Grid.Row="1" Orientation="Horizontal">
