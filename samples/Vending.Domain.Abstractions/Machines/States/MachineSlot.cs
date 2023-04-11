@@ -25,7 +25,7 @@ public sealed class MachineSlot
     public MachineSlot(Guid machineId, int position, SnackPile? snackPile = null)
         : this()
     {
-        MachineId = Guard.Against.Empty(machineId, nameof(machineId));
+        MachineId = machineId;
         Position = Guard.Against.Negative(position, nameof(position));
         SnackPile = snackPile;
     }

@@ -12,13 +12,14 @@ public partial class MachinesManagementView
         InitializeComponent();
         this.WhenActivated(disposable =>
                            {
-                               this.Bind(ViewModel, vm => vm.PageSize, v => v.PageSizeTextBox.Text).DisposeWith(disposable);
-                               this.Bind(ViewModel, vm => vm.MoneyAmountStart, v => v.MoneyAmountStartTextBox.Text).DisposeWith(disposable);
-                               this.Bind(ViewModel, vm => vm.MoneyAmountEnd, v => v.MoneyAmountEndTextBox.Text).DisposeWith(disposable);
-                               this.Bind(ViewModel, vm => vm.CurrentMachine, v => v.MachineItemsDataGrid.SelectedItem).DisposeWith(disposable);
+                               this.Bind(ViewModel, vm => vm.PageSize, v => v.PageSizeTextBox.Text, IntToTextConverter, TextToIntConverter).DisposeWith(disposable);
+                               this.Bind(ViewModel, vm => vm.MoneyAmountStart, v => v.MoneyAmountStartTextBox.Text, NullableDecimalToTextConverter, TextToNullableDecimalConverter).DisposeWith(disposable);
+                               this.Bind(ViewModel, vm => vm.MoneyAmountEnd, v => v.MoneyAmountEndTextBox.Text, NullableDecimalToTextConverter, TextToNullableDecimalConverter).DisposeWith(disposable);
                                this.OneWayBind(ViewModel, vm => vm.Machines, v => v.MachineItemsDataGrid.ItemsSource).DisposeWith(disposable);
+                               this.Bind(ViewModel, vm => vm.CurrentMachine, v => v.MachineItemsDataGrid.SelectedItem).DisposeWith(disposable);
                                this.OneWayBind(ViewModel, vm => vm.PageNumber, v => v.CurrentPageText.Text).DisposeWith(disposable);
                                this.BindCommand(ViewModel, vm => vm.AddMachineCommand, v => v.AddMachineButton).DisposeWith(disposable);
+                               this.BindCommand(ViewModel, vm => vm.EditMachineCommand, v => v.EditMachineButton).DisposeWith(disposable);
                                this.BindCommand(ViewModel, vm => vm.RemoveMachineCommand, v => v.RemoveMachineButton).DisposeWith(disposable);
                                this.BindCommand(ViewModel, vm => vm.GoPreviousPageCommand, v => v.PreviousPageButton).DisposeWith(disposable);
                                this.BindCommand(ViewModel, vm => vm.GoNextPageCommand, v => v.NextPageButton).DisposeWith(disposable);
@@ -27,9 +28,39 @@ public partial class MachinesManagementView
                            });
     }
 
+    private string IntToTextConverter(int number)
+    {
+        return number.ToString();
+    }
+
+    private int TextToIntConverter(string text)
+    {
+        return int.TryParse(text, out var number) ? number : 0;
+    }
+
+    private string NullableDecimalToTextConverter(decimal? amount)
+    {
+        return amount.HasValue ? amount.Value.ToString("C") : string.Empty;
+    }
+
+    private decimal? TextToNullableDecimalConverter(string text)
+    {
+        if (decimal.TryParse(text, out var amount))
+        {
+            return amount;
+        }
+        return null;
+    }
+
     private void ShowMachineEditWindow(InteractionContext<MachineEditWindowModel, Unit> interaction)
     {
         var window = new MachineEditWindow { ViewModel = interaction.Input };
+        var hostWindow = this.GetParentWindow();
+        if (hostWindow != null)
+        {
+            window.Owner = hostWindow;
+            window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+        }
         window.ShowDialog();
         interaction.SetOutput(Unit.Default);
     }

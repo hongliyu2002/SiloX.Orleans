@@ -16,6 +16,9 @@
                     <TextBlock Text="Add" FontSize="13" Margin="5" />
                 </StackPanel>
             </Button>
+            <Button x:Name="EditMachineButton" Width="75" Margin="5">
+                <TextBlock Text="Edit" FontSize="13" Margin="5" />
+            </Button>
             <Button x:Name="RemoveMachineButton" Width="75" Margin="5">
                 <TextBlock Text="Remove" FontSize="13" Margin="5" />
             </Button>
@@ -27,10 +30,10 @@
             <TextBox x:Name="MoneyAmountEndTextBox" Width="50" Height="20" Margin="5" />
         </StackPanel>
 
-        <DataGrid x:Name="MachineItemsDataGrid" Grid.Row="1" AutoGenerateColumns="False">
+        <DataGrid x:Name="MachineItemsDataGrid" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="ID" Width="*" Binding="{Binding Id}" />
-                <DataGridTemplateColumn Header="Money Inside" Width="*">
+                <DataGridTextColumn Header="ID" Width="Auto" Binding="{Binding Id}" />
+                <DataGridTemplateColumn Header="Money Inside" Width="Auto">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBlock>
@@ -56,13 +59,13 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn Header="Transaction $" Width="*" Binding="{Binding AmountInTransaction, StringFormat='C2'}" />
-                <DataGridTextColumn Header="Slots #" Width="*" Binding="{Binding SlotCount}" />
-                <DataGridTextColumn Header="Snacks #" Width="*" Binding="{Binding SnackCount}" />
-                <DataGridTextColumn Header="Snacks *" Width="*" Binding="{Binding SnackQuantity}" />
-                <DataGridTextColumn Header="Snacks $" Width="*" Binding="{Binding SnackAmount}" />
-                <DataGridTextColumn Header="Bought #" Width="*" Binding="{Binding BoughtCount}" />
-                <DataGridTextColumn Header="Bought $" Width="*" Binding="{Binding BoughtAmount}" />
+                <DataGridTextColumn Header="Transaction $" Width="Auto" Binding="{Binding AmountInTransaction, StringFormat='C2'}" />
+                <DataGridTextColumn Header="Slots #" Width="Auto" Binding="{Binding SlotCount}" />
+                <DataGridTextColumn Header="Snacks #" Width="Auto" Binding="{Binding SnackCount}" />
+                <DataGridTextColumn Header="Snacks *" Width="Auto" Binding="{Binding SnackQuantity}" />
+                <DataGridTextColumn Header="Snacks $" Width="Auto" Binding="{Binding SnackAmount}" />
+                <DataGridTextColumn Header="Bought #" Width="Auto" Binding="{Binding BoughtCount}" />
+                <DataGridTextColumn Header="Bought $" Width="Auto" Binding="{Binding BoughtAmount}" />
             </DataGrid.Columns>
         </DataGrid>
 

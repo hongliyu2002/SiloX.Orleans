@@ -31,4 +31,31 @@ public static class MachineMapper
         machineInfo.SnackAmount = machine.SnackAmount;
         return machineInfo;
     }
+
+    /// <summary>
+    ///     Converts a <see cref="MachineInfo" /> to a <see cref="Machine" />.
+    /// </summary>
+    /// <param name="machineInfo">The <see cref="MachineInfo" /> to convert.</param>
+    /// <param name="machine">The <see cref="Machine" /> to convert to.</param>
+    /// <returns>The <see cref="Machine" /> converted from the <see cref="MachineInfo" />.</returns>
+    public static Machine ToDomain(this MachineInfo machineInfo, Machine? machine = null)
+    {
+        machine ??= new Machine();
+        machine.Id = machineInfo.Id;
+        machine.MoneyInside = machineInfo.MoneyInside.ToDomain(machine.MoneyInside);
+        machine.AmountInTransaction = machineInfo.AmountInTransaction;
+        machine.Slots = machineInfo.Slots.Select(slot => slot.ToDomain(machine.Slots.FirstOrDefault(ms => ms.MachineId == slot.MachineId && ms.Position == slot.Position))).ToList();
+        machine.CreatedAt = machineInfo.CreatedAt;
+        machine.LastModifiedAt = machineInfo.LastModifiedAt;
+        machine.DeletedAt = machineInfo.DeletedAt;
+        machine.CreatedBy = machineInfo.CreatedBy;
+        machine.LastModifiedBy = machineInfo.LastModifiedBy;
+        machine.DeletedBy = machineInfo.DeletedBy;
+        machine.IsDeleted = machineInfo.IsDeleted;
+        machine.SlotCount = machineInfo.SlotCount;
+        machine.SnackCount = machineInfo.SnackCount;
+        machine.SnackQuantity = machineInfo.SnackQuantity;
+        machine.SnackAmount = machineInfo.SnackAmount;
+        return machine;
+    }
 }

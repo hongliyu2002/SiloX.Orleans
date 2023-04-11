@@ -25,4 +25,26 @@ public static class SnackMapper
         snackInfo.IsDeleted = snack.IsDeleted;
         return snackInfo;
     }
+
+    /// <summary>
+    ///     Maps a <see cref="SnackInfo" /> to a <see cref="Snack" />
+    /// </summary>
+    /// <param name="snackInfo">The <see cref="SnackInfo" /> to map from.</param>
+    /// <param name="snack">The <see cref="Snack" /> to map to. If null, a new instance will be created.</param>
+    /// <returns>The mapped <see cref="Snack" />.</returns>
+    public static Snack ToDomain(this SnackInfo snackInfo, Snack? snack = null)
+    {
+        snack ??= new Snack();
+        snack.Id = snackInfo.Id;
+        snack.Name = snackInfo.Name;
+        snack.PictureUrl = snackInfo.PictureUrl;
+        snack.CreatedAt = snackInfo.CreatedAt;
+        snack.CreatedBy = snackInfo.CreatedBy;
+        snack.LastModifiedAt = snackInfo.LastModifiedAt;
+        snack.LastModifiedBy = snackInfo.LastModifiedBy;
+        snack.DeletedBy = snackInfo.DeletedBy;
+        snack.DeletedAt = snackInfo.DeletedAt;
+        snack.IsDeleted = snackInfo.IsDeleted;
+        return snack;
+    }
 }

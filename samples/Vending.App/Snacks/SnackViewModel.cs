@@ -17,7 +17,6 @@ public class SnackViewModel : ReactiveObject
     #region Properties
 
     private Guid _id;
-
     public Guid Id
     {
         get => _id;
@@ -25,7 +24,6 @@ public class SnackViewModel : ReactiveObject
     }
 
     private string _name = string.Empty;
-
     public string Name
     {
         get => _name;
@@ -33,7 +31,6 @@ public class SnackViewModel : ReactiveObject
     }
 
     private string? _pictureUrl;
-
     public string? PictureUrl
     {
         get => _pictureUrl;
@@ -41,7 +38,6 @@ public class SnackViewModel : ReactiveObject
     }
 
     private int _machineCount;
-
     public int MachineCount
     {
         get => _machineCount;
@@ -49,7 +45,6 @@ public class SnackViewModel : ReactiveObject
     }
 
     private int _totalQuantity;
-
     public int TotalQuantity
     {
         get => _totalQuantity;
@@ -57,7 +52,6 @@ public class SnackViewModel : ReactiveObject
     }
 
     private decimal _totalAmount;
-
     public decimal TotalAmount
     {
         get => _totalAmount;
@@ -65,7 +59,6 @@ public class SnackViewModel : ReactiveObject
     }
 
     private int _boughtCount;
-
     public int BoughtCount
     {
         get => _boughtCount;
@@ -73,7 +66,6 @@ public class SnackViewModel : ReactiveObject
     }
 
     private decimal _boughtAmount;
-
     public decimal BoughtAmount
     {
         get => _boughtAmount;
@@ -81,7 +73,6 @@ public class SnackViewModel : ReactiveObject
     }
 
     private bool _isDeleted;
-
     public bool IsDeleted
     {
         get => _isDeleted;

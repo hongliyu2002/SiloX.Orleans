@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
@@ -36,26 +35,26 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
                     .Filter(this.WhenAnyValue(vm => vm.SearchTerm)
                                 .Throttle(TimeSpan.FromMilliseconds(500))
                                 .DistinctUntilChanged()
-                                .Select(term => new Func<SnackViewModel, bool>(snack => (term.IsNullOrEmpty() || snack.Name.Contains(term, StringComparison.OrdinalIgnoreCase)) && snack.IsDeleted == false)))
+                                .Select(_ => new Func<SnackViewModel, bool>(snack => (SearchTerm.IsNullOrEmpty() || snack.Name.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase)) && snack.IsDeleted == false)))
                     .Sort(SortExpressionComparer<SnackViewModel>.Ascending(snack => snack.Name))
                     .ObserveOn(RxApp.MainThreadScheduler)
                     .Bind(out _snacks)
                     .Subscribe();
         // Search snacks and update the cache.
         this.WhenAnyValue(vm => vm.SearchTerm, vm => vm.ClusterClient)
-            .Where(tuple => tuple.Item2 != null)
+            .Where(_ => ClusterClient != null)
             .Throttle(TimeSpan.FromMilliseconds(500))
             .DistinctUntilChanged()
-            .Select(tuple => (tuple.Item1.Trim(), tuple.Item2!.GetGrain<ISnackRetrieverGrain>("Manager")))
-            .SelectMany(tuple => tuple.Item2.SearchingListAsync(new SnackRetrieverSearchingListQuery(tuple.Item1, new Dictionary<string, bool> { { "Id", false } }, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")))
+            .Select(_ => ClusterClient!.GetGrain<ISnackRetrieverGrain>("Manager"))
+            .SelectMany(grain => grain.SearchingListAsync(new SnackRetrieverSearchingListQuery(SearchTerm, null, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")))
             .Where(result => result.IsSuccess)
             .Select(result => result.Value)
             .ObserveOn(RxApp.MainThreadScheduler)
             .Subscribe(snacks => _snacksCache.Edit(updater => updater.AddOrUpdate(snacks.Select(snack => new SnackViewModel(snack)))));
-        // When the current snack snack changes, get the snack edit view model.
+        // When the current snack changes, get the snack edit view model.
         this.WhenAnyValue(vm => vm.CurrentSnack, vm => vm.ClusterClient)
-            .Where(tuple => tuple is { Item1: not null, Item2: not null })
-            .Select(tuple => tuple.Item2!.GetGrain<ISnackGrain>(tuple.Item1!.Id))
+            .Where(_ => CurrentSnack != null && ClusterClient != null)
+            .Select(_ => ClusterClient!.GetGrain<ISnackGrain>(CurrentSnack!.Id))
             .SelectMany(grain => grain.GetSnackAsync())
             .ObserveOn(RxApp.MainThreadScheduler)
             .Subscribe(snack => CurrentSnackEdit = new SnackEditViewModel(snack, ClusterClient!));
@@ -63,14 +62,15 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
                            {
                                // When the cluster client changes, subscribe to the snack info stream.
                                this.WhenAnyValue(vm => vm.ClusterClient)
-                                   .Where(client => client != null)
-                                   .Select(client => client!.GetStreamProvider(Constants.StreamProviderName))
-                                   .Select(provider => provider.GetStream<SnackInfoEvent>(StreamId.Create(Constants.SnackInfosBroadcastNamespace, Guid.Empty)))
+                                   .Where(_ => ClusterClient != null)
+                                   .Select(_ => ClusterClient!.GetStreamProvider(Constants.StreamProviderName))
+                                   .Select(streamProvider => streamProvider.GetStream<SnackInfoEvent>(StreamId.Create(Constants.SnackInfosBroadcastNamespace, Guid.Empty)))
                                    .SelectMany(stream => stream.SubscribeAsync(HandleEventAsync, HandleErrorAsync, HandleCompletedAsync, _lastSequenceToken))
                                    .ObserveOn(RxApp.MainThreadScheduler)
                                    .Subscribe(HandleSubscriptionAsync)
                                    .DisposeWith(disposable);
-                               Disposable.Create(HandleSubscriptionDisposeAsync).DisposeWith(disposable);
+                               Disposable.Create(HandleSubscriptionDisposeAsync)
+                                         .DisposeWith(disposable);
                            });
         // Create the commands.
         AddSnackCommand = ReactiveCommand.CreateFromTask(AddSnackAsync, CanAddSnack);
@@ -132,7 +132,9 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
     /// <summary>
     ///     Gets the observable that determines whether the add snack command can be executed.
     /// </summary>
-    private IObservable<bool> CanAddSnack => this.WhenAnyValue(vm => vm.ClusterClient).Select(client => client != null);
+    private IObservable<bool> CanAddSnack =>
+        this.WhenAnyValue(vm => vm.ClusterClient)
+            .Select(_ => ClusterClient != null);
 
     /// <summary>
     ///     Adds a new snack.
@@ -142,7 +144,8 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
         bool retry;
         do
         {
-            var result = Result.Ok().Map(() => CurrentSnackEdit = new SnackEditViewModel(new Snack(), ClusterClient!));
+            var result = Result.Ok()
+                               .Map(() => CurrentSnackEdit = new SnackEditViewModel(new Snack(), ClusterClient!));
             if (result.IsSuccess)
             {
                 return;
@@ -161,7 +164,9 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
     /// <summary>
     ///     Gets the observable that indicates whether the remove snack command can be executed.
     /// </summary>
-    private IObservable<bool> CanRemoveSnack => this.WhenAnyValue(vm => vm.CurrentSnack, vm => vm.ClusterClient).Select(snackClient => snackClient is { Item1: not null, Item2: not null });
+    private IObservable<bool> CanRemoveSnack =>
+        this.WhenAnyValue(vm => vm.CurrentSnack, vm => vm.ClusterClient)
+            .Select(_ => CurrentSnack != null && ClusterClient != null);
 
     /// <summary>
     ///     Gets the interaction that asks the user to confirm the removal of the current snack.
@@ -181,7 +186,9 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
         bool retry;
         do
         {
-            var result = await Result.Ok().MapTry(() => ClusterClient!.GetGrain<ISnackRepoGrain>(string.Empty)).BindTryAsync(repoGrain => repoGrain.DeleteAsync(new SnackRepoDeleteCommand(CurrentSnack!.Id, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")));
+            var result = await Result.Ok()
+                                     .MapTry(() => ClusterClient!.GetGrain<ISnackRepoGrain>(string.Empty))
+                                     .BindTryAsync(grain => grain.DeleteAsync(new SnackRepoDeleteCommand(CurrentSnack!.Id, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")));
             if (result.IsSuccess)
             {
                 return;
@@ -244,15 +251,12 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
     private Task HandleEventAsync(SnackInfoEvent projectionEvent, StreamSequenceToken sequenceToken)
     {
         _lastSequenceToken = sequenceToken;
-        switch (projectionEvent)
-        {
-            case SnackInfoSavedEvent snackEvent:
-                return ApplyEventAsync(snackEvent);
-            case SnackInfoErrorEvent snackEvent:
-                return ApplyErrorEventAsync(snackEvent);
-            default:
-                return Task.CompletedTask;
-        }
+        return projectionEvent switch
+               {
+                   SnackInfoSavedEvent snackEvent => ApplyEventAsync(snackEvent),
+                   SnackInfoErrorEvent snackEvent => ApplyErrorEventAsync(snackEvent),
+                   _ => Task.CompletedTask
+               };
     }
 
     private Task HandleErrorAsync(Exception exception)

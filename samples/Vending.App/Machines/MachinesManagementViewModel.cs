@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
@@ -36,9 +35,9 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
                       .Filter(this.WhenAnyValue(vm => vm.PageSize, vm => vm.PageNumber, vm => vm.MoneyAmountStart, vm => vm.MoneyAmountEnd)
                                   .Throttle(TimeSpan.FromMilliseconds(500))
                                   .DistinctUntilChanged()
-                                  .Select(query => new Func<MachineViewModel, bool>(machine => (query.Item3 == null || machine.MoneyInside.Amount >= query.Item3)
-                                                                                            && (query.Item4 == null || machine.MoneyInside.Amount < query.Item4)
-                                                                                            && machine.IsDeleted == false)))
+                                  .Select(_ => new Func<MachineViewModel, bool>(machine => (MoneyAmountStart == null || machine.MoneyInside.Amount >= MoneyAmountStart)
+                                                                                        && (MoneyAmountEnd == null || machine.MoneyInside.Amount < MoneyAmountEnd)
+                                                                                        && machine.IsDeleted == false)))
                       .Sort(SortExpressionComparer<MachineViewModel>.Ascending(machine => machine.Id))
                       .Skip(PageSize * (PageNumber - 1))
                       .Take(PageSize)
@@ -49,20 +48,21 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
         this.WhenAnyValue(vm => vm.PageSize, vm => vm.PageCount)
             .Throttle(TimeSpan.FromMilliseconds(500))
             .DistinctUntilChanged()
-            .Subscribe(page =>
+            .Subscribe(_ =>
                        {
                            var pageNumber = PageNumber <= 0 ? 1 : PageNumber;
-                           var oldOffset = _oldPageSize * (pageNumber - 1);
+                           var oldOffset = _oldPageSize * (pageNumber - 1) + 1;
                            var newPageOfOldOffset = (int)Math.Ceiling((double)oldOffset / PageSize);
-                           PageNumber = Math.Min(newPageOfOldOffset, page.Item2);
+                           pageNumber = Math.Min(newPageOfOldOffset, PageCount);
+                           PageNumber = pageNumber <= 0 ? 1 : pageNumber;
                        });
         // Get machines and update the cache.
         this.WhenAnyValue(vm => vm.MoneyAmountStart, vm => vm.MoneyAmountEnd, vm => vm.ClusterClient)
-            .Where(tuple => tuple.Item3 != null)
+            .Where(_ => ClusterClient != null)
             .Throttle(TimeSpan.FromMilliseconds(500))
             .DistinctUntilChanged()
-            .Select(tuple => (tuple.Item1, tuple.Item2, tuple.Item3!.GetGrain<IMachineRetrieverGrain>("Manager")))
-            .SelectMany(tuple => tuple.Item3.ListAsync(new MachineRetrieverListQuery(new Dictionary<string, bool> { { "Id", false } }, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager", new DecimalRange(tuple.Item1, tuple.Item2))))
+            .Select(_ => ClusterClient!.GetGrain<IMachineRetrieverGrain>("Manager"))
+            .SelectMany(grain => grain.ListAsync(new MachineRetrieverListQuery(null, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager", new DecimalRange(MoneyAmountStart, MoneyAmountEnd))))
             .Where(result => result.IsSuccess)
             .Select(result => result.Value)
             .ObserveOn(RxApp.MainThreadScheduler)
@@ -71,13 +71,20 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
                            _machinesCache.Edit(updater => updater.AddOrUpdate(machines.Select(machine => new MachineViewModel(machine))));
                            PageCount = (int)Math.Ceiling((double)machines.Count / PageSize);
                        });
+        // When the current machine changes, get the machine edit view model.
+        this.WhenAnyValue(vm => vm.CurrentMachine, vm => vm.ClusterClient)
+            .Where(_ => CurrentMachine != null && ClusterClient != null)
+            .Select(_ => ClusterClient!.GetGrain<IMachineGrain>(CurrentMachine!.Id))
+            .SelectMany(grain => grain.GetMachineAsync())
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .Subscribe(machine => CurrentMachineEdit = new MachineEditWindowModel(machine, ClusterClient!));
         this.WhenActivated(disposable =>
                            {
                                // When the cluster client changes, subscribe to the machine info stream.
                                this.WhenAnyValue(vm => vm.ClusterClient)
-                                   .Where(client => client != null)
-                                   .Select(client => client!.GetStreamProvider(Constants.StreamProviderName))
-                                   .Select(provider => provider.GetStream<MachineInfoEvent>(StreamId.Create(Constants.MachineInfosBroadcastNamespace, Guid.Empty)))
+                                   .Where(_ => ClusterClient != null)
+                                   .Select(_ => ClusterClient!.GetStreamProvider(Constants.StreamProviderName))
+                                   .Select(streamProvider => streamProvider.GetStream<MachineInfoEvent>(StreamId.Create(Constants.MachineInfosBroadcastNamespace, Guid.Empty)))
                                    .SelectMany(stream => stream.SubscribeAsync(HandleEventAsync, HandleErrorAsync, HandleCompletedAsync, _lastSequenceToken))
                                    .ObserveOn(RxApp.MainThreadScheduler)
                                    .Subscribe(HandleSubscriptionAsync)
@@ -87,6 +94,7 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
                            });
         // Create the commands.
         AddMachineCommand = ReactiveCommand.CreateFromTask(AddMachineAsync, CanAddMachine);
+        EditMachineCommand = ReactiveCommand.CreateFromTask(EditMachineAsync, CanEditMachine);
         RemoveMachineCommand = ReactiveCommand.CreateFromTask(RemoveMachineAsync, CanRemoveMachine);
         GoPreviousPageCommand = ReactiveCommand.Create(GoPreviousPage, CanGoPreviousPage);
         GoNextPageCommand = ReactiveCommand.Create(GoNextPage, CanGoNextPage);
@@ -105,7 +113,7 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     }
 
     private int _pageSize = 10;
-    private int _oldPageSize;
+    private int _oldPageSize = 10;
     public int PageSize
     {
         get => _pageSize;
@@ -151,6 +159,13 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
         set => this.RaiseAndSetIfChanged(ref _currentMachine, value);
     }
 
+    private MachineEditWindowModel? _currentMachineEdit;
+    public MachineEditWindowModel? CurrentMachineEdit
+    {
+        get => _currentMachineEdit;
+        set => this.RaiseAndSetIfChanged(ref _currentMachineEdit, value);
+    }
+
     public ReadOnlyObservableCollection<MachineViewModel> Machines => _machines;
 
     #endregion
@@ -164,7 +179,7 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
 
     private IObservable<bool> CanAddMachine =>
         this.WhenAnyValue(vm => vm.ClusterClient)
-            .Select(client => client != null);
+            .Select(_ => ClusterClient != null);
 
     /// <summary>
     ///     Gets the interaction that shows the machine edit dialog.
@@ -172,13 +187,31 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     public Interaction<MachineEditWindowModel, Unit> ShowEditMachine { get; } = new();
 
     /// <summary>
-    ///     Gets the command that moves the navigation side.
+    ///     Adds a new machine.
     /// </summary>
     private async Task AddMachineAsync()
     {
         var machine = new Machine();
         machine.Slots.Add(new MachineSlot(machine.Id, 1));
-        await ShowEditMachine.Handle(new MachineEditWindowModel(machine, ClusterClient!));
+        var windowModel = new MachineEditWindowModel(machine, ClusterClient!);
+        await ShowEditMachine.Handle(windowModel);
+    }
+
+    /// <summary>
+    ///     Gets the command that edits a machine.
+    /// </summary>
+    public ReactiveCommand<Unit, Unit> EditMachineCommand { get; }
+
+    private IObservable<bool> CanEditMachine =>
+        this.WhenAnyValue(vm => vm.CurrentMachineEdit)
+            .Select(_ => CurrentMachineEdit != null && ClusterClient != null);
+
+    /// <summary>
+    ///     Edits the current machine.
+    /// </summary>
+    private async Task EditMachineAsync()
+    {
+        await ShowEditMachine.Handle(CurrentMachineEdit!);
     }
 
     /// <summary>
@@ -190,8 +223,8 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     ///     Gets the observable that indicates whether the remove machine command can be executed.
     /// </summary>
     private IObservable<bool> CanRemoveMachine =>
-        this.WhenAnyValue(vm => vm.CurrentMachine, vm => vm.ClusterClient)
-            .Select(machineClient => machineClient is { Item1: not null, Item2: not null });
+        this.WhenAnyValue(vm => vm.CurrentMachine)
+            .Select(_ => CurrentMachine != null && ClusterClient != null);
 
     /// <summary>
     ///     Gets the interaction that asks the user to confirm the removal of the current machine.
@@ -231,7 +264,7 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
 
     private IObservable<bool> CanGoPreviousPage =>
         this.WhenAnyValue(vm => vm.PageNumber)
-            .Select(page => page > 1);
+            .Select(_ => PageNumber > 1);
 
     /// <summary>
     ///     Moves to the previous page.
@@ -248,7 +281,7 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
 
     private IObservable<bool> CanGoNextPage =>
         this.WhenAnyValue(vm => vm.PageNumber, vm => vm.PageCount)
-            .Select(page => page.Item1 < page.Item2);
+            .Select(_ => PageNumber < PageCount);
 
     /// <summary>
     ///     Moves to the next page.

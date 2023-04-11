@@ -22,4 +22,20 @@ public static class MachineSlotMapper
         }
         return slotInfo;
     }
+
+    /// <summary>
+    ///     Maps a <see cref="MachineSlotInfo" /> to a <see cref="MachineSlot" />.
+    /// </summary>
+    /// <param name="slotInfo">The <see cref="MachineSlotInfo" /> to map. </param>
+    /// <param name="slot">The <see cref="MachineSlot" /> to map to. If <c>null</c>, a new <see cref="MachineSlot" /> will be created.</param>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    public static MachineSlot ToDomain(this MachineSlotInfo slotInfo, MachineSlot? slot = null)
+    {
+        slot ??= new MachineSlot(slotInfo.MachineId, slotInfo.Position);
+        if (slotInfo.SnackPile != null)
+        {
+            slot.SnackPile = slotInfo.SnackPile.ToDomain(slot.SnackPile);
+        }
+        return slot;
+    }
 }

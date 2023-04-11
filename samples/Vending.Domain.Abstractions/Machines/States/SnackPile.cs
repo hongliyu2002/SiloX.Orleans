@@ -25,7 +25,7 @@ public sealed class SnackPile
     public SnackPile(Guid snackId, int quantity, decimal price)
         : this()
     {
-        SnackId = Guard.Against.Empty(snackId, nameof(snackId));
+        SnackId = snackId;
         Quantity = Guard.Against.Negative(quantity, nameof(quantity));
         Price = Guard.Against.Negative(price, nameof(price));
         Amount = Quantity * Price;

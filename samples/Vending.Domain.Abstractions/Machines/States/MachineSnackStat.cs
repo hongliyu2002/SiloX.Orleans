@@ -26,8 +26,8 @@ public sealed class MachineSnackStat
     public MachineSnackStat(Guid machineId, Guid snackId, int totalQuantity, decimal totalAmount)
         : this()
     {
-        MachineId = Guard.Against.Empty(machineId, nameof(machineId));
-        SnackId = Guard.Against.Empty(snackId, nameof(snackId));
+        MachineId = machineId;
+        SnackId = snackId;
         TotalQuantity = Guard.Against.Negative(totalQuantity, nameof(totalQuantity));
         TotalAmount = Guard.Against.Negative(totalAmount, nameof(totalAmount));
     }

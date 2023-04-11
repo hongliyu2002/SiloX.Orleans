@@ -24,4 +24,23 @@ public static class PurchaseMapper
         await purchaseInfo.UpdateSnackNameAndPictureUrlAsync(getSnackNamePicture);
         return purchaseInfo;
     }
+
+    /// <summary>
+    ///     Maps a <see cref="PurchaseInfo" /> to a <see cref="Purchase" />.
+    /// </summary>
+    /// <param name="purchaseInfo">The <see cref="PurchaseInfo" /> to map. </param>
+    /// <param name="purchase">The <see cref="Purchase" /> to map to. </param>
+    /// <returns>A <see cref="Task" /> that represents the asynchronous operation.</returns>
+    public static Purchase ToDomain(this PurchaseInfo purchaseInfo, Purchase? purchase = null)
+    {
+        purchase ??= new Purchase();
+        purchase.Id = purchaseInfo.Id;
+        purchase.MachineId = purchaseInfo.MachineId;
+        purchase.Position = purchaseInfo.Position;
+        purchase.SnackId = purchaseInfo.SnackId;
+        purchase.BoughtPrice = purchaseInfo.BoughtPrice;
+        purchase.BoughtAt = purchaseInfo.BoughtAt;
+        purchase.BoughtBy = purchaseInfo.BoughtBy;
+        return purchase;
+    }
 }

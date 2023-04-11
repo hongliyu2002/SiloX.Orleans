@@ -1,7 +1,7 @@
 ﻿<reactiveUi:ReactiveUserControl x:TypeArguments="vm:SlotEditViewModel" x:Class="Vending.App.Machines.SlotEditView" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:reactiveUi="http://reactiveui.net" xmlns:vm="clr-namespace:Vending.App.Machines" mc:Ignorable="d"
-                                d:DesignHeight="100" d:DesignWidth="480">
+                                d:DesignHeight="100" d:DesignWidth="600">
     <StackPanel Orientation="Horizontal">
         <TextBlock Text="P:" FontSize="13" Margin="5" VerticalAlignment="Center" />
         <TextBox x:Name="PositionTextBox" Width="50" Height="20" Margin="5" />
@@ -10,5 +10,7 @@
         <TextBox x:Name="QuantityTextBox" Width="50" Height="20" Margin="5" />
         <TextBlock Text="￥:" FontSize="13" Margin="5" VerticalAlignment="Center" />
         <TextBox x:Name="PriceTextBox" Width="50" Height="20" Margin="5" />
+        <TextBlock Text="Total:" FontSize="13" Margin="5" VerticalAlignment="Center" />
+        <TextBlock x:Name="AmountTextBox" Width="50" Height="20" Margin="5" />
     </StackPanel>
 </reactiveUi:ReactiveUserControl>
