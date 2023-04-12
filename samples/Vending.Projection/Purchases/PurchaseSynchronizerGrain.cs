@@ -204,8 +204,11 @@ public class PurchaseSynchronizerGrain : PublisherGrainWithGuidKey<PurchaseInfoE
                     _projectionDbContext.Purchases.Add(purchaseInfo);
                 }
                 await purchase.ToProjection(GetSnackNameAndPictureUrlAsync, purchaseInfo);
-                await _projectionDbContext.SaveChangesAsync();
-                await PublishAsync(new PurchaseInfoSavedEvent(purchaseInfo.Id, purchaseInfo.Version, purchaseInfo, traceId, operatedAt, operatedBy));
+                var changes = await _projectionDbContext.SaveChangesAsync();
+                if (changes > 0)
+                {
+                    await PublishAsync(new PurchaseInfoSavedEvent(purchaseInfo.Id, purchaseInfo.Version, purchaseInfo, traceId, operatedAt, operatedBy));
+                }
                 return;
             }
             catch (DbUpdateConcurrencyException ex)

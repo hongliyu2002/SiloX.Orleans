@@ -208,8 +208,11 @@ public class MachineSynchronizerGrain : PublisherGrainWithGuidKey<MachineInfoEve
                 var statsOfPurchasesGrain = GrainFactory.GetGrain<IMachineStatsOfPurchasesGrain>(machineId);
                 machineInfo.BoughtCount = await statsOfPurchasesGrain.GetBoughtCountAsync();
                 machineInfo.BoughtAmount = await statsOfPurchasesGrain.GetBoughtAmountAsync();
-                await _projectionDbContext.SaveChangesAsync();
-                await PublishAsync(new MachineInfoSavedEvent(machineInfo.Id, machineInfo.Version, machineInfo, traceId, operatedAt, operatedBy));
+                var changes = await _projectionDbContext.SaveChangesAsync();
+                if (changes > 0)
+                {
+                    await PublishAsync(new MachineInfoSavedEvent(machineInfo.Id, machineInfo.Version, machineInfo, traceId, operatedAt, operatedBy));
+                }
                 return;
             }
             catch (DbUpdateConcurrencyException ex)

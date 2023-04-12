@@ -30,21 +30,20 @@ public class MainWindowModel : ReactiveObject
         GoPurchasesManagementCommand = ReactiveCommand.Create(GoPurchasesManagement);
         // Register to application started event
         var appLifetime = Locator.Current.GetService<IHostApplicationLifetime>();
-        if (appLifetime == null)
+        if (appLifetime != null)
         {
-            return;
+            var clusterClient = Locator.Current.GetService<IClusterClient>();
+            appLifetime.ApplicationStarted.Register(() =>
+                                                    {
+                                                        var dispatcher = Application.Current.Dispatcher;
+                                                        dispatcher?.Invoke(() =>
+                                                                           {
+                                                                               _viewModels["Snacks"].ClusterClient = clusterClient;
+                                                                               _viewModels["Machines"].ClusterClient = clusterClient;
+                                                                               _viewModels["Purchases"].ClusterClient = clusterClient;
+                                                                           });
+                                                    });
         }
-        var clusterClient = Locator.Current.GetService<IClusterClient>();
-        appLifetime.ApplicationStarted.Register(() =>
-                                                {
-                                                    var dispatcher = Application.Current.Dispatcher;
-                                                    dispatcher?.Invoke(() =>
-                                                                       {
-                                                                           _viewModels["Snacks"].ClusterClient = clusterClient;
-                                                                           _viewModels["Machines"].ClusterClient = clusterClient;
-                                                                           _viewModels["Purchases"].ClusterClient = clusterClient;
-                                                                       });
-                                                });
     }
 
     #region Properties

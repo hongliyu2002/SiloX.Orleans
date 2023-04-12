@@ -210,8 +210,11 @@ public class SnackSynchronizerGrain : PublisherGrainWithGuidKey<SnackInfoEvent, 
                 var statsOfPurchasesGrain = GrainFactory.GetGrain<ISnackStatsOfPurchasesGrain>(snackId);
                 snackInfo.BoughtCount = await statsOfPurchasesGrain.GetBoughtCountAsync();
                 snackInfo.BoughtAmount = await statsOfPurchasesGrain.GetBoughtAmountAsync();
-                await _projectionDbContext.SaveChangesAsync();
-                await PublishAsync(new SnackInfoSavedEvent(snackInfo.Id, snackInfo.Version, snackInfo, traceId, operatedAt, operatedBy));
+                var changes = await _projectionDbContext.SaveChangesAsync();
+                if (changes > 0)
+                {
+                    await PublishAsync(new SnackInfoSavedEvent(snackInfo.Id, snackInfo.Version, snackInfo, traceId, operatedAt, operatedBy));
+                }
                 return;
             }
             catch (DbUpdateConcurrencyException ex)
