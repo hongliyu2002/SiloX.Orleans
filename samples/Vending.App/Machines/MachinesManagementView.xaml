@@ -22,6 +22,9 @@
             <Button x:Name="RemoveMachineButton" Width="75" Margin="5">
                 <TextBlock Text="Remove" FontSize="13" Margin="5" />
             </Button>
+            <Button x:Name="SyncMachinesButton" Width="75" Margin="5">
+                <TextBlock Text="Sync Data" FontSize="13" Margin="5" />
+            </Button>
             <TextBlock Text="Page Size:" FontSize="13" Margin="5" VerticalAlignment="Center" />
             <TextBox x:Name="PageSizeTextBox" Width="50" Height="20" Margin="5" />
             <TextBlock Text="Money Inside $:" FontSize="13" Margin="5" VerticalAlignment="Center" />

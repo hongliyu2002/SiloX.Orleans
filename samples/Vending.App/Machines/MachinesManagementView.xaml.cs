@@ -23,6 +23,7 @@ public partial class MachinesManagementView
                                this.BindCommand(ViewModel, vm => vm.AddMachineCommand, v => v.AddMachineButton).DisposeWith(disposable);
                                this.BindCommand(ViewModel, vm => vm.EditMachineCommand, v => v.EditMachineButton).DisposeWith(disposable);
                                this.BindCommand(ViewModel, vm => vm.RemoveMachineCommand, v => v.RemoveMachineButton).DisposeWith(disposable);
+                               this.BindCommand(ViewModel, vm => vm.SyncMachinesCommand, v => v.SyncMachinesButton).DisposeWith(disposable);
                                this.BindCommand(ViewModel, vm => vm.GoPreviousPageCommand, v => v.PreviousPageButton).DisposeWith(disposable);
                                this.BindCommand(ViewModel, vm => vm.GoNextPageCommand, v => v.NextPageButton).DisposeWith(disposable);
                                ViewModel?.ShowEditMachine.RegisterHandler(ShowMachineEditWindow).DisposeWith(disposable);

@@ -145,6 +145,7 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
         AddMachineCommand = ReactiveCommand.CreateFromTask(AddMachineAsync, CanAddMachine);
         EditMachineCommand = ReactiveCommand.CreateFromTask(EditMachineAsync, CanEditMachine);
         RemoveMachineCommand = ReactiveCommand.CreateFromTask(RemoveMachineAsync, CanRemoveMachine);
+        SyncMachinesCommand = ReactiveCommand.CreateFromTask(SyncMachinesAsync, CanSyncMachines);
         GoPreviousPageCommand = ReactiveCommand.Create(GoPreviousPage, CanGoPreviousPage);
         GoNextPageCommand = ReactiveCommand.Create(GoNextPage, CanGoNextPage);
     }
@@ -351,6 +352,40 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
                                      .Ensure(ClusterClient != null, "No cluster client available.")
                                      .MapTry(() => ClusterClient!.GetGrain<IMachineRepoGrain>(string.Empty))
                                      .BindTryAsync(grain => grain.DeleteAsync(new MachineRepoDeleteCommand(CurrentMachine!.Id, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")));
+            if (result.IsSuccess)
+            {
+                return;
+            }
+            var errorRecovery = await Interactions.Errors.Handle(result.Errors);
+            retry = errorRecovery == ErrorRecoveryOption.Retry;
+        }
+        while (retry);
+    }
+
+    /// <summary>
+    ///     Gets the command that syncs the machine data.
+    /// </summary>
+    public ReactiveCommand<Unit, Unit> SyncMachinesCommand { get; }
+
+    /// <summary>
+    ///     Gets the observable that indicates whether the sync machines command can be executed.
+    /// </summary>
+    private IObservable<bool> CanSyncMachines =>
+        this.WhenAnyValue(vm => vm.ClusterClient)
+            .Select(client => client != null);
+
+    /// <summary>
+    ///     Syncs the machine data.
+    /// </summary>
+    private async Task SyncMachinesAsync()
+    {
+        bool retry;
+        do
+        {
+            var result = await Result.Ok()
+                                     .Ensure(ClusterClient != null, "No cluster client available.")
+                                     .MapTry(() => ClusterClient!.GetGrain<IMachineSynchronizerGrain>(string.Empty))
+                                     .MapTryAsync(grain => grain.SyncDifferencesAsync());
             if (result.IsSuccess)
             {
                 return;
