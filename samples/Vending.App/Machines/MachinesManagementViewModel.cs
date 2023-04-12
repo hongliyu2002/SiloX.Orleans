@@ -6,6 +6,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using DynamicData;
+using DynamicData.Aggregation;
 using DynamicData.Binding;
 using Orleans;
 using Orleans.FluentResults;
@@ -59,28 +60,28 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
         // Create the cache for the machines.
         _machinesCache = new SourceCache<MachineViewModel, Guid>(machine => machine.Id);
         // Connect the cache to the machines observable collection.
-        _machinesCache.Connect()
-                      .Filter(this.WhenAnyValue(vm => vm.MoneyAmountStart, vm => vm.MoneyAmountEnd)
-                                  .Throttle(TimeSpan.FromMilliseconds(500))
-                                  .DistinctUntilChanged()
-                                  .Select(tuple => new Func<MachineViewModel, bool>(machine => (tuple.Item1 == null || machine.MoneyInside.Amount >= tuple.Item1)
-                                                                                            && (tuple.Item2 == null || machine.MoneyInside.Amount < tuple.Item2)
-                                                                                            && machine.IsDeleted == false)))
-                      .Sort(SortExpressionComparer<MachineViewModel>.Ascending(machine => machine.Id))
-                      .Page(this.WhenAnyValue(vm => vm.PageNumber, vm => vm.PageSize)
-                                .DistinctUntilChanged()
-                                .Select(tuple => new PageRequest(tuple.Item1, tuple.Item2)))
-                      .ObserveOn(RxApp.MainThreadScheduler)
-                      .Bind(out _machines)
-                      .Subscribe();
-
+        var machinesObs = _machinesCache.Connect()
+                                     .Filter(this.WhenAnyValue(vm => vm.MoneyAmountStart, vm => vm.MoneyAmountEnd)
+                                                 .Throttle(TimeSpan.FromMilliseconds(500))
+                                                 .DistinctUntilChanged()
+                                                 .Select(tuple => new Func<MachineViewModel, bool>(machine => (tuple.Item1 == null || machine.MoneyInside.Amount >= tuple.Item1)
+                                                                                                           && (tuple.Item2 == null || machine.MoneyInside.Amount < tuple.Item2)
+                                                                                                           && machine.IsDeleted == false)));
+        machinesObs.Sort(SortExpressionComparer<MachineViewModel>.Ascending(machine => machine.Id))
+                .Page(this.WhenAnyValue(vm => vm.PageNumber, vm => vm.PageSize)
+                          .DistinctUntilChanged()
+                          .Select(tuple => new PageRequest(tuple.Item1, tuple.Item2)))
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Bind(out _machines)
+                .Subscribe();
         // Recalculate the page count when the cache changes.
-        _machinesCache.CountChanged.ObserveOn(RxApp.MainThreadScheduler)
-                      .Subscribe(count =>
-                                 {
-                                     MachineCount = count;
-                                     PageCount = (int)Math.Ceiling((double)count / PageSize);
-                                 });
+        machinesObs.Count()
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Subscribe(count =>
+                           {
+                               MachineCount = count;
+                               PageCount = (int)Math.Ceiling((double)count / PageSize);
+                           });
         this.WhenAnyValue(vm => vm.PageSize)
             .ObserveOn(RxApp.MainThreadScheduler)
             .Subscribe(size => PageCount = (int)Math.Ceiling((double)_machinesCache.Count / size));
