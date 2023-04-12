@@ -29,9 +29,9 @@ public class SnackEditViewModel : ReactiveObject, IActivatableViewModel, IOrlean
                            {
                                // When the cluster client changes, subscribe to the snack info stream.
                                this.WhenAnyValue(vm => vm.Id, vm => vm.ClusterClient)
-                                   .Where(_ => Id != Guid.Empty && ClusterClient != null)
-                                   .Select(_ => ClusterClient!.GetStreamProvider(Constants.StreamProviderName))
-                                   .Select(streamProvider => streamProvider.GetStream<SnackEvent>(StreamId.Create(Constants.SnacksNamespace, Id)))
+                                   .Where(tuple => tuple.Item1 != Guid.Empty && tuple.Item2 != null)
+                                   .Select(tuple => (tuple.Item1, tuple.Item2!.GetStreamProvider(Constants.StreamProviderName)))
+                                   .Select(tuple => tuple.Item2.GetStream<SnackEvent>(StreamId.Create(Constants.SnacksNamespace, tuple.Item1)))
                                    .SelectMany(stream => stream.SubscribeAsync(HandleEventAsync, HandleErrorAsync, HandleCompletedAsync, _lastSequenceToken))
                                    .Subscribe(HandleSubscriptionAsync)
                                    .DisposeWith(disposable);
@@ -95,7 +95,7 @@ public class SnackEditViewModel : ReactiveObject, IActivatableViewModel, IOrlean
 
     private IObservable<bool> CanSaveSnack =>
         this.WhenAnyValue(vm => vm.Name, vm => vm.IsDeleted, vm => vm.ClusterClient)
-            .Select(_ => Name.IsNotNullOrEmpty() && IsDeleted == false && ClusterClient != null);
+            .Select(tuple => tuple.Item1.IsNotNullOrEmpty() && tuple is { Item2: false, Item3: not null });
 
     private async Task SaveSnackAsync()
     {
@@ -104,6 +104,8 @@ public class SnackEditViewModel : ReactiveObject, IActivatableViewModel, IOrlean
         {
             ISnackRepoGrain grain = null!;
             var result = await Result.Ok()
+                                     .Ensure(Name.IsNotNullOrEmpty(), "Name is required.")
+                                     .Ensure(ClusterClient != null, "No cluster client available.")
                                      .MapTry(() => grain = ClusterClient!.GetGrain<ISnackRepoGrain>("Manager"))
                                      .BindTryIfAsync(Id == Guid.Empty, () => grain.CreateAsync(new SnackRepoCreateCommand(Name, PictureUrl, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")))
                                      .BindTryIfAsync<Snack>(Id != Guid.Empty, () => grain.UpdateAsync(new SnackRepoUpdateCommand(Id, Name, PictureUrl, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")))

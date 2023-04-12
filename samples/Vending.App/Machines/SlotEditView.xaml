@@ -11,6 +11,6 @@
         <TextBlock Text="￥:" FontSize="13" Margin="5" VerticalAlignment="Center" />
         <TextBox x:Name="PriceTextBox" Width="50" Height="20" Margin="5" />
         <TextBlock Text="Total:" FontSize="13" Margin="5" VerticalAlignment="Center" />
-        <TextBlock x:Name="AmountTextBox" Width="50" Height="20" Margin="5" />
+        <TextBlock x:Name="AmountTextBox" Width="50" Height="20" Margin="5" VerticalAlignment="Center" />
     </StackPanel>
 </reactiveUi:ReactiveUserControl>

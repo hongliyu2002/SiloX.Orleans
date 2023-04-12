@@ -17,44 +17,46 @@ public class SlotEditViewModel : ReactiveObject
         Snacks = Guard.Against.Null(snacks, nameof(snacks));
 
         // Set the current snack when the snack id changes.
-        this.WhenAnyValue(vm => vm.SnackId, vm => vm.CurrentSnack)
-            .Where(_ => SnackId != null && SnackId != Guid.Empty && (CurrentSnack == null || CurrentSnack.Id != SnackId))
+        this.WhenAnyValue(vm => vm.SnackId)
+            .Where(snackId => snackId != null && snackId.Value != Guid.Empty)
             .ObserveOn(RxApp.MainThreadScheduler)
-            .Subscribe(_ => CurrentSnack = Snacks.FirstOrDefault(snack => snack.Id == SnackId));
-
-        // Set the snack properties to null when the current snack is null.
-        this.WhenAnyValue(vm => vm.CurrentSnack)
-            .Where(_ => CurrentSnack == null)
-            .ObserveOn(RxApp.MainThreadScheduler)
-            .Subscribe(_ =>
+            .Subscribe(snackId =>
                        {
-                           SnackPile = null;
-                           SnackId = null;
-                           Quantity = null;
-                           Price = null;
-                           Amount = null;
-                       });
-
-        // Set the snack properties when the current snack is not null.
-        this.WhenAnyValue(vm => vm.CurrentSnack)
-            .Where(_ => CurrentSnack != null)
-            .ObserveOn(RxApp.MainThreadScheduler)
-            .Subscribe(snack =>
-                       {
-                           SnackId = snack!.Id;
-                           Quantity ??= 1;
-                           Price ??= 0;
+                           var snack = CurrentSnack;
+                           if (snack == null || snack.Id != snackId!.Value)
+                           {
+                               CurrentSnack = Snacks.FirstOrDefault(s => s.Id == snackId);
+                           }
                        });
 
         // Recreate the snack pile when any of the properties change.
         this.WhenAnyValue(vm => vm.CurrentSnack, vm => vm.Quantity, vm => vm.Price)
-            .Where(_ => CurrentSnack != null && Quantity != null && Price != null)
             .ObserveOn(RxApp.MainThreadScheduler)
-            .Subscribe(_ =>
+            .Subscribe(tuple =>
                        {
-                           SnackPile = new SnackPile(CurrentSnack!.Id, Quantity!.Value, Price!.Value);
-                           Amount = SnackPile.Amount;
+                           var snack = tuple.Item1;
+                           var quantity = tuple.Item2;
+                           var price = tuple.Item3;
+                           if (snack == null)
+                           {
+                               SnackPile = null;
+                               Amount = null;
+                           }
+                           else if (quantity == null)
+                           {
+                               Quantity = 1;
+                           }
+                           else if (price == null)
+                           {
+                               Price = 0;
+                           }
+                           else
+                           {
+                               SnackPile = new SnackPile(snack.Id, quantity.Value, price.Value);
+                               Amount = SnackPile.Amount;
+                           }
                        });
+
         // Load the slot.
         LoadSlot(slot);
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
@@ -23,7 +24,6 @@ namespace Vending.App.Machines;
 
 public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel, IOrleansObject
 {
-    private readonly ReadOnlyObservableCollection<SnackViewModel> _snacks;
     private readonly SourceCache<SlotEditViewModel, int> _slotsCache;
 
     private StreamSubscriptionHandle<MachineEvent>? _subscription;
@@ -41,35 +41,40 @@ public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel, IOr
                    .ObserveOn(RxApp.MainThreadScheduler)
                    .Bind(out _slots)
                    .Subscribe();
+
         // Recalculate the slot count when the slots change.
         _slotsCache.CountChanged.ObserveOn(RxApp.MainThreadScheduler)
                    .Subscribe(count => SlotCount = count);
+
         // Recreate the money inside when any of the money properties change.
         this.WhenAnyValue(vm => vm.MoneyYuan1, vm => vm.MoneyYuan2, vm => vm.MoneyYuan5, vm => vm.MoneyYuan10, vm => vm.MoneyYuan20, vm => vm.MoneyYuan50, vm => vm.MoneyYuan100)
             .ObserveOn(RxApp.MainThreadScheduler)
-            .Subscribe(_ =>
+            .Subscribe(tuple =>
                        {
-                           MoneyInside = new Money(MoneyYuan1, MoneyYuan2, MoneyYuan5, MoneyYuan10, MoneyYuan20, MoneyYuan50, MoneyYuan100);
+                           MoneyInside = new Money(tuple.Item1, tuple.Item2, tuple.Item3, tuple.Item4, tuple.Item5, tuple.Item6, tuple.Item7);
                            MoneyAmount = MoneyInside.Amount;
                        });
+
         // Stream events subscription.
         this.WhenActivated(disposable =>
                            {
                                // When the cluster client changes, subscribe to the machine info stream.
                                this.WhenAnyValue(vm => vm.Id, vm => vm.ClusterClient)
-                                   .Where(_ => Id != Guid.Empty && ClusterClient != null)
-                                   .Select(_ => ClusterClient!.GetStreamProvider(Constants.StreamProviderName))
-                                   .Select(streamProvider => streamProvider.GetStream<MachineEvent>(StreamId.Create(Constants.MachinesNamespace, Id)))
+                                   .Where(tuple => tuple.Item1 != Guid.Empty && tuple.Item2 != null)
+                                   .Select(tuple => (tuple.Item1, tuple.Item2!.GetStreamProvider(Constants.StreamProviderName)))
+                                   .Select(tuple => tuple.Item2.GetStream<MachineEvent>(StreamId.Create(Constants.MachinesNamespace, tuple.Item1)))
                                    .SelectMany(stream => stream.SubscribeAsync(HandleEventAsync, HandleErrorAsync, HandleCompletedAsync, _lastSequenceToken))
                                    .Subscribe(HandleSubscriptionAsync)
                                    .DisposeWith(disposable);
                                Disposable.Create(HandleSubscriptionDisposeAsync)
                                          .DisposeWith(disposable);
                            });
+
         // Create the commands.
-        AddSlotCommand = ReactiveCommand.Create(AddSlot);
+        AddSlotCommand = ReactiveCommand.CreateFromTask(AddSlotAsync, CanAddSlot);
         RemoveSlotCommand = ReactiveCommand.CreateFromTask(RemoveSlotAsync, CanRemoveSlot);
         SaveMachineCommand = ReactiveCommand.CreateFromTask(SaveMachineAsync, CanSaveMachine);
+
         // Load the machine.
         LoadMachine(machine);
     }
@@ -180,6 +185,8 @@ public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel, IOr
         set => this.RaiseAndSetIfChanged(ref _slotCount, value);
     }
 
+    private readonly ReadOnlyObservableCollection<SnackViewModel> _snacks;
+
     #endregion
 
     #region Commands
@@ -189,13 +196,33 @@ public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel, IOr
     /// </summary>
     public ReactiveCommand<Unit, Unit> AddSlotCommand { get; }
 
+    private IObservable<bool> CanAddSlot =>
+        this.WhenAnyValue(vm => vm._snacks)
+            .Select(_ => _snacks.IsNotNullOrEmpty());
+
     /// <summary>
     ///     Adds a new slot.
     /// </summary>
-    private void AddSlot()
+    private async Task AddSlotAsync()
     {
-        var position = _slotsCache.Keys.Max() + 1;
-        _slotsCache.Edit(updater => updater.AddOrUpdate(new SlotEditViewModel(new MachineSlot(Id, position), _snacks)));
+        bool retry;
+        do
+        {
+            var result = Result.Ok()
+                               .Ensure(_snacks.Count > 0, "No snacks available.")
+                               .TapTry(() =>
+                                       {
+                                           var position = _slotsCache.Keys.Max() + 1;
+                                           _slotsCache.Edit(updater => updater.AddOrUpdate(new SlotEditViewModel(new MachineSlot(Id, position), _snacks)));
+                                       });
+            if (result.IsSuccess)
+            {
+                return;
+            }
+            var errorRecovery = await Interactions.Errors.Handle(result.Errors);
+            retry = errorRecovery == ErrorRecoveryOption.Retry;
+        }
+        while (retry);
     }
 
     /// <summary>
@@ -233,22 +260,26 @@ public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel, IOr
     public ReactiveCommand<Unit, Unit> SaveMachineCommand { get; }
 
     private IObservable<bool> CanSaveMachine =>
-        this.WhenAnyValue(vm => vm.SlotCount, vm => vm.IsDeleted, vm => vm.ClusterClient)
-            .Select(_ => Slots.IsNotNullOrEmpty()
-                      && Slots.GroupBy(slot => slot.Position)
-                              .All(g => g.Count() == 1)
-                      && IsDeleted == false
-                      && ClusterClient != null);
+        this.WhenAnyValue(vm => vm.Slots, vm => vm.SlotCount, vm => vm.IsDeleted, vm => vm.ClusterClient)
+            .Select(tuple => tuple.Item1.IsNotNullOrEmpty()
+                          && tuple.Item1.GroupBy(s => s.Position)
+                                  .All(g => g.Count() == 1)
+                          && tuple is { Item3: false, Item4: not null });
 
     private async Task SaveMachineAsync()
     {
         bool retry;
         do
         {
-            var slots = Slots.ToDictionary(slot => slot.Position, slot => slot.SnackPile);
             IMachineRepoGrain grain = null!;
+            Dictionary<int, SnackPile?> slots = null!;
             var result = await Result.Ok()
-                                     .MapTry(() => grain = ClusterClient!.GetGrain<IMachineRepoGrain>("Manager"))
+                                     .Ensure(Slots.IsNotNullOrEmpty(), "No slots available.")
+                                     .Ensure(Slots.GroupBy(s => s.Position)
+                                                  .All(g => g.Count() == 1), "Duplicate slot positions.")
+                                     .Ensure(ClusterClient != null, "No cluster client available.")
+                                     .TapTry(() => slots = Slots.ToDictionary(slot => slot.Position, slot => slot.SnackPile))
+                                     .TapTry(() => grain = ClusterClient!.GetGrain<IMachineRepoGrain>("Manager"))
                                      .BindTryIfAsync(Id == Guid.Empty, () => grain.CreateAsync(new MachineRepoCreateCommand(MoneyInside, slots, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")))
                                      .BindTryIfAsync<Machine>(Id != Guid.Empty, () => grain.UpdateAsync(new MachineRepoUpdateCommand(Id, MoneyInside, slots, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")))
                                      .TapTryAsync(LoadMachine);
