@@ -70,12 +70,12 @@ public class SnackStatsOfMachinesGrain : StatefulGrainWithGuidKey<StatsOfMachine
     {
         var snackId = this.GetPrimaryKey();
         var traceId = Guid.NewGuid();
-        var operationAt = DateTimeOffset.UtcNow;
-        var operationBy = $"System/{GetType().Name}";
+        var operatedAt = DateTimeOffset.UtcNow;
+        var operatedBy = $"System/{GetType().Name}";
         return Result.Ok()
                      .MapTryAsync(() => ApplyMachineCountAsync(machineCount))
-                     .MapTryAsync(() => PublishAsync(new SnackMachineCountUpdatedEvent(snackId, State.MachineCount, traceId, operationAt, operationBy)))
-                     .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(snackId, 0, 121, errors.ToListMessages(), traceId, operationAt, operationBy)));
+                     .MapTryAsync(() => PublishAsync(new SnackMachineCountUpdatedEvent(snackId, State.MachineCount, traceId, operatedAt, operatedBy)))
+                     .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(snackId, 0, 121, errors.ToListMessages(), traceId, operatedAt, operatedBy)));
     }
 
     /// <inheritdoc />
@@ -83,12 +83,12 @@ public class SnackStatsOfMachinesGrain : StatefulGrainWithGuidKey<StatsOfMachine
     {
         var snackId = this.GetPrimaryKey();
         var traceId = Guid.NewGuid();
-        var operationAt = DateTimeOffset.UtcNow;
-        var operationBy = $"System/{GetType().Name}";
+        var operatedAt = DateTimeOffset.UtcNow;
+        var operatedBy = $"System/{GetType().Name}";
         return Result.Ok()
                      .MapTryAsync(() => ApplyTotalQuantityAsync(totalQuantity))
-                     .MapTryAsync(() => PublishAsync(new SnackTotalQuantityUpdatedEvent(snackId, State.TotalQuantity, traceId, operationAt, operationBy)))
-                     .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(snackId, 0, 122, errors.ToListMessages(), traceId, operationAt, operationBy)));
+                     .MapTryAsync(() => PublishAsync(new SnackTotalQuantityUpdatedEvent(snackId, State.TotalQuantity, traceId, operatedAt, operatedBy)))
+                     .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(snackId, 0, 122, errors.ToListMessages(), traceId, operatedAt, operatedBy)));
     }
 
     /// <inheritdoc />
@@ -96,12 +96,12 @@ public class SnackStatsOfMachinesGrain : StatefulGrainWithGuidKey<StatsOfMachine
     {
         var snackId = this.GetPrimaryKey();
         var traceId = Guid.NewGuid();
-        var operationAt = DateTimeOffset.UtcNow;
-        var operationBy = $"System/{GetType().Name}";
+        var operatedAt = DateTimeOffset.UtcNow;
+        var operatedBy = $"System/{GetType().Name}";
         return Result.Ok()
                      .MapTryAsync(() => ApplyTotalAmountAsync(totalAmount))
-                     .MapTryAsync(() => PublishAsync(new SnackTotalAmountUpdatedEvent(snackId, State.TotalAmount, traceId, operationAt, operationBy)))
-                     .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(snackId, 0, 123, errors.ToListMessages(), traceId, operationAt, operationBy)));
+                     .MapTryAsync(() => PublishAsync(new SnackTotalAmountUpdatedEvent(snackId, State.TotalAmount, traceId, operatedAt, operatedBy)))
+                     .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(snackId, 0, 123, errors.ToListMessages(), traceId, operatedAt, operatedBy)));
     }
 
     #region Persistence

@@ -81,6 +81,8 @@ public sealed class SnackProjectionGrain : SubscriberPublisherGrainWithGuidKey<S
 
     private async Task ApplyEventAsync(SnackInitializedEvent snackEvent)
     {
+        var operatedAt = DateTimeOffset.UtcNow;
+        var operatedBy = $"System/{GetType().Name}";
         try
         {
             var snackInfo = await _dbContext.Snacks.FindAsync(snackEvent.SnackId);
@@ -104,18 +106,20 @@ public sealed class SnackProjectionGrain : SubscriberPublisherGrainWithGuidKey<S
                 return;
             }
             await _dbContext.SaveChangesAsync();
-            await PublishAsync(new SnackInfoSavedEvent(snackInfo.Id, snackInfo.Version, snackInfo, snackEvent.TraceId, DateTimeOffset.UtcNow, snackEvent.OperatedBy));
+            await PublishAsync(new SnackInfoSavedEvent(snackInfo.Id, snackInfo.Version, snackInfo, snackEvent.TraceId, operatedAt, operatedBy));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Apply SnackInitializedEvent: Exception is occurred when try to write data to the database. Try to execute full update...");
-            await PublishErrorAsync(new SnackInfoErrorEvent(snackEvent.SnackId, snackEvent.Version, 101, new[] { ex.Message }, snackEvent.TraceId, DateTimeOffset.UtcNow, snackEvent.OperatedBy));
+            await PublishErrorAsync(new SnackInfoErrorEvent(snackEvent.SnackId, snackEvent.Version, 101, new[] { ex.Message }, snackEvent.TraceId, operatedAt, operatedBy));
             await ApplyFullUpdateAsync(snackEvent);
         }
     }
 
     private async Task ApplyEventAsync(SnackDeletedEvent snackEvent)
     {
+        var operatedAt = DateTimeOffset.UtcNow;
+        var operatedBy = $"System/{GetType().Name}";
         try
         {
             var snackInfo = await _dbContext.Snacks.FindAsync(snackEvent.SnackId);
@@ -136,18 +140,20 @@ public sealed class SnackProjectionGrain : SubscriberPublisherGrainWithGuidKey<S
             snackInfo.IsDeleted = true;
             snackInfo.Version = snackEvent.Version;
             await _dbContext.SaveChangesAsync();
-            await PublishAsync(new SnackInfoSavedEvent(snackInfo.Id, snackInfo.Version, snackInfo, snackEvent.TraceId, DateTimeOffset.UtcNow, snackEvent.OperatedBy));
+            await PublishAsync(new SnackInfoSavedEvent(snackInfo.Id, snackInfo.Version, snackInfo, snackEvent.TraceId, operatedAt, operatedBy));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Apply SnackDeletedEvent: Exception is occurred when try to write data to the database. Try to execute full update...");
-            await PublishErrorAsync(new SnackInfoErrorEvent(snackEvent.SnackId, snackEvent.Version, 102, new[] { ex.Message }, snackEvent.TraceId, DateTimeOffset.UtcNow, snackEvent.OperatedBy));
+            await PublishErrorAsync(new SnackInfoErrorEvent(snackEvent.SnackId, snackEvent.Version, 102, new[] { ex.Message }, snackEvent.TraceId, operatedAt, operatedBy));
             await ApplyFullUpdateAsync(snackEvent);
         }
     }
 
     private async Task ApplyEventAsync(SnackUpdatedEvent snackEvent)
     {
+        var operatedAt = DateTimeOffset.UtcNow;
+        var operatedBy = $"System/{GetType().Name}";
         try
         {
             var snackInfo = await _dbContext.Snacks.FindAsync(snackEvent.SnackId);
@@ -169,18 +175,20 @@ public sealed class SnackProjectionGrain : SubscriberPublisherGrainWithGuidKey<S
             snackInfo.LastModifiedBy = snackEvent.OperatedBy;
             snackInfo.Version = snackEvent.Version;
             await _dbContext.SaveChangesAsync();
-            await PublishAsync(new SnackInfoSavedEvent(snackInfo.Id, snackInfo.Version, snackInfo, snackEvent.TraceId, DateTimeOffset.UtcNow, snackEvent.OperatedBy));
+            await PublishAsync(new SnackInfoSavedEvent(snackInfo.Id, snackInfo.Version, snackInfo, snackEvent.TraceId, operatedAt, operatedBy));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Apply SnackUpdatedEvent: Exception is occurred when try to write data to the database. Try to execute full update...");
-            await PublishErrorAsync(new SnackInfoErrorEvent(snackEvent.SnackId, snackEvent.Version, 103, new[] { ex.Message }, snackEvent.TraceId, DateTimeOffset.UtcNow, snackEvent.OperatedBy));
+            await PublishErrorAsync(new SnackInfoErrorEvent(snackEvent.SnackId, snackEvent.Version, 103, new[] { ex.Message }, snackEvent.TraceId, operatedAt, operatedBy));
             await ApplyFullUpdateAsync(snackEvent);
         }
     }
 
     private async Task ApplyEventAsync(SnackMachineCountUpdatedEvent snackEvent)
     {
+        var operatedAt = DateTimeOffset.UtcNow;
+        var operatedBy = $"System/{GetType().Name}";
         try
         {
             var snackInfo = await _dbContext.Snacks.FindAsync(snackEvent.SnackId);
@@ -192,18 +200,20 @@ public sealed class SnackProjectionGrain : SubscriberPublisherGrainWithGuidKey<S
             }
             snackInfo.MachineCount = snackEvent.MachineCount;
             await _dbContext.SaveChangesAsync();
-            await PublishAsync(new SnackInfoSavedEvent(snackInfo.Id, snackInfo.Version, snackInfo, snackEvent.TraceId, DateTimeOffset.UtcNow, snackEvent.OperatedBy));
+            await PublishAsync(new SnackInfoSavedEvent(snackInfo.Id, snackInfo.Version, snackInfo, snackEvent.TraceId, operatedAt, operatedBy));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Apply SnackMachineCountUpdatedEvent: Exception is occurred when try to write data to the database. Try to execute full update...");
-            await PublishErrorAsync(new SnackInfoErrorEvent(snackEvent.SnackId, snackEvent.Version, 121, new[] { ex.Message }, snackEvent.TraceId, DateTimeOffset.UtcNow, snackEvent.OperatedBy));
+            await PublishErrorAsync(new SnackInfoErrorEvent(snackEvent.SnackId, snackEvent.Version, 121, new[] { ex.Message }, snackEvent.TraceId, operatedAt, operatedBy));
             await ApplyFullUpdateAsync(snackEvent);
         }
     }
 
     private async Task ApplyEventAsync(SnackTotalQuantityUpdatedEvent snackEvent)
     {
+        var operatedAt = DateTimeOffset.UtcNow;
+        var operatedBy = $"System/{GetType().Name}";
         try
         {
             var snackInfo = await _dbContext.Snacks.FindAsync(snackEvent.SnackId);
@@ -215,18 +225,20 @@ public sealed class SnackProjectionGrain : SubscriberPublisherGrainWithGuidKey<S
             }
             snackInfo.TotalQuantity = snackEvent.TotalQuantity;
             await _dbContext.SaveChangesAsync();
-            await PublishAsync(new SnackInfoSavedEvent(snackInfo.Id, snackInfo.Version, snackInfo, snackEvent.TraceId, DateTimeOffset.UtcNow, snackEvent.OperatedBy));
+            await PublishAsync(new SnackInfoSavedEvent(snackInfo.Id, snackInfo.Version, snackInfo, snackEvent.TraceId, operatedAt, operatedBy));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Apply SnackTotalQuantityUpdatedEvent: Exception is occurred when try to write data to the database. Try to execute full update...");
-            await PublishErrorAsync(new SnackInfoErrorEvent(snackEvent.SnackId, snackEvent.Version, 122, new[] { ex.Message }, snackEvent.TraceId, DateTimeOffset.UtcNow, snackEvent.OperatedBy));
+            await PublishErrorAsync(new SnackInfoErrorEvent(snackEvent.SnackId, snackEvent.Version, 122, new[] { ex.Message }, snackEvent.TraceId, operatedAt, operatedBy));
             await ApplyFullUpdateAsync(snackEvent);
         }
     }
 
     private async Task ApplyEventAsync(SnackTotalAmountUpdatedEvent snackEvent)
     {
+        var operatedAt = DateTimeOffset.UtcNow;
+        var operatedBy = $"System/{GetType().Name}";
         try
         {
             var snackInfo = await _dbContext.Snacks.FindAsync(snackEvent.SnackId);
@@ -238,18 +250,20 @@ public sealed class SnackProjectionGrain : SubscriberPublisherGrainWithGuidKey<S
             }
             snackInfo.TotalAmount = snackEvent.TotalAmount;
             await _dbContext.SaveChangesAsync();
-            await PublishAsync(new SnackInfoSavedEvent(snackInfo.Id, snackInfo.Version, snackInfo, snackEvent.TraceId, DateTimeOffset.UtcNow, snackEvent.OperatedBy));
+            await PublishAsync(new SnackInfoSavedEvent(snackInfo.Id, snackInfo.Version, snackInfo, snackEvent.TraceId, operatedAt, operatedBy));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Apply SnackTotalAmountUpdatedEvent: Exception is occurred when try to write data to the database. Try to execute full update...");
-            await PublishErrorAsync(new SnackInfoErrorEvent(snackEvent.SnackId, snackEvent.Version, 123, new[] { ex.Message }, snackEvent.TraceId, DateTimeOffset.UtcNow, snackEvent.OperatedBy));
+            await PublishErrorAsync(new SnackInfoErrorEvent(snackEvent.SnackId, snackEvent.Version, 123, new[] { ex.Message }, snackEvent.TraceId, operatedAt, operatedBy));
             await ApplyFullUpdateAsync(snackEvent);
         }
     }
 
     private async Task ApplyEventAsync(SnackBoughtCountUpdatedEvent snackEvent)
     {
+        var operatedAt = DateTimeOffset.UtcNow;
+        var operatedBy = $"System/{GetType().Name}";
         try
         {
             var snackInfo = await _dbContext.Snacks.FindAsync(snackEvent.SnackId);
@@ -261,18 +275,20 @@ public sealed class SnackProjectionGrain : SubscriberPublisherGrainWithGuidKey<S
             }
             snackInfo.BoughtCount = snackEvent.BoughtCount;
             await _dbContext.SaveChangesAsync();
-            await PublishAsync(new SnackInfoSavedEvent(snackInfo.Id, snackInfo.Version, snackInfo, snackEvent.TraceId, DateTimeOffset.UtcNow, snackEvent.OperatedBy));
+            await PublishAsync(new SnackInfoSavedEvent(snackInfo.Id, snackInfo.Version, snackInfo, snackEvent.TraceId, operatedAt, operatedBy));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Apply SnackBoughtCountUpdatedEvent: Exception is occurred when try to write data to the database. Try to execute full update...");
-            await PublishErrorAsync(new SnackInfoErrorEvent(snackEvent.SnackId, snackEvent.Version, 131, new[] { ex.Message }, snackEvent.TraceId, DateTimeOffset.UtcNow, snackEvent.OperatedBy));
+            await PublishErrorAsync(new SnackInfoErrorEvent(snackEvent.SnackId, snackEvent.Version, 131, new[] { ex.Message }, snackEvent.TraceId, operatedAt, operatedBy));
             await ApplyFullUpdateAsync(snackEvent);
         }
     }
 
     private async Task ApplyEventAsync(SnackBoughtAmountUpdatedEvent snackEvent)
     {
+        var operatedAt = DateTimeOffset.UtcNow;
+        var operatedBy = $"System/{GetType().Name}";
         try
         {
             var snackInfo = await _dbContext.Snacks.FindAsync(snackEvent.SnackId);
@@ -284,12 +300,12 @@ public sealed class SnackProjectionGrain : SubscriberPublisherGrainWithGuidKey<S
             }
             snackInfo.BoughtAmount = snackEvent.BoughtAmount;
             await _dbContext.SaveChangesAsync();
-            await PublishAsync(new SnackInfoSavedEvent(snackInfo.Id, snackInfo.Version, snackInfo, snackEvent.TraceId, DateTimeOffset.UtcNow, snackEvent.OperatedBy));
+            await PublishAsync(new SnackInfoSavedEvent(snackInfo.Id, snackInfo.Version, snackInfo, snackEvent.TraceId, operatedAt, operatedBy));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Apply SnackBoughtAmountUpdatedEvent: Exception is occurred when try to write data to the database. Try to execute full update...");
-            await PublishErrorAsync(new SnackInfoErrorEvent(snackEvent.SnackId, snackEvent.Version, 132, new[] { ex.Message }, snackEvent.TraceId, DateTimeOffset.UtcNow, snackEvent.OperatedBy));
+            await PublishErrorAsync(new SnackInfoErrorEvent(snackEvent.SnackId, snackEvent.Version, 132, new[] { ex.Message }, snackEvent.TraceId, operatedAt, operatedBy));
             await ApplyFullUpdateAsync(snackEvent);
         }
     }
@@ -300,13 +316,15 @@ public sealed class SnackProjectionGrain : SubscriberPublisherGrainWithGuidKey<S
         bool retryNeeded;
         do
         {
+            var operatedAt = DateTimeOffset.UtcNow;
+            var operatedBy = $"System/{GetType().Name}";
             try
             {
                 var snackId = snackEvent.SnackId;
                 var snackGrain = GrainFactory.GetGrain<ISnackGrain>(snackId);
                 var snack = await snackGrain.GetSnackAsync();
                 var snackInfo = await _dbContext.Snacks.FindAsync(snackId);
-                if (snack == null)
+                if (snack == null || snack.Id == Guid.Empty)
                 {
                     if (snackInfo == null)
                     {
@@ -331,7 +349,7 @@ public sealed class SnackProjectionGrain : SubscriberPublisherGrainWithGuidKey<S
                 snackInfo.BoughtCount = await statsOfPurchasesGrain.GetBoughtCountAsync();
                 snackInfo.BoughtAmount = await statsOfPurchasesGrain.GetBoughtAmountAsync();
                 await _dbContext.SaveChangesAsync();
-                await PublishAsync(new SnackInfoSavedEvent(snackInfo.Id, snackInfo.Version, snackInfo, snackEvent.TraceId, DateTimeOffset.UtcNow, snackEvent.OperatedBy));
+                await PublishAsync(new SnackInfoSavedEvent(snackInfo.Id, snackInfo.Version, snackInfo, snackEvent.TraceId, operatedAt, operatedBy));
                 return;
             }
             catch (DbUpdateConcurrencyException ex)
@@ -346,7 +364,7 @@ public sealed class SnackProjectionGrain : SubscriberPublisherGrainWithGuidKey<S
             catch (Exception ex)
             {
                 _logger.LogError(ex, "ApplyFullUpdateAsync: Exception is occurred when try to write data to the database");
-                await PublishErrorAsync(new SnackInfoErrorEvent(snackEvent.SnackId, snackEvent.Version, 100, new[] { ex.Message }, snackEvent.TraceId, DateTimeOffset.UtcNow, snackEvent.OperatedBy));
+                await PublishErrorAsync(new SnackInfoErrorEvent(snackEvent.SnackId, snackEvent.Version, 100, new[] { ex.Message }, snackEvent.TraceId, operatedAt, operatedBy));
                 retryNeeded = false;
             }
         }

@@ -2,6 +2,7 @@
 using Fluxera.Extensions.Hosting.Modules;
 using Fluxera.Extensions.Hosting.Modules.Configuration;
 using JetBrains.Annotations;
+using SiloX.Orleans.Reminders;
 using SiloX.Orleans.Streaming;
 using Vending.Projection.Contributors;
 using Vending.Projection.EntityFrameworkCore;
@@ -11,6 +12,7 @@ namespace Vending.Projection;
 /// <summary>
 /// </summary>
 [PublicAPI]
+[DependsOn<RemindersModule>]
 [DependsOn<StreamingModule>]
 [DependsOn<ProjectionEFCoreModule>]
 [DependsOn<ConfigurationModule>]

@@ -64,12 +64,12 @@ public class MachineStatsOfPurchasesGrain : StatefulGrainWithGuidKey<StatsOfPurc
     {
         var machineId = this.GetPrimaryKey();
         var traceId = Guid.NewGuid();
-        var operationAt = DateTimeOffset.UtcNow;
-        var operationBy = $"System/{GetType().Name}";
+        var operatedAt = DateTimeOffset.UtcNow;
+        var operatedBy = $"System/{GetType().Name}";
         return Result.Ok()
                      .MapTryAsync(() => ApplyBoughtCountAsync(boughtCount))
-                     .MapTryAsync(() => PublishAsync(new MachineBoughtCountUpdatedEvent(machineId, State.BoughtCount, traceId, operationAt, operationBy)))
-                     .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(machineId, 0, 221, errors.ToListMessages(), traceId, operationAt, operationBy)));
+                     .MapTryAsync(() => PublishAsync(new MachineBoughtCountUpdatedEvent(machineId, State.BoughtCount, traceId, operatedAt, operatedBy)))
+                     .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(machineId, 0, 221, errors.ToListMessages(), traceId, operatedAt, operatedBy)));
     }
 
     /// <inheritdoc />
@@ -77,12 +77,12 @@ public class MachineStatsOfPurchasesGrain : StatefulGrainWithGuidKey<StatsOfPurc
     {
         var machineId = this.GetPrimaryKey();
         var traceId = Guid.NewGuid();
-        var operationAt = DateTimeOffset.UtcNow;
-        var operationBy = $"System/{GetType().Name}";
+        var operatedAt = DateTimeOffset.UtcNow;
+        var operatedBy = $"System/{GetType().Name}";
         return Result.Ok()
                      .MapTryAsync(() => ApplyBoughtAmountAsync(boughtAmount))
-                     .MapTryAsync(() => PublishAsync(new MachineBoughtAmountUpdatedEvent(machineId, State.BoughtAmount, traceId, operationAt, operationBy)))
-                     .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(machineId, 0, 222, errors.ToListMessages(), traceId, operationAt, operationBy)));
+                     .MapTryAsync(() => PublishAsync(new MachineBoughtAmountUpdatedEvent(machineId, State.BoughtAmount, traceId, operatedAt, operatedBy)))
+                     .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(machineId, 0, 222, errors.ToListMessages(), traceId, operatedAt, operatedBy)));
     }
 
     #region Persistence

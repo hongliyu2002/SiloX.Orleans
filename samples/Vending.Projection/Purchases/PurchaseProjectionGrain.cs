@@ -76,6 +76,8 @@ public sealed class PurchaseProjectionGrain : SubscriberPublisherGrainWithGuidKe
 
     private async Task ApplyEventAsync(PurchaseInitializedEvent purchaseEvent)
     {
+        var operatedAt = DateTimeOffset.UtcNow;
+        var operatedBy = $"System/{GetType().Name}";
         try
         {
             var purchaseInfo = await _dbContext.Purchases.FindAsync(purchaseEvent.PurchaseId);
@@ -102,12 +104,12 @@ public sealed class PurchaseProjectionGrain : SubscriberPublisherGrainWithGuidKe
             }
             await purchaseInfo.UpdateSnackNameAndPictureUrlAsync(GetSnackNameAndPictureUrlAsync);
             await _dbContext.SaveChangesAsync();
-            await PublishAsync(new PurchaseInfoSavedEvent(purchaseInfo.Id, purchaseInfo.Version, purchaseInfo, purchaseEvent.TraceId, DateTimeOffset.UtcNow, purchaseEvent.OperatedBy));
+            await PublishAsync(new PurchaseInfoSavedEvent(purchaseInfo.Id, purchaseInfo.Version, purchaseInfo, purchaseEvent.TraceId, operatedAt, operatedBy));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Apply PurchaseInitializedEvent: Exception is occurred when try to write data to the database. Try to execute full update...");
-            await PublishErrorAsync(new PurchaseInfoErrorEvent(purchaseEvent.PurchaseId, purchaseEvent.Version, 301, new[] { ex.Message }, purchaseEvent.TraceId, DateTimeOffset.UtcNow, purchaseEvent.OperatedBy));
+            await PublishErrorAsync(new PurchaseInfoErrorEvent(purchaseEvent.PurchaseId, purchaseEvent.Version, 301, new[] { ex.Message }, purchaseEvent.TraceId, operatedAt, operatedBy));
             await ApplyFullUpdateAsync(purchaseEvent);
         }
     }
@@ -118,12 +120,14 @@ public sealed class PurchaseProjectionGrain : SubscriberPublisherGrainWithGuidKe
         bool retryNeeded;
         do
         {
+            var operatedAt = DateTimeOffset.UtcNow;
+            var operatedBy = $"System/{GetType().Name}";
             try
             {
                 var purchaseGrain = GrainFactory.GetGrain<IPurchaseGrain>(purchaseEvent.PurchaseId);
                 var purchase = await purchaseGrain.GetPurchaseAsync();
                 var purchaseInfo = await _dbContext.Purchases.FindAsync(purchaseEvent.PurchaseId);
-                if (purchase == null)
+                if (purchase == null || purchase.Id == Guid.Empty)
                 {
                     if (purchaseInfo == null)
                     {
@@ -140,7 +144,7 @@ public sealed class PurchaseProjectionGrain : SubscriberPublisherGrainWithGuidKe
                 }
                 await purchase.ToProjection(GetSnackNameAndPictureUrlAsync, purchaseInfo);
                 await _dbContext.SaveChangesAsync();
-                await PublishAsync(new PurchaseInfoSavedEvent(purchaseInfo.Id, purchaseInfo.Version, purchaseInfo, purchaseEvent.TraceId, DateTimeOffset.UtcNow, purchaseEvent.OperatedBy));
+                await PublishAsync(new PurchaseInfoSavedEvent(purchaseInfo.Id, purchaseInfo.Version, purchaseInfo, purchaseEvent.TraceId, operatedAt, operatedBy));
                 return;
             }
             catch (DbUpdateConcurrencyException ex)
@@ -155,7 +159,7 @@ public sealed class PurchaseProjectionGrain : SubscriberPublisherGrainWithGuidKe
             catch (Exception ex)
             {
                 _logger.LogError(ex, "ApplyFullUpdateAsync: Exception is occurred when try to write data to the database");
-                await PublishErrorAsync(new PurchaseInfoErrorEvent(purchaseEvent.PurchaseId, purchaseEvent.Version, 300, new[] { ex.Message }, purchaseEvent.TraceId, DateTimeOffset.UtcNow, purchaseEvent.OperatedBy));
+                await PublishErrorAsync(new PurchaseInfoErrorEvent(purchaseEvent.PurchaseId, purchaseEvent.Version, 300, new[] { ex.Message }, purchaseEvent.TraceId, operatedAt, operatedBy));
                 retryNeeded = false;
             }
         }
