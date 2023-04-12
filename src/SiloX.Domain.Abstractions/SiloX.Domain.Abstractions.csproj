@@ -32,11 +32,12 @@
 
     <ItemGroup>
         <PackageReference Include="Fluxera.Extensions.Hosting.Modules.Configuration" Version="7.1.5" />
+        <PackageReference Include="Microsoft.AspNetCore.Connections.Abstractions" Version="7.0.5" />
         <PackageReference Include="Microsoft.Orleans.BroadcastChannel" Version="7.1.1" />
         <PackageReference Include="Microsoft.Orleans.EventSourcing" Version="7.1.1" />
         <PackageReference Include="Microsoft.Orleans.Sdk" Version="7.1.1" />
         <PackageReference Include="Microsoft.Orleans.Streaming" Version="7.1.1" />
-        <PackageReference Include="Orleans.FluentResults" Version="7.1.4" />
+        <PackageReference Include="Orleans.FluentResults" Version="7.1.5" />
         <PackageReference Include="System.Interactive" Version="6.0.1" />
         <PackageReference Include="System.Interactive.Async" Version="6.0.1" />
         <PackageReference Include="System.Interactive.Async.Providers" Version="6.0.1" />
@@ -54,5 +55,5 @@
             <Link>README.md</Link>
         </None>
     </ItemGroup>
-    
+
 </Project>
