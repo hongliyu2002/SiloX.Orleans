@@ -7,6 +7,7 @@ using SiloX.Domain.Abstractions;
 using Vending.Domain.Abstractions;
 using Vending.Domain.Abstractions.Purchases;
 using Vending.Domain.Abstractions.Snacks;
+using Vending.Domain.EntityFrameworkCore;
 using Vending.Projection.Abstractions.Purchases;
 using Vending.Projection.EntityFrameworkCore;
 
@@ -18,14 +19,14 @@ namespace Vending.Synchronizer.Purchases;
 public class PurchaseSynchronizerGrain : PublisherGrainWithGuidKey<PurchaseInfoEvent, PurchaseInfoErrorEvent>, IPurchaseSynchronizerGrain
 {
     private readonly ProjectionDbContext _projectionDbContext;
-    private readonly ProjectionDbContext _domainDbContext;
+    private readonly DomainDbContext _domainDbContext;
     private readonly ILogger<PurchaseSynchronizerGrain> _logger;
 
     private IGrainReminder? _syncDifferencesReminder;
     private IGrainReminder? _syncAllReminder;
 
     /// <inheritdoc />
-    public PurchaseSynchronizerGrain(ProjectionDbContext projectionDbContext, ProjectionDbContext domainDbContext, ILogger<PurchaseSynchronizerGrain> logger)
+    public PurchaseSynchronizerGrain(ProjectionDbContext projectionDbContext, DomainDbContext domainDbContext, ILogger<PurchaseSynchronizerGrain> logger)
         : base(Constants.StreamProviderName)
     {
         _projectionDbContext = Guard.Against.Null(projectionDbContext, nameof(projectionDbContext));

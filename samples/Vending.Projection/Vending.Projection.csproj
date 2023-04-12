@@ -15,6 +15,7 @@
     <ItemGroup>
         <ProjectReference Include="..\..\src\SiloX.Orleans.Reminders\SiloX.Orleans.Reminders.csproj" />
         <ProjectReference Include="..\..\src\SiloX.Orleans.Streaming\SiloX.Orleans.Streaming.csproj" />
+        <ProjectReference Include="..\Vending.Domain.EntityFrameworkCore\Vending.Domain.EntityFrameworkCore.csproj" />
         <ProjectReference Include="..\Vending.Projection.Abstractions\Vending.Projection.Abstractions.csproj" />
         <ProjectReference Include="..\Vending.Projection.EntityFrameworkCore\Vending.Projection.EntityFrameworkCore.csproj" />
     </ItemGroup>

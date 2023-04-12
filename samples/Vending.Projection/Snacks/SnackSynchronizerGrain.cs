@@ -5,6 +5,7 @@ using Orleans.Runtime;
 using SiloX.Domain.Abstractions;
 using Vending.Domain.Abstractions;
 using Vending.Domain.Abstractions.Snacks;
+using Vending.Domain.EntityFrameworkCore;
 using Vending.Projection.Abstractions.Snacks;
 using Vending.Projection.EntityFrameworkCore;
 
@@ -16,14 +17,14 @@ namespace Vending.Synchronizer.Snacks;
 public class SnackSynchronizerGrain : PublisherGrainWithGuidKey<SnackInfoEvent, SnackInfoErrorEvent>, ISnackSynchronizerGrain
 {
     private readonly ProjectionDbContext _projectionDbContext;
-    private readonly ProjectionDbContext _domainDbContext;
+    private readonly DomainDbContext _domainDbContext;
     private readonly ILogger<SnackSynchronizerGrain> _logger;
 
     private IGrainReminder? _syncDifferencesReminder;
     private IGrainReminder? _syncAllReminder;
 
     /// <inheritdoc />
-    public SnackSynchronizerGrain(ProjectionDbContext projectionDbContext, ProjectionDbContext domainDbContext, ILogger<SnackSynchronizerGrain> logger)
+    public SnackSynchronizerGrain(ProjectionDbContext projectionDbContext, DomainDbContext domainDbContext, ILogger<SnackSynchronizerGrain> logger)
         : base(Constants.StreamProviderName)
     {
         _projectionDbContext = Guard.Against.Null(projectionDbContext, nameof(projectionDbContext));

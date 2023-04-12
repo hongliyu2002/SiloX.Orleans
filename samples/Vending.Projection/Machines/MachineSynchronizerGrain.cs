@@ -7,6 +7,7 @@ using SiloX.Domain.Abstractions;
 using Vending.Domain.Abstractions;
 using Vending.Domain.Abstractions.Machines;
 using Vending.Domain.Abstractions.Snacks;
+using Vending.Domain.EntityFrameworkCore;
 using Vending.Projection.Abstractions.Machines;
 using Vending.Projection.EntityFrameworkCore;
 
@@ -18,14 +19,14 @@ namespace Vending.Synchronizer.Machines;
 public class MachineSynchronizerGrain : PublisherGrainWithGuidKey<MachineInfoEvent, MachineInfoErrorEvent>, IMachineSynchronizerGrain
 {
     private readonly ProjectionDbContext _projectionDbContext;
-    private readonly ProjectionDbContext _domainDbContext;
+    private readonly DomainDbContext _domainDbContext;
     private readonly ILogger<MachineSynchronizerGrain> _logger;
 
     private IGrainReminder? _syncDifferencesReminder;
     private IGrainReminder? _syncAllReminder;
 
     /// <inheritdoc />
-    public MachineSynchronizerGrain(ProjectionDbContext projectionDbContext, ProjectionDbContext domainDbContext, ILogger<MachineSynchronizerGrain> logger)
+    public MachineSynchronizerGrain(ProjectionDbContext projectionDbContext, DomainDbContext domainDbContext, ILogger<MachineSynchronizerGrain> logger)
         : base(Constants.StreamProviderName)
     {
         _projectionDbContext = Guard.Against.Null(projectionDbContext, nameof(projectionDbContext));
