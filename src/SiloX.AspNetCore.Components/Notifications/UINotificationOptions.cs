@@ -6,7 +6,7 @@ namespace SiloX.AspNetCore.Components.Notifications;
 ///     Options to override notification appearance.
 /// </summary>
 [PublicAPI]
-public class UiNotificationOptions
+public class UINotificationOptions
 {
     /// <summary>
     ///     Custom text for the Ok button.

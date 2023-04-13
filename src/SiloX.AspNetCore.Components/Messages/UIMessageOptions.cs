@@ -6,7 +6,7 @@ namespace SiloX.AspNetCore.Components.Messages;
 ///     Options to override message dialog appearance.
 /// </summary>
 [PublicAPI]
-public class UiMessageOptions
+public class UIMessageOptions
 {
     /// <summary>
     ///     If true, the message dialogue will be centered on the screen.

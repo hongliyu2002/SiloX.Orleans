@@ -10,7 +10,7 @@ using SiloX.AspNetCore.Components.Progression;
 namespace SiloX.AspNetCore.Components;
 
 /// <summary>
-/// </summary>
+///  </summary>
 [PublicAPI]
 [DependsOn<ConfigurationModule>]
 public class ComponentsModule : ConfigureServicesModule
@@ -19,7 +19,7 @@ public class ComponentsModule : ConfigureServicesModule
     public override void ConfigureServices(IServiceConfigurationContext context)
     {
         context.Log("AddNullUserExceptionInformer", services => services.AddSingleton<IUserExceptionInformer, NullUserExceptionInformer>());
-        context.Log("AddNNullUiNotificationService", services => services.AddTransient<IUiNotificationService, NullUiNotificationService>());
-        context.Log("AddNullUiPageProgressService", services => services.AddSingleton<IUiPageProgressService, NullUiPageProgressService>());
+        context.Log("AddNNullUiNotificationService", services => services.AddTransient<IUINotificationService, NullIUINotificationService>());
+        context.Log("AddNullUiPageProgressService", services => services.AddSingleton<IUIPageProgressService, NullIUIPageProgressService>());
     }
 }

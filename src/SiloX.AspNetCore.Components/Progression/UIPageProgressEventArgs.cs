@@ -6,14 +6,14 @@ namespace SiloX.AspNetCore.Components.Progression;
 ///     Event arguments for the page progress event.
 /// </summary>
 [PublicAPI]
-public class UiPageProgressEventArgs : EventArgs
+public class UIPageProgressEventArgs : EventArgs
 {
     /// <summary>
-    ///     Initializes a new instance of the <see cref="UiPageProgressEventArgs" /> class.
+    ///     Initializes a new instance of the <see cref="UIPageProgressEventArgs" /> class.
     /// </summary>
     /// <param name="percentage">The percentage of the progress.</param>
     /// <param name="options">The options to override page progress appearance.</param>
-    public UiPageProgressEventArgs(int? percentage, UiPageProgressOptions options)
+    public UIPageProgressEventArgs(int? percentage, UIPageProgressOptions options)
     {
         Percentage = percentage;
         Options = options;
@@ -27,5 +27,5 @@ public class UiPageProgressEventArgs : EventArgs
     /// <summary>
     ///     The options to override page progress appearance.
     /// </summary>
-    public UiPageProgressOptions Options { get; }
+    public UIPageProgressOptions Options { get; }
 }

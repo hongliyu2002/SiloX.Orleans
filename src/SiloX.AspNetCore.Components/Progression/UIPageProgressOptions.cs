@@ -6,10 +6,10 @@ namespace SiloX.AspNetCore.Components.Progression;
 ///     Options to override page progress appearance.
 /// </summary>
 [PublicAPI]
-public class UiPageProgressOptions
+public class UIPageProgressOptions
 {
     /// <summary>
     ///     Type or color, of the page progress.
     /// </summary>
-    public UiPageProgressType Type { get; set; }
+    public UIPageProgressType Type { get; set; }
 }

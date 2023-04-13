@@ -6,7 +6,7 @@ namespace SiloX.AspNetCore.Components.Progression;
 ///     The type of the progress.
 /// </summary>
 [PublicAPI]
-public enum UiPageProgressType
+public enum UIPageProgressType
 {
     /// <summary>
     ///     The default type.

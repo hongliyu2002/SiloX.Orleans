@@ -6,7 +6,7 @@ namespace SiloX.AspNetCore.Components.Notifications;
 ///     The type of notification.
 /// </summary>
 [PublicAPI]
-public enum UiNotificationType
+public enum UINotificationType
 {
     /// <summary>
     ///     The notification is informational.

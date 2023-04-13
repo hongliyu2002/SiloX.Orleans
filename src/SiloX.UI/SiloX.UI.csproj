@@ -1,12 +1,12 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <PackageId>SiloX.AspNetCore.Components</PackageId>
-        <Title>Components module</Title>
-        <Description>Components module that for Microsoft AspNetCore.</Description>
+        <PackageId>SiloX.UI</PackageId>
+        <Title>UI module</Title>
+        <Description>UI module that for Microsoft AspNetCore.</Description>
         <Version>7.1.0</Version>
         <AssemblyVersion>7.1.0.0</AssemblyVersion>
         <FileVersion>7.1.0.0</FileVersion>
@@ -15,7 +15,7 @@
         <RepositoryUrl>https://github.com/hongliyu2002/SiloX.Orleans</RepositoryUrl>
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageTags>library;extensions;hosting;modular;aspnetcore;components;aspnetcore-components</PackageTags>
+        <PackageTags>library;extensions;hosting;modular;ui</PackageTags>
         <PackageProjectUrl>https://github.com/hongliyu2002/SiloX.Orleans</PackageProjectUrl>
         <PackageIcon>logo_128.png</PackageIcon>
         <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -27,14 +27,13 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <AspNetCoreBuildTimeCodeGen>false</AspNetCoreBuildTimeCodeGen>
-        <RootNamespace>SiloX.AspNetCore.Components</RootNamespace>
+        <RootNamespace>SiloX.UI</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Fluxera.Extensions.Common" Version="7.1.2" />
         <PackageReference Include="Fluxera.Extensions.Hosting.Modules.Configuration" Version="7.1.5" />
         <PackageReference Include="Fluxera.Extensions.Localization" Version="7.1.2" />
-        <PackageReference Include="Microsoft.AspNetCore.Components" Version="7.0.5" />
     </ItemGroup>
 
     <ItemGroup>

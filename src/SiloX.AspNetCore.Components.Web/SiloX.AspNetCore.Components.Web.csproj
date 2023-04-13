@@ -4,9 +4,9 @@
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <PackageId>SiloX.AspNetCore.Components</PackageId>
-        <Title>Components module</Title>
-        <Description>Components module that for Microsoft AspNetCore.</Description>
+        <PackageId>SiloX.AspNetCore.Components.Web</PackageId>
+        <Title>Components web module</Title>
+        <Description>Components web module that for Microsoft AspNetCore.</Description>
         <Version>7.1.0</Version>
         <AssemblyVersion>7.1.0.0</AssemblyVersion>
         <FileVersion>7.1.0.0</FileVersion>
@@ -27,7 +27,7 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <AspNetCoreBuildTimeCodeGen>false</AspNetCoreBuildTimeCodeGen>
-        <RootNamespace>SiloX.AspNetCore.Components</RootNamespace>
+        <RootNamespace>SiloX.AspNetCore.Components.Web</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -35,6 +35,8 @@
         <PackageReference Include="Fluxera.Extensions.Hosting.Modules.Configuration" Version="7.1.5" />
         <PackageReference Include="Fluxera.Extensions.Localization" Version="7.1.2" />
         <PackageReference Include="Microsoft.AspNetCore.Components" Version="7.0.5" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="7.0.5" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.5" />
     </ItemGroup>
 
     <ItemGroup>

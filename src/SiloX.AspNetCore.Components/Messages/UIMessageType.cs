@@ -6,7 +6,7 @@ namespace SiloX.AspNetCore.Components.Messages;
 ///     Defines the possible ui message types with predefined actions.
 /// </summary>
 [PublicAPI]
-public enum UiMessageType
+public enum UIMessageType
 {
     /// <summary>
     ///     The message is informational.

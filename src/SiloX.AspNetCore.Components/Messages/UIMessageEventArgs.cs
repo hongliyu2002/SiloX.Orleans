@@ -3,19 +3,19 @@
 namespace SiloX.AspNetCore.Components.Messages;
 
 /// <summary>
-///     Event arguments for the <see cref="IUiMessageService" />.
+///     Event arguments for the <see cref="IUIMessageService" />.
 /// </summary>
 [PublicAPI]
-public class UiMessageEventArgs : EventArgs
+public class UIMessageEventArgs : EventArgs
 {
     /// <summary>
-    ///     Initializes a new instance of the <see cref="UiMessageEventArgs" /> class.
+    ///     Initializes a new instance of the <see cref="UIMessageEventArgs" /> class.
     /// </summary>
     /// <param name="messageType">The type of the message.</param>
     /// <param name="message">The message.</param>
     /// <param name="title">The title.</param>
     /// <param name="options">The options.</param>
-    public UiMessageEventArgs(UiMessageType messageType, string message, string title, UiMessageOptions options)
+    public UIMessageEventArgs(UIMessageType messageType, string message, string title, UIMessageOptions options)
     {
         MessageType = messageType;
         Message = message;
@@ -24,14 +24,14 @@ public class UiMessageEventArgs : EventArgs
     }
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="UiMessageEventArgs" /> class.
+    ///     Initializes a new instance of the <see cref="UIMessageEventArgs" /> class.
     /// </summary>
     /// <param name="messageType">The type of the message.</param>
     /// <param name="message">The message.</param>
     /// <param name="title">The title.</param>
     /// <param name="options">The options.</param>
     /// <param name="callback">The callback.</param>
-    public UiMessageEventArgs(UiMessageType messageType, string message, string title, UiMessageOptions options, TaskCompletionSource<bool>? callback)
+    public UIMessageEventArgs(UIMessageType messageType, string message, string title, UIMessageOptions options, TaskCompletionSource<bool>? callback)
     {
         MessageType = messageType;
         Message = message;
@@ -43,7 +43,7 @@ public class UiMessageEventArgs : EventArgs
     /// <summary>
     ///     Gets the type of the message.
     /// </summary>
-    public UiMessageType MessageType { get; set; }
+    public UIMessageType MessageType { get; set; }
 
     /// <summary>
     ///     Gets the message.
@@ -58,7 +58,7 @@ public class UiMessageEventArgs : EventArgs
     /// <summary>
     ///     Gets the options.
     /// </summary>
-    public UiMessageOptions Options { get; }
+    public UIMessageOptions Options { get; }
 
     /// <summary>
     ///     Gets the callback.

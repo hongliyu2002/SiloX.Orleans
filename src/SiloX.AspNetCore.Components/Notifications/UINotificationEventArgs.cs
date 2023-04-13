@@ -3,19 +3,19 @@
 namespace SiloX.AspNetCore.Components.Notifications;
 
 /// <summary>
-///     Event args for the <see cref="IUiNotificationService" /> event.
+///     Event args for the <see cref="IUINotificationService" /> event.
 /// </summary>
 [PublicAPI]
-public class UiNotificationEventArgs : EventArgs
+public class UINotificationEventArgs : EventArgs
 {
     /// <summary>
-    ///     Initializes a new instance of the <see cref="UiNotificationEventArgs" /> class.
+    ///     Initializes a new instance of the <see cref="UINotificationEventArgs" /> class.
     /// </summary>
     /// <param name="notificationType">The type of the notification.</param>
     /// <param name="message">The message of the notification.</param>
     /// <param name="title">The title of the notification.</param>
     /// <param name="options">The options of the notification.</param>
-    public UiNotificationEventArgs(UiNotificationType notificationType, string message, string title, UiNotificationOptions options)
+    public UINotificationEventArgs(UINotificationType notificationType, string message, string title, UINotificationOptions options)
     {
         NotificationType = notificationType;
         Message = message;
@@ -26,7 +26,7 @@ public class UiNotificationEventArgs : EventArgs
     /// <summary>
     ///     Gets the type of the notification.
     /// </summary>
-    public UiNotificationType NotificationType { get; set; }
+    public UINotificationType NotificationType { get; set; }
 
     /// <summary>
     ///     Gets the message of the notification.
@@ -41,5 +41,5 @@ public class UiNotificationEventArgs : EventArgs
     /// <summary>
     ///     Gets the options of the notification.
     /// </summary>
-    public UiNotificationOptions Options { get; }
+    public UINotificationOptions Options { get; }
 }

@@ -72,15 +72,15 @@ public abstract class ComponentBase : OwningComponentBase
     /// </summary>
     protected IAuthorizationService AuthorizationService => LazyGetRequiredService(ref _authorizationService);
 
-    private IUiMessageService? _message;
+    private IUIMessageService? _message;
     /// <summary>
     /// </summary>
-    protected IUiMessageService Message => LazyGetNonScopedRequiredService(ref _message);
+    protected IUIMessageService Message => LazyGetNonScopedRequiredService(ref _message);
 
-    private IUiNotificationService? _notify;
+    private IUINotificationService? _notify;
     /// <summary>
     /// </summary>
-    protected IUiNotificationService Notify => LazyGetNonScopedRequiredService(ref _notify);
+    protected IUINotificationService Notify => LazyGetNonScopedRequiredService(ref _notify);
 
     private IUserExceptionInformer? _exceptionInformer;
     /// <summary>
