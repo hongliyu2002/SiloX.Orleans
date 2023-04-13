@@ -1,6 +1,7 @@
-﻿using JetBrains.Annotations;
+﻿using Fluxera.Guards;
+using JetBrains.Annotations;
 
-namespace SiloX.UI.LayoutHooks;
+namespace SiloX.AspNetCore.UI.LayoutHooks;
 
 /// <summary>
 ///     Layout hook information.
@@ -14,7 +15,7 @@ public class LayoutHookInfo
     /// <param name="layout"></param>
     public LayoutHookInfo(Type componentType, string? layout = null)
     {
-        ComponentType = componentType;
+        ComponentType = Guard.Against.Null(componentType, nameof(componentType));
         Layout = layout;
     }
 

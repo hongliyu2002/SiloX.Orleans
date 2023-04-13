@@ -1,6 +1,7 @@
-﻿using JetBrains.Annotations;
+﻿using Fluxera.Guards;
+using JetBrains.Annotations;
 
-namespace SiloX.UI.LayoutHooks;
+namespace SiloX.AspNetCore.UI.LayoutHooks;
 
 /// <summary>
 ///     View model for the layout hook view.
@@ -8,7 +9,6 @@ namespace SiloX.UI.LayoutHooks;
 [PublicAPI]
 public class LayoutHookViewModel
 {
-
     /// <summary>
     ///     Initializes a new instance of the <see cref="LayoutHookViewModel" /> class.
     /// </summary>
@@ -16,8 +16,8 @@ public class LayoutHookViewModel
     /// <param name="layout">The layout.</param>
     public LayoutHookViewModel(LayoutHookInfo[] hooks, string layout)
     {
-        Hooks = hooks;
-        Layout = layout;
+        Hooks = Guard.Against.Null(hooks, nameof(hooks));
+        Layout = Guard.Against.NullOrEmpty(layout, nameof(layout));
     }
 
     /// <summary>

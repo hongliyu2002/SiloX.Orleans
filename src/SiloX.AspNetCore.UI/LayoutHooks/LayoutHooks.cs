@@ -1,6 +1,6 @@
 ﻿using JetBrains.Annotations;
 
-namespace SiloX.UI.LayoutHooks;
+namespace SiloX.AspNetCore.UI.LayoutHooks;
 
 /// <summary>
 /// </summary>

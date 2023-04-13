@@ -1,6 +1,6 @@
 ﻿using JetBrains.Annotations;
 
-namespace SiloX.UI.Branding;
+namespace SiloX.AspNetCore.UI.Branding;
 
 /// <summary>
 ///     Default implementation of <see cref="IBrandingProvider" />.
