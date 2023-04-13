@@ -4,7 +4,7 @@
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <PackageId>SiloX.Blazor.Server</PackageId>
+        <PackageId>SiloX.AspNetCore.Components.Server</PackageId>
         <Title>Blazor server module</Title>
         <Description>Blazor server module that for Microsoft AspNetCore.</Description>
         <Version>7.1.0</Version>
@@ -27,11 +27,10 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <AspNetCoreBuildTimeCodeGen>false</AspNetCoreBuildTimeCodeGen>
-        <RootNamespace>SiloX.Blazor.Server</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.Configuration" Version="7.2.0" />
+        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.AspNetCore" Version="7.2.0" />
         <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="7.0.5" />
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.5" />
     </ItemGroup>

@@ -79,7 +79,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vending.Hosting", "samples\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vending.Blazor", "samples\Vending.Blazor\Vending.Blazor.csproj", "{BC61FFAD-FCB9-4138-A5EB-35CB2C76CB78}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiloX.Blazor.Server", "src\SiloX.Blazor.Server\SiloX.Blazor.Server.csproj", "{84A2FAD4-4363-4383-B70E-333A7488CD26}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiloX.AspNetCore.Components.Server", "src\SiloX.AspNetCore.Components.Server\SiloX.AspNetCore.Components.Server.csproj", "{84A2FAD4-4363-4383-B70E-333A7488CD26}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
