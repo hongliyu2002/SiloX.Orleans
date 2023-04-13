@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿using Fluxera.Guards;
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.Components;
 
 namespace SiloX.AspNetCore.Components.DependencyInjection;
@@ -9,14 +10,13 @@ namespace SiloX.AspNetCore.Components.DependencyInjection;
 [PublicAPI]
 public class ServiceProviderComponentActivator : IComponentActivator
 {
-
     /// <summary>
     ///     Initializes a new instance of the <see cref="ServiceProviderComponentActivator" /> class.
     /// </summary>
     /// <param name="serviceProvider">The <see cref="IServiceProvider" /> used to create components.</param>
     public ServiceProviderComponentActivator(IServiceProvider serviceProvider)
     {
-        ServiceProvider = serviceProvider;
+        ServiceProvider = Guard.Against.Null(serviceProvider, nameof(serviceProvider));
     }
 
     /// <summary>

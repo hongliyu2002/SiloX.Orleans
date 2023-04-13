@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿using Fluxera.Guards;
+using JetBrains.Annotations;
 
 namespace SiloX.AspNetCore.Components.ExceptionHandling;
 
@@ -14,7 +15,7 @@ public class UserExceptionInformerContext
     /// <param name="exception">The exception.</param>
     public UserExceptionInformerContext(Exception exception)
     {
-        Exception = exception;
+        Exception = Guard.Against.Null(exception, nameof(exception));
     }
 
     /// <summary>

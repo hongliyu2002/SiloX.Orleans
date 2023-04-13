@@ -3,7 +3,7 @@
 namespace SiloX.AspNetCore.Components.Alerts;
 
 /// <summary>
-///     Interface for the AlertManager service.
+///     Interface for the alert manager service.
 /// </summary>
 [PublicAPI]
 public interface IAlertManager

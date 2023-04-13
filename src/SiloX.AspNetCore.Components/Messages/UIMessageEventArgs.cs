@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿using Fluxera.Guards;
+using JetBrains.Annotations;
 
 namespace SiloX.AspNetCore.Components.Messages;
 
@@ -18,9 +19,9 @@ public class UIMessageEventArgs : EventArgs
     public UIMessageEventArgs(UIMessageType messageType, string message, string title, UIMessageOptions options)
     {
         MessageType = messageType;
-        Message = message;
-        Title = title;
-        Options = options;
+        Message = Guard.Against.NullOrEmpty(message, nameof(message));
+        Title = Guard.Against.NullOrEmpty(title, nameof(title));
+        Options = Guard.Against.Null(options, nameof(options));
     }
 
     /// <summary>
@@ -32,11 +33,8 @@ public class UIMessageEventArgs : EventArgs
     /// <param name="options">The options.</param>
     /// <param name="callback">The callback.</param>
     public UIMessageEventArgs(UIMessageType messageType, string message, string title, UIMessageOptions options, TaskCompletionSource<bool>? callback)
+        : this(messageType, message, title, options)
     {
-        MessageType = messageType;
-        Message = message;
-        Title = title;
-        Options = options;
         Callback = callback;
     }
 

@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿using Fluxera.Guards;
+using JetBrains.Annotations;
 
 namespace SiloX.AspNetCore.Components.Notifications;
 
@@ -18,9 +19,9 @@ public class UINotificationEventArgs : EventArgs
     public UINotificationEventArgs(UINotificationType notificationType, string message, string title, UINotificationOptions options)
     {
         NotificationType = notificationType;
-        Message = message;
-        Title = title;
-        Options = options;
+        Message = Guard.Against.NullOrEmpty(message, nameof(message));
+        Title = Guard.Against.NullOrEmpty(title, nameof(title));
+        Options = Guard.Against.Null(options, nameof(options));
     }
 
     /// <summary>

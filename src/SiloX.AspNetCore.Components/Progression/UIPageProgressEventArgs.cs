@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿using Fluxera.Guards;
+using JetBrains.Annotations;
 
 namespace SiloX.AspNetCore.Components.Progression;
 
@@ -16,7 +17,7 @@ public class UIPageProgressEventArgs : EventArgs
     public UIPageProgressEventArgs(int? percentage, UIPageProgressOptions options)
     {
         Percentage = percentage;
-        Options = options;
+        Options = Guard.Against.Null(options, nameof(options));
     }
 
     /// <summary>
