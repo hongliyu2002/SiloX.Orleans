@@ -1,8 +1,11 @@
-﻿namespace SiloX.AspNetCore.Components.ExceptionHandling;
+﻿using JetBrains.Annotations;
+
+namespace SiloX.AspNetCore.Components.ExceptionHandling;
 
 /// <summary>
 ///     A null implementation of <see cref="IUserExceptionInformer" /> that does nothing.
 /// </summary>
+[PublicAPI]
 public class NullUserExceptionInformer : IUserExceptionInformer
 {
     /// <summary>

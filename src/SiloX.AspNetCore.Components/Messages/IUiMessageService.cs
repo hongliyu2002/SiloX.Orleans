@@ -1,8 +1,11 @@
-﻿namespace SiloX.AspNetCore.Components.Messages;
+﻿using JetBrains.Annotations;
+
+namespace SiloX.AspNetCore.Components.Messages;
 
 /// <summary>
 ///     A service to show messages to the user.
 /// </summary>
+[PublicAPI]
 public interface IUiMessageService
 {
     /// <summary>

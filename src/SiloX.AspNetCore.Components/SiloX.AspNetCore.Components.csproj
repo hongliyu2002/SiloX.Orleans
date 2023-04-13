@@ -33,6 +33,7 @@
     <ItemGroup>
         <PackageReference Include="Fluxera.Extensions.Common" Version="7.1.2" />
         <PackageReference Include="Fluxera.Extensions.Hosting.Modules.Configuration" Version="7.1.5" />
+        <PackageReference Include="Fluxera.Extensions.Localization" Version="7.1.2" />
         <PackageReference Include="Microsoft.AspNetCore.Components" Version="7.0.5" />
     </ItemGroup>
 

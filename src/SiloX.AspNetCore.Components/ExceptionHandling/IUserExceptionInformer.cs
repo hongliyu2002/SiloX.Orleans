@@ -1,8 +1,11 @@
-﻿namespace SiloX.AspNetCore.Components.ExceptionHandling;
+﻿using JetBrains.Annotations;
+
+namespace SiloX.AspNetCore.Components.ExceptionHandling;
 
 /// <summary>
 ///     Interface for user exception informers.
 /// </summary>
+[PublicAPI]
 public interface IUserExceptionInformer
 {
     /// <summary>
