@@ -35,9 +35,9 @@
         <PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="6.0.2" />
         <PackageReference Include="AspNetCore.HealthChecks.Oracle" Version="6.0.3" />
         <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="6.0.2" />
-        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.DataManagement" Version="7.1.5" />
-        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.HealthChecks" Version="7.1.5" />
-        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.OpenTelemetry" Version="7.1.5" />
+        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.DataManagement" Version="7.2.0" />
+        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.HealthChecks" Version="7.2.0" />
+        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.OpenTelemetry" Version="7.2.0" />
         <PackageReference Include="Microsoft.Orleans.Clustering.AdoNet" Version="7.1.1" />
     </ItemGroup>
 

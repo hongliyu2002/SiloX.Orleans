@@ -10,8 +10,8 @@
     <ItemGroup>
         <PackageReference Include="Fluxera.Extensions.Hosting" Version="7.1.4" />
         <PackageReference Include="Fluxera.Extensions.Hosting.AspNetCore" Version="7.1.4" />
-        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.AspNetCore.HealthChecks" Version="7.1.5" />
-        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.Serilog" Version="7.1.5" />
+        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.AspNetCore.HealthChecks" Version="7.2.0" />
+        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.Serilog" Version="7.2.0" />
         <PackageReference Include="OrleansDashboard" Version="7.2.0" />
         <PackageReference Include="Serilog.AspNetCore" Version="6.1.0" />
         <PackageReference Include="Serilog.Enrichers.Environment" Version="2.2.0" />
