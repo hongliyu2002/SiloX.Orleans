@@ -79,6 +79,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vending.Hosting", "samples\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiloX.AspNetCore.Components.Server", "src\SiloX.AspNetCore.Components.Server\SiloX.AspNetCore.Components.Server.csproj", "{84A2FAD4-4363-4383-B70E-333A7488CD26}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vending.Apps.Blazor", "samples\Vending.Apps.Blazor\Vending.Apps.Blazor.csproj", "{AC6788B2-ADE2-446E-96C4-3A50F55B255C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -119,6 +121,7 @@ Global
 		{4B340E8B-C8BE-46F7-B19A-242CAC62C035} = {A8D7B044-04CC-49E9-9568-F5CA4A253AFC}
 		{BC9B8A0E-86D1-428C-82CD-25CB093E853F} = {A8D7B044-04CC-49E9-9568-F5CA4A253AFC}
 		{84A2FAD4-4363-4383-B70E-333A7488CD26} = {3365796E-DC4C-4D45-AA70-83D5982B013E}
+		{AC6788B2-ADE2-446E-96C4-3A50F55B255C} = {A8D7B044-04CC-49E9-9568-F5CA4A253AFC}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{98333171-E519-467A-AA23-70D4C10F34F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -253,5 +256,9 @@ Global
 		{84A2FAD4-4363-4383-B70E-333A7488CD26}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{84A2FAD4-4363-4383-B70E-333A7488CD26}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{84A2FAD4-4363-4383-B70E-333A7488CD26}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC6788B2-ADE2-446E-96C4-3A50F55B255C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC6788B2-ADE2-446E-96C4-3A50F55B255C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC6788B2-ADE2-446E-96C4-3A50F55B255C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC6788B2-ADE2-446E-96C4-3A50F55B255C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

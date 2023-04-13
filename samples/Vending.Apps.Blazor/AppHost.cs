@@ -1,17 +1,19 @@
 ﻿using System.Reflection;
 using Fluxera.Extensions.Hosting;
 using Fluxera.Extensions.Hosting.Modules.AspNetCore.HealthChecks;
+using Fluxera.Extensions.Hosting.Modules.OpenTelemetry;
 using Fluxera.Extensions.Hosting.Modules.Serilog;
 using Fluxera.Extensions.Hosting.Plugins;
+using OpenTelemetry.Logs;
 using Serilog;
 using Serilog.Extensions.Logging;
 
-namespace Vending.Hosting;
+namespace Vending.Apps.Blazor;
 
 /// <summary>
-///     Hosts the Vending Service.
+///     Hosts the Vending Client.
 /// </summary>
-public sealed class ServiceHost : WebApplicationHost<HostingModule>
+public class AppHost : WebApplicationHost<AppModule>
 {
     /// <inheritdoc />
     protected override void ConfigureApplicationPlugins(IPluginConfigurationContext context)
@@ -28,6 +30,11 @@ public sealed class ServiceHost : WebApplicationHost<HostingModule>
                                           {
                                               configuration.AddUserSecrets(Assembly.GetExecutingAssembly());
                                           });
+        // Add OpenTelemetry logging.
+        builder.AddOpenTelemetryLogging(options =>
+                                        {
+                                            options.AddConsoleExporter();
+                                        });
         // Add Serilog logging
         builder.AddSerilogLogging((context, configuration) =>
                                   {

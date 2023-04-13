@@ -14,14 +14,14 @@
   &lt;Assembly Path="C:\Users\hongl\.nuget\packages\orleans.eventsourcing.eventstore\7.1.2\lib\net7.0\Orleans.EventSourcing.EventStore.dll" /&gt;&#xD;
   &lt;Assembly Path="C:\Users\hongl\.nuget\packages\orleans.persistence.eventstore\7.1.2\lib\net7.0\Orleans.Persistence.EventStore.dll" /&gt;&#xD;
   &lt;Assembly Path="C:\Users\hongl\.nuget\packages\orleans.streaming.eventstore\7.1.2\lib\net7.0\Orleans.Streaming.EventStore.dll" /&gt;&#xD;
-  &lt;Assembly Path="C:\Users\hongl\.nuget\packages\microsoft.aspnetcore.components\7.0.5\lib\net7.0\Microsoft.AspNetCore.Components.dll" /&gt;&#xD;
-  &lt;Assembly Path="C:\Users\hongl\.nuget\packages\microsoft.aspnetcore.components.web\7.0.5\lib\net7.0\Microsoft.AspNetCore.Components.Web.dll" /&gt;&#xD;
   &lt;Assembly Path="C:\Users\hongl\.nuget\packages\microsoft.aspnetcore.components.authorization\7.0.5\lib\net7.0\Microsoft.AspNetCore.Components.Authorization.dll" /&gt;&#xD;
   &lt;Assembly Path="C:\Users\hongl\.nuget\packages\microsoft.aspnetcore.components.forms\7.0.5\lib\net7.0\Microsoft.AspNetCore.Components.Forms.dll" /&gt;&#xD;
   &lt;PhysicalFolder Path="C:\Users\hongl\.nuget\packages\fluxera.extensions.dependencyinjection\7.1.2" Loaded="True" /&gt;&#xD;
   &lt;PhysicalFolder Path="C:\Users\hongl\.nuget\packages\fluxera.extensions.hosting.modules.serilog\7.2.0" Loaded="True" /&gt;&#xD;
   &lt;PhysicalFolder Path="C:\Users\hongl\.nuget\packages\reactiveui.blazor\18.4.26" Loaded="True" /&gt;&#xD;
   &lt;PhysicalFolder Path="C:\Users\hongl\.nuget\packages\fluxera.extensions.hosting.wpf\7.1.4" Loaded="True" /&gt;&#xD;
+  &lt;PhysicalFolder Path="C:\Users\hongl\.nuget\packages\microsoft.aspnetcore.components.web\7.0.5" Loaded="True" /&gt;&#xD;
+  &lt;PhysicalFolder Path="C:\Users\hongl\.nuget\packages\microsoft.aspnetcore.components\7.0.5" Loaded="True" /&gt;&#xD;
 &lt;/AssemblyExplorer&gt;</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=17924b6c_002Da32d_002D43c0_002Da596_002Df8eccfed356b/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="SnackGrainTests" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;

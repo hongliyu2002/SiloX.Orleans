@@ -1,0 +1,31 @@
+﻿@inherits LayoutComponentBase
+<mudthemeprovider />
+<muddialogprovider />
+<mudsnackbarprovider />
+<mudlayout>
+    <mudappbar Elevation="0">
+        <mudiconbutton Icon="@Icons.Material.Filled.Menu" Color="@Color.Inherit" Edge="@Edge.Start" OnClick="@DrawerToggle" />
+        <mudspacer />
+        <mudiconbutton Icon="@Icons.Material.Filled.MoreVert" Color="@Color.Inherit" Edge="@Edge.End" />
+    </mudappbar>
+    <muddrawer Elevation="1" @bind-Open="@drawerOpen">
+        <muddrawerheader>
+            <mudtext Typo="@Typo.h6">Mud</mudtext>
+        </muddrawerheader>
+        <NavMenu />
+    </muddrawer>
+    <mudmaincontent>
+        <mudcontainer MaxWidth="@MaxWidth.Large" Class="my-16 pt-16">
+            @Body
+        </mudcontainer>
+    </mudmaincontent>
+</mudlayout>
+
+@code {
+    bool drawerOpen = true;
+
+    void DrawerToggle()
+    {
+        drawerOpen = !drawerOpen;
+    }
+}
