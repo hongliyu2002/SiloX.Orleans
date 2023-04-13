@@ -5,8 +5,8 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <PackageId>SiloX.AspNetCore.Components.Web</PackageId>
-        <Title>Components web module</Title>
-        <Description>Components web module that for Microsoft AspNetCore.</Description>
+        <Title>Blazor components web module</Title>
+        <Description>Blazor components web module that for Microsoft AspNetCore.</Description>
         <Version>7.1.0</Version>
         <AssemblyVersion>7.1.0.0</AssemblyVersion>
         <FileVersion>7.1.0.0</FileVersion>
@@ -15,7 +15,7 @@
         <RepositoryUrl>https://github.com/hongliyu2002/SiloX.Orleans</RepositoryUrl>
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageTags>library;extensions;hosting;modular;aspnetcore;components;aspnetcore-components</PackageTags>
+        <PackageTags>library;extensions;hosting;modular;aspnetcore;components-web;aspnetcore-components-web</PackageTags>
         <PackageProjectUrl>https://github.com/hongliyu2002/SiloX.Orleans</PackageProjectUrl>
         <PackageIcon>logo_128.png</PackageIcon>
         <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -31,10 +31,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Fluxera.Extensions.Common" Version="7.1.2" />
         <PackageReference Include="Fluxera.Extensions.Hosting.Modules.Configuration" Version="7.1.5" />
         <PackageReference Include="Fluxera.Extensions.Localization" Version="7.1.2" />
-        <PackageReference Include="Microsoft.AspNetCore.Components" Version="7.0.5" />
         <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="7.0.5" />
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.5" />
     </ItemGroup>
@@ -46,6 +44,11 @@
         <None Include=".\README.md" Pack="true" PackagePath="">
             <Link>README.md</Link>
         </None>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\SiloX.AspNetCore.Components\SiloX.AspNetCore.Components.csproj" />
+        <ProjectReference Include="..\SiloX.UI\SiloX.UI.csproj" />
     </ItemGroup>
 
 </Project>

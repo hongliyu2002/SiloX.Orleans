@@ -13,7 +13,7 @@ namespace SiloX.AspNetCore.Components;
 /// <summary>
 /// </summary>
 [PublicAPI]
-public abstract class ComponentBase : OwningComponentBase
+public abstract class ExtendedComponentBase : OwningComponentBase
 {
     // private IStringLocalizerFactory? _stringLocalizerFactory;
     // /// <summary>
