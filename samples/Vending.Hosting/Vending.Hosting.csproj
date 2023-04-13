@@ -8,8 +8,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Fluxera.Extensions.Hosting" Version="7.1.3" />
-        <PackageReference Include="Fluxera.Extensions.Hosting.AspNetCore" Version="7.1.3" />
+        <PackageReference Include="Fluxera.Extensions.Hosting" Version="7.1.4" />
+        <PackageReference Include="Fluxera.Extensions.Hosting.AspNetCore" Version="7.1.4" />
         <PackageReference Include="Fluxera.Extensions.Hosting.Modules.AspNetCore.HealthChecks" Version="7.1.5" />
         <PackageReference Include="Fluxera.Extensions.Hosting.Modules.Serilog" Version="7.1.5" />
         <PackageReference Include="OrleansDashboard" Version="7.2.0" />
