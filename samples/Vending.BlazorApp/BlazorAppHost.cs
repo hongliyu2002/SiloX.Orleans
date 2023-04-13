@@ -1,17 +1,19 @@
 ﻿using System.Reflection;
 using Fluxera.Extensions.Hosting;
 using Fluxera.Extensions.Hosting.Modules.AspNetCore.HealthChecks;
+using Fluxera.Extensions.Hosting.Modules.OpenTelemetry;
 using Fluxera.Extensions.Hosting.Modules.Serilog;
 using Fluxera.Extensions.Hosting.Plugins;
+using OpenTelemetry.Logs;
 using Serilog;
 using Serilog.Extensions.Logging;
 
-namespace Vending.Hosting;
+namespace Vending.BlazorApp;
 
 /// <summary>
-///     Hosts the Vending Service.
+///     Hosts the Vending Client.
 /// </summary>
-public sealed class ServiceHost : WebApplicationHost<HostingModule>
+public class BlazorAppHost : WebApplicationHost<BlazorAppModule>
 {
     /// <inheritdoc />
     protected override void ConfigureApplicationPlugins(IPluginConfigurationContext context)
@@ -24,14 +26,19 @@ public sealed class ServiceHost : WebApplicationHost<HostingModule>
     protected override void ConfigureHostBuilder(IHostBuilder builder)
     {
         // Add user secrets configuration source.
-        builder.ConfigureAppConfiguration(configurationBuilder =>
+        builder.ConfigureAppConfiguration(builder =>
                                           {
-                                              configurationBuilder.AddUserSecrets(Assembly.GetExecutingAssembly());
+                                              builder.AddUserSecrets(Assembly.GetExecutingAssembly());
                                           });
+        // Add OpenTelemetry logging.
+        builder.AddOpenTelemetryLogging(options =>
+                                        {
+                                            options.AddConsoleExporter();
+                                        });
         // Add Serilog logging
-        builder.AddSerilogLogging((hostBuilderContext, loggerConfiguration) =>
+        builder.AddSerilogLogging((context, configuration) =>
                                   {
-                                      loggerConfiguration.ReadFrom.Configuration(hostBuilderContext.Configuration).Enrich.FromLogContext();
+                                      configuration.ReadFrom.Configuration(context.Configuration).Enrich.FromLogContext();
                                   });
     }
 

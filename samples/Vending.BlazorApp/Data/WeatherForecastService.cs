@@ -1,4 +1,4 @@
-namespace Vending.Blazor.Data;
+namespace Vending.BlazorApp.Data;
 
 public class WeatherForecastService
 {

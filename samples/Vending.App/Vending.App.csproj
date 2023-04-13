@@ -3,21 +3,16 @@
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
         <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
         <TargetFrameworks>net7.0-windows</TargetFrameworks>
         <UseWPF>true</UseWPF>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="DynamicData" Version="7.13.5" />
-        <PackageReference Include="Fluxera.Extensions.Hosting" Version="7.1.4" />
-        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.Configuration" Version="7.2.0" />
         <PackageReference Include="Fluxera.Extensions.Hosting.Wpf" Version="7.1.4" />
         <PackageReference Include="Fluxera.Extensions.Hosting.Modules.Serilog" Version="7.2.0" />
         <PackageReference Include="ReactiveUI.WPF" Version="18.4.26" />
-        <PackageReference Include="Serilog.Enrichers.Environment" Version="2.2.0" />
-        <PackageReference Include="Serilog.Enrichers.Process" Version="2.0.2" />
-        <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
-        <PackageReference Include="Serilog.Extensions.Hosting" Version="5.0.1" />
         <PackageReference Include="Serilog.Sinks.Async" Version="1.5.0" />
         <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
         <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />

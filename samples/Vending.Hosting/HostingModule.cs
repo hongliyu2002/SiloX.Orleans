@@ -1,5 +1,6 @@
 ﻿using Fluxera.Extensions.Hosting;
 using Fluxera.Extensions.Hosting.Modules;
+using Fluxera.Extensions.Hosting.Modules.AspNetCore.HealthChecks;
 using Fluxera.Extensions.Hosting.Modules.Configuration;
 using JetBrains.Annotations;
 using SiloX.Orleans;
@@ -21,6 +22,7 @@ using Vending.Projection.Abstractions.Snacks;
 namespace Vending.Hosting;
 
 [PublicAPI]
+[DependsOn<HealthChecksEndpointsModule>]
 [DependsOn<ServerModule>]
 [DependsOn<RedisClusteringModule>]
 [DependsOn<RedisRemindersModule>]

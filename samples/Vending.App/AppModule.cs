@@ -19,7 +19,6 @@ namespace Vending.App;
 [DependsOn<RedisClusteringModule>]
 [DependsOn<EventStoreStreamingModule>]
 [DependsOn<TransactionsModule>]
-[DependsOn<ConfigurationModule>]
 public sealed class AppModule : ConfigureApplicationModule
 {
     /// <inheritdoc />
