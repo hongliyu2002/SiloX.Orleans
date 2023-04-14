@@ -12,7 +12,7 @@ namespace SiloX.Domain.Abstractions.Extensions;
 public static class GrainExtensions
 {
     /// <summary>
-    ///     Get a stream of events for a given publisher grain.
+    ///     Get a stream of events from a publisher grain.
     /// </summary>
     /// <param name="grain">The <see cref="IGrainBase" />.</param>
     /// <param name="providerName">The name of the stream provider to use.</param>
@@ -46,7 +46,7 @@ public static class GrainExtensions
     }
 
     /// <summary>
-    ///     Get a stream of events for a given broadcaster grain.
+    ///     Get a stream of events from a broadcaster grain.
     /// </summary>
     /// <param name="grain">The <see cref="IGrainBase" />.</param>
     /// <param name="providerName">The name of the stream provider to use.</param>
@@ -79,7 +79,7 @@ public static class GrainExtensions
     }
 
     /// <summary>
-    ///     Get a stream of events for a given publisher grain.
+    ///     Get a stream of events from a publisher grain.
     /// </summary>
     /// <param name="grain">The <see cref="IGrainBase" />.</param>
     /// <param name="providerName">The name of the stream provider to use.</param>
@@ -113,7 +113,7 @@ public static class GrainExtensions
     }
 
     /// <summary>
-    ///     Get a stream of events for a given broadcaster grain.
+    ///     Get a stream of events from a broadcaster grain.
     /// </summary>
     /// <param name="grain">The <see cref="IGrainBase" />.</param>
     /// <param name="providerName">The name of the stream provider to use.</param>
