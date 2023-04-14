@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Linq;
+﻿using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Threading.Tasks;
 using DynamicData;
 using DynamicData.Binding;
 using Fluxera.Utilities.Extensions;
-using Orleans;
 using Orleans.FluentResults;
 using Orleans.Runtime;
 using Orleans.Streams;
@@ -38,8 +34,9 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
                                 .Select(_ => new Func<SnackViewModel, bool>(snack => (SearchTerm.IsNullOrEmpty() || snack.Name.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase)) && snack.IsDeleted == false)))
                     .Sort(SortExpressionComparer<SnackViewModel>.Ascending(snack => snack.Id))
                     .ObserveOn(RxApp.MainThreadScheduler)
-                    .Bind(out _snacks)
+                    .Bind(out var snacks)
                     .Subscribe();
+        Snacks = snacks;
 
         // Search snacks and update the cache.
         this.WhenAnyValue(vm => vm.SearchTerm, vm => vm.ClusterClient)
@@ -51,7 +48,7 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
             .Where(result => result.IsSuccess)
             .Select(result => result.Value)
             .ObserveOn(RxApp.MainThreadScheduler)
-            .Subscribe(snacks => _snacksCache.Edit(updater => updater.AddOrUpdate(snacks.Select(snack => new SnackViewModel(snack)))));
+            .Subscribe(snacksList => _snacksCache.Edit(updater => updater.AddOrUpdate(snacksList.Select(snack => new SnackViewModel(snack)))));
 
         // When the current snack changes, get the snack edit view model.
         this.WhenAnyValue(vm => vm.CurrentSnack, vm => vm.ClusterClient)
@@ -119,8 +116,7 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
         set => this.RaiseAndSetIfChanged(ref _currentSnackEdit, value);
     }
 
-    private readonly ReadOnlyObservableCollection<SnackViewModel> _snacks;
-    public ReadOnlyObservableCollection<SnackViewModel> Snacks => _snacks;
+    public ReadOnlyObservableCollection<SnackViewModel> Snacks { get; }
 
     #endregion
 
