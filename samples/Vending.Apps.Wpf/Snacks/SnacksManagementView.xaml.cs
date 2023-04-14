@@ -12,6 +12,7 @@ public partial class SnacksManagementView
         InitializeComponent();
         this.WhenActivated(disposable =>
                            {
+                               this.OneWayBind(ViewModel, vm => vm.ErrorInfo, v => v.ErrorLabel.Content, NavigationSideToIntConverter).DisposeWith(disposable);
                                this.OneWayBind(ViewModel, vm => vm.NavigationSide, v => v.NavigationGridGridColumn, NavigationSideToIntConverter).DisposeWith(disposable);
                                this.Bind(ViewModel, vm => vm.SearchTerm, v => v.SearchTextBox.Text).DisposeWith(disposable);
                                this.OneWayBind(ViewModel, vm => vm.Snacks, v => v.SnackItemsListBox.ItemsSource).DisposeWith(disposable);

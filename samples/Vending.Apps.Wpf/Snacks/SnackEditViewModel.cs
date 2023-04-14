@@ -1,16 +1,12 @@
-﻿using System;
-using System.Reactive;
+﻿using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Threading.Tasks;
-using System.Windows;
 using Fluxera.Guards;
 using Fluxera.Utilities.Extensions;
-using Orleans;
 using Orleans.FluentResults;
-using Orleans.Runtime;
 using Orleans.Streams;
 using ReactiveUI;
+using SiloX.Domain.Abstractions.Extensions;
 using Vending.Domain.Abstractions;
 using Vending.Domain.Abstractions.Snacks;
 
@@ -18,7 +14,6 @@ namespace Vending.App.Wpf.Snacks;
 
 public class SnackEditViewModel : ReactiveObject, IActivatableViewModel, IOrleansObject
 {
-    private StreamSubscriptionHandle<SnackEvent>? _subscription;
     private StreamSequenceToken? _lastSequenceToken;
 
     public SnackEditViewModel(Snack snack, IClusterClient clusterClient)
@@ -28,15 +23,39 @@ public class SnackEditViewModel : ReactiveObject, IActivatableViewModel, IOrlean
         this.WhenActivated(disposable =>
                            {
                                // When the cluster client changes, subscribe to the snack info stream.
-                               this.WhenAnyValue(vm => vm.Id, vm => vm.ClusterClient)
-                                   .Where(tuple => tuple.Item1 != Guid.Empty && tuple.Item2 != null)
-                                   .Select(tuple => (tuple.Item1, tuple.Item2!.GetStreamProvider(Constants.StreamProviderName)))
-                                   .Select(tuple => tuple.Item2.GetStream<SnackEvent>(StreamId.Create(Constants.SnacksNamespace, tuple.Item1)))
-                                   .SelectMany(stream => stream.SubscribeAsync(HandleEventAsync, HandleErrorAsync, HandleCompletedAsync, _lastSequenceToken))
-                                   .Subscribe(HandleSubscriptionAsync)
-                                   .DisposeWith(disposable);
-                               Disposable.Create(HandleSubscriptionDisposeAsync)
-                                         .DisposeWith(disposable);
+                               var snackStreamObs = this.WhenAnyValue(vm => vm.Id, vm => vm.ClusterClient)
+                                                        .Where(tuple => tuple.Item1 != Guid.Empty && tuple.Item2 != null)
+                                                        .SelectMany(tuple => tuple.Item2!.GetSubscriberStreamWithGuidKey<SnackEvent>(Constants.StreamProviderName, Constants.SnacksNamespace, tuple.Item1, _lastSequenceToken))
+                                                        .Publish()
+                                                        .RefCount();
+                               snackStreamObs.Where(tuple => tuple.Event is SnackInitializedEvent)
+                                             .ObserveOn(RxApp.MainThreadScheduler)
+                                             .Subscribe(tuple =>
+                                                        {
+                                                            _lastSequenceToken = tuple.SequenceToken;
+                                                            var snackEvent = (SnackInitializedEvent)tuple.Event;
+                                                            Name = snackEvent.Name;
+                                                            PictureUrl = snackEvent.PictureUrl;
+                                                        })
+                                             .DisposeWith(disposable);
+                               snackStreamObs.Where(tuple => tuple.Event is SnackDeletedEvent)
+                                             .ObserveOn(RxApp.MainThreadScheduler)
+                                             .Subscribe(tuple =>
+                                                        {
+                                                            _lastSequenceToken = tuple.SequenceToken;
+                                                            IsDeleted = true;
+                                                        })
+                                             .DisposeWith(disposable);
+                               snackStreamObs.Where(tuple => tuple.Event is SnackUpdatedEvent)
+                                             .ObserveOn(RxApp.MainThreadScheduler)
+                                             .Subscribe(tuple =>
+                                                        {
+                                                            _lastSequenceToken = tuple.SequenceToken;
+                                                            var snackEvent = (SnackUpdatedEvent)tuple.Event;
+                                                            Name = snackEvent.Name;
+                                                            PictureUrl = snackEvent.PictureUrl;
+                                                        })
+                                             .DisposeWith(disposable);
                            });
         // Create the commands.
         SaveSnackCommand = ReactiveCommand.CreateFromTask(SaveSnackAsync, CanSaveSnack);
@@ -54,6 +73,13 @@ public class SnackEditViewModel : ReactiveObject, IActivatableViewModel, IOrlean
     {
         get => _clusterClient;
         set => this.RaiseAndSetIfChanged(ref _clusterClient, value);
+    }
+
+    private string _errorInfo = string.Empty;
+    public string ErrorInfo
+    {
+        get => _errorInfo;
+        set => this.RaiseAndSetIfChanged(ref _errorInfo, value);
     }
 
     private Guid _id;
@@ -130,114 +156,6 @@ public class SnackEditViewModel : ReactiveObject, IActivatableViewModel, IOrlean
         Name = snack.Name;
         PictureUrl = snack.PictureUrl;
         IsDeleted = snack.IsDeleted;
-    }
-
-    #endregion
-
-    #region Stream Handlers
-
-    private async void HandleSubscriptionAsync(StreamSubscriptionHandle<SnackEvent> subscription)
-    {
-        if (_subscription != null)
-        {
-            try
-            {
-                await _subscription.UnsubscribeAsync();
-            }
-            catch
-            {
-                // ignored
-            }
-        }
-        _subscription = subscription;
-    }
-
-    private async void HandleSubscriptionDisposeAsync()
-    {
-        if (_subscription == null)
-        {
-            return;
-        }
-        try
-        {
-            await _subscription.UnsubscribeAsync();
-        }
-        catch
-        {
-            // ignored
-        }
-    }
-
-    private Task HandleEventAsync(SnackEvent domainEvent, StreamSequenceToken sequenceToken)
-    {
-        _lastSequenceToken = sequenceToken;
-        return domainEvent switch
-               {
-                   SnackInitializedEvent snackEvent => ApplyEventAsync(snackEvent),
-                   SnackDeletedEvent snackEvent => ApplyEventAsync(snackEvent),
-                   SnackUpdatedEvent snackEvent => ApplyEventAsync(snackEvent),
-                   SnackErrorEvent snackEvent => ApplyErrorEventAsync(snackEvent),
-                   _ => Task.CompletedTask
-               };
-    }
-
-    private Task HandleErrorAsync(Exception exception)
-    {
-        return Task.CompletedTask;
-    }
-
-    private Task HandleCompletedAsync()
-    {
-        return Task.CompletedTask;
-    }
-
-    private Task ApplyEventAsync(SnackInitializedEvent snackEvent)
-    {
-        if (snackEvent.SnackId != Id)
-        {
-            return Task.CompletedTask;
-        }
-        var dispatcher = Application.Current.Dispatcher;
-        dispatcher?.Invoke(() =>
-                           {
-                               Name = snackEvent.Name;
-                               PictureUrl = snackEvent.PictureUrl;
-                           });
-        return Task.CompletedTask;
-    }
-
-    private Task ApplyEventAsync(SnackDeletedEvent snackEvent)
-    {
-        if (snackEvent.SnackId != Id)
-        {
-            return Task.CompletedTask;
-        }
-        var dispatcher = Application.Current.Dispatcher;
-        dispatcher?.Invoke(() =>
-                           {
-                               IsDeleted = true;
-                           });
-        return Task.CompletedTask;
-    }
-
-    private Task ApplyEventAsync(SnackUpdatedEvent snackEvent)
-    {
-        if (snackEvent.SnackId != Id)
-        {
-            return Task.CompletedTask;
-        }
-        var dispatcher = Application.Current.Dispatcher;
-        dispatcher?.Invoke(() =>
-                           {
-                               Name = snackEvent.Name;
-                               PictureUrl = snackEvent.PictureUrl;
-                           });
-        return Task.CompletedTask;
-    }
-
-    private Task ApplyErrorEventAsync(SnackErrorEvent errorEvent)
-    {
-        return Task.CompletedTask;
     }
 
     #endregion

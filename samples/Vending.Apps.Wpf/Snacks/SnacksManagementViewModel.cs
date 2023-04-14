@@ -6,9 +6,9 @@ using DynamicData;
 using DynamicData.Binding;
 using Fluxera.Utilities.Extensions;
 using Orleans.FluentResults;
-using Orleans.Runtime;
 using Orleans.Streams;
 using ReactiveUI;
+using SiloX.Domain.Abstractions.Extensions;
 using Vending.Domain.Abstractions;
 using Vending.Domain.Abstractions.Snacks;
 using Vending.Projection.Abstractions.Snacks;
@@ -17,25 +17,22 @@ namespace Vending.App.Wpf.Snacks;
 
 public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, IOrleansObject
 {
-    private readonly SourceCache<SnackViewModel, Guid> _snacksCache;
-
-    private StreamSubscriptionHandle<SnackInfoEvent>? _subscription;
     private StreamSequenceToken? _lastSequenceToken;
 
     /// <inheritdoc />
     public SnacksManagementViewModel()
     {
         // Create the cache for the snacks.
-        _snacksCache = new SourceCache<SnackViewModel, Guid>(snack => snack.Id);
-        _snacksCache.Connect()
-                    .Filter(this.WhenAnyValue(vm => vm.SearchTerm)
-                                .Throttle(TimeSpan.FromMilliseconds(500))
-                                .DistinctUntilChanged()
-                                .Select(_ => new Func<SnackViewModel, bool>(snack => (SearchTerm.IsNullOrEmpty() || snack.Name.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase)) && snack.IsDeleted == false)))
-                    .Sort(SortExpressionComparer<SnackViewModel>.Ascending(snack => snack.Id))
-                    .ObserveOn(RxApp.MainThreadScheduler)
-                    .Bind(out var snacks)
-                    .Subscribe();
+        var snacksCache = new SourceCache<SnackViewModel, Guid>(snack => snack.Id);
+        snacksCache.Connect()
+                   .Filter(this.WhenAnyValue(vm => vm.SearchTerm)
+                               .Throttle(TimeSpan.FromMilliseconds(500))
+                               .DistinctUntilChanged()
+                               .Select(_ => new Func<SnackViewModel, bool>(snack => (SearchTerm.IsNullOrEmpty() || snack.Name.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase)) && snack.IsDeleted == false)))
+                   .Sort(SortExpressionComparer<SnackViewModel>.Ascending(snack => snack.Id))
+                   .ObserveOn(RxApp.MainThreadScheduler)
+                   .Bind(out var snacks)
+                   .Subscribe();
         Snacks = snacks;
 
         // Search snacks and update the cache.
@@ -48,7 +45,7 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
             .Where(result => result.IsSuccess)
             .Select(result => result.Value)
             .ObserveOn(RxApp.MainThreadScheduler)
-            .Subscribe(snacksList => _snacksCache.Edit(updater => updater.AddOrUpdate(snacksList.Select(snack => new SnackViewModel(snack)))));
+            .Subscribe(snacksList => snacksCache.Edit(updater => updater.AddOrUpdate(snacksList.Select(snack => new SnackViewModel(snack)))));
 
         // When the current snack changes, get the snack edit view model.
         this.WhenAnyValue(vm => vm.CurrentSnack, vm => vm.ClusterClient)
@@ -57,18 +54,34 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
             .SelectMany(grain => grain.GetSnackAsync())
             .ObserveOn(RxApp.MainThreadScheduler)
             .Subscribe(snack => CurrentSnackEdit = new SnackEditViewModel(snack, ClusterClient!));
+
+        // Subscribe to the snack info stream.
         this.WhenActivated(disposable =>
                            {
                                // When the cluster client changes, subscribe to the snack info stream.
-                               this.WhenAnyValue(vm => vm.ClusterClient)
-                                   .Where(client => client != null)
-                                   .Select(client => client!.GetStreamProvider(Constants.StreamProviderName))
-                                   .Select(streamProvider => streamProvider.GetStream<SnackInfoEvent>(StreamId.Create(Constants.SnackInfosBroadcastNamespace, Guid.Empty)))
-                                   .SelectMany(stream => stream.SubscribeAsync(HandleEventAsync, HandleErrorAsync, HandleCompletedAsync, _lastSequenceToken))
-                                   .Subscribe(HandleSubscriptionAsync)
-                                   .DisposeWith(disposable);
-                               Disposable.Create(HandleSubscriptionDisposeAsync)
-                                         .DisposeWith(disposable);
+                               var allSnacksStreamObs = this.WhenAnyValue(vm => vm.ClusterClient)
+                                                         .Where(client => client != null)
+                                                         .SelectMany(client => client!.GetReceiverStreamWithGuidKey<SnackInfoEvent>(Constants.StreamProviderName, Constants.SnackInfosBroadcastNamespace, _lastSequenceToken))
+                                                         .Publish()
+                                                         .RefCount();
+                               allSnacksStreamObs.Where(tuple => tuple.Event is SnackInfoSavedEvent)
+                                              .ObserveOn(RxApp.MainThreadScheduler)
+                                              .Subscribe(tuple =>
+                                                         {
+                                                             _lastSequenceToken = tuple.SequenceToken;
+                                                             var savedEvent = (SnackInfoSavedEvent)tuple.Event;
+                                                             snacksCache.Edit(updater => updater.AddOrUpdate(new SnackViewModel(savedEvent.Snack)));
+                                                         })
+                                              .DisposeWith(disposable);
+                               allSnacksStreamObs.Where(tuple => tuple.Event is SnackInfoErrorEvent)
+                                              .ObserveOn(RxApp.MainThreadScheduler)
+                                              .Subscribe(tuple =>
+                                                         {
+                                                             _lastSequenceToken = tuple.SequenceToken;
+                                                             var errorEvent = (SnackInfoErrorEvent)tuple.Event;
+                                                             ErrorInfo = $"{errorEvent.Code}:{string.Join("\n", errorEvent.Reasons)}";
+                                                         })
+                                              .DisposeWith(disposable);
                            });
         // Create the commands.
         AddSnackCommand = ReactiveCommand.CreateFromTask(AddSnackAsync, CanAddSnack);
@@ -86,6 +99,13 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
     {
         get => _clusterClient;
         set => this.RaiseAndSetIfChanged(ref _clusterClient, value);
+    }
+
+    private string _errorInfo = string.Empty;
+    public string ErrorInfo
+    {
+        get => _errorInfo;
+        set => this.RaiseAndSetIfChanged(ref _errorInfo, value);
     }
 
     private NavigationSide _navigationSide;
@@ -215,75 +235,6 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
     private void MoveNavigationSide()
     {
         NavigationSide = NavigationSide == NavigationSide.Left ? NavigationSide.Right : NavigationSide.Left;
-    }
-
-    #endregion
-
-    #region Stream Handlers
-
-    private async void HandleSubscriptionAsync(StreamSubscriptionHandle<SnackInfoEvent> subscription)
-    {
-        if (_subscription != null)
-        {
-            try
-            {
-                await _subscription.UnsubscribeAsync();
-            }
-            catch
-            {
-                // ignored
-            }
-        }
-        _subscription = subscription;
-    }
-
-    private async void HandleSubscriptionDisposeAsync()
-    {
-        if (_subscription == null)
-        {
-            return;
-        }
-        try
-        {
-            await _subscription.UnsubscribeAsync();
-        }
-        catch
-        {
-            // ignored
-        }
-    }
-
-    private Task HandleEventAsync(SnackInfoEvent projectionEvent, StreamSequenceToken sequenceToken)
-    {
-        _lastSequenceToken = sequenceToken;
-        return projectionEvent switch
-               {
-                   SnackInfoSavedEvent snackEvent => ApplyEventAsync(snackEvent),
-                   SnackInfoErrorEvent snackEvent => ApplyErrorEventAsync(snackEvent),
-                   _ => Task.CompletedTask
-               };
-    }
-
-    private Task HandleErrorAsync(Exception exception)
-    {
-        return Task.CompletedTask;
-    }
-
-    private Task HandleCompletedAsync()
-    {
-        return Task.CompletedTask;
-    }
-
-    private Task ApplyEventAsync(SnackInfoSavedEvent snackEvent)
-    {
-        _snacksCache.Edit(updater => updater.AddOrUpdate(new SnackViewModel(snackEvent.Snack)));
-        return Task.CompletedTask;
-    }
-
-    private Task ApplyErrorEventAsync(SnackInfoErrorEvent errorEvent)
-    {
-        // return Interactions.Errors.Handle(result.Errors);
-        return Task.CompletedTask;
     }
 
     #endregion

@@ -3,12 +3,17 @@
                                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:reactiveUi="http://reactiveui.net" xmlns:vm="clr-namespace:Vending.App.Wpf.Snacks" mc:Ignorable="d"
                                 d:DesignHeight="450" d:DesignWidth="600">
     <Grid ShowGridLines="False" Background="LightCyan">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
-        <Grid x:Name="NavigationGrid" Grid.Column="0" Width="260">
+        <Label Grid.Row="0" x:Name="ErrorLabel" Grid.ColumnSpan="3" Background="Bisque" Foreground="Red" />
+        <Grid Grid.Row="1" x:Name="NavigationGrid" Grid.Column="0" Width="260">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -34,6 +39,6 @@
             </StackPanel>
             <ListBox x:Name="SnackItemsListBox" Grid.Row="2" Margin="5 0 5 5" HorizontalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
         </Grid>
-        <reactiveUi:ViewModelViewHost x:Name="EditViewHost" Grid.Column="1" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
+        <reactiveUi:ViewModelViewHost Grid.Row="1" x:Name="EditViewHost" Grid.Column="1" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
     </Grid>
 </reactiveUi:ReactiveUserControl>
