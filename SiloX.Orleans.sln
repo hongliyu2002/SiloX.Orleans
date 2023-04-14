@@ -73,7 +73,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vending.Projection.EntityFr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vending.Domain.EntityFrameworkCore", "samples\Vending.Domain.EntityFrameworkCore\Vending.Domain.EntityFrameworkCore.csproj", "{ABC13703-065A-4DDC-AF35-1D6CEC623F5E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vending.App", "samples\Vending.App\Vending.App.csproj", "{4B340E8B-C8BE-46F7-B19A-242CAC62C035}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vending.Apps.Wpf", "samples\Vending.Apps.Wpf\Vending.Apps.Wpf.csproj", "{4B340E8B-C8BE-46F7-B19A-242CAC62C035}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vending.Hosting", "samples\Vending.Hosting\Vending.Hosting.csproj", "{BC9B8A0E-86D1-428C-82CD-25CB093E853F}"
 EndProject

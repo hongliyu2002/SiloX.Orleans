@@ -1,0 +1,20 @@
+﻿<reactiveUi:ReactiveWindow x:TypeArguments="vm:MainWindowModel" x:Class="Vending.App.Wpf.MainWindow"
+                           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                           xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                           xmlns:reactiveUi="http://reactiveui.net" xmlns:vm="clr-namespace:Vending.App.Wpf" mc:Ignorable="d" Title="Vending Management System"
+                           Height="768" Width="1024">
+    <Grid ShowGridLines="False">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Menu Grid.Row="0" Height="20" VerticalAlignment="Center">
+            <MenuItem x:Name="SnacksManagementMenuItem" Header="_Snacks Management" />
+            <MenuItem x:Name="MachinesManagementMenuItem" Header="_Machines Management" />
+            <MenuItem x:Name="PurchasesManagementMenuItem" Header="_Purchases Management" />
+        </Menu>
+
+        <reactiveUi:ViewModelViewHost x:Name="MainViewHost" Grid.Row="1" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
+    </Grid>
+</reactiveUi:ReactiveWindow>

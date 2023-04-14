@@ -1,9 +1,9 @@
 ﻿using Fluxera.Extensions.Hosting.Modules.Configuration;
 
-namespace Vending.Apps.Blazor.Contributors;
+namespace Vending.App.Wpf.Contributors;
 
 internal sealed class ConfigureAppOptionsContributor : ConfigureOptionsContributorBase<AppOptions>
 {
     /// <inheritdoc />
-    public override string SectionName => "Vending:Apps.Blazor";
+    public override string SectionName => "Vending:Apps.Wpf";
 }

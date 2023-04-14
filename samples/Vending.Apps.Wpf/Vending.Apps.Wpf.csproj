@@ -1,0 +1,77 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <TargetFrameworks>net7.0-windows</TargetFrameworks>
+        <UseWPF>true</UseWPF>
+        <RootNamespace>Vending.App.Wpf</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="DynamicData" Version="7.13.5" />
+        <PackageReference Include="Fluxera.Extensions.Hosting.Wpf" Version="7.1.4" />
+        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.Serilog" Version="7.2.0" />
+        <PackageReference Include="ReactiveUI.WPF" Version="18.4.26" />
+        <PackageReference Include="Serilog.Sinks.Async" Version="1.5.0" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
+        <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+        <PackageReference Include="Splat.Microsoft.Extensions.DependencyInjection" Version="14.6.8" />
+    </ItemGroup>
+     
+     <ItemGroup> 
+         <ProjectReference Include="..\..\src\SiloX.Orleans.Client\SiloX.Orleans.Client.csproj" /> 
+         <ProjectReference Include="..\..\src\SiloX.Orleans.Clustering.Redis\SiloX.Orleans.Clustering.Redis.csproj" /> 
+         <ProjectReference Include="..\..\src\SiloX.Orleans.Streaming.EventStore\SiloX.Orleans.Streaming.EventStore.csproj" /> 
+         <ProjectReference Include="..\..\src\SiloX.Orleans.Transactions\SiloX.Orleans.Transactions.csproj" /> 
+         <ProjectReference Include="..\Vending.Domain.Abstractions\Vending.Domain.Abstractions.csproj" /> 
+         <ProjectReference Include="..\Vending.Projection.Abstractions\Vending.Projection.Abstractions.csproj" /> 
+     </ItemGroup> 
+
+    <ItemGroup>
+        <None Update="appsettings.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Page Update="Machines\MachinesManagementView.xaml">
+          <Generator>MSBuild:Compile</Generator>
+          <XamlRuntime>Wpf</XamlRuntime>
+          <SubType>Designer</SubType>
+        </Page>
+        <Page Update="Snacks\SnackEditView.xaml">
+          <Generator>MSBuild:Compile</Generator>
+          <XamlRuntime>Wpf</XamlRuntime>
+          <SubType>Designer</SubType>
+        </Page>
+        <Page Update="Snacks\SnackView.xaml">
+          <Generator>MSBuild:Compile</Generator>
+          <XamlRuntime>Wpf</XamlRuntime>
+          <SubType>Designer</SubType>
+        </Page>
+        <Page Update="Snacks\SnacksManagementView.xaml">
+          <Generator>MSBuild:Compile</Generator>
+          <XamlRuntime>Wpf</XamlRuntime>
+          <SubType>Designer</SubType>
+        </Page>
+        <Page Update="Main\MainWindow.xaml">
+          <Generator>MSBuild:Compile</Generator>
+          <XamlRuntime>Wpf</XamlRuntime>
+          <SubType>Designer</SubType>
+        </Page>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Remove="Images\add.png" />
+        <Resource Include="Images\add.png" />
+        <None Remove="Images\move.png" />
+        <Resource Include="Images\move.png" />
+        <None Remove="Images\snack.png" />
+        <Resource Include="Images\snack.png" />
+    </ItemGroup>
+
+</Project>
