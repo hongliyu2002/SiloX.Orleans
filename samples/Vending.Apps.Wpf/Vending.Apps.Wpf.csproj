@@ -6,7 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <TargetFrameworks>net7.0-windows</TargetFrameworks>
         <UseWPF>true</UseWPF>
-        <RootNamespace>Vending.App.Wpf</RootNamespace>
+        <RootNamespace>Vending.Apps.Wpf</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>

@@ -2,7 +2,7 @@
 using System.Reactive.Disposables;
 using ReactiveUI;
 
-namespace Vending.App.Wpf.Machines;
+namespace Vending.Apps.Wpf.Machines;
 
 public partial class SlotEditView
 {

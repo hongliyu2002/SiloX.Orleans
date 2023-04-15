@@ -1,4 +1,4 @@
-﻿namespace Vending.App.Wpf.Snacks;
+﻿namespace Vending.Apps.Wpf.Snacks;
 
 /// <summary>
 ///     Represents the side of the navigation pane.

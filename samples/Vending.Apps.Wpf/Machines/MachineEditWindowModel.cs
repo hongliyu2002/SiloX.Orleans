@@ -10,11 +10,11 @@ using Orleans.FluentResults;
 using Orleans.Streams;
 using ReactiveUI;
 using SiloX.Domain.Abstractions.Extensions;
-using Vending.App.Wpf.Snacks;
+using Vending.Apps.Wpf.Snacks;
 using Vending.Domain.Abstractions;
 using Vending.Domain.Abstractions.Machines;
 
-namespace Vending.App.Wpf.Machines;
+namespace Vending.Apps.Wpf.Machines;
 
 public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel
 {

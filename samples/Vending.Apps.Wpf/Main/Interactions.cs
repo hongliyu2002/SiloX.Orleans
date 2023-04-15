@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Orleans.FluentResults;
 using ReactiveUI;
 
-namespace Vending.App.Wpf;
+namespace Vending.Apps.Wpf;
 
 /// <summary>
 ///     Provides interactions for the application.

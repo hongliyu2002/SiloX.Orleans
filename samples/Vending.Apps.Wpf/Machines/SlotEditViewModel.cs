@@ -2,10 +2,10 @@
 using System.Reactive.Linq;
 using Fluxera.Guards;
 using ReactiveUI;
-using Vending.App.Wpf.Snacks;
+using Vending.Apps.Wpf.Snacks;
 using Vending.Domain.Abstractions.Machines;
 
-namespace Vending.App.Wpf.Machines;
+namespace Vending.Apps.Wpf.Machines;
 
 public class SlotEditViewModel : ReactiveObject
 {

@@ -1,4 +1,4 @@
-﻿namespace Vending.App.Wpf.Purchases;
+﻿namespace Vending.Apps.Wpf.Purchases;
 
 public partial class PurchasesManagementView
 {

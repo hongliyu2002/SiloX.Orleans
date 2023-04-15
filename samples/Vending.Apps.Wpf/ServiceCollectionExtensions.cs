@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Vending.App.Wpf.Services;
+using Vending.Apps.Wpf.Services;
 
-namespace Vending.App.Wpf;
+namespace Vending.Apps.Wpf;
 
 /// <summary>
 /// </summary>

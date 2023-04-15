@@ -10,7 +10,7 @@ using SiloX.Domain.Abstractions.Extensions;
 using Vending.Domain.Abstractions;
 using Vending.Domain.Abstractions.Snacks;
 
-namespace Vending.App.Wpf.Snacks;
+namespace Vending.Apps.Wpf.Snacks;
 
 public class SnackEditViewModel : ReactiveObject, IActivatableViewModel
 {

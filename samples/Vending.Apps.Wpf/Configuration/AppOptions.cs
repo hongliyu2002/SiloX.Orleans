@@ -1,6 +1,6 @@
 ﻿using JetBrains.Annotations;
 
-namespace Vending.App.Wpf;
+namespace Vending.Apps.Wpf;
 
 /// <summary>
 /// </summary>

@@ -1,7 +1,7 @@
-﻿<reactiveUi:ReactiveUserControl x:TypeArguments="vm:PurchasesManagementViewModel" x:Class="Vending.App.Wpf.Purchases.PurchasesManagementView"
+﻿<reactiveUi:ReactiveUserControl x:TypeArguments="vm:PurchasesManagementViewModel" x:Class="Vending.Apps.Wpf.Purchases.PurchasesManagementView"
                                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:reactiveUi="http://reactiveui.net"
-                                xmlns:vm="clr-namespace:Vending.App.Wpf.Purchases" mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="600">
+                                xmlns:vm="clr-namespace:Vending.Apps.Wpf.Purchases" mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="600">
     <Grid Background="OliveDrab" />
 </reactiveUi:ReactiveUserControl>

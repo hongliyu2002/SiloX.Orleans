@@ -1,10 +1,10 @@
 ﻿using System.Reactive;
 using ReactiveUI;
-using Vending.App.Wpf.Machines;
-using Vending.App.Wpf.Purchases;
-using Vending.App.Wpf.Snacks;
+using Vending.Apps.Wpf.Machines;
+using Vending.Apps.Wpf.Purchases;
+using Vending.Apps.Wpf.Snacks;
 
-namespace Vending.App.Wpf;
+namespace Vending.Apps.Wpf;
 
 public class MainWindowModel : ReactiveObject
 {

@@ -1,4 +1,4 @@
-﻿namespace Vending.App.Wpf.Services;
+﻿namespace Vending.Apps.Wpf.Services;
 
 public interface IClusterClientReady
 {

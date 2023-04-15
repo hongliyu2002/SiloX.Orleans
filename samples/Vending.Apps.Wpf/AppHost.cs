@@ -3,7 +3,7 @@ using Fluxera.Extensions.Hosting.Modules.Serilog;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 
-namespace Vending.App.Wpf;
+namespace Vending.Apps.Wpf;
 
 /// <summary>
 ///     Hosts the Vending Client.

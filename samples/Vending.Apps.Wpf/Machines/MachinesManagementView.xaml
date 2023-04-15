@@ -1,7 +1,7 @@
-﻿<reactiveUi:ReactiveUserControl x:TypeArguments="vm:MachinesManagementViewModel" x:Class="Vending.App.Wpf.Machines.MachinesManagementView"
+﻿<reactiveUi:ReactiveUserControl x:TypeArguments="vm:MachinesManagementViewModel" x:Class="Vending.Apps.Wpf.Machines.MachinesManagementView"
                                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                                xmlns:reactiveUi="http://reactiveui.net" xmlns:vm="clr-namespace:Vending.App.Wpf.Machines" mc:Ignorable="d" d:DesignHeight="480" d:DesignWidth="640">
+                                xmlns:reactiveUi="http://reactiveui.net" xmlns:vm="clr-namespace:Vending.Apps.Wpf.Machines" mc:Ignorable="d" d:DesignHeight="480" d:DesignWidth="640">
     <Grid ShowGridLines="True" Background="Cornsilk">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />

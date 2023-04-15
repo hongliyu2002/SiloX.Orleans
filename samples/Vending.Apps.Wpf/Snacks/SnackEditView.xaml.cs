@@ -4,7 +4,7 @@ using System.Windows.Media.Imaging;
 using Fluxera.Utilities.Extensions;
 using ReactiveUI;
 
-namespace Vending.App.Wpf.Snacks;
+namespace Vending.Apps.Wpf.Snacks;
 
 public partial class SnackEditView
 {

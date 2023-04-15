@@ -1,7 +1,7 @@
 ﻿using DynamicData;
 using Vending.Projection.Abstractions.Machines;
 
-namespace Vending.App.Wpf.Machines;
+namespace Vending.Apps.Wpf.Machines;
 
 public static class MachinesCacheExtensions
 {

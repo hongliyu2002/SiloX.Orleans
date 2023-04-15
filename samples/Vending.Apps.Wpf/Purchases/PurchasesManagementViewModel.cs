@@ -1,6 +1,6 @@
 ﻿using ReactiveUI;
 
-namespace Vending.App.Wpf.Purchases;
+namespace Vending.Apps.Wpf.Purchases;
 
 public class PurchasesManagementViewModel : ReactiveObject, IActivatableViewModel
 {

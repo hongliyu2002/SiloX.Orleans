@@ -5,7 +5,7 @@ using System.Windows;
 using Fluxera.Utilities.Extensions;
 using ReactiveUI;
 
-namespace Vending.App.Wpf.Machines;
+namespace Vending.Apps.Wpf.Machines;
 
 public partial class MachinesManagementView
 {

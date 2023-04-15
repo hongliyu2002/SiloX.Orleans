@@ -2,7 +2,7 @@
 using ReactiveUI;
 using Vending.Projection.Abstractions.Snacks;
 
-namespace Vending.App.Wpf.Snacks;
+namespace Vending.Apps.Wpf.Snacks;
 
 public class SnackViewModel : ReactiveObject
 {

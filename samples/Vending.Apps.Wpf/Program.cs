@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Fluxera.Extensions.Hosting;
 
-namespace Vending.App.Wpf;
+namespace Vending.Apps.Wpf;
 
 public static class Program
 {

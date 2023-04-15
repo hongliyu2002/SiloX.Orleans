@@ -1,6 +1,6 @@
 ﻿using Fluxera.Extensions.Hosting.Modules.Configuration;
 
-namespace Vending.App.Wpf.Contributors;
+namespace Vending.Apps.Wpf.Contributors;
 
 internal sealed class ConfigureAppOptionsContributor : ConfigureOptionsContributorBase<AppOptions>
 {

@@ -11,14 +11,14 @@ using ReactiveUI;
 using SiloX.Domain.Abstractions;
 using SiloX.Domain.Abstractions.Extensions;
 using Splat;
-using Vending.App.Wpf.Services;
-using Vending.App.Wpf.Snacks;
+using Vending.Apps.Wpf.Services;
+using Vending.Apps.Wpf.Snacks;
 using Vending.Domain.Abstractions;
 using Vending.Domain.Abstractions.Machines;
 using Vending.Projection.Abstractions.Machines;
 using Vending.Projection.Abstractions.Snacks;
 
-namespace Vending.App.Wpf.Machines;
+namespace Vending.Apps.Wpf.Machines;
 
 public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
 {

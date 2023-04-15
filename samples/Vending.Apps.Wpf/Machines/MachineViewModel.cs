@@ -3,7 +3,7 @@ using Fluxera.Guards;
 using ReactiveUI;
 using Vending.Projection.Abstractions.Machines;
 
-namespace Vending.App.Wpf.Machines;
+namespace Vending.Apps.Wpf.Machines;
 
 public class MachineViewModel : ReactiveObject
 {

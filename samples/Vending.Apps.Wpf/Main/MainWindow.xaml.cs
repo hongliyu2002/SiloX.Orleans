@@ -7,7 +7,7 @@ using Orleans.FluentResults;
 using ReactiveUI;
 using SiloX.Domain.Abstractions.Extensions;
 
-namespace Vending.App.Wpf;
+namespace Vending.Apps.Wpf;
 
 /// <summary>
 ///     Interaction logic for MainWindow.xaml

@@ -1,9 +1,9 @@
 ﻿using System.Collections.ObjectModel;
 using DynamicData;
-using Vending.App.Wpf.Snacks;
+using Vending.Apps.Wpf.Snacks;
 using Vending.Domain.Abstractions.Machines;
 
-namespace Vending.App.Wpf.Machines;
+namespace Vending.Apps.Wpf.Machines;
 
 public static class SlotsCacheExtensions
 {

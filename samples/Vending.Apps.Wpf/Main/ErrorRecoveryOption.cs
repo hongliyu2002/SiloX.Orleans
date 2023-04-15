@@ -1,4 +1,4 @@
-﻿namespace Vending.App.Wpf;
+﻿namespace Vending.Apps.Wpf;
 
 /// <summary>
 ///     Error recovery option.

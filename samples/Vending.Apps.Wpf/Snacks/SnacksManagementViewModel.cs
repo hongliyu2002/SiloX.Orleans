@@ -10,12 +10,12 @@ using Orleans.Streams;
 using ReactiveUI;
 using SiloX.Domain.Abstractions.Extensions;
 using Splat;
-using Vending.App.Wpf.Services;
+using Vending.Apps.Wpf.Services;
 using Vending.Domain.Abstractions;
 using Vending.Domain.Abstractions.Snacks;
 using Vending.Projection.Abstractions.Snacks;
 
-namespace Vending.App.Wpf.Snacks;
+namespace Vending.Apps.Wpf.Snacks;
 
 public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel
 {

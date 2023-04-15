@@ -1,7 +1,7 @@
 ﻿using DynamicData;
 using Vending.Projection.Abstractions.Snacks;
 
-namespace Vending.App.Wpf.Snacks;
+namespace Vending.Apps.Wpf.Snacks;
 
 public static class SnacksCacheExtensions
 {
