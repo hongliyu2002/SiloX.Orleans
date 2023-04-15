@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Orleans.Runtime;
 using SiloX.Domain.Abstractions;
+using SiloX.Domain.Abstractions.Extensions;
 using Vending.Domain.Abstractions;
 using Vending.Domain.Abstractions.Snacks;
 using Vending.Domain.EntityFrameworkCore;
@@ -132,19 +133,20 @@ public class SnackSynchronizerGrain : PublisherGrainWithGuidKey<SnackInfoEvent, 
     {
         try
         {
-            var snackIds = await _domainDbContext.Snacks.Select(s => s.Id).ToListAsync();
-            var snackInfoIds = await _projectionDbContext.Snacks.Select(s => s.Id).ToListAsync();
-            var snackInfoIdsToRemove = snackInfoIds.Except(snackIds);
+            var snackIdVersions = await _domainDbContext.Snacks.Select(s => new { s.Id, Version = EF.Property<int>(s, "Version") }).ToDictionaryAsync(r => r.Id, r => r.Version);
+            var snackInfoIdVersions = await _projectionDbContext.Snacks.Select(s => new { s.Id, s.Version }).ToDictionaryAsync(r => r.Id, r => r.Version);
+            var snackInfoIdVersionsToRemove = snackInfoIdVersions.Except(snackIdVersions, true);
+            var snackInfoIdsToRemove = snackInfoIdVersionsToRemove.Keys.ToArray();
             var snackInfosToRemove = await _projectionDbContext.Snacks.Where(s => snackInfoIdsToRemove.Contains(s.Id)).ToListAsync();
             if (snackInfosToRemove is { Count: > 0 })
             {
                 _projectionDbContext.RemoveRange(snackInfosToRemove);
                 await _projectionDbContext.SaveChangesAsync();
             }
-            var snackIdsToSync = snackIds.Except(snackInfoIds).ToList();
-            foreach (var snackId in snackIdsToSync)
+            var snackIdVersionsToSync = snackIdVersions.Except(snackInfoIdVersions);
+            foreach (var snackIdVersion in snackIdVersionsToSync)
             {
-                await ApplyFullUpdateAsync(snackId);
+                await ApplyFullUpdateAsync(snackIdVersion.Key);
             }
         }
         catch (Exception ex)
@@ -158,18 +160,20 @@ public class SnackSynchronizerGrain : PublisherGrainWithGuidKey<SnackInfoEvent, 
     {
         try
         {
-            var snackIds = await _domainDbContext.Snacks.Select(s => s.Id).ToListAsync();
-            var snackInfoIds = await _projectionDbContext.Snacks.Select(s => s.Id).ToListAsync();
-            var snackInfoIdsToRemove = snackInfoIds.Except(snackIds);
+            var snackIdVersions = await _domainDbContext.Snacks.Select(s => new { s.Id, Version = EF.Property<int>(s, "Version") }).ToDictionaryAsync(r => r.Id, r => r.Version);
+            var snackInfoIdVersions = await _projectionDbContext.Snacks.Select(s => new { s.Id, s.Version }).ToDictionaryAsync(r => r.Id, r => r.Version);
+            var snackInfoIdVersionsToRemove = snackInfoIdVersions.Except(snackIdVersions, true);
+            var snackInfoIdsToRemove = snackInfoIdVersionsToRemove.Keys.ToArray();
             var snackInfosToRemove = await _projectionDbContext.Snacks.Where(s => snackInfoIdsToRemove.Contains(s.Id)).ToListAsync();
             if (snackInfosToRemove is { Count: > 0 })
             {
                 _projectionDbContext.RemoveRange(snackInfosToRemove);
                 await _projectionDbContext.SaveChangesAsync();
             }
-            foreach (var snackId in snackIds)
+            var snackIdVersionsToSync = snackIdVersions;
+            foreach (var snackIdVersion in snackIdVersionsToSync)
             {
-                await ApplyFullUpdateAsync(snackId);
+                await ApplyFullUpdateAsync(snackIdVersion.Key);
             }
         }
         catch (Exception ex)

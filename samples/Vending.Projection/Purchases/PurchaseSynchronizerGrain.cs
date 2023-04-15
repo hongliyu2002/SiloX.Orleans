@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Orleans.Runtime;
 using SiloX.Domain.Abstractions;
+using SiloX.Domain.Abstractions.Extensions;
 using Vending.Domain.Abstractions;
 using Vending.Domain.Abstractions.Purchases;
 using Vending.Domain.Abstractions.Snacks;
@@ -134,19 +135,20 @@ public class PurchaseSynchronizerGrain : PublisherGrainWithGuidKey<PurchaseInfoE
     {
         try
         {
-            var purchaseIds = await _domainDbContext.Purchases.Select(s => s.Id).ToListAsync();
-            var purchaseInfoIds = await _projectionDbContext.Purchases.Select(s => s.Id).ToListAsync();
-            var purchaseInfoIdsToRemove = purchaseInfoIds.Except(purchaseIds);
+            var purchaseIdVersions = await _domainDbContext.Purchases.Select(s => new { s.Id, Version = EF.Property<int>(s, "Version") }).ToDictionaryAsync(r => r.Id, r => r.Version);
+            var purchaseInfoIdVersions = await _projectionDbContext.Purchases.Select(s => new { s.Id, s.Version }).ToDictionaryAsync(r => r.Id, r => r.Version);
+            var purchaseInfoIdVersionsToRemove = purchaseInfoIdVersions.Except(purchaseIdVersions, true);
+            var purchaseInfoIdsToRemove = purchaseInfoIdVersionsToRemove.Keys.ToArray();
             var purchaseInfosToRemove = await _projectionDbContext.Purchases.Where(s => purchaseInfoIdsToRemove.Contains(s.Id)).ToListAsync();
             if (purchaseInfosToRemove is { Count: > 0 })
             {
                 _projectionDbContext.RemoveRange(purchaseInfosToRemove);
                 await _projectionDbContext.SaveChangesAsync();
             }
-            var purchaseIdsToSync = purchaseIds.Except(purchaseInfoIds).ToList();
-            foreach (var purchaseId in purchaseIdsToSync)
+            var purchaseIdVersionsToSync = purchaseIdVersions.Except(purchaseInfoIdVersions);
+            foreach (var purchaseIdVersion in purchaseIdVersionsToSync)
             {
-                await ApplyFullUpdateAsync(purchaseId);
+                await ApplyFullUpdateAsync(purchaseIdVersion.Key);
             }
         }
         catch (Exception ex)
@@ -160,18 +162,20 @@ public class PurchaseSynchronizerGrain : PublisherGrainWithGuidKey<PurchaseInfoE
     {
         try
         {
-            var purchaseIds = await _domainDbContext.Purchases.Select(s => s.Id).ToListAsync();
-            var purchaseInfoIds = await _projectionDbContext.Purchases.Select(s => s.Id).ToListAsync();
-            var purchaseInfoIdsToRemove = purchaseInfoIds.Except(purchaseIds);
+            var purchaseIdVersions = await _domainDbContext.Purchases.Select(s => new { s.Id, Version = EF.Property<int>(s, "Version") }).ToDictionaryAsync(r => r.Id, r => r.Version);
+            var purchaseInfoIdVersions = await _projectionDbContext.Purchases.Select(s => new { s.Id, s.Version }).ToDictionaryAsync(r => r.Id, r => r.Version);
+            var purchaseInfoIdVersionsToRemove = purchaseInfoIdVersions.Except(purchaseIdVersions, true);
+            var purchaseInfoIdsToRemove = purchaseInfoIdVersionsToRemove.Keys.ToArray();
             var purchaseInfosToRemove = await _projectionDbContext.Purchases.Where(s => purchaseInfoIdsToRemove.Contains(s.Id)).ToListAsync();
             if (purchaseInfosToRemove is { Count: > 0 })
             {
                 _projectionDbContext.RemoveRange(purchaseInfosToRemove);
                 await _projectionDbContext.SaveChangesAsync();
             }
-            foreach (var purchaseId in purchaseIds)
+            var purchaseIdVersionsToSync = purchaseIdVersions;
+            foreach (var purchaseIdVersion in purchaseIdVersionsToSync)
             {
-                await ApplyFullUpdateAsync(purchaseId);
+                await ApplyFullUpdateAsync(purchaseIdVersion.Key);
             }
         }
         catch (Exception ex)

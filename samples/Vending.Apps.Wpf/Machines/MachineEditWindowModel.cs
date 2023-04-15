@@ -329,7 +329,8 @@ public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel, IOr
                                .Ensure(_snacks.Count > 0, "No snacks available.")
                                .TapTry(() =>
                                        {
-                                           var position = _slotsCache.Keys.Max() + 1;
+                                           
+                                           var position = _slotsCache.Count > 0 ? _slotsCache.Keys.Max() + 1 : 1;
                                            _slotsCache.AddOrUpdateWith(new MachineSlot(Id, position), _snacks);
                                        });
             if (result.IsSuccess)

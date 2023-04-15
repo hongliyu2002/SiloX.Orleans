@@ -149,7 +149,7 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
             }
             machineInfo.MoneyInside = machineEvent.MoneyInside.ToProjection(machineInfo.MoneyInside);
             machineInfo.AmountInTransaction = machineEvent.AmountInTransaction;
-            machineInfo.Slots = await Task.WhenAll(machineEvent.Slots.Select(slot => slot.ToProjection(GetSnackNameAndPictureUrlAsync, machineInfo.Slots.FirstOrDefault(ms => ms.MachineId == slot.MachineId && ms.Position == slot.Position))));
+            machineInfo.Slots = (await Task.WhenAll(machineEvent.Slots.Select(slot => slot.ToProjection(GetSnackNameAndPictureUrlAsync, machineInfo.Slots.FirstOrDefault(ms => ms.MachineId == slot.MachineId && ms.Position == slot.Position))))).ToList();
             machineInfo.SlotCount = machineEvent.SlotCount;
             machineInfo.SnackCount = machineEvent.SnackCount;
             machineInfo.SnackQuantity = machineEvent.SnackQuantity;
@@ -189,7 +189,7 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
                 return;
             }
             machineInfo.MoneyInside = machineEvent.MoneyInside.ToProjection(machineInfo.MoneyInside);
-            machineInfo.Slots = await Task.WhenAll(machineEvent.Slots.Select(slot => slot.ToProjection(GetSnackNameAndPictureUrlAsync, machineInfo.Slots.FirstOrDefault(ms => ms.MachineId == slot.MachineId && ms.Position == slot.Position))));
+            machineInfo.Slots = (await Task.WhenAll(machineEvent.Slots.Select(slot => slot.ToProjection(GetSnackNameAndPictureUrlAsync, machineInfo.Slots.FirstOrDefault(ms => ms.MachineId == slot.MachineId && ms.Position == slot.Position))))).ToList();
             machineInfo.SlotCount = machineEvent.SlotCount;
             machineInfo.SnackCount = machineEvent.SnackCount;
             machineInfo.SnackQuantity = machineEvent.SnackQuantity;

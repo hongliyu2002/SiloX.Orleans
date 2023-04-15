@@ -17,7 +17,7 @@ public static class MachineMapper
         machineInfo.Id = machine.Id;
         machineInfo.MoneyInside = machine.MoneyInside.ToProjection(machineInfo.MoneyInside);
         machineInfo.AmountInTransaction = machine.AmountInTransaction;
-        machineInfo.Slots = await Task.WhenAll(machine.Slots.Select(slot => slot.ToProjection(getSnackNamePicture, machineInfo.Slots.FirstOrDefault(ms => ms.MachineId == slot.MachineId && ms.Position == slot.Position))));
+        machineInfo.Slots = (await Task.WhenAll(machine.Slots.Select(slot => slot.ToProjection(getSnackNamePicture, machineInfo.Slots.FirstOrDefault(ms => ms.MachineId == slot.MachineId && ms.Position == slot.Position))))).ToList();
         machineInfo.CreatedAt = machine.CreatedAt;
         machineInfo.LastModifiedAt = machine.LastModifiedAt;
         machineInfo.DeletedAt = machine.DeletedAt;

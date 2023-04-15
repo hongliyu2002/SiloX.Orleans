@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Orleans.Runtime;
 using SiloX.Domain.Abstractions;
+using SiloX.Domain.Abstractions.Extensions;
 using Vending.Domain.Abstractions;
 using Vending.Domain.Abstractions.Machines;
 using Vending.Domain.Abstractions.Snacks;
@@ -134,19 +135,20 @@ public class MachineSynchronizerGrain : PublisherGrainWithGuidKey<MachineInfoEve
     {
         try
         {
-            var machineIds = await _domainDbContext.Machines.Select(s => s.Id).ToListAsync();
-            var machineInfoIds = await _projectionDbContext.Machines.Select(s => s.Id).ToListAsync();
-            var machineInfoIdsToRemove = machineInfoIds.Except(machineIds);
+            var machineIdVersions = await _domainDbContext.Machines.Select(s => new { s.Id, Version = EF.Property<int>(s, "Version") }).ToDictionaryAsync(r => r.Id, r => r.Version);
+            var machineInfoIdVersions = await _projectionDbContext.Machines.Select(s => new { s.Id, s.Version }).ToDictionaryAsync(r => r.Id, r => r.Version);
+            var machineInfoIdVersionsToRemove = machineInfoIdVersions.Except(machineIdVersions, true);
+            var machineInfoIdsToRemove = machineInfoIdVersionsToRemove.Keys.ToArray();
             var machineInfosToRemove = await _projectionDbContext.Machines.Where(s => machineInfoIdsToRemove.Contains(s.Id)).ToListAsync();
             if (machineInfosToRemove is { Count: > 0 })
             {
                 _projectionDbContext.RemoveRange(machineInfosToRemove);
                 await _projectionDbContext.SaveChangesAsync();
             }
-            var machineIdsToSync = machineIds.Except(machineInfoIds).ToList();
-            foreach (var machineId in machineIdsToSync)
+            var machineIdVersionsToSync = machineIdVersions.Except(machineInfoIdVersions);
+            foreach (var machineIdVersion in machineIdVersionsToSync)
             {
-                await ApplyFullUpdateAsync(machineId);
+                await ApplyFullUpdateAsync(machineIdVersion.Key);
             }
         }
         catch (Exception ex)
@@ -160,18 +162,20 @@ public class MachineSynchronizerGrain : PublisherGrainWithGuidKey<MachineInfoEve
     {
         try
         {
-            var machineIds = await _domainDbContext.Machines.Select(s => s.Id).ToListAsync();
-            var machineInfoIds = await _projectionDbContext.Machines.Select(s => s.Id).ToListAsync();
-            var machineInfoIdsToRemove = machineInfoIds.Except(machineIds);
+            var machineIdVersions = await _domainDbContext.Machines.Select(s => new { s.Id, Version = EF.Property<int>(s, "Version") }).ToDictionaryAsync(r => r.Id, r => r.Version);
+            var machineInfoIdVersions = await _projectionDbContext.Machines.Select(s => new { s.Id, s.Version }).ToDictionaryAsync(r => r.Id, r => r.Version);
+            var machineInfoIdVersionsToRemove = machineInfoIdVersions.Except(machineIdVersions, true);
+            var machineInfoIdsToRemove = machineInfoIdVersionsToRemove.Keys.ToArray();
             var machineInfosToRemove = await _projectionDbContext.Machines.Where(s => machineInfoIdsToRemove.Contains(s.Id)).ToListAsync();
             if (machineInfosToRemove is { Count: > 0 })
             {
                 _projectionDbContext.RemoveRange(machineInfosToRemove);
                 await _projectionDbContext.SaveChangesAsync();
             }
-            foreach (var machineId in machineIds)
+            var machineIdVersionsToSync = machineIdVersions;
+            foreach (var machineIdVersion in machineIdVersionsToSync)
             {
-                await ApplyFullUpdateAsync(machineId);
+                await ApplyFullUpdateAsync(machineIdVersion.Key);
             }
         }
         catch (Exception ex)
