@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Linq;
+﻿using System.Collections.ObjectModel;
 using System.Reactive.Linq;
 using Fluxera.Guards;
 using ReactiveUI;
@@ -30,34 +28,29 @@ public class SlotEditViewModel : ReactiveObject
                        });
 
         // Recreate the snack pile when any of the properties change.
-        this.WhenAnyValue(vm => vm.CurrentSnack, vm => vm.Quantity, vm => vm.Price)
-            .Where(tuple => tuple.Item1 != null)
+        this.WhenAnyValue(vm => vm.CurrentSnack)
             .ObserveOn(RxApp.MainThreadScheduler)
-            .Subscribe(tuple =>
+            .Subscribe(snack =>
                        {
-                           var snack = tuple.Item1;
-                           var quantity = tuple.Item2;
-                           var price = tuple.Item3;
                            if (snack == null)
                            {
                                SnackPile = null;
                                Amount = null;
                            }
-                           else if (quantity == null)
-                           {
-                               Quantity = 1;
-                           }
-                           else if (price == null)
-                           {
-                               Price = 0;
-                           }
                            else
                            {
-                               SnackPile = new SnackPile(snack.Id, quantity.Value, price.Value);
-                               Amount = SnackPile.Amount;
+                               Quantity ??= 1;
+                               Price ??= 1;
                            }
                        });
-
+        this.WhenAnyValue(vm => vm.CurrentSnack, vm => vm.Quantity, vm => vm.Price)
+            .Where(tuple => tuple is { Item1: not null, Item2: not null, Item3: not null })
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .Subscribe(tuple =>
+                       {
+                           SnackPile = new SnackPile(tuple.Item1!.Id, tuple.Item2!.Value, tuple.Item3!.Value);
+                           Amount = SnackPile.Amount;
+                       });
         // Load the slot.
         LoadSlot(slot);
     }
