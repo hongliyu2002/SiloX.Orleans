@@ -56,6 +56,15 @@ public class SnackEditViewModel : ReactiveObject, IActivatableViewModel, IOrlean
                                                             PictureUrl = snackEvent.PictureUrl;
                                                         })
                                              .DisposeWith(disposable);
+                               snackStreamObs.Where(tuple => tuple.Event is SnackErrorEvent)
+                                             .ObserveOn(RxApp.MainThreadScheduler)
+                                             .Subscribe(tuple =>
+                                                        {
+                                                            _lastSequenceToken = tuple.SequenceToken;
+                                                            var errorEvent = (SnackErrorEvent)tuple.Event;
+                                                            ErrorInfo = $"{errorEvent.Code}:{string.Join("\n", errorEvent.Reasons)}";
+                                                        })
+                                             .DisposeWith(disposable);
                            });
         // Create the commands.
         SaveSnackCommand = ReactiveCommand.CreateFromTask(SaveSnackAsync, CanSaveSnack);

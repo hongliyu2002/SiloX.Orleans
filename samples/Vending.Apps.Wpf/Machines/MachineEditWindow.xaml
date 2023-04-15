@@ -6,10 +6,12 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0" ShowGridLines="False" Background="LightCyan">
+        <Label Grid.Row="0" x:Name="ErrorLabel" Background="Bisque" Foreground="Red" />
+        <Grid Grid.Row="1" ShowGridLines="False" Background="LightCyan">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -44,7 +46,7 @@
                 </StackPanel>
             </StackPanel>
         </Grid>
-        <StackPanel Grid.Row="1" Orientation="Horizontal">
+        <StackPanel Grid.Row="2" Orientation="Horizontal">
             <Button x:Name="AddSlotButton" Width="75" Height="25" Margin="5">
                 <StackPanel Orientation="Horizontal">
                     <Image Source="/Images/add.png" Height="13" />
@@ -55,9 +57,9 @@
                 <TextBlock Text="Remove" FontSize="13" />
             </Button>
         </StackPanel>
-        <ListBox Grid.Row="2" x:Name="SlotsListBox" Margin="5" HorizontalContentAlignment="Stretch" />
-        <CheckBox Grid.Row="3" x:Name="IsDeletedCheckBox" Content="Deleted" Margin="5" IsEnabled="False" VerticalAlignment="Center" />
-        <StackPanel Grid.Row="3" Orientation="Horizontal" FlowDirection="RightToLeft" Margin="5">
+        <ListBox Grid.Row="3" x:Name="SlotsListBox" Margin="5" HorizontalContentAlignment="Stretch" />
+        <CheckBox Grid.Row="4" x:Name="IsDeletedCheckBox" Content="Deleted" Margin="5" IsEnabled="False" VerticalAlignment="Center" />
+        <StackPanel Grid.Row="4" Orientation="Horizontal" FlowDirection="RightToLeft" Margin="5">
             <Button x:Name="SaveMachineButton" Width="100" Height="25" Margin="5">
                 <TextBlock Text="Save" FontSize="13" />
             </Button>
