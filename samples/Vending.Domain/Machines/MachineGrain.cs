@@ -392,6 +392,7 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
         if (existingMachine == null)
         {
             _dbContext.Machines.Add(newMachine);
+            _dbContext.Entry(newMachine).Property("Version").CurrentValue = Version;
         }
         else
         {
@@ -434,6 +435,7 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
                     _dbContext.Entry(existingSnackStat).CurrentValues.SetValues(newSnackStat);
                 }
             }
+            _dbContext.Entry(existingMachine).Property("Version").CurrentValue = Version;
             _dbContext.Entry(existingMachine).State = EntityState.Modified;
         }
         await _dbContext.SaveChangesAsync();

@@ -135,10 +135,12 @@ public sealed class SnackGrain : EventSourcingGrainWithGuidKey<Snack, SnackComma
         if (existingSnack == null)
         {
             _dbContext.Snacks.Add(newSnack);
+            _dbContext.Entry(newSnack).Property("Version").CurrentValue = Version;
         }
         else
         {
             _dbContext.Entry(existingSnack).CurrentValues.SetValues(newSnack);
+            _dbContext.Entry(existingSnack).Property("Version").CurrentValue = Version;
             _dbContext.Entry(existingSnack).State = EntityState.Modified;
         }
         await _dbContext.SaveChangesAsync();

@@ -27,6 +27,7 @@ public class DomainDbContext : DbContext
                                    {
                                        builder.ToTable("Snacks");
                                        builder.HasKey(s => s.Id);
+                                       builder.Property<int>("Version").HasColumnName("Version").HasDefaultValue(0);
                                        builder.Property(s => s.Name).HasMaxLength(128);
                                        builder.Ignore(s => s.CreatedAt);
                                        builder.Ignore(s => s.CreatedBy);
@@ -42,6 +43,7 @@ public class DomainDbContext : DbContext
                                      {
                                          builder.ToTable("Machines");
                                          builder.HasKey(m => m.Id);
+                                         builder.Property<int>("Version").HasColumnName("Version").HasDefaultValue(0);
                                          builder.OwnsOne(m => m.MoneyInside, navigation =>
                                                                              {
                                                                                  navigation.Property(m => m.Amount).HasPrecision(10, 2);
@@ -83,6 +85,7 @@ public class DomainDbContext : DbContext
                                       {
                                           builder.ToTable("Purchases");
                                           builder.HasKey(p => p.Id);
+                                          builder.Property<int>("Version").HasColumnName("Version").HasDefaultValue(0);
                                           builder.HasOne<Machine>().WithMany().HasForeignKey(p => p.MachineId).OnDelete(DeleteBehavior.Cascade);
                                           builder.HasOne<Snack>().WithMany().HasForeignKey(p => p.SnackId).OnDelete(DeleteBehavior.Cascade);
                                           builder.Property(p => p.BoughtPrice).HasPrecision(10, 2);
