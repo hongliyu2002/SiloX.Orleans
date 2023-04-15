@@ -77,7 +77,6 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
                                               .ObserveOn(RxApp.MainThreadScheduler)
                                               .Subscribe(tuple =>
                                                          {
-                                                             _snackSequenceToken = tuple.SequenceToken;
                                                              var errorEvent = (SnackInfoErrorEvent)tuple.Event;
                                                              ErrorInfo = $"{errorEvent.Code}:{string.Join("\n", errorEvent.Reasons)}";
                                                          })

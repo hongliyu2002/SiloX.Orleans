@@ -141,8 +141,11 @@ public class SnackSynchronizerGrain : PublisherGrainWithGuidKey<SnackInfoEvent, 
                 _projectionDbContext.RemoveRange(snackInfosToRemove);
                 await _projectionDbContext.SaveChangesAsync();
             }
-            var snackIdsToSync = snackIds.Except(snackInfoIds);
-            await Task.WhenAll(snackIdsToSync.Select(ApplyFullUpdateAsync));
+            var snackIdsToSync = snackIds.Except(snackInfoIds).ToList();
+            foreach (var snackId in snackIdsToSync)
+            {
+                await ApplyFullUpdateAsync(snackId);
+            }
         }
         catch (Exception ex)
         {
@@ -164,8 +167,10 @@ public class SnackSynchronizerGrain : PublisherGrainWithGuidKey<SnackInfoEvent, 
                 _projectionDbContext.RemoveRange(snackInfosToRemove);
                 await _projectionDbContext.SaveChangesAsync();
             }
-            var snackIdsToSync = snackIds;
-            await Task.WhenAll(snackIdsToSync.Select(ApplyFullUpdateAsync));
+            foreach (var snackId in snackIds)
+            {
+                await ApplyFullUpdateAsync(snackId);
+            }
         }
         catch (Exception ex)
         {

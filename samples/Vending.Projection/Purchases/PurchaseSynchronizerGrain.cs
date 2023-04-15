@@ -143,8 +143,11 @@ public class PurchaseSynchronizerGrain : PublisherGrainWithGuidKey<PurchaseInfoE
                 _projectionDbContext.RemoveRange(purchaseInfosToRemove);
                 await _projectionDbContext.SaveChangesAsync();
             }
-            var purchaseIdsToSync = purchaseIds.Except(purchaseInfoIds);
-            await Task.WhenAll(purchaseIdsToSync.Select(ApplyFullUpdateAsync));
+            var purchaseIdsToSync = purchaseIds.Except(purchaseInfoIds).ToList();
+            foreach (var purchaseId in purchaseIdsToSync)
+            {
+                await ApplyFullUpdateAsync(purchaseId);
+            }
         }
         catch (Exception ex)
         {
@@ -166,8 +169,10 @@ public class PurchaseSynchronizerGrain : PublisherGrainWithGuidKey<PurchaseInfoE
                 _projectionDbContext.RemoveRange(purchaseInfosToRemove);
                 await _projectionDbContext.SaveChangesAsync();
             }
-            var purchaseIdsToSync = purchaseIds;
-            await Task.WhenAll(purchaseIdsToSync.Select(ApplyFullUpdateAsync));
+            foreach (var purchaseId in purchaseIds)
+            {
+                await ApplyFullUpdateAsync(purchaseId);
+            }
         }
         catch (Exception ex)
         {

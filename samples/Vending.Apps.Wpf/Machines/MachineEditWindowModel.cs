@@ -173,7 +173,6 @@ public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel, IOr
                                                .ObserveOn(RxApp.MainThreadScheduler)
                                                .Subscribe(tuple =>
                                                           {
-                                                              _lastSequenceToken = tuple.SequenceToken;
                                                               var errorEvent = (MachineErrorEvent)tuple.Event;
                                                               ErrorInfo = $"{errorEvent.Code}:{string.Join("\n", errorEvent.Reasons)}";
                                                           })

@@ -132,7 +132,6 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
                                                    .ObserveOn(RxApp.MainThreadScheduler)
                                                    .Subscribe(tuple =>
                                                               {
-                                                                  _machineSequenceToken = tuple.SequenceToken;
                                                                   var errorEvent = (MachineInfoErrorEvent)tuple.Event;
                                                                   ErrorInfo = $"{errorEvent.Code}:{string.Join("\n", errorEvent.Reasons)}";
                                                               })
@@ -157,7 +156,6 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
                                                  .ObserveOn(RxApp.MainThreadScheduler)
                                                  .Subscribe(tuple =>
                                                             {
-                                                                _snackSequenceToken = tuple.SequenceToken;
                                                                 var errorEvent = (SnackInfoErrorEvent)tuple.Event;
                                                                 ErrorInfo = $"{errorEvent.Code}:{string.Join("\n", errorEvent.Reasons)}";
                                                             })

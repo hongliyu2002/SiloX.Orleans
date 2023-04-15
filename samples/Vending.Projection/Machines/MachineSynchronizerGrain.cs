@@ -143,8 +143,11 @@ public class MachineSynchronizerGrain : PublisherGrainWithGuidKey<MachineInfoEve
                 _projectionDbContext.RemoveRange(machineInfosToRemove);
                 await _projectionDbContext.SaveChangesAsync();
             }
-            var machineIdsToSync = machineIds.Except(machineInfoIds);
-            await Task.WhenAll(machineIdsToSync.Select(ApplyFullUpdateAsync));
+            var machineIdsToSync = machineIds.Except(machineInfoIds).ToList();
+            foreach (var machineId in machineIdsToSync)
+            {
+                await ApplyFullUpdateAsync(machineId);
+            }
         }
         catch (Exception ex)
         {
@@ -166,8 +169,10 @@ public class MachineSynchronizerGrain : PublisherGrainWithGuidKey<MachineInfoEve
                 _projectionDbContext.RemoveRange(machineInfosToRemove);
                 await _projectionDbContext.SaveChangesAsync();
             }
-            var machineIdsToSync = machineIds;
-            await Task.WhenAll(machineIdsToSync.Select(ApplyFullUpdateAsync));
+            foreach (var machineId in machineIds)
+            {
+                await ApplyFullUpdateAsync(machineId);
+            }
         }
         catch (Exception ex)
         {

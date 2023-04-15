@@ -60,7 +60,6 @@ public class SnackEditViewModel : ReactiveObject, IActivatableViewModel, IOrlean
                                              .ObserveOn(RxApp.MainThreadScheduler)
                                              .Subscribe(tuple =>
                                                         {
-                                                            _lastSequenceToken = tuple.SequenceToken;
                                                             var errorEvent = (SnackErrorEvent)tuple.Event;
                                                             ErrorInfo = $"{errorEvent.Code}:{string.Join("\n", errorEvent.Reasons)}";
                                                         })
