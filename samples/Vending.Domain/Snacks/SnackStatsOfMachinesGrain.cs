@@ -74,7 +74,7 @@ public class SnackStatsOfMachinesGrain : StatefulGrainWithGuidKey<StatsOfMachine
         var operatedBy = $"System/{GetType().Name}";
         return Result.Ok()
                      .MapTryAsync(() => ApplyMachineCountAsync(machineCount))
-                     .MapTryAsync(() => PublishAsync(new SnackMachineCountUpdatedEvent(snackId, State.MachineCount, traceId, operatedAt, operatedBy)))
+                     .TapTryAsync(() => PublishAsync(new SnackMachineCountUpdatedEvent(snackId, State.MachineCount, traceId, operatedAt, operatedBy)))
                      .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(snackId, 0, 121, errors.ToListMessages(), traceId, operatedAt, operatedBy)));
     }
 
@@ -87,7 +87,7 @@ public class SnackStatsOfMachinesGrain : StatefulGrainWithGuidKey<StatsOfMachine
         var operatedBy = $"System/{GetType().Name}";
         return Result.Ok()
                      .MapTryAsync(() => ApplyTotalQuantityAsync(totalQuantity))
-                     .MapTryAsync(() => PublishAsync(new SnackTotalQuantityUpdatedEvent(snackId, State.TotalQuantity, traceId, operatedAt, operatedBy)))
+                     .TapTryAsync(() => PublishAsync(new SnackTotalQuantityUpdatedEvent(snackId, State.TotalQuantity, traceId, operatedAt, operatedBy)))
                      .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(snackId, 0, 122, errors.ToListMessages(), traceId, operatedAt, operatedBy)));
     }
 
@@ -100,7 +100,7 @@ public class SnackStatsOfMachinesGrain : StatefulGrainWithGuidKey<StatsOfMachine
         var operatedBy = $"System/{GetType().Name}";
         return Result.Ok()
                      .MapTryAsync(() => ApplyTotalAmountAsync(totalAmount))
-                     .MapTryAsync(() => PublishAsync(new SnackTotalAmountUpdatedEvent(snackId, State.TotalAmount, traceId, operatedAt, operatedBy)))
+                     .TapTryAsync(() => PublishAsync(new SnackTotalAmountUpdatedEvent(snackId, State.TotalAmount, traceId, operatedAt, operatedBy)))
                      .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(snackId, 0, 123, errors.ToListMessages(), traceId, operatedAt, operatedBy)));
     }
 

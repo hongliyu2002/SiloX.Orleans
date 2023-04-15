@@ -68,7 +68,7 @@ public class SnackStatsOfPurchasesGrain : StatefulGrainWithGuidKey<StatsOfPurcha
         var operatedBy = $"System/{GetType().Name}";
         return Result.Ok()
                      .MapTryAsync(() => ApplyBoughtCountAsync(boughtCount))
-                     .MapTryAsync(() => PublishAsync(new SnackBoughtCountUpdatedEvent(snackId, State.BoughtCount, traceId, operatedAt, operatedBy)))
+                     .TapTryAsync(() => PublishAsync(new SnackBoughtCountUpdatedEvent(snackId, State.BoughtCount, traceId, operatedAt, operatedBy)))
                      .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(snackId, 0, 131, errors.ToListMessages(), traceId, operatedAt, operatedBy)));
     }
 
@@ -81,7 +81,7 @@ public class SnackStatsOfPurchasesGrain : StatefulGrainWithGuidKey<StatsOfPurcha
         var operatedBy = $"System/{GetType().Name}";
         return Result.Ok()
                      .MapTryAsync(() => ApplyBoughtAmountAsync(boughtAmount))
-                     .MapTryAsync(() => PublishAsync(new SnackBoughtAmountUpdatedEvent(snackId, State.BoughtAmount, traceId, operatedAt, operatedBy)))
+                     .TapTryAsync(() => PublishAsync(new SnackBoughtAmountUpdatedEvent(snackId, State.BoughtAmount, traceId, operatedAt, operatedBy)))
                      .TapErrorTryAsync(errors => PublishErrorAsync(new SnackErrorEvent(snackId, 0, 132, errors.ToListMessages(), traceId, operatedAt, operatedBy)));
     }
 

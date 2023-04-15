@@ -68,7 +68,7 @@ public class MachineStatsOfPurchasesGrain : StatefulGrainWithGuidKey<StatsOfPurc
         var operatedBy = $"System/{GetType().Name}";
         return Result.Ok()
                      .MapTryAsync(() => ApplyBoughtCountAsync(boughtCount))
-                     .MapTryAsync(() => PublishAsync(new MachineBoughtCountUpdatedEvent(machineId, State.BoughtCount, traceId, operatedAt, operatedBy)))
+                     .TapTryAsync(() => PublishAsync(new MachineBoughtCountUpdatedEvent(machineId, State.BoughtCount, traceId, operatedAt, operatedBy)))
                      .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(machineId, 0, 221, errors.ToListMessages(), traceId, operatedAt, operatedBy)));
     }
 
@@ -81,7 +81,7 @@ public class MachineStatsOfPurchasesGrain : StatefulGrainWithGuidKey<StatsOfPurc
         var operatedBy = $"System/{GetType().Name}";
         return Result.Ok()
                      .MapTryAsync(() => ApplyBoughtAmountAsync(boughtAmount))
-                     .MapTryAsync(() => PublishAsync(new MachineBoughtAmountUpdatedEvent(machineId, State.BoughtAmount, traceId, operatedAt, operatedBy)))
+                     .TapTryAsync(() => PublishAsync(new MachineBoughtAmountUpdatedEvent(machineId, State.BoughtAmount, traceId, operatedAt, operatedBy)))
                      .TapErrorTryAsync(errors => PublishErrorAsync(new MachineErrorEvent(machineId, 0, 222, errors.ToListMessages(), traceId, operatedAt, operatedBy)));
     }
 

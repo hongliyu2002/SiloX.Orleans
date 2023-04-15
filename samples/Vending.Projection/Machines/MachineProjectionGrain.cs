@@ -143,15 +143,13 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
             }
             if (machineInfo.Version != machineEvent.Version - 1)
             {
-                _logger.LogWarning("Apply MachineDeletedEvent: Machine {MachineId} version {Version}) in the database should be {MachineVersion}. Try to execute full update...", machineEvent.MachineId, machineInfo.Version,
-                                   machineEvent.Version - 1);
+                _logger.LogWarning("Apply MachineDeletedEvent: Machine {MachineId} version {Version}) in the database should be {MachineVersion}. Try to execute full update...", machineEvent.MachineId, machineInfo.Version, machineEvent.Version - 1);
                 await ApplyFullUpdateAsync(machineEvent);
                 return;
             }
             machineInfo.MoneyInside = machineEvent.MoneyInside.ToProjection(machineInfo.MoneyInside);
             machineInfo.AmountInTransaction = machineEvent.AmountInTransaction;
-            machineInfo.Slots = await Task.WhenAll(machineEvent.Slots.Select(slot => slot.ToProjection(GetSnackNameAndPictureUrlAsync,
-                                                                                                       machineInfo.Slots.FirstOrDefault(ms => ms.MachineId == slot.MachineId && ms.Position == slot.Position))));
+            machineInfo.Slots = await Task.WhenAll(machineEvent.Slots.Select(slot => slot.ToProjection(GetSnackNameAndPictureUrlAsync, machineInfo.Slots.FirstOrDefault(ms => ms.MachineId == slot.MachineId && ms.Position == slot.Position))));
             machineInfo.SlotCount = machineEvent.SlotCount;
             machineInfo.SnackCount = machineEvent.SnackCount;
             machineInfo.SnackQuantity = machineEvent.SnackQuantity;
@@ -186,14 +184,12 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
             }
             if (machineInfo.Version != machineEvent.Version - 1)
             {
-                _logger.LogWarning("Apply MachineUpdatedEvent: Machine {MachineId} version {MachineVersion}) in the database should be {Version}. Try to execute full update...", machineEvent.MachineId, machineInfo.Version,
-                                   machineEvent.Version - 1);
+                _logger.LogWarning("Apply MachineUpdatedEvent: Machine {MachineId} version {MachineVersion}) in the database should be {Version}. Try to execute full update...", machineEvent.MachineId, machineInfo.Version, machineEvent.Version - 1);
                 await ApplyFullUpdateAsync(machineEvent);
                 return;
             }
             machineInfo.MoneyInside = machineEvent.MoneyInside.ToProjection(machineInfo.MoneyInside);
-            machineInfo.Slots = await Task.WhenAll(machineEvent.Slots.Select(slot => slot.ToProjection(GetSnackNameAndPictureUrlAsync,
-                                                                                                       machineInfo.Slots.FirstOrDefault(ms => ms.MachineId == slot.MachineId && ms.Position == slot.Position))));
+            machineInfo.Slots = await Task.WhenAll(machineEvent.Slots.Select(slot => slot.ToProjection(GetSnackNameAndPictureUrlAsync, machineInfo.Slots.FirstOrDefault(ms => ms.MachineId == slot.MachineId && ms.Position == slot.Position))));
             machineInfo.SlotCount = machineEvent.SlotCount;
             machineInfo.SnackCount = machineEvent.SnackCount;
             machineInfo.SnackQuantity = machineEvent.SnackQuantity;
@@ -227,8 +223,7 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
             }
             if (machineInfo.Version != machineEvent.Version - 1)
             {
-                _logger.LogWarning("Apply MachineSlotAddedEvent: Machine {MachineId} version {MachineVersion}) in the database should be {Version}. Try to execute full update...", machineEvent.MachineId, machineInfo.Version,
-                                   machineEvent.Version - 1);
+                _logger.LogWarning("Apply MachineSlotAddedEvent: Machine {MachineId} version {MachineVersion}) in the database should be {Version}. Try to execute full update...", machineEvent.MachineId, machineInfo.Version, machineEvent.Version - 1);
                 await ApplyFullUpdateAsync(machineEvent);
                 return;
             }
@@ -274,15 +269,14 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
             }
             if (machineInfo.Version != machineEvent.Version - 1)
             {
-                _logger.LogWarning("Apply MachineSlotRemovedEvent: Machine {MachineId} version {Version}) in the database should be {MachineVersion}. Try to execute full update...", machineEvent.MachineId, machineInfo.Version,
-                                   machineEvent.Version - 1);
+                _logger.LogWarning("Apply MachineSlotRemovedEvent: Machine {MachineId} version {Version}) in the database should be {MachineVersion}. Try to execute full update...", machineEvent.MachineId, machineInfo.Version, machineEvent.Version - 1);
                 await ApplyFullUpdateAsync(machineEvent);
                 return;
             }
-            var slotInfo = machineInfo.Slots.FirstOrDefault(ms => ms.MachineId == machineEvent.MachineId && ms.Position == machineEvent.Position);
+            var slotInfo = machineInfo.Slots.FirstOrDefault(ms => ms.MachineId == machineEvent.Slot.MachineId && ms.Position == machineEvent.Slot.Position);
             if (slotInfo == null)
             {
-                _logger.LogWarning("Apply MachineSlotRemovedEvent: Slot at position {Position} in machine {MachineId} does not exist in the database. Try to execute full update...", machineEvent.Position, machineEvent.MachineId);
+                _logger.LogWarning("Apply MachineSlotRemovedEvent: Slot at position {Position} in machine {MachineId} does not exist in the database. Try to execute full update...", machineEvent.Slot.Position, machineEvent.MachineId);
                 await ApplyFullUpdateAsync(machineEvent);
                 return;
             }
@@ -320,8 +314,7 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
             }
             if (machineInfo.Version != machineEvent.Version - 1)
             {
-                _logger.LogWarning("Apply MachineMoneyLoadedEvent: Machine {MachineId} version {Version}) in the database should be {MachineVersion}. Try to execute full update...", machineEvent.MachineId, machineInfo.Version,
-                                   machineEvent.Version - 1);
+                _logger.LogWarning("Apply MachineMoneyLoadedEvent: Machine {MachineId} version {Version}) in the database should be {MachineVersion}. Try to execute full update...", machineEvent.MachineId, machineInfo.Version, machineEvent.Version - 1);
                 await ApplyFullUpdateAsync(machineEvent);
                 return;
             }
@@ -355,8 +348,7 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
             }
             if (machineInfo.Version != machineEvent.Version - 1)
             {
-                _logger.LogWarning("Apply MachineMoneyUnloadedEvent: Machine {MachineId} version {Version}) in the database should be {MachineVersion}. Try to execute full update...", machineEvent.MachineId, machineInfo.Version,
-                                   machineEvent.Version - 1);
+                _logger.LogWarning("Apply MachineMoneyUnloadedEvent: Machine {MachineId} version {Version}) in the database should be {MachineVersion}. Try to execute full update...", machineEvent.MachineId, machineInfo.Version, machineEvent.Version - 1);
                 await ApplyFullUpdateAsync(machineEvent);
                 return;
             }
@@ -390,8 +382,7 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
             }
             if (machineInfo.Version != machineEvent.Version - 1)
             {
-                _logger.LogWarning("Apply MachineMoneyInsertedEvent: Machine {MachineId} version {Version}) in the database should be {MachineVersion}. Try to execute full update...", machineEvent.MachineId, machineInfo.Version,
-                                   machineEvent.Version - 1);
+                _logger.LogWarning("Apply MachineMoneyInsertedEvent: Machine {MachineId} version {Version}) in the database should be {MachineVersion}. Try to execute full update...", machineEvent.MachineId, machineInfo.Version, machineEvent.Version - 1);
                 await ApplyFullUpdateAsync(machineEvent);
                 return;
             }
@@ -426,8 +417,7 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
             }
             if (machineInfo.Version != machineEvent.Version - 1)
             {
-                _logger.LogWarning("Apply MachineMoneyReturnedEvent: Machine {MachineId} version {Version}) in the database should be {MachineVersion}. Try to execute full update...", machineEvent.MachineId, machineInfo.Version,
-                                   machineEvent.Version - 1);
+                _logger.LogWarning("Apply MachineMoneyReturnedEvent: Machine {MachineId} version {Version}) in the database should be {MachineVersion}. Try to execute full update...", machineEvent.MachineId, machineInfo.Version, machineEvent.Version - 1);
                 await ApplyFullUpdateAsync(machineEvent);
                 return;
             }
@@ -462,8 +452,7 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
             }
             if (machineInfo.Version != machineEvent.Version - 1)
             {
-                _logger.LogWarning("Apply MachineSnacksLoadedEvent: Machine {MachineId} version {MachineVersion}) in the database should be {Version}. Try to execute full update...", machineEvent.MachineId, machineInfo.Version,
-                                   machineEvent.Version - 1);
+                _logger.LogWarning("Apply MachineSnacksLoadedEvent: Machine {MachineId} version {MachineVersion}) in the database should be {Version}. Try to execute full update...", machineEvent.MachineId, machineInfo.Version, machineEvent.Version - 1);
                 await ApplyFullUpdateAsync(machineEvent);
                 return;
             }
@@ -508,8 +497,7 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
             }
             if (machineInfo.Version != machineEvent.Version - 1)
             {
-                _logger.LogWarning("Apply MachineSnacksUnloadedEvent: Machine {MachineId} version {Version}) in the database should be {MachineVersion}. Try to execute full update...", machineEvent.MachineId, machineInfo.Version,
-                                   machineEvent.Version - 1);
+                _logger.LogWarning("Apply MachineSnacksUnloadedEvent: Machine {MachineId} version {Version}) in the database should be {MachineVersion}. Try to execute full update...", machineEvent.MachineId, machineInfo.Version, machineEvent.Version - 1);
                 await ApplyFullUpdateAsync(machineEvent);
                 return;
             }
@@ -554,8 +542,7 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
             }
             if (machineInfo.Version != machineEvent.Version - 1)
             {
-                _logger.LogWarning("Apply MachineSnackBoughtEvent: Machine {MachineId} version {Version}) in the database should be {MachineVersion}. Try to execute full update...", machineEvent.MachineId, machineInfo.Version,
-                                   machineEvent.Version - 1);
+                _logger.LogWarning("Apply MachineSnackBoughtEvent: Machine {MachineId} version {Version}) in the database should be {MachineVersion}. Try to execute full update...", machineEvent.MachineId, machineInfo.Version, machineEvent.Version - 1);
                 await ApplyFullUpdateAsync(machineEvent);
                 return;
             }

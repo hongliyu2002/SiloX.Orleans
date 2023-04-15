@@ -6,7 +6,7 @@
 public sealed record MachineSlotRemovedEvent
     (Guid MachineId,
      int Version,
-     int Position,
+     MachineSlot Slot,
      int SlotCount,
      int SnackCount,
      int SnackQuantity,

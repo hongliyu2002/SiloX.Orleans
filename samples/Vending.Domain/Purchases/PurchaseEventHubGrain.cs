@@ -10,7 +10,7 @@ using Vending.Domain.Abstractions.Snacks;
 namespace Vending.Domain.Purchases;
 
 [ImplicitStreamSubscription(Constants.PurchasesBroadcastNamespace)]
-public class PurchaseEventHubGrain : ReceiverGrainWithStringKey<PurchaseEvent, PurchaseErrorEvent>, IPurchaseEventHubGrain
+public class PurchaseEventHubGrain : ReceiverGrainWithGuidKey<PurchaseEvent, PurchaseErrorEvent>, IPurchaseEventHubGrain
 {
     private readonly ILogger<PurchaseEventHubGrain> _logger;
 

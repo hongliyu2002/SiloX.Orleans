@@ -65,7 +65,7 @@ public sealed class PurchaseGrain : StatefulGrainWithStringKey<Purchase, Purchas
         return ValidateInitialize(command)
               .MapTryAsync(() => ApplyAsync(command))
               .MapTryAsync(PersistAsync)
-              .MapTryAsync(() => PublishAsync(new PurchaseInitializedEvent(State.Id, State.MachineId, State.Position, State.SnackId, State.BoughtPrice, command.TraceId, State.BoughtAt ?? DateTimeOffset.UtcNow, State.BoughtBy ?? command.OperatedBy)))
+              .TapTryAsync(() => PublishAsync(new PurchaseInitializedEvent(State.Id, State.MachineId, State.Position, State.SnackId, State.BoughtPrice, command.TraceId, State.BoughtAt ?? DateTimeOffset.UtcNow, State.BoughtBy ?? command.OperatedBy)))
               .TapErrorTryAsync(errors => PublishErrorAsync(new PurchaseErrorEvent(this.GetPrimaryKey(), command.MachineId, command.Position, command.SnackId, 301, errors.ToListMessages(), command.TraceId, DateTimeOffset.UtcNow, command.OperatedBy)));
     }
 
