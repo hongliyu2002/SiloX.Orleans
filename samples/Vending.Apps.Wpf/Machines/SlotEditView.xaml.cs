@@ -14,7 +14,7 @@ public partial class SlotEditView
                                this.Bind(ViewModel, vm => vm.Position, v => v.PositionTextBox.Text, IntToTextConverter, TextToIntConverter).DisposeWith(disposable);
                                this.Bind(ViewModel, vm => vm.Quantity, v => v.QuantityTextBox.Text, NullableIntToTextConverter, TextToNullableIntConverter).DisposeWith(disposable);
                                this.Bind(ViewModel, vm => vm.Price, v => v.PriceTextBox.Text, NullableDecimalToTextConverter, TextToNullableDecimalConverter).DisposeWith(disposable);
-                               this.OneWayBind(ViewModel, vm => vm.Amount, v => v.AmountTextBox.Text).DisposeWith(disposable);
+                               this.OneWayBind(ViewModel, vm => vm.Amount, v => v.AmountText.Content).DisposeWith(disposable);
                                this.OneWayBind(ViewModel, vm => vm.Snacks, v => v.SnackItemsComboBox.ItemsSource).DisposeWith(disposable);
                                this.Bind(ViewModel, vm => vm.CurrentSnack, v => v.SnackItemsComboBox.SelectedItem).DisposeWith(disposable);
                            });

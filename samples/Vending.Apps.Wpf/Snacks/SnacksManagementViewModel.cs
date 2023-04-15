@@ -17,7 +17,7 @@ namespace Vending.App.Wpf.Snacks;
 
 public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, IOrleansObject
 {
-    private StreamSequenceToken? _lastSequenceToken;
+    private StreamSequenceToken? _snackSequenceToken;
 
     /// <inheritdoc />
     public SnacksManagementViewModel()
@@ -61,14 +61,14 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
                                // When the cluster client changes, subscribe to the snack info stream.
                                var allSnacksStreamObs = this.WhenAnyValue(vm => vm.ClusterClient)
                                                          .Where(client => client != null)
-                                                         .SelectMany(client => client!.GetReceiverStreamWithGuidKey<SnackInfoEvent>(Constants.StreamProviderName, Constants.SnackInfosBroadcastNamespace, _lastSequenceToken))
+                                                         .SelectMany(client => client!.GetReceiverStreamWithGuidKey<SnackInfoEvent>(Constants.StreamProviderName, Constants.SnackInfosBroadcastNamespace, _snackSequenceToken))
                                                          .Publish()
                                                          .RefCount();
                                allSnacksStreamObs.Where(tuple => tuple.Event is SnackInfoSavedEvent)
                                               .ObserveOn(RxApp.MainThreadScheduler)
                                               .Subscribe(tuple =>
                                                          {
-                                                             _lastSequenceToken = tuple.SequenceToken;
+                                                             _snackSequenceToken = tuple.SequenceToken;
                                                              var savedEvent = (SnackInfoSavedEvent)tuple.Event;
                                                              snacksCache.Edit(updater => updater.AddOrUpdate(new SnackViewModel(savedEvent.Snack)));
                                                          })
@@ -77,7 +77,7 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
                                               .ObserveOn(RxApp.MainThreadScheduler)
                                               .Subscribe(tuple =>
                                                          {
-                                                             _lastSequenceToken = tuple.SequenceToken;
+                                                             _snackSequenceToken = tuple.SequenceToken;
                                                              var errorEvent = (SnackInfoErrorEvent)tuple.Event;
                                                              ErrorInfo = $"{errorEvent.Code}:{string.Join("\n", errorEvent.Reasons)}";
                                                          })

@@ -2,6 +2,7 @@
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Windows;
+using Fluxera.Utilities.Extensions;
 using ReactiveUI;
 
 namespace Vending.App.Wpf.Machines;
@@ -13,6 +14,8 @@ public partial class MachinesManagementView
         InitializeComponent();
         this.WhenActivated(disposable =>
                            {
+                               this.OneWayBind(ViewModel, vm => vm.ErrorInfo, v => v.ErrorLabel.Visibility, StringToVisibilityConverter).DisposeWith(disposable);
+                               this.OneWayBind(ViewModel, vm => vm.ErrorInfo, v => v.ErrorLabel.Content).DisposeWith(disposable);
                                this.Bind(ViewModel, vm => vm.PageSize, v => v.PageSizeTextBox.Text, IntToTextConverter, TextToIntConverter).DisposeWith(disposable);
                                this.Bind(ViewModel, vm => vm.MoneyAmountStart, v => v.MoneyAmountStartTextBox.Text, NullableDecimalToTextConverter, TextToNullableDecimalConverter).DisposeWith(disposable);
                                this.Bind(ViewModel, vm => vm.MoneyAmountEnd, v => v.MoneyAmountEndTextBox.Text, NullableDecimalToTextConverter, TextToNullableDecimalConverter).DisposeWith(disposable);
@@ -30,7 +33,12 @@ public partial class MachinesManagementView
                                ViewModel?.ConfirmRemoveMachine.RegisterHandler(ShowMessageBox).DisposeWith(disposable);
                            });
     }
-
+        
+    private Visibility StringToVisibilityConverter(string value)
+    {
+        return value.IsNotNullOrEmpty() ? Visibility.Visible : Visibility.Collapsed;
+    }
+    
     private string IntToTextConverter(int number)
     {
         return number.ToString();

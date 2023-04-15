@@ -6,10 +6,10 @@ using DynamicData;
 using DynamicData.Aggregation;
 using DynamicData.Binding;
 using Orleans.FluentResults;
-using Orleans.Runtime;
 using Orleans.Streams;
 using ReactiveUI;
 using SiloX.Domain.Abstractions;
+using SiloX.Domain.Abstractions.Extensions;
 using Vending.App.Wpf.Snacks;
 using Vending.Domain.Abstractions;
 using Vending.Domain.Abstractions.Machines;
@@ -20,29 +20,23 @@ namespace Vending.App.Wpf.Machines;
 
 public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel, IOrleansObject
 {
-    private readonly SourceCache<MachineViewModel, Guid> _machinesCache;
-    private readonly SourceCache<SnackViewModel, Guid> _snacksCache;
-
-    private StreamSubscriptionHandle<MachineInfoEvent>? _subscription;
-    private StreamSequenceToken? _lastSequenceToken;
-
-    private StreamSubscriptionHandle<SnackInfoEvent>? _snackSubscription;
-    private StreamSequenceToken? _lastSnackSequenceToken;
+    private StreamSequenceToken? _machineSequenceToken;
+    private StreamSequenceToken? _snackSequenceToken;
 
     /// <inheritdoc />
     public MachinesManagementViewModel()
     {
         // Create the cache for the snacks.
-        _snacksCache = new SourceCache<SnackViewModel, Guid>(snack => snack.Id);
-        _snacksCache.Connect()
-                    .Sort(SortExpressionComparer<SnackViewModel>.Ascending(snack => snack.Id))
-                    .ObserveOn(RxApp.MainThreadScheduler)
-                    .Bind(out var snacks)
-                    .Subscribe();
+        var snacksCache = new SourceCache<SnackViewModel, Guid>(snack => snack.Id);
+        snacksCache.Connect()
+                   .Sort(SortExpressionComparer<SnackViewModel>.Ascending(snack => snack.Id))
+                   .ObserveOn(RxApp.MainThreadScheduler)
+                   .Bind(out var snacks)
+                   .Subscribe();
         Snacks = snacks;
         // Recalculate the snack count when the snacks change.
-        _snacksCache.CountChanged.ObserveOn(RxApp.MainThreadScheduler)
-                    .Subscribe(count => SnackCount = count);
+        snacksCache.CountChanged.ObserveOn(RxApp.MainThreadScheduler)
+                   .Subscribe(count => SnackCount = count);
 
         // Get snacks and update the cache.
         this.WhenAnyValue(vm => vm.ClusterClient)
@@ -52,20 +46,20 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
             .Where(result => result.IsSuccess)
             .Select(result => result.Value)
             .ObserveOn(RxApp.MainThreadScheduler)
-            .Subscribe(snacksList => _snacksCache.Edit(updater => updater.AddOrUpdate(snacksList.Select(snack => new SnackViewModel(snack)))));
+            .Subscribe(snacksList => snacksCache.Edit(updater => updater.AddOrUpdate(snacksList.Select(snack => new SnackViewModel(snack)))));
 
         // Create the cache for the machines.
-        _machinesCache = new SourceCache<MachineViewModel, Guid>(machine => machine.Id);
-        // Connect the cache to the machines observable collection.
-        var machinesObs = _machinesCache.Connect()
-                                        .Filter(this.WhenAnyValue(vm => vm.MoneyAmountStart, vm => vm.MoneyAmountEnd)
-                                                    .Throttle(TimeSpan.FromMilliseconds(500))
-                                                    .DistinctUntilChanged()
-                                                    .Select(tuple => new Func<MachineViewModel, bool>(machine => (tuple.Item1 == null || machine.MoneyInside.Amount >= tuple.Item1)
-                                                                                                              && (tuple.Item2 == null || machine.MoneyInside.Amount < tuple.Item2)
-                                                                                                              && machine.IsDeleted == false)))
-                                        .Publish()
-                                        .RefCount();
+        var machinesCache = new SourceCache<MachineViewModel, Guid>(machine => machine.Id);
+        var machinesObs = machinesCache.Connect()
+                                       .Filter(this.WhenAnyValue(vm => vm.MoneyAmountStart, vm => vm.MoneyAmountEnd)
+                                                   .Throttle(TimeSpan.FromMilliseconds(500))
+                                                   .DistinctUntilChanged()
+                                                   .Select(tuple => new Func<MachineViewModel, bool>(machine => (tuple.Item1 == null || machine.MoneyInside.Amount >= tuple.Item1)
+                                                                                                             && (tuple.Item2 == null || machine.MoneyInside.Amount < tuple.Item2)
+                                                                                                             && machine.IsDeleted == false)))
+                                       .Publish()
+                                       .RefCount();
+        // Sort and page the machines.
         machinesObs.Sort(SortExpressionComparer<MachineViewModel>.Ascending(machine => machine.Id))
                    .Page(this.WhenAnyValue(vm => vm.PageNumber, vm => vm.PageSize)
                              .DistinctUntilChanged()
@@ -74,7 +68,6 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
                    .Bind(out var machines)
                    .Subscribe();
         Machines = machines;
-        
         // Recalculate the page count when the cache changes.
         machinesObs.Count()
                    .ObserveOn(RxApp.MainThreadScheduler)
@@ -85,7 +78,7 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
                               });
         this.WhenAnyValue(vm => vm.PageSize)
             .ObserveOn(RxApp.MainThreadScheduler)
-            .Subscribe(size => PageCount = (int)Math.Ceiling((double)_machinesCache.Count / size));
+            .Subscribe(size => PageCount = (int)Math.Ceiling((double)machinesCache.Count / size));
 
         // Recalculate the page number when the page size or page count changes.
         this.WhenAnyValue(vm => vm.PageSize, vm => vm.PageCount)
@@ -109,7 +102,7 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
             .Where(result => result.IsSuccess)
             .Select(result => result.Value)
             .ObserveOn(RxApp.MainThreadScheduler)
-            .Subscribe(machinesList => _machinesCache.Edit(updater => updater.AddOrUpdate(machinesList.Select(machine => new MachineViewModel(machine)))));
+            .Subscribe(machinesList => machinesCache.Edit(updater => updater.AddOrUpdate(machinesList.Select(machine => new MachineViewModel(machine)))));
 
         // When the current machine changes, if it is null, set the current machine edit view model to null.
         this.WhenAnyValue(vm => vm.CurrentMachine, vm => vm.SnackCount, vm => vm.ClusterClient)
@@ -121,26 +114,54 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
         this.WhenActivated(disposable =>
                            {
                                // When the cluster client changes, subscribe to the machine info stream.
-                               this.WhenAnyValue(vm => vm.ClusterClient)
-                                   .Where(client => client != null)
-                                   .Select(client => client!.GetStreamProvider(Constants.StreamProviderName))
-                                   .Select(streamProvider => streamProvider.GetStream<MachineInfoEvent>(StreamId.Create(Constants.MachineInfosBroadcastNamespace, Guid.Empty)))
-                                   .SelectMany(stream => stream.SubscribeAsync(HandleEventAsync, HandleErrorAsync, HandleCompletedAsync, _lastSequenceToken))
-                                   .Subscribe(HandleSubscriptionAsync)
-                                   .DisposeWith(disposable);
-                               Disposable.Create(HandleSubscriptionDisposeAsync)
-                                         .DisposeWith(disposable);
+                               var allMachinesStreamObs = this.WhenAnyValue(vm => vm.ClusterClient)
+                                                              .Where(client => client != null)
+                                                              .SelectMany(client => client!.GetReceiverStreamWithGuidKey<MachineInfoEvent>(Constants.StreamProviderName, Constants.MachineInfosBroadcastNamespace, _machineSequenceToken))
+                                                              .Publish()
+                                                              .RefCount();
+                               allMachinesStreamObs.Where(tuple => tuple.Event is MachineInfoSavedEvent)
+                                                   .ObserveOn(RxApp.MainThreadScheduler)
+                                                   .Subscribe(tuple =>
+                                                              {
+                                                                  _machineSequenceToken = tuple.SequenceToken;
+                                                                  var savedEvent = (MachineInfoSavedEvent)tuple.Event;
+                                                                  machinesCache.Edit(updater => updater.AddOrUpdate(new MachineViewModel(savedEvent.Machine)));
+                                                              })
+                                                   .DisposeWith(disposable);
+                               allMachinesStreamObs.Where(tuple => tuple.Event is MachineInfoErrorEvent)
+                                                   .ObserveOn(RxApp.MainThreadScheduler)
+                                                   .Subscribe(tuple =>
+                                                              {
+                                                                  _machineSequenceToken = tuple.SequenceToken;
+                                                                  var errorEvent = (MachineInfoErrorEvent)tuple.Event;
+                                                                  ErrorInfo = $"{errorEvent.Code}:{string.Join("\n", errorEvent.Reasons)}";
+                                                              })
+                                                   .DisposeWith(disposable);
 
                                // When the cluster client changes, subscribe to the snack info stream.
-                               this.WhenAnyValue(vm => vm.ClusterClient)
-                                   .Where(client => client != null)
-                                   .Select(client => client!.GetStreamProvider(Constants.StreamProviderName))
-                                   .Select(streamProvider => streamProvider.GetStream<SnackInfoEvent>(StreamId.Create(Constants.SnackInfosBroadcastNamespace, Guid.Empty)))
-                                   .SelectMany(stream => stream.SubscribeAsync(HandleSnackEventAsync, HandleSnackErrorAsync, HandleSnackCompletedAsync, _lastSnackSequenceToken))
-                                   .Subscribe(HandleSnackSubscriptionAsync)
-                                   .DisposeWith(disposable);
-                               Disposable.Create(HandleSnackSubscriptionDisposeAsync)
-                                         .DisposeWith(disposable);
+                               var allSnacksStreamObs = this.WhenAnyValue(vm => vm.ClusterClient)
+                                                            .Where(client => client != null)
+                                                            .SelectMany(client => client!.GetReceiverStreamWithGuidKey<SnackInfoEvent>(Constants.StreamProviderName, Constants.SnackInfosBroadcastNamespace, _snackSequenceToken))
+                                                            .Publish()
+                                                            .RefCount();
+                               allSnacksStreamObs.Where(tuple => tuple.Event is SnackInfoSavedEvent)
+                                                 .ObserveOn(RxApp.MainThreadScheduler)
+                                                 .Subscribe(tuple =>
+                                                            {
+                                                                _snackSequenceToken = tuple.SequenceToken;
+                                                                var savedEvent = (SnackInfoSavedEvent)tuple.Event;
+                                                                snacksCache.Edit(updater => updater.AddOrUpdate(new SnackViewModel(savedEvent.Snack)));
+                                                            })
+                                                 .DisposeWith(disposable);
+                               allSnacksStreamObs.Where(tuple => tuple.Event is SnackInfoErrorEvent)
+                                                 .ObserveOn(RxApp.MainThreadScheduler)
+                                                 .Subscribe(tuple =>
+                                                            {
+                                                                _snackSequenceToken = tuple.SequenceToken;
+                                                                var errorEvent = (SnackInfoErrorEvent)tuple.Event;
+                                                                ErrorInfo = $"{errorEvent.Code}:{string.Join("\n", errorEvent.Reasons)}";
+                                                            })
+                                                 .DisposeWith(disposable);
                            });
 
         // Create the commands.
@@ -162,6 +183,13 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     {
         get => _clusterClient;
         set => this.RaiseAndSetIfChanged(ref _clusterClient, value);
+    }
+
+    private string _errorInfo = string.Empty;
+    public string ErrorInfo
+    {
+        get => _errorInfo;
+        set => this.RaiseAndSetIfChanged(ref _errorInfo, value);
     }
 
     private int _pageSize = 10;
@@ -428,143 +456,6 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     private void GoNextPage()
     {
         PageNumber++;
-    }
-
-    #endregion
-
-    #region Stream Handlers
-
-    private async void HandleSubscriptionAsync(StreamSubscriptionHandle<MachineInfoEvent> subscription)
-    {
-        if (_subscription != null)
-        {
-            try
-            {
-                await _subscription.UnsubscribeAsync();
-            }
-            catch
-            {
-                // ignored
-            }
-        }
-        _subscription = subscription;
-    }
-
-    private async void HandleSubscriptionDisposeAsync()
-    {
-        if (_subscription == null)
-        {
-            return;
-        }
-        try
-        {
-            await _subscription.UnsubscribeAsync();
-        }
-        catch
-        {
-            // ignored
-        }
-    }
-
-    private Task HandleEventAsync(MachineInfoEvent projectionEvent, StreamSequenceToken sequenceToken)
-    {
-        _lastSequenceToken = sequenceToken;
-        return projectionEvent switch
-               {
-                   MachineInfoSavedEvent machineEvent => ApplyEventAsync(machineEvent),
-                   MachineInfoErrorEvent machineEvent => ApplyErrorEventAsync(machineEvent),
-                   _ => Task.CompletedTask
-               };
-    }
-
-    private Task HandleErrorAsync(Exception exception)
-    {
-        return Task.CompletedTask;
-    }
-
-    private Task HandleCompletedAsync()
-    {
-        return Task.CompletedTask;
-    }
-
-    private Task ApplyEventAsync(MachineInfoSavedEvent machineEvent)
-    {
-        _machinesCache.Edit(updater => updater.AddOrUpdate(new MachineViewModel(machineEvent.Machine)));
-        return Task.CompletedTask;
-    }
-
-    private Task ApplyErrorEventAsync(MachineInfoErrorEvent errorEvent)
-    {
-        return Task.CompletedTask;
-    }
-
-    #endregion
-
-    #region Snack Stream Handlers
-
-    private async void HandleSnackSubscriptionAsync(StreamSubscriptionHandle<SnackInfoEvent> snackSubscription)
-    {
-        if (_snackSubscription != null)
-        {
-            try
-            {
-                await _snackSubscription.UnsubscribeAsync();
-            }
-            catch
-            {
-                // ignored
-            }
-        }
-        _snackSubscription = snackSubscription;
-    }
-
-    private async void HandleSnackSubscriptionDisposeAsync()
-    {
-        if (_snackSubscription == null)
-        {
-            return;
-        }
-        try
-        {
-            await _snackSubscription.UnsubscribeAsync();
-        }
-        catch
-        {
-            // ignored
-        }
-    }
-
-    private Task HandleSnackEventAsync(SnackInfoEvent projectionEvent, StreamSequenceToken sequenceToken)
-    {
-        _lastSnackSequenceToken = sequenceToken;
-        return projectionEvent switch
-               {
-                   SnackInfoSavedEvent snackEvent => ApplySnackEventAsync(snackEvent),
-                   SnackInfoErrorEvent snackEvent => ApplySnackErrorEventAsync(snackEvent),
-                   _ => Task.CompletedTask
-               };
-    }
-
-    private Task HandleSnackErrorAsync(Exception exception)
-    {
-        return Task.CompletedTask;
-    }
-
-    private Task HandleSnackCompletedAsync()
-    {
-        return Task.CompletedTask;
-    }
-
-    private Task ApplySnackEventAsync(SnackInfoSavedEvent snackEvent)
-    {
-        _snacksCache.Edit(updater => updater.AddOrUpdate(new SnackViewModel(snackEvent.Snack)));
-        return Task.CompletedTask;
-    }
-
-    private Task ApplySnackErrorEventAsync(SnackInfoErrorEvent errorEvent)
-    {
-        // return Interactions.Errors.Handle(result.Errors);
-        return Task.CompletedTask;
     }
 
     #endregion

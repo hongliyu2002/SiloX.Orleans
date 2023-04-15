@@ -12,7 +12,7 @@
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
-        <Label Grid.Row="0" x:Name="ErrorLabel" Grid.ColumnSpan="3" Background="Bisque" Foreground="Red" />
+        <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" x:Name="ErrorLabel" Background="Bisque" Foreground="Red" />
         <Grid Grid.Row="1" x:Name="NavigationGrid" Grid.Column="0" Width="260">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
