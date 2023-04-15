@@ -396,6 +396,7 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
         else
         {
             _dbContext.Entry(existingMachine).CurrentValues.SetValues(newMachine);
+            existingMachine.MoneyInside = newMachine.MoneyInside;
             // Remove slots that are not in the new machine.
             foreach (var existingSlot in existingMachine.Slots.Where(slot => newMachine.Slots.All(ms => ms.Position != slot.Position)))
             {
@@ -412,6 +413,7 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
                 else
                 {
                     _dbContext.Entry(existingSlot).CurrentValues.SetValues(newSlot);
+                    existingSlot.SnackPile = newSlot.SnackPile;
                 }
             }
             // Remove snack stats that are not in the new machine.
