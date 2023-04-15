@@ -79,10 +79,7 @@ public sealed class SnackGrain : EventSourcingGrainWithGuidKey<Snack, SnackComma
     private Result ValidateDelete(SnackDeleteCommand command)
     {
         var snackId = this.GetPrimaryKey();
-        return Result.Ok()
-                     .Verify(State.IsDeleted == false, $"Snack {snackId} has already been removed.")
-                     .Verify(State.IsCreated, $"Snack {snackId} is not initialized.")
-                     .Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
+        return Result.Ok().Verify(State.IsDeleted == false, $"Snack {snackId} has already been removed.").Verify(State.IsCreated, $"Snack {snackId} is not initialized.").Verify(command.OperatedBy.IsNotNullOrWhiteSpace(), "Operator should not be empty.");
     }
 
     /// <inheritdoc />
@@ -133,14 +130,16 @@ public sealed class SnackGrain : EventSourcingGrainWithGuidKey<Snack, SnackComma
 
     private async Task PersistAsync()
     {
-        var snack = await _dbContext.Snacks.FirstOrDefaultAsync(s => s.Id == State.Id);
-        if (snack != null)
+        var newSnack = State;
+        var existingSnack = await _dbContext.Snacks.FirstOrDefaultAsync(s => s.Id == newSnack.Id);
+        if (existingSnack == null)
         {
-            _dbContext.Entry(snack).CurrentValues.SetValues(State);
+            _dbContext.Snacks.Add(newSnack);
         }
         else
         {
-            _dbContext.Snacks.Add(State);
+            _dbContext.Entry(existingSnack).CurrentValues.SetValues(newSnack);
+            _dbContext.Entry(existingSnack).State = EntityState.Modified;
         }
         await _dbContext.SaveChangesAsync();
     }

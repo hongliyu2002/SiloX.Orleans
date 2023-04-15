@@ -85,14 +85,16 @@ public sealed class PurchaseGrain : StatefulGrainWithStringKey<Purchase, Purchas
 
     private async Task PersistAsync()
     {
-        var purchase = await _dbContext.Purchases.FirstOrDefaultAsync(p => p.Id == State.Id);
-        if (purchase != null)
+        var newPurchase = State;
+        var existingPurchase = await _dbContext.Purchases.FirstOrDefaultAsync(p => p.Id == newPurchase.Id);
+        if (existingPurchase == null)
         {
-            _dbContext.Entry(purchase).CurrentValues.SetValues(State);
+            _dbContext.Purchases.Add(State);
         }
         else
         {
-            _dbContext.Purchases.Add(State);
+            _dbContext.Entry(existingPurchase).CurrentValues.SetValues(newPurchase);
+            _dbContext.Entry(existingPurchase).State = EntityState.Modified;
         }
         await _dbContext.SaveChangesAsync();
     }

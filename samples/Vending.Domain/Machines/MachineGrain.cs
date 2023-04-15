@@ -387,14 +387,52 @@ public sealed class MachineGrain : EventSourcingGrainWithGuidKey<Machine, Machin
 
     private async Task PersistAsync()
     {
-        var machine = await _dbContext.Machines.Include(m => m.Slots).Include(m => m.SnackStats).FirstOrDefaultAsync(m => m.Id == State.Id);
-        if (machine != null)
+        var newMachine = State;
+        var existingMachine = await _dbContext.Machines.Include(m => m.MoneyInside).Include(m => m.Slots).ThenInclude(ms => ms.SnackPile).Include(m => m.SnackStats).FirstOrDefaultAsync(m => m.Id == newMachine.Id);
+        if (existingMachine == null)
         {
-            _dbContext.Entry(machine).CurrentValues.SetValues(State);
+            _dbContext.Machines.Add(newMachine);
         }
         else
         {
-            _dbContext.Machines.Add(State);
+            _dbContext.Entry(existingMachine).CurrentValues.SetValues(newMachine);
+            // Remove slots that are not in the new machine.
+            foreach (var existingSlot in existingMachine.Slots.Where(slot => newMachine.Slots.All(ms => ms.Position != slot.Position)))
+            {
+                _dbContext.Remove(existingSlot);
+            }
+            // Update or add slots.
+            foreach (var newSlot in newMachine.Slots)
+            {
+                var existingSlot = existingMachine.Slots.SingleOrDefault(ms => ms.Position == newSlot.Position);
+                if (existingSlot == null)
+                {
+                    existingMachine.Slots.Add(newSlot);
+                }
+                else
+                {
+                    _dbContext.Entry(existingSlot).CurrentValues.SetValues(newSlot);
+                }
+            }
+            // Remove snack stats that are not in the new machine.
+            foreach (var existingSnackStat in existingMachine.SnackStats.Where(snackStat => newMachine.SnackStats.All(mss => mss.SnackId != snackStat.SnackId)))
+            {
+                _dbContext.Remove(existingSnackStat);
+            }
+            // Update or add snackStats.
+            foreach (var newSnackStat in newMachine.SnackStats)
+            {
+                var existingSnackStat = existingMachine.SnackStats.SingleOrDefault(mss => mss.SnackId == newSnackStat.SnackId);
+                if (existingSnackStat == null)
+                {
+                    existingMachine.SnackStats.Add(newSnackStat);
+                }
+                else
+                {
+                    _dbContext.Entry(existingSnackStat).CurrentValues.SetValues(newSnackStat);
+                }
+            }
+            _dbContext.Entry(existingMachine).State = EntityState.Modified;
         }
         await _dbContext.SaveChangesAsync();
     }
