@@ -25,6 +25,7 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
         // Create the cache for the snacks.
         var snacksCache = new SourceCache<SnackViewModel, Guid>(snack => snack.Id);
         snacksCache.Connect()
+                   .AutoRefresh(snack => snack.Id) 
                    .Filter(this.WhenAnyValue(vm => vm.SearchTerm)
                                .Throttle(TimeSpan.FromMilliseconds(500))
                                .DistinctUntilChanged()
@@ -45,7 +46,7 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
             .Where(result => result.IsSuccess)
             .Select(result => result.Value)
             .ObserveOn(RxApp.MainThreadScheduler)
-            .Subscribe(snacksList => snacksCache.Edit(updater => updater.AddOrUpdate(snacksList.Select(snack => new SnackViewModel(snack)))));
+            .Subscribe(snacksList => snacksCache.AddOrUpdateWith(snacksList));
 
         // When the current snack changes, get the snack edit view model.
         this.WhenAnyValue(vm => vm.CurrentSnack, vm => vm.ClusterClient)
@@ -60,27 +61,27 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
                            {
                                // When the cluster client changes, subscribe to the snack info stream.
                                var allSnacksStreamObs = this.WhenAnyValue(vm => vm.ClusterClient)
-                                                         .Where(client => client != null)
-                                                         .SelectMany(client => client!.GetReceiverStreamWithGuidKey<SnackInfoEvent>(Constants.StreamProviderName, Constants.SnackInfosBroadcastNamespace, _snackSequenceToken))
-                                                         .Publish()
-                                                         .RefCount();
+                                                            .Where(client => client != null)
+                                                            .SelectMany(client => client!.GetReceiverStreamWithGuidKey<SnackInfoEvent>(Constants.StreamProviderName, Constants.SnackInfosBroadcastNamespace, _snackSequenceToken))
+                                                            .Publish()
+                                                            .RefCount();
                                allSnacksStreamObs.Where(tuple => tuple.Event is SnackInfoSavedEvent)
-                                              .ObserveOn(RxApp.MainThreadScheduler)
-                                              .Subscribe(tuple =>
-                                                         {
-                                                             _snackSequenceToken = tuple.SequenceToken;
-                                                             var savedEvent = (SnackInfoSavedEvent)tuple.Event;
-                                                             snacksCache.Edit(updater => updater.AddOrUpdate(new SnackViewModel(savedEvent.Snack)));
-                                                         })
-                                              .DisposeWith(disposable);
+                                                 .ObserveOn(RxApp.MainThreadScheduler)
+                                                 .Subscribe(tuple =>
+                                                            {
+                                                                _snackSequenceToken = tuple.SequenceToken;
+                                                                var savedEvent = (SnackInfoSavedEvent)tuple.Event;
+                                                                snacksCache.AddOrUpdateWith(savedEvent.Snack);
+                                                            })
+                                                 .DisposeWith(disposable);
                                allSnacksStreamObs.Where(tuple => tuple.Event is SnackInfoErrorEvent)
-                                              .ObserveOn(RxApp.MainThreadScheduler)
-                                              .Subscribe(tuple =>
-                                                         {
-                                                             var errorEvent = (SnackInfoErrorEvent)tuple.Event;
-                                                             ErrorInfo = $"{errorEvent.Code}:{string.Join("\n", errorEvent.Reasons)}";
-                                                         })
-                                              .DisposeWith(disposable);
+                                                 .ObserveOn(RxApp.MainThreadScheduler)
+                                                 .Subscribe(tuple =>
+                                                            {
+                                                                var errorEvent = (SnackInfoErrorEvent)tuple.Event;
+                                                                ErrorInfo = $"{errorEvent.Code}:{string.Join("\n", errorEvent.Reasons)}";
+                                                            })
+                                                 .DisposeWith(disposable);
                            });
         // Create the commands.
         AddSnackCommand = ReactiveCommand.CreateFromTask(AddSnackAsync, CanAddSnack);
@@ -149,9 +150,7 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
     /// <summary>
     ///     Gets the observable that determines whether the add snack command can be executed.
     /// </summary>
-    private IObservable<bool> CanAddSnack =>
-        this.WhenAnyValue(vm => vm.ClusterClient)
-            .Select(client => client != null);
+    private IObservable<bool> CanAddSnack => this.WhenAnyValue(vm => vm.ClusterClient).Select(client => client != null);
 
     /// <summary>
     ///     Adds a new snack.
@@ -186,9 +185,7 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
     /// <summary>
     ///     Gets the observable that indicates whether the remove snack command can be executed.
     /// </summary>
-    private IObservable<bool> CanRemoveSnack =>
-        this.WhenAnyValue(vm => vm.CurrentSnack, vm => vm.ClusterClient)
-            .Select(tuple => tuple is { Item1: not null, Item2: not null });
+    private IObservable<bool> CanRemoveSnack => this.WhenAnyValue(vm => vm.CurrentSnack, vm => vm.ClusterClient).Select(tuple => tuple is { Item1: not null, Item2: not null });
 
     /// <summary>
     ///     Gets the interaction that asks the user to confirm the removal of the current snack.

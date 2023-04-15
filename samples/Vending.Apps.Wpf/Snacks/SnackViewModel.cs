@@ -11,7 +11,7 @@ public class SnackViewModel : ReactiveObject
     {
         Guard.Against.Null(snackInfo, nameof(snackInfo));
         // Load the snack info.
-        LoadSnack(snackInfo);
+        UpdateWith(snackInfo);
     }
 
     #region Properties
@@ -83,7 +83,7 @@ public class SnackViewModel : ReactiveObject
 
     #region Load Snack
 
-    private void LoadSnack(SnackInfo snackInfo)
+    public void UpdateWith(SnackInfo snackInfo)
     {
         Id = snackInfo.Id;
         Name = snackInfo.Name;

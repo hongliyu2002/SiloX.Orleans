@@ -52,7 +52,7 @@ public class SlotEditViewModel : ReactiveObject
                            Amount = SnackPile.Amount;
                        });
         // Load the slot.
-        LoadSlot(slot);
+        UpdateWith(slot);
     }
 
     #region Properties
@@ -112,7 +112,7 @@ public class SlotEditViewModel : ReactiveObject
 
     #region Load Slot
 
-    private void LoadSlot(MachineSlot slot)
+    public void UpdateWith(MachineSlot slot)
     {
         Position = slot.Position;
         if (slot.SnackPile != null)

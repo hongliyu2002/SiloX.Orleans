@@ -11,7 +11,7 @@ public class MachineViewModel : ReactiveObject
     {
         Guard.Against.Null(machineInfo, nameof(machineInfo));
         // Load the machine info.
-        LoadMachine(machineInfo);
+        UpdateWith(machineInfo);
     }
 
     #region Properties
@@ -90,7 +90,7 @@ public class MachineViewModel : ReactiveObject
 
     #region Load Machine
 
-    private void LoadMachine(MachineInfo machineInfo)
+    public void UpdateWith(MachineInfo machineInfo)
     {
         Id = machineInfo.Id;
         MoneyInside = machineInfo.MoneyInside;

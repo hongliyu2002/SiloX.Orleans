@@ -63,7 +63,7 @@ public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel, IOr
                                                           {
                                                               _lastSequenceToken = tuple.SequenceToken;
                                                               var machineEvent = (MachineInitializedEvent)tuple.Event;
-                                                              LoadMoney(machineEvent.MoneyInside);
+                                                              UpdateWith(machineEvent.MoneyInside);
                                                               _slotsCache.Edit(updater => updater.Load(machineEvent.Slots.Select(slot => new SlotEditViewModel(slot, _snacks))));
                                                           })
                                                .DisposeWith(disposable);
@@ -73,7 +73,7 @@ public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel, IOr
                                                           {
                                                               _lastSequenceToken = tuple.SequenceToken;
                                                               var machineEvent = (MachineDeletedEvent)tuple.Event;
-                                                              LoadMoney(machineEvent.MoneyInside);
+                                                              UpdateWith(machineEvent.MoneyInside);
                                                               IsDeleted = true;
                                                               _slotsCache.Edit(updater => updater.Load(machineEvent.Slots.Select(slot => new SlotEditViewModel(slot, _snacks))));
                                                           })
@@ -84,7 +84,7 @@ public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel, IOr
                                                           {
                                                               _lastSequenceToken = tuple.SequenceToken;
                                                               var machineEvent = (MachineUpdatedEvent)tuple.Event;
-                                                              LoadMoney(machineEvent.MoneyInside);
+                                                              UpdateWith(machineEvent.MoneyInside);
                                                               _slotsCache.Edit(updater => updater.Load(machineEvent.Slots.Select(slot => new SlotEditViewModel(slot, _snacks))));
                                                           })
                                                .DisposeWith(disposable);
@@ -112,7 +112,7 @@ public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel, IOr
                                                           {
                                                               _lastSequenceToken = tuple.SequenceToken;
                                                               var machineEvent = (MachineMoneyLoadedEvent)tuple.Event;
-                                                              LoadMoney(machineEvent.MoneyInside);
+                                                              UpdateWith(machineEvent.MoneyInside);
                                                           })
                                                .DisposeWith(disposable);
                                machineStreamObs.Where(tuple => tuple.Event is MachineMoneyUnloadedEvent)
@@ -121,7 +121,7 @@ public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel, IOr
                                                           {
                                                               _lastSequenceToken = tuple.SequenceToken;
                                                               var machineEvent = (MachineMoneyUnloadedEvent)tuple.Event;
-                                                              LoadMoney(machineEvent.MoneyInside);
+                                                              UpdateWith(machineEvent.MoneyInside);
                                                           })
                                                .DisposeWith(disposable);
                                machineStreamObs.Where(tuple => tuple.Event is MachineMoneyInsertedEvent)
@@ -130,7 +130,7 @@ public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel, IOr
                                                           {
                                                               _lastSequenceToken = tuple.SequenceToken;
                                                               var machineEvent = (MachineMoneyInsertedEvent)tuple.Event;
-                                                              LoadMoney(machineEvent.MoneyInside);
+                                                              UpdateWith(machineEvent.MoneyInside);
                                                           })
                                                .DisposeWith(disposable);
                                machineStreamObs.Where(tuple => tuple.Event is MachineMoneyReturnedEvent)
@@ -139,7 +139,7 @@ public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel, IOr
                                                           {
                                                               _lastSequenceToken = tuple.SequenceToken;
                                                               var machineEvent = (MachineMoneyReturnedEvent)tuple.Event;
-                                                              LoadMoney(machineEvent.MoneyInside);
+                                                              UpdateWith(machineEvent.MoneyInside);
                                                           })
                                                .DisposeWith(disposable);
                                machineStreamObs.Where(tuple => tuple.Event is MachineSnacksLoadedEvent)
@@ -185,7 +185,7 @@ public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel, IOr
         SaveMachineCommand = ReactiveCommand.CreateFromTask(SaveMachineAsync, CanSaveMachine);
 
         // Load the machine.
-        LoadMachine(machine);
+        UpdateWith(machine);
     }
 
     #region Properties
@@ -398,7 +398,7 @@ public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel, IOr
                                      .TapTry(() => grain = ClusterClient!.GetGrain<IMachineRepoGrain>("Manager"))
                                      .BindTryIfAsync(Id == Guid.Empty, () => grain.CreateAsync(new MachineRepoCreateCommand(MoneyInside, slots, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")))
                                      .BindTryIfAsync<Machine>(Id != Guid.Empty, () => grain.UpdateAsync(new MachineRepoUpdateCommand(Id, MoneyInside, slots, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")))
-                                     .TapTryAsync(LoadMachine);
+                                     .TapTryAsync(UpdateWith);
             if (result.IsSuccess)
             {
                 return;
@@ -413,15 +413,15 @@ public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel, IOr
 
     #region Load Machine
 
-    private void LoadMachine(Machine machine)
+    public void UpdateWith(Machine machine)
     {
         Id = machine.Id;
-        LoadMoney(machine.MoneyInside);
+        UpdateWith(machine.MoneyInside);
         IsDeleted = machine.IsDeleted;
         _slotsCache.Edit(updater => updater.Load(machine.Slots.Select(slot => new SlotEditViewModel(slot, _snacks))));
     }
 
-    private void LoadMoney(Money money)
+    public void UpdateWith(Money money)
     {
         MoneyYuan1 = money.Yuan1;
         MoneyYuan2 = money.Yuan2;

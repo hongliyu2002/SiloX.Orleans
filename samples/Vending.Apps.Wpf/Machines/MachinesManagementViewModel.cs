@@ -29,6 +29,7 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
         // Create the cache for the snacks.
         var snacksCache = new SourceCache<SnackViewModel, Guid>(snack => snack.Id);
         snacksCache.Connect()
+                   .AutoRefresh(snack => snack.Id) 
                    .Sort(SortExpressionComparer<SnackViewModel>.Ascending(snack => snack.Id))
                    .ObserveOn(RxApp.MainThreadScheduler)
                    .Bind(out var snacks)
@@ -46,7 +47,7 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
             .Where(result => result.IsSuccess)
             .Select(result => result.Value)
             .ObserveOn(RxApp.MainThreadScheduler)
-            .Subscribe(snacksList => snacksCache.Edit(updater => updater.AddOrUpdate(snacksList.Select(snack => new SnackViewModel(snack)))));
+            .Subscribe(snacksList => snacksCache.AddOrUpdateWith(snacksList));
 
         // Create the cache for the machines.
         var machinesCache = new SourceCache<MachineViewModel, Guid>(machine => machine.Id);
@@ -149,7 +150,7 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
                                                             {
                                                                 _snackSequenceToken = tuple.SequenceToken;
                                                                 var savedEvent = (SnackInfoSavedEvent)tuple.Event;
-                                                                snacksCache.Edit(updater => updater.AddOrUpdate(new SnackViewModel(savedEvent.Snack)));
+                                                                snacksCache.AddOrUpdateWith(savedEvent.Snack);
                                                             })
                                                  .DisposeWith(disposable);
                                allSnacksStreamObs.Where(tuple => tuple.Event is SnackInfoErrorEvent)
