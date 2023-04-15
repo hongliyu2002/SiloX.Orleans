@@ -2,7 +2,9 @@
 using System.Windows;
 using System.Windows.Controls;
 using Fluxera.Utilities.Extensions;
+using Orleans.FluentResults;
 using ReactiveUI;
+using SiloX.Domain.Abstractions.Extensions;
 
 namespace Vending.Apps.Wpf.Snacks;
 
@@ -23,10 +25,11 @@ public partial class SnacksManagementView
                                this.BindCommand(ViewModel, vm => vm.AddSnackCommand, v => v.AddSnackButton).DisposeWith(disposable);
                                this.BindCommand(ViewModel, vm => vm.RemoveSnackCommand, v => v.RemoveSnackButton).DisposeWith(disposable);
                                this.BindCommand(ViewModel, vm => vm.MoveNavigationSideCommand, v => v.MoveNavigationSideButton).DisposeWith(disposable);
-                               ViewModel?.ConfirmRemoveSnack.RegisterHandler(ShowMessageBox).DisposeWith(disposable);
+                               ViewModel?.ConfirmRemoveSnackInteraction.RegisterHandler(ConfirmRemoveSnack).DisposeWith(disposable);
+                               ViewModel?.ErrorsInteraction.RegisterHandler(HandleErrors).DisposeWith(disposable);
                            });
     }
-        
+
     private Visibility StringToVisibilityConverter(string value)
     {
         return value.IsNotNullOrEmpty() ? Visibility.Visible : Visibility.Collapsed;
@@ -37,10 +40,18 @@ public partial class SnacksManagementView
         return side == NavigationSide.Left ? 0 : 2;
     }
 
-    private void ShowMessageBox(InteractionContext<string, bool> interaction)
+    private void ConfirmRemoveSnack(InteractionContext<string, bool> interaction)
     {
         var result = MessageBox.Show($"Are you sure you want to remove {interaction.Input}?", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question);
         interaction.SetOutput(result == MessageBoxResult.Yes);
+    }
+
+    private void HandleErrors(InteractionContext<IEnumerable<IError>, ErrorRecovery> errorsInteraction)
+    {
+        var errors = errorsInteraction.Input;
+        var message = errors.ToMessage();
+        var result = MessageBox.Show($"{message}.\n\nRetry or cancel?", "Errors occurred when operating", MessageBoxButton.OKCancel, MessageBoxImage.Error);
+        errorsInteraction.SetOutput(result == MessageBoxResult.OK ? ErrorRecovery.Retry : ErrorRecovery.Abort);
     }
 
     public int NavigationGridGridColumn

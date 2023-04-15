@@ -76,11 +76,11 @@ public class SnackEditViewModel : ReactiveObject, IActivatableViewModel
     /// <inheritdoc />
     public ViewModelActivator Activator { get; } = new();
 
-    private IClusterClient? _clusterClient;
+    private readonly IClusterClient? _clusterClient;
     public IClusterClient? ClusterClient
     {
         get => _clusterClient;
-        set => this.RaiseAndSetIfChanged(ref _clusterClient, value);
+        init => this.RaiseAndSetIfChanged(ref _clusterClient, value);
     }
 
     private string _errorInfo = string.Empty;
@@ -120,6 +120,15 @@ public class SnackEditViewModel : ReactiveObject, IActivatableViewModel
 
     #endregion
 
+    #region Interactions
+
+    /// <summary>
+    ///     Interaction for errors.
+    /// </summary>
+    public Interaction<IEnumerable<IError>, ErrorRecovery> ErrorsInteraction { get; } = new();
+
+    #endregion
+    
     #region Commands
 
     /// <summary>
@@ -148,8 +157,8 @@ public class SnackEditViewModel : ReactiveObject, IActivatableViewModel
             {
                 return;
             }
-            var errorRecovery = await Interactions.Errors.Handle(result.Errors);
-            retry = errorRecovery == ErrorRecoveryOption.Retry;
+            var errorRecovery = await ErrorsInteraction.Handle(result.Errors);
+            retry = errorRecovery == ErrorRecovery.Retry;
         }
         while (retry);
     }

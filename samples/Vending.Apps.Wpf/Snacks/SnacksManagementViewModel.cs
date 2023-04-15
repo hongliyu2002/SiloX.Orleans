@@ -26,11 +26,7 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel
     {
         // When the cluster client is ready, set the cluster client.
         ClusterClientReady = Locator.Current.GetService<IClusterClientReady>();
-        this.WhenAnyValue(vm => vm.ClusterClientReady)
-            .Where(clientReady => clientReady != null)
-            .SelectMany(clientReady => clientReady!.ClusterClient.Task)
-            .ObserveOn(RxApp.MainThreadScheduler)
-            .Subscribe(client => ClusterClient = client);
+        this.WhenAnyValue(vm => vm.ClusterClientReady).Where(clientReady => clientReady != null).SelectMany(clientReady => clientReady!.ClusterClient.Task).ObserveOn(RxApp.MainThreadScheduler).Subscribe(client => ClusterClient = client);
 
         // Create the cache for the snacks.
         var snacksCache = new SourceCache<SnackViewModel, Guid>(snack => snack.Id);
@@ -157,6 +153,20 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel
 
     #endregion
 
+    #region Interactions
+
+    /// <summary>
+    ///     Interaction that asks the user to confirm the removal of the current snack.
+    /// </summary>
+    public Interaction<string, bool> ConfirmRemoveSnackInteraction { get; } = new();
+
+    /// <summary>
+    ///     Interaction for errors.
+    /// </summary>
+    public Interaction<IEnumerable<IError>, ErrorRecovery> ErrorsInteraction { get; } = new();
+
+    #endregion
+
     #region Commands
 
     /// <summary>
@@ -167,9 +177,7 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel
     /// <summary>
     ///     Gets the observable that determines whether the add snack command can be executed.
     /// </summary>
-    private IObservable<bool> CanAddSnack =>
-        this.WhenAnyValue(vm => vm.ClusterClient)
-            .Select(client => client != null);
+    private IObservable<bool> CanAddSnack => this.WhenAnyValue(vm => vm.ClusterClient).Select(client => client != null);
 
     /// <summary>
     ///     Adds a new snack.
@@ -190,8 +198,8 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel
             {
                 return;
             }
-            var errorRecovery = await Interactions.Errors.Handle(result.Errors);
-            retry = errorRecovery == ErrorRecoveryOption.Retry;
+            var errorRecovery = await ErrorsInteraction.Handle(result.Errors);
+            retry = errorRecovery == ErrorRecovery.Retry;
         }
         while (retry);
     }
@@ -204,21 +212,14 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel
     /// <summary>
     ///     Gets the observable that indicates whether the remove snack command can be executed.
     /// </summary>
-    private IObservable<bool> CanRemoveSnack =>
-        this.WhenAnyValue(vm => vm.CurrentSnack, vm => vm.ClusterClient)
-            .Select(tuple => tuple is { Item1: not null, Item2: not null });
-
-    /// <summary>
-    ///     Gets the interaction that asks the user to confirm the removal of the current snack.
-    /// </summary>
-    public Interaction<string, bool> ConfirmRemoveSnack { get; } = new();
+    private IObservable<bool> CanRemoveSnack => this.WhenAnyValue(vm => vm.CurrentSnack, vm => vm.ClusterClient).Select(tuple => tuple is { Item1: not null, Item2: not null });
 
     /// <summary>
     ///     Removes the current snack.
     /// </summary>
     private async Task RemoveSnackAsync()
     {
-        var confirm = await ConfirmRemoveSnack.Handle(CurrentSnack!.Name);
+        var confirm = await ConfirmRemoveSnackInteraction.Handle(CurrentSnack!.Name);
         if (!confirm)
         {
             return;
@@ -235,8 +236,8 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel
             {
                 return;
             }
-            var errorRecovery = await Interactions.Errors.Handle(result.Errors);
-            retry = errorRecovery == ErrorRecoveryOption.Retry;
+            var errorRecovery = await ErrorsInteraction.Handle(result.Errors);
+            retry = errorRecovery == ErrorRecovery.Retry;
         }
         while (retry);
     }

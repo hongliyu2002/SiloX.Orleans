@@ -2,7 +2,9 @@
 using System.Windows;
 using System.Windows.Media.Imaging;
 using Fluxera.Utilities.Extensions;
+using Orleans.FluentResults;
 using ReactiveUI;
+using SiloX.Domain.Abstractions.Extensions;
 
 namespace Vending.Apps.Wpf.Snacks;
 
@@ -25,11 +27,20 @@ public partial class SnackEditView
                                this.OneWayBind(ViewModel, vm => vm.IsDeleted, v => v.NameTextBox.IsEnabled, deleted => !deleted).DisposeWith(disposable);
                                this.OneWayBind(ViewModel, vm => vm.IsDeleted, v => v.PictureTextBox.IsEnabled, deleted => !deleted).DisposeWith(disposable);
                                this.BindCommand(ViewModel, vm => vm.SaveSnackCommand, v => v.SaveButton).DisposeWith(disposable);
+                               ViewModel?.ErrorsInteraction.RegisterHandler(HandleErrors).DisposeWith(disposable);
                            });
     }
 
     private Visibility StringToVisibilityConverter(string value)
     {
         return value.IsNotNullOrEmpty() ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    private void HandleErrors(InteractionContext<IEnumerable<IError>, ErrorRecovery> errorsInteraction)
+    {
+        var errors = errorsInteraction.Input;
+        var message = errors.ToMessage();
+        var result = MessageBox.Show($"{message}.\n\nRetry or cancel?", "Errors occurred when operating", MessageBoxButton.OKCancel, MessageBoxImage.Error);
+        errorsInteraction.SetOutput(result == MessageBoxResult.OK ? ErrorRecovery.Retry : ErrorRecovery.Abort);
     }
 }

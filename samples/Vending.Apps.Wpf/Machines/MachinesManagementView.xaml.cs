@@ -3,7 +3,9 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Windows;
 using Fluxera.Utilities.Extensions;
+using Orleans.FluentResults;
 using ReactiveUI;
+using SiloX.Domain.Abstractions.Extensions;
 
 namespace Vending.Apps.Wpf.Machines;
 
@@ -29,16 +31,17 @@ public partial class MachinesManagementView
                                this.BindCommand(ViewModel, vm => vm.SyncMachinesCommand, v => v.SyncMachinesButton).DisposeWith(disposable);
                                this.BindCommand(ViewModel, vm => vm.GoPreviousPageCommand, v => v.PreviousPageButton).DisposeWith(disposable);
                                this.BindCommand(ViewModel, vm => vm.GoNextPageCommand, v => v.NextPageButton).DisposeWith(disposable);
-                               ViewModel?.ShowEditMachine.RegisterHandler(ShowMachineEditWindow).DisposeWith(disposable);
-                               ViewModel?.ConfirmRemoveMachine.RegisterHandler(ShowMessageBox).DisposeWith(disposable);
+                               ViewModel?.ShowEditMachineInteraction.RegisterHandler(ShowEditMachine).DisposeWith(disposable);
+                               ViewModel?.ConfirmRemoveMachineInteraction.RegisterHandler(ConfirmRemoveMachine).DisposeWith(disposable);
+                               ViewModel?.ErrorsInteraction.RegisterHandler(HandleErrors).DisposeWith(disposable);
                            });
     }
-        
+
     private Visibility StringToVisibilityConverter(string value)
     {
         return value.IsNotNullOrEmpty() ? Visibility.Visible : Visibility.Collapsed;
     }
-    
+
     private string IntToTextConverter(int number)
     {
         return number.ToString();
@@ -63,7 +66,7 @@ public partial class MachinesManagementView
         return null;
     }
 
-    private void ShowMachineEditWindow(InteractionContext<MachineEditWindowModel, Unit> interaction)
+    private void ShowEditMachine(InteractionContext<MachineEditWindowModel, Unit> interaction)
     {
         var window = new MachineEditWindow { ViewModel = interaction.Input };
         var hostWindow = this.GetParentWindow();
@@ -76,9 +79,17 @@ public partial class MachinesManagementView
         interaction.SetOutput(Unit.Default);
     }
 
-    private void ShowMessageBox(InteractionContext<string, bool> interaction)
+    private void ConfirmRemoveMachine(InteractionContext<string, bool> interaction)
     {
         var result = MessageBox.Show($"Are you sure you want to remove {interaction.Input}?", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question);
         interaction.SetOutput(result == MessageBoxResult.Yes);
+    }
+
+    private void HandleErrors(InteractionContext<IEnumerable<IError>, ErrorRecovery> errorsInteraction)
+    {
+        var errors = errorsInteraction.Input;
+        var message = errors.ToMessage();
+        var result = MessageBox.Show($"{message}.\n\nRetry or cancel?", "Errors occurred when operating", MessageBoxButton.OKCancel, MessageBoxImage.Error);
+        errorsInteraction.SetOutput(result == MessageBoxResult.OK ? ErrorRecovery.Retry : ErrorRecovery.Abort);
     }
 }

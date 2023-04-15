@@ -1,7 +1,9 @@
 ﻿using System.Reactive.Disposables;
 using System.Windows;
 using Fluxera.Utilities.Extensions;
+using Orleans.FluentResults;
 using ReactiveUI;
+using SiloX.Domain.Abstractions.Extensions;
 
 namespace Vending.Apps.Wpf.Machines;
 
@@ -36,7 +38,8 @@ public partial class MachineEditWindow
                                this.BindCommand(ViewModel, vm => vm.AddSlotCommand, v => v.AddSlotButton).DisposeWith(disposable);
                                this.BindCommand(ViewModel, vm => vm.RemoveSlotCommand, v => v.RemoveSlotButton).DisposeWith(disposable);
                                this.BindCommand(ViewModel, vm => vm.SaveMachineCommand, v => v.SaveMachineButton).DisposeWith(disposable);
-                               ViewModel?.ConfirmRemoveSlot.RegisterHandler(ShowMessageBox).DisposeWith(disposable);
+                               ViewModel?.ConfirmRemoveSlotInteraction.RegisterHandler(ConfirmRemoveSlot).DisposeWith(disposable);
+                               ViewModel?.ErrorsInteraction.RegisterHandler(HandleErrors).DisposeWith(disposable);
                            });
     }
 
@@ -55,9 +58,17 @@ public partial class MachineEditWindow
         return int.TryParse(text, out var number) ? number : 0;
     }
 
-    private void ShowMessageBox(InteractionContext<string, bool> interaction)
+    private void ConfirmRemoveSlot(InteractionContext<string, bool> interaction)
     {
         var result = MessageBox.Show($"Are you sure you want to remove {interaction.Input}?", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question);
         interaction.SetOutput(result == MessageBoxResult.Yes);
+    }
+
+    private void HandleErrors(InteractionContext<IEnumerable<IError>, ErrorRecovery> errorsInteraction)
+    {
+        var errors = errorsInteraction.Input;
+        var message = errors.ToMessage();
+        var result = MessageBox.Show($"{message}.\n\nRetry or cancel?", "Errors occurred when operating", MessageBoxButton.OKCancel, MessageBoxImage.Error);
+        errorsInteraction.SetOutput(result == MessageBoxResult.OK ? ErrorRecovery.Retry : ErrorRecovery.Abort);
     }
 }

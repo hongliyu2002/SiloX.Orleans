@@ -1,4 +1,4 @@
-﻿namespace Vending.Apps.Wpf;
+﻿namespace Vending.Apps.Blazor;
 
 /// <summary>
 ///     Error recovery option.
