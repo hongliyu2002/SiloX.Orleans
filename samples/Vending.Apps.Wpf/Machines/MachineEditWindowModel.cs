@@ -16,7 +16,7 @@ using Vending.Domain.Abstractions.Machines;
 
 namespace Vending.App.Wpf.Machines;
 
-public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel, IOrleansObject
+public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel
 {
     private readonly SourceCache<SlotEditViewModel, int> _slotsCache;
 
@@ -329,7 +329,6 @@ public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel, IOr
                                .Ensure(_snacks.Count > 0, "No snacks available.")
                                .TapTry(() =>
                                        {
-                                           
                                            var position = _slotsCache.Count > 0 ? _slotsCache.Keys.Max() + 1 : 1;
                                            _slotsCache.AddOrUpdateWith(new MachineSlot(Id, position), _snacks);
                                        });

@@ -9,23 +9,33 @@ using Orleans.FluentResults;
 using Orleans.Streams;
 using ReactiveUI;
 using SiloX.Domain.Abstractions.Extensions;
+using Splat;
+using Vending.App.Wpf.Services;
 using Vending.Domain.Abstractions;
 using Vending.Domain.Abstractions.Snacks;
 using Vending.Projection.Abstractions.Snacks;
 
 namespace Vending.App.Wpf.Snacks;
 
-public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, IOrleansObject
+public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel
 {
     private StreamSequenceToken? _snackSequenceToken;
 
     /// <inheritdoc />
     public SnacksManagementViewModel()
     {
+        // When the cluster client is ready, set the cluster client.
+        ClusterClientReady = Locator.Current.GetService<IClusterClientReady>();
+        this.WhenAnyValue(vm => vm.ClusterClientReady)
+            .Where(clientReady => clientReady != null)
+            .SelectMany(clientReady => clientReady!.ClusterClient.Task)
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .Subscribe(client => ClusterClient = client);
+
         // Create the cache for the snacks.
         var snacksCache = new SourceCache<SnackViewModel, Guid>(snack => snack.Id);
         snacksCache.Connect()
-                   .AutoRefresh(snack => snack.Id) 
+                   .AutoRefresh(snack => snack.Id)
                    .Filter(this.WhenAnyValue(vm => vm.SearchTerm)
                                .Throttle(TimeSpan.FromMilliseconds(500))
                                .DistinctUntilChanged()
@@ -94,6 +104,13 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
     /// <inheritdoc />
     public ViewModelActivator Activator { get; } = new();
 
+    private readonly IClusterClientReady? _clusterClientReady;
+    public IClusterClientReady? ClusterClientReady
+    {
+        get => _clusterClientReady;
+        init => this.RaiseAndSetIfChanged(ref _clusterClientReady, value);
+    }
+
     private IClusterClient? _clusterClient;
     public IClusterClient? ClusterClient
     {
@@ -150,7 +167,9 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
     /// <summary>
     ///     Gets the observable that determines whether the add snack command can be executed.
     /// </summary>
-    private IObservable<bool> CanAddSnack => this.WhenAnyValue(vm => vm.ClusterClient).Select(client => client != null);
+    private IObservable<bool> CanAddSnack =>
+        this.WhenAnyValue(vm => vm.ClusterClient)
+            .Select(client => client != null);
 
     /// <summary>
     ///     Adds a new snack.
@@ -185,7 +204,9 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel, 
     /// <summary>
     ///     Gets the observable that indicates whether the remove snack command can be executed.
     /// </summary>
-    private IObservable<bool> CanRemoveSnack => this.WhenAnyValue(vm => vm.CurrentSnack, vm => vm.ClusterClient).Select(tuple => tuple is { Item1: not null, Item2: not null });
+    private IObservable<bool> CanRemoveSnack =>
+        this.WhenAnyValue(vm => vm.CurrentSnack, vm => vm.ClusterClient)
+            .Select(tuple => tuple is { Item1: not null, Item2: not null });
 
     /// <summary>
     ///     Gets the interaction that asks the user to confirm the removal of the current snack.

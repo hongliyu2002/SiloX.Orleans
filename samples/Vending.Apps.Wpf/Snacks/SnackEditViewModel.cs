@@ -12,7 +12,7 @@ using Vending.Domain.Abstractions.Snacks;
 
 namespace Vending.App.Wpf.Snacks;
 
-public class SnackEditViewModel : ReactiveObject, IActivatableViewModel, IOrleansObject
+public class SnackEditViewModel : ReactiveObject, IActivatableViewModel
 {
     private StreamSequenceToken? _lastSequenceToken;
 
@@ -23,47 +23,47 @@ public class SnackEditViewModel : ReactiveObject, IActivatableViewModel, IOrlean
         this.WhenActivated(disposable =>
                            {
                                // When the cluster client changes, subscribe to the snack info stream.
-                               var snackStreamObs = this.WhenAnyValue(vm => vm.Id, vm => vm.ClusterClient)
-                                                        .Where(tuple => tuple.Item1 != Guid.Empty && tuple.Item2 != null)
-                                                        .SelectMany(tuple => tuple.Item2!.GetSubscriberStreamWithGuidKey<SnackEvent>(Constants.StreamProviderName, Constants.SnacksNamespace, tuple.Item1, _lastSequenceToken))
-                                                        .Publish()
-                                                        .RefCount();
-                               snackStreamObs.Where(tuple => tuple.Event is SnackInitializedEvent)
-                                             .ObserveOn(RxApp.MainThreadScheduler)
-                                             .Subscribe(tuple =>
-                                                        {
-                                                            _lastSequenceToken = tuple.SequenceToken;
-                                                            var snackEvent = (SnackInitializedEvent)tuple.Event;
-                                                            Name = snackEvent.Name;
-                                                            PictureUrl = snackEvent.PictureUrl;
-                                                        })
-                                             .DisposeWith(disposable);
-                               snackStreamObs.Where(tuple => tuple.Event is SnackDeletedEvent)
-                                             .ObserveOn(RxApp.MainThreadScheduler)
-                                             .Subscribe(tuple =>
-                                                        {
-                                                            _lastSequenceToken = tuple.SequenceToken;
-                                                            IsDeleted = true;
-                                                        })
-                                             .DisposeWith(disposable);
-                               snackStreamObs.Where(tuple => tuple.Event is SnackUpdatedEvent)
-                                             .ObserveOn(RxApp.MainThreadScheduler)
-                                             .Subscribe(tuple =>
-                                                        {
-                                                            _lastSequenceToken = tuple.SequenceToken;
-                                                            var snackEvent = (SnackUpdatedEvent)tuple.Event;
-                                                            Name = snackEvent.Name;
-                                                            PictureUrl = snackEvent.PictureUrl;
-                                                        })
-                                             .DisposeWith(disposable);
-                               snackStreamObs.Where(tuple => tuple.Event is SnackErrorEvent)
-                                             .ObserveOn(RxApp.MainThreadScheduler)
-                                             .Subscribe(tuple =>
-                                                        {
-                                                            var errorEvent = (SnackErrorEvent)tuple.Event;
-                                                            ErrorInfo = $"{errorEvent.Code}:{string.Join("\n", errorEvent.Reasons)}";
-                                                        })
-                                             .DisposeWith(disposable);
+                               var streamObs = this.WhenAnyValue(vm => vm.Id, vm => vm.ClusterClient)
+                                                   .Where(tuple => tuple.Item1 != Guid.Empty && tuple.Item2 != null)
+                                                   .SelectMany(tuple => tuple.Item2!.GetSubscriberStreamWithGuidKey<SnackEvent>(Constants.StreamProviderName, Constants.SnacksNamespace, tuple.Item1, _lastSequenceToken))
+                                                   .Publish()
+                                                   .RefCount();
+                               streamObs.Where(tuple => tuple.Event is SnackInitializedEvent)
+                                        .ObserveOn(RxApp.MainThreadScheduler)
+                                        .Subscribe(tuple =>
+                                                   {
+                                                       _lastSequenceToken = tuple.SequenceToken;
+                                                       var snackEvent = (SnackInitializedEvent)tuple.Event;
+                                                       Name = snackEvent.Name;
+                                                       PictureUrl = snackEvent.PictureUrl;
+                                                   })
+                                        .DisposeWith(disposable);
+                               streamObs.Where(tuple => tuple.Event is SnackDeletedEvent)
+                                        .ObserveOn(RxApp.MainThreadScheduler)
+                                        .Subscribe(tuple =>
+                                                   {
+                                                       _lastSequenceToken = tuple.SequenceToken;
+                                                       IsDeleted = true;
+                                                   })
+                                        .DisposeWith(disposable);
+                               streamObs.Where(tuple => tuple.Event is SnackUpdatedEvent)
+                                        .ObserveOn(RxApp.MainThreadScheduler)
+                                        .Subscribe(tuple =>
+                                                   {
+                                                       _lastSequenceToken = tuple.SequenceToken;
+                                                       var snackEvent = (SnackUpdatedEvent)tuple.Event;
+                                                       Name = snackEvent.Name;
+                                                       PictureUrl = snackEvent.PictureUrl;
+                                                   })
+                                        .DisposeWith(disposable);
+                               streamObs.Where(tuple => tuple.Event is SnackErrorEvent)
+                                        .ObserveOn(RxApp.MainThreadScheduler)
+                                        .Subscribe(tuple =>
+                                                   {
+                                                       var errorEvent = (SnackErrorEvent)tuple.Event;
+                                                       ErrorInfo = $"{errorEvent.Code}:{string.Join("\n", errorEvent.Reasons)}";
+                                                   })
+                                        .DisposeWith(disposable);
                            });
         // Create the commands.
         SaveSnackCommand = ReactiveCommand.CreateFromTask(SaveSnackAsync, CanSaveSnack);

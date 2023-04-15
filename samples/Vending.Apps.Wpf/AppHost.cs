@@ -15,9 +15,9 @@ public sealed class AppHost : WpfApplicationHost<AppModule>
     {
         base.ConfigureHostBuilder(builder);
         // Add Serilog logging
-        builder.AddSerilogLogging((hostBuilderContext, loggerConfiguration) =>
+        builder.AddSerilogLogging((context, configuration) =>
                                   {
-                                      loggerConfiguration.ReadFrom.Configuration(hostBuilderContext.Configuration);
+                                      configuration.ReadFrom.Configuration(context.Configuration).Enrich.FromLogContext();
                                   });
         // Register the main window factory to use.
         builder.UseMainWindow(sp => new MainWindow());

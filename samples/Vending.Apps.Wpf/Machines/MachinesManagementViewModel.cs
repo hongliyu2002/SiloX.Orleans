@@ -10,6 +10,8 @@ using Orleans.Streams;
 using ReactiveUI;
 using SiloX.Domain.Abstractions;
 using SiloX.Domain.Abstractions.Extensions;
+using Splat;
+using Vending.App.Wpf.Services;
 using Vending.App.Wpf.Snacks;
 using Vending.Domain.Abstractions;
 using Vending.Domain.Abstractions.Machines;
@@ -18,7 +20,7 @@ using Vending.Projection.Abstractions.Snacks;
 
 namespace Vending.App.Wpf.Machines;
 
-public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel, IOrleansObject
+public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
 {
     private StreamSequenceToken? _machineSequenceToken;
     private StreamSequenceToken? _snackSequenceToken;
@@ -26,10 +28,18 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     /// <inheritdoc />
     public MachinesManagementViewModel()
     {
+        // When the cluster client is ready, set the cluster client.
+        ClusterClientReady = Locator.Current.GetService<IClusterClientReady>();
+        this.WhenAnyValue(vm => vm.ClusterClientReady)
+            .Where(clientReady => clientReady != null)
+            .SelectMany(clientReady => clientReady!.ClusterClient.Task)
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .Subscribe(client => ClusterClient = client);
+
         // Create the cache for the snacks.
         var snacksCache = new SourceCache<SnackViewModel, Guid>(snack => snack.Id);
         snacksCache.Connect()
-                   .AutoRefresh(snack => snack.Id) 
+                   .AutoRefresh(snack => snack.Id)
                    .Sort(SortExpressionComparer<SnackViewModel>.Ascending(snack => snack.Id))
                    .ObserveOn(RxApp.MainThreadScheduler)
                    .Bind(out var snacks)
@@ -52,7 +62,7 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
         // Create the cache for the machines.
         var machinesCache = new SourceCache<MachineViewModel, Guid>(machine => machine.Id);
         var machinesObs = machinesCache.Connect()
-                                       .AutoRefresh(machine => machine.Id) 
+                                       .AutoRefresh(machine => machine.Id)
                                        .Filter(this.WhenAnyValue(vm => vm.MoneyAmountStart, vm => vm.MoneyAmountEnd)
                                                    .Throttle(TimeSpan.FromMilliseconds(500))
                                                    .DistinctUntilChanged()
@@ -177,6 +187,13 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
 
     /// <inheritdoc />
     public ViewModelActivator Activator { get; } = new();
+
+    private readonly IClusterClientReady? _clusterClientReady;
+    public IClusterClientReady? ClusterClientReady
+    {
+        get => _clusterClientReady;
+        init => this.RaiseAndSetIfChanged(ref _clusterClientReady, value);
+    }
 
     private IClusterClient? _clusterClient;
     public IClusterClient? ClusterClient

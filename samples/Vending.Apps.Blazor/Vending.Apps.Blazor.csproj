@@ -36,9 +36,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Pages\Machines\" />
-        <Folder Include="Pages\Purchases\" />
-        <Folder Include="Pages\Snacks\" />
+        <Folder Include="Machines\" />
+        <Folder Include="Purchases\" />
     </ItemGroup>
 
     <ItemGroup>
@@ -55,6 +54,7 @@
       <_ContentIncludedByDefault Remove="wwwroot\css\open-iconic\README.md" />
       <_ContentIncludedByDefault Remove="wwwroot\css\site.css" />
       <_ContentIncludedByDefault Remove="Shared\SurveyPrompt.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Snacks\SnackManagementView.cshtml" />
     </ItemGroup>
 
 </Project>

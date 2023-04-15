@@ -1,10 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Reactive;
-using System.Windows;
-using Microsoft.Extensions.Hosting;
-using Orleans;
+﻿using System.Reactive;
 using ReactiveUI;
-using Splat;
 using Vending.App.Wpf.Machines;
 using Vending.App.Wpf.Purchases;
 using Vending.App.Wpf.Snacks;
@@ -13,11 +8,11 @@ namespace Vending.App.Wpf;
 
 public class MainWindowModel : ReactiveObject
 {
-    private readonly Dictionary<string, IOrleansObject> _viewModels;
+    private readonly Dictionary<string, ReactiveObject> _viewModels;
 
     public MainWindowModel()
     {
-        _viewModels = new Dictionary<string, IOrleansObject>
+        _viewModels = new Dictionary<string, ReactiveObject>
                       {
                           { "Snacks", new SnacksManagementViewModel() },
                           { "Machines", new MachinesManagementViewModel() },
@@ -28,28 +23,12 @@ public class MainWindowModel : ReactiveObject
         GoSnacksManagementCommand = ReactiveCommand.Create(GoSnacksManagement);
         GoMachinesManagementCommand = ReactiveCommand.Create(GoMachinesManagement);
         GoPurchasesManagementCommand = ReactiveCommand.Create(GoPurchasesManagement);
-        // Register to application started event
-        var appLifetime = Locator.Current.GetService<IHostApplicationLifetime>();
-        if (appLifetime != null)
-        {
-            var clusterClient = Locator.Current.GetService<IClusterClient>();
-            appLifetime.ApplicationStarted.Register(() =>
-                                                    {
-                                                        var dispatcher = Application.Current.Dispatcher;
-                                                        dispatcher?.Invoke(() =>
-                                                                           {
-                                                                               _viewModels["Snacks"].ClusterClient = clusterClient;
-                                                                               _viewModels["Machines"].ClusterClient = clusterClient;
-                                                                               _viewModels["Purchases"].ClusterClient = clusterClient;
-                                                                           });
-                                                    });
-        }
     }
 
     #region Properties
 
-    private IOrleansObject? _currentViewModel;
-    public IOrleansObject? CurrentViewModel
+    private ReactiveObject? _currentViewModel;
+    public ReactiveObject? CurrentViewModel
     {
         get => _currentViewModel;
         set => this.RaiseAndSetIfChanged(ref _currentViewModel, value);

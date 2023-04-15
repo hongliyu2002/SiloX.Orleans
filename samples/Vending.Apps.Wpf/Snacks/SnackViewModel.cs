@@ -1,5 +1,4 @@
-﻿using System;
-using Fluxera.Guards;
+﻿using Fluxera.Guards;
 using ReactiveUI;
 using Vending.Projection.Abstractions.Snacks;
 

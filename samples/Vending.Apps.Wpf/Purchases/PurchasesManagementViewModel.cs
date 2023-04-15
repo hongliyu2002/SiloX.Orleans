@@ -1,9 +1,8 @@
-﻿using Orleans;
-using ReactiveUI;
+﻿using ReactiveUI;
 
 namespace Vending.App.Wpf.Purchases;
 
-public class PurchasesManagementViewModel : ReactiveObject, IOrleansObject
+public class PurchasesManagementViewModel : ReactiveObject, IActivatableViewModel
 {
 
     /// <inheritdoc />
@@ -12,5 +11,12 @@ public class PurchasesManagementViewModel : ReactiveObject, IOrleansObject
     }
 
     /// <inheritdoc />
-    public IClusterClient? ClusterClient { get; set; }
+    public ViewModelActivator Activator { get; } = new();
+
+    private IClusterClient? _clusterClient;
+    public IClusterClient? ClusterClient
+    {
+        get => _clusterClient;
+        set => this.RaiseAndSetIfChanged(ref _clusterClient, value);
+    }
 }

@@ -11,6 +11,7 @@ using SiloX.Orleans.Clustering.Redis;
 using SiloX.Orleans.Streaming.EventStore;
 using SiloX.Orleans.Transactions;
 using Vending.Apps.Blazor.Contributors;
+using Vending.Apps.Blazor.Services;
 
 namespace Vending.Apps.Blazor;
 
@@ -33,13 +34,24 @@ public sealed class AppModule : ConfigureApplicationModule
     public override void ConfigureServices(IServiceConfigurationContext context)
     {
         var options = context.Services.GetOptions<AppOptions>();
-        context.Log("AddVendingApp", services => services.AddVendingApp(options));
+        context.Log("AddVendingBlazor", services => services.AddVendingBlazor(options));
         context.Log("AddMudServices", services => services.AddMudServices());
     }
 
     /// <inheritdoc />
     public override void Configure(IApplicationInitializationContext context)
     {
+        // Register application lifetime events
+        var services = context.ServiceProvider;
+        var appLifetime = services.GetRequiredService<IHostApplicationLifetime>();
+        appLifetime.ApplicationStarted.Register(() =>
+                                                {
+                                                    var clusterClientReady = services.GetRequiredService<IClusterClientReady>();
+                                                    var clusterClient = services.GetRequiredService<IClusterClient>();
+                                                    clusterClientReady.SetClusterClient(clusterClient);
+                                                });
+
+        // Configure application
         if (context.Environment.IsDevelopment())
         {
             context.UseDeveloperExceptionPage();
