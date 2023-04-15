@@ -64,7 +64,7 @@ public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel, IOr
                                                               _lastSequenceToken = tuple.SequenceToken;
                                                               var machineEvent = (MachineInitializedEvent)tuple.Event;
                                                               UpdateWith(machineEvent.MoneyInside);
-                                                              _slotsCache.Edit(updater => updater.Load(machineEvent.Slots.Select(slot => new SlotEditViewModel(slot, _snacks))));
+                                                              _slotsCache.LoadWith(machineEvent.Slots, _snacks);
                                                           })
                                                .DisposeWith(disposable);
                                machineStreamObs.Where(tuple => tuple.Event is MachineDeletedEvent)
@@ -75,7 +75,7 @@ public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel, IOr
                                                               var machineEvent = (MachineDeletedEvent)tuple.Event;
                                                               UpdateWith(machineEvent.MoneyInside);
                                                               IsDeleted = true;
-                                                              _slotsCache.Edit(updater => updater.Load(machineEvent.Slots.Select(slot => new SlotEditViewModel(slot, _snacks))));
+                                                              _slotsCache.LoadWith(machineEvent.Slots, _snacks);
                                                           })
                                                .DisposeWith(disposable);
                                machineStreamObs.Where(tuple => tuple.Event is MachineUpdatedEvent)
@@ -85,7 +85,7 @@ public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel, IOr
                                                               _lastSequenceToken = tuple.SequenceToken;
                                                               var machineEvent = (MachineUpdatedEvent)tuple.Event;
                                                               UpdateWith(machineEvent.MoneyInside);
-                                                              _slotsCache.Edit(updater => updater.Load(machineEvent.Slots.Select(slot => new SlotEditViewModel(slot, _snacks))));
+                                                              _slotsCache.LoadWith(machineEvent.Slots, _snacks);
                                                           })
                                                .DisposeWith(disposable);
                                machineStreamObs.Where(tuple => tuple.Event is MachineSlotAddedEvent)
@@ -94,7 +94,7 @@ public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel, IOr
                                                           {
                                                               _lastSequenceToken = tuple.SequenceToken;
                                                               var machineEvent = (MachineSlotAddedEvent)tuple.Event;
-                                                              _slotsCache.Edit(updater => updater.AddOrUpdate(new SlotEditViewModel(machineEvent.Slot, _snacks)));
+                                                              _slotsCache.AddOrUpdateWith(machineEvent.Slot, _snacks);
                                                           })
                                                .DisposeWith(disposable);
                                machineStreamObs.Where(tuple => tuple.Event is MachineSlotRemovedEvent)
@@ -148,7 +148,7 @@ public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel, IOr
                                                           {
                                                               _lastSequenceToken = tuple.SequenceToken;
                                                               var machineEvent = (MachineSnacksLoadedEvent)tuple.Event;
-                                                              _slotsCache.Edit(updater => updater.AddOrUpdate(new SlotEditViewModel(machineEvent.Slot, _snacks)));
+                                                              _slotsCache.AddOrUpdateWith(machineEvent.Slot, _snacks);
                                                           })
                                                .DisposeWith(disposable);
                                machineStreamObs.Where(tuple => tuple.Event is MachineSnacksUnloadedEvent)
@@ -157,7 +157,7 @@ public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel, IOr
                                                           {
                                                               _lastSequenceToken = tuple.SequenceToken;
                                                               var machineEvent = (MachineSnacksUnloadedEvent)tuple.Event;
-                                                              _slotsCache.Edit(updater => updater.AddOrUpdate(new SlotEditViewModel(machineEvent.Slot, _snacks)));
+                                                              _slotsCache.AddOrUpdateWith(machineEvent.Slot, _snacks);
                                                           })
                                                .DisposeWith(disposable);
                                machineStreamObs.Where(tuple => tuple.Event is MachineSnackBoughtEvent)
@@ -166,7 +166,7 @@ public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel, IOr
                                                           {
                                                               _lastSequenceToken = tuple.SequenceToken;
                                                               var machineEvent = (MachineSnackBoughtEvent)tuple.Event;
-                                                              _slotsCache.Edit(updater => updater.AddOrUpdate(new SlotEditViewModel(machineEvent.Slot, _snacks)));
+                                                              _slotsCache.AddOrUpdateWith(machineEvent.Slot, _snacks);
                                                           })
                                                .DisposeWith(disposable);
                                machineStreamObs.Where(tuple => tuple.Event is MachineErrorEvent)
