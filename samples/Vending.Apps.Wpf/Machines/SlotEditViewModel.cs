@@ -31,6 +31,7 @@ public class SlotEditViewModel : ReactiveObject
 
         // Recreate the snack pile when any of the properties change.
         this.WhenAnyValue(vm => vm.CurrentSnack, vm => vm.Quantity, vm => vm.Price)
+            .Where(tuple => tuple.Item1 != null)
             .ObserveOn(RxApp.MainThreadScheduler)
             .Subscribe(tuple =>
                        {

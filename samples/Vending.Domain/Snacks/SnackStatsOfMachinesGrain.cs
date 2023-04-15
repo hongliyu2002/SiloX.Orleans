@@ -108,9 +108,9 @@ public class SnackStatsOfMachinesGrain : StatefulGrainWithGuidKey<StatsOfMachine
 
     private async Task ApplyMachineCountAsync(int machineCount)
     {
+        var snackId = this.GetPrimaryKey();
         if (machineCount < 0)
         {
-            var snackId = this.GetPrimaryKey();
             machineCount = await _dbContext.Machines.Where(m => m.IsDeleted == false && m.SnackStats.Any(ss => ss.SnackId == snackId)).CountAsync();
         }
         var oldMachineCount = State.MachineCount;
@@ -118,7 +118,7 @@ public class SnackStatsOfMachinesGrain : StatefulGrainWithGuidKey<StatsOfMachine
         {
             State.MachineCount = machineCount;
             await WriteStateAsync();
-            _logger.LogInformation("Updated count of machines that have this snack from {OldCount} to {NewCount}", oldMachineCount, machineCount);
+            _logger.LogInformation("Updated count of machines that have this snack {SnackId} from {OldCount} to {NewCount}", snackId, oldMachineCount, machineCount);
         }
     }
 
