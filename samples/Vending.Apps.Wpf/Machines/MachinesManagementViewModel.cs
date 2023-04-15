@@ -52,6 +52,7 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
         // Create the cache for the machines.
         var machinesCache = new SourceCache<MachineViewModel, Guid>(machine => machine.Id);
         var machinesObs = machinesCache.Connect()
+                                       .AutoRefresh(machine => machine.Id) 
                                        .Filter(this.WhenAnyValue(vm => vm.MoneyAmountStart, vm => vm.MoneyAmountEnd)
                                                    .Throttle(TimeSpan.FromMilliseconds(500))
                                                    .DistinctUntilChanged()
@@ -103,7 +104,7 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
             .Where(result => result.IsSuccess)
             .Select(result => result.Value)
             .ObserveOn(RxApp.MainThreadScheduler)
-            .Subscribe(machinesList => machinesCache.Edit(updater => updater.AddOrUpdate(machinesList.Select(machine => new MachineViewModel(machine)))));
+            .Subscribe(machinesList => machinesCache.AddOrUpdateWith(machinesList));
 
         // When the current machine changes, if it is null, set the current machine edit view model to null.
         this.WhenAnyValue(vm => vm.CurrentMachine, vm => vm.SnackCount, vm => vm.ClusterClient)
@@ -126,7 +127,7 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
                                                               {
                                                                   _machineSequenceToken = tuple.SequenceToken;
                                                                   var savedEvent = (MachineInfoSavedEvent)tuple.Event;
-                                                                  machinesCache.Edit(updater => updater.AddOrUpdate(new MachineViewModel(savedEvent.Machine)));
+                                                                  machinesCache.AddOrUpdateWith(savedEvent.Machine);
                                                               })
                                                    .DisposeWith(disposable);
                                allMachinesStreamObs.Where(tuple => tuple.Event is MachineInfoErrorEvent)

@@ -42,6 +42,26 @@ public static class SlotsCacheExtensions
                          });
     }
 
+    public static void RemoveWith(this SourceCache<SlotEditViewModel, int> sourceCache, int position)
+    {
+        sourceCache.Edit(updater => updater.Remove(position));
+    }
+
+    public static void RemoveWith(this SourceCache<SlotEditViewModel, int> sourceCache, IList<int> positions)
+    {
+        sourceCache.Edit(updater => updater.RemoveKeys(positions));
+    }
+
+    public static void RemoveWith(this SourceCache<SlotEditViewModel, int> sourceCache, MachineSlot slot)
+    {
+        sourceCache.Edit(updater => updater.Remove(slot.Position));
+    }
+
+    public static void RemoveWith(this SourceCache<SlotEditViewModel, int> sourceCache, IList<MachineSlot> slots)
+    {
+        sourceCache.Edit(updater => updater.RemoveKeys(slots.Select(slot => slot.Position)));
+    }
+
     public static void LoadWith(this SourceCache<SlotEditViewModel, int> sourceCache, IList<MachineSlot> slots, ReadOnlyObservableCollection<SnackViewModel> snacks)
     {
         sourceCache.Edit(updater => updater.Load(slots.Select(slot => new SlotEditViewModel(slot, snacks))));

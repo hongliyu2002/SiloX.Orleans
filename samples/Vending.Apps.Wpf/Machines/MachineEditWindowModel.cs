@@ -30,6 +30,7 @@ public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel, IOr
         // Create the cache for the slots.
         _slotsCache = new SourceCache<SlotEditViewModel, int>(slot => slot.Position);
         _slotsCache.Connect()
+                   .AutoRefresh(slot => slot.Position)
                    .Sort(SortExpressionComparer<SlotEditViewModel>.Ascending(slot => slot.Position))
                    .ObserveOn(RxApp.MainThreadScheduler)
                    .Bind(out _slots)
@@ -103,7 +104,7 @@ public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel, IOr
                                                           {
                                                               _lastSequenceToken = tuple.SequenceToken;
                                                               var machineEvent = (MachineSlotRemovedEvent)tuple.Event;
-                                                              _slotsCache.Edit(updater => updater.Remove(machineEvent.Slot.Position));
+                                                              _slotsCache.RemoveWith(machineEvent.Slot);
                                                           })
                                                .DisposeWith(disposable);
                                machineStreamObs.Where(tuple => tuple.Event is MachineMoneyLoadedEvent)
@@ -329,7 +330,7 @@ public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel, IOr
                                .TapTry(() =>
                                        {
                                            var position = _slotsCache.Keys.Max() + 1;
-                                           _slotsCache.Edit(updater => updater.AddOrUpdate(new SlotEditViewModel(new MachineSlot(Id, position), _snacks)));
+                                           _slotsCache.AddOrUpdateWith(new MachineSlot(Id, position), _snacks);
                                        });
             if (result.IsSuccess)
             {
@@ -361,13 +362,16 @@ public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel, IOr
     /// <summary>
     ///     Removes the current slot.
     /// </summary>
-    private async Task RemoveSlotAsync()
+    private Task RemoveSlotAsync()
     {
-        var confirm = await ConfirmRemoveSlot.Handle(CurrentSlot!.Position.ToString());
-        if (confirm)
-        {
-            _slotsCache.Edit(updater => updater.Remove(CurrentSlot!.Position));
-        }
+        var currentSlot = CurrentSlot;
+        // var confirm = await ConfirmRemoveSlot.Handle(currentSlot!.Position.ToString());
+        // if (confirm)
+        // {
+        //     _slotsCache.RemoveWith(currentSlot!.Position);
+        // }
+        _slotsCache.RemoveWith(currentSlot!.Position);
+        return Task.CompletedTask;
     }
 
     /// <summary>
@@ -418,7 +422,7 @@ public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel, IOr
         Id = machine.Id;
         UpdateWith(machine.MoneyInside);
         IsDeleted = machine.IsDeleted;
-        _slotsCache.Edit(updater => updater.Load(machine.Slots.Select(slot => new SlotEditViewModel(slot, _snacks))));
+        _slotsCache.LoadWith(machine.Slots, _snacks);
     }
 
     public void UpdateWith(Money money)
