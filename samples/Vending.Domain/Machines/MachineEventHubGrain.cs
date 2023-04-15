@@ -84,7 +84,7 @@ public class MachineEventHubGrain : ReceiverGrainWithGuidKey<MachineEvent, Machi
                                                                            snackStatsGrain.UpdateTotalAmountAsync(-1)
                                                                        });
             var results = await Task.WhenAll(tasks);
-            _logger.LogInformation("Handle MachineInitializedEvent: Machine {MachineId} tasks is dispatched. With success： {SuccessCount} failed： {FailedCount}", this.GetPrimaryKey(), results.Count(r => r.IsSuccess), results.Count(r => r.IsFailed));
+            _logger.LogInformation("Handle MachineInitializedEvent: Machine {MachineId} tasks is dispatched. With success： {SuccessCount} failed： {FailedCount}", machineEvent.MachineId, results.Count(r => r.IsSuccess), results.Count(r => r.IsFailed));
         }
         catch (Exception ex)
         {
@@ -106,7 +106,7 @@ public class MachineEventHubGrain : ReceiverGrainWithGuidKey<MachineEvent, Machi
                                                                            snackStatsGrain.UpdateTotalAmountAsync(-1)
                                                                        });
             var results = await Task.WhenAll(tasks);
-            _logger.LogInformation("Handle MachineDeletedEvent: Machine {MachineId} tasks is dispatched. With success： {SuccessCount} failed： {FailedCount}", this.GetPrimaryKey(), results.Count(r => r.IsSuccess), results.Count(r => r.IsFailed));
+            _logger.LogInformation("Handle MachineDeletedEvent: Machine {MachineId} tasks is dispatched. With success： {SuccessCount} failed： {FailedCount}", machineEvent.MachineId, results.Count(r => r.IsSuccess), results.Count(r => r.IsFailed));
         }
         catch (Exception ex)
         {
@@ -128,7 +128,7 @@ public class MachineEventHubGrain : ReceiverGrainWithGuidKey<MachineEvent, Machi
                                                                            snackStatsGrain.UpdateTotalAmountAsync(-1)
                                                                        });
             var results = await Task.WhenAll(tasks);
-            _logger.LogInformation("Handle MachineUpdatedEvent: Machine {MachineId} tasks is dispatched. With success： {SuccessCount} failed： {FailedCount}", this.GetPrimaryKey(), results.Count(r => r.IsSuccess), results.Count(r => r.IsFailed));
+            _logger.LogInformation("Handle MachineUpdatedEvent: Machine {MachineId} tasks is dispatched. With success： {SuccessCount} failed： {FailedCount}", machineEvent.MachineId, results.Count(r => r.IsSuccess), results.Count(r => r.IsFailed));
         }
         catch (Exception ex)
         {
@@ -151,7 +151,7 @@ public class MachineEventHubGrain : ReceiverGrainWithGuidKey<MachineEvent, Machi
                                 snackStatsGrain.UpdateTotalAmountAsync(-1)
                             };
                 var results = await Task.WhenAll(tasks);
-                _logger.LogInformation("Handle MachineSlotAddedEvent: Machine {MachineId} tasks is dispatched. With success： {SuccessCount} failed： {FailedCount}", this.GetPrimaryKey(), results.Count(r => r.IsSuccess), results.Count(r => r.IsFailed));
+                _logger.LogInformation("Handle MachineSlotAddedEvent: Machine {MachineId} tasks is dispatched. With success： {SuccessCount} failed： {FailedCount}", machineEvent.MachineId, results.Count(r => r.IsSuccess), results.Count(r => r.IsFailed));
             }
         }
         catch (Exception ex)
@@ -175,7 +175,7 @@ public class MachineEventHubGrain : ReceiverGrainWithGuidKey<MachineEvent, Machi
                                 snackStatsGrain.UpdateTotalAmountAsync(-1)
                             };
                 var results = await Task.WhenAll(tasks);
-                _logger.LogInformation("Handle MachineSlotRemovedEvent: Machine {MachineId} tasks is dispatched. With success： {SuccessCount} failed： {FailedCount}", this.GetPrimaryKey(), results.Count(r => r.IsSuccess), results.Count(r => r.IsFailed));
+                _logger.LogInformation("Handle MachineSlotRemovedEvent: Machine {MachineId} tasks is dispatched. With success： {SuccessCount} failed： {FailedCount}", machineEvent.MachineId, results.Count(r => r.IsSuccess), results.Count(r => r.IsFailed));
             }
         }
         catch (Exception ex)
@@ -199,7 +199,7 @@ public class MachineEventHubGrain : ReceiverGrainWithGuidKey<MachineEvent, Machi
                                 snackStatsGrain.UpdateTotalAmountAsync(-1)
                             };
                 var results = await Task.WhenAll(tasks);
-                _logger.LogInformation("Handle MachineSnacksLoadedEvent: Machine {MachineId} tasks is dispatched. With success： {SuccessCount} failed： {FailedCount}", this.GetPrimaryKey(), results.Count(r => r.IsSuccess), results.Count(r => r.IsFailed));
+                _logger.LogInformation("Handle MachineSnacksLoadedEvent: Machine {MachineId} tasks is dispatched. With success： {SuccessCount} failed： {FailedCount}", machineEvent.MachineId, results.Count(r => r.IsSuccess), results.Count(r => r.IsFailed));
             }
         }
         catch (Exception ex)
@@ -223,7 +223,7 @@ public class MachineEventHubGrain : ReceiverGrainWithGuidKey<MachineEvent, Machi
                                 snackStatsGrain.UpdateTotalAmountAsync(-1)
                             };
                 var results = await Task.WhenAll(tasks);
-                _logger.LogInformation("Handle MachineSnacksUnloadedEvent: Machine {MachineId} tasks is dispatched. With success： {SuccessCount} failed： {FailedCount}", this.GetPrimaryKey(), results.Count(r => r.IsSuccess), results.Count(r => r.IsFailed));
+                _logger.LogInformation("Handle MachineSnacksUnloadedEvent: Machine {MachineId} tasks is dispatched. With success： {SuccessCount} failed： {FailedCount}", machineEvent.MachineId, results.Count(r => r.IsSuccess), results.Count(r => r.IsFailed));
             }
         }
         catch (Exception ex)
@@ -247,7 +247,7 @@ public class MachineEventHubGrain : ReceiverGrainWithGuidKey<MachineEvent, Machi
                                 snackStatsGrain.UpdateTotalAmountAsync(-1)
                             };
                 var results = await Task.WhenAll(tasks);
-                _logger.LogInformation("Handle MachineSnackBoughtEvent: Machine {MachineId} tasks is dispatched. With success： {SuccessCount} failed： {FailedCount}", this.GetPrimaryKey(), results.Count(r => r.IsSuccess), results.Count(r => r.IsFailed));
+                _logger.LogInformation("Handle MachineSnackBoughtEvent: Machine {MachineId} tasks is dispatched. With success： {SuccessCount} failed： {FailedCount}", machineEvent.MachineId, results.Count(r => r.IsSuccess), results.Count(r => r.IsFailed));
             }
         }
         catch (Exception ex)

@@ -103,7 +103,7 @@ public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel, IOr
                                                           {
                                                               _lastSequenceToken = tuple.SequenceToken;
                                                               var machineEvent = (MachineSlotRemovedEvent)tuple.Event;
-                                                              _slotsCache.Edit(updater => updater.Remove(machineEvent.Position));
+                                                              _slotsCache.Edit(updater => updater.Remove(machineEvent.Slot.Position));
                                                           })
                                                .DisposeWith(disposable);
                                machineStreamObs.Where(tuple => tuple.Event is MachineMoneyLoadedEvent)

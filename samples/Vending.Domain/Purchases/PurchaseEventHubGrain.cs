@@ -74,7 +74,7 @@ public class PurchaseEventHubGrain : ReceiverGrainWithGuidKey<PurchaseEvent, Pur
             tasks.Add(snackStatsGrain.UpdateBoughtCountAsync(-1));
             tasks.Add(snackStatsGrain.UpdateBoughtAmountAsync(-1));
             var results = await Task.WhenAll(tasks);
-            _logger.LogInformation("Dispatch PurchaseInitializedEvent: Purchase {PurchaseId} tasks is dispatched. With success： {SuccessCount} failed： {FailedCount}", this.GetPrimaryKey(), results.Count(r => r.IsSuccess), results.Count(r => r.IsFailed));
+            _logger.LogInformation("Dispatch PurchaseInitializedEvent: Purchase {PurchaseId} tasks is dispatched. With success： {SuccessCount} failed： {FailedCount}", purchaseEvent.PurchaseId, results.Count(r => r.IsSuccess), results.Count(r => r.IsFailed));
         }
         catch (Exception ex)
         {
