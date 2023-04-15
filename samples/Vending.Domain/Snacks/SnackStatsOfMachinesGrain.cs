@@ -113,41 +113,44 @@ public class SnackStatsOfMachinesGrain : StatefulGrainWithGuidKey<StatsOfMachine
             var snackId = this.GetPrimaryKey();
             machineCount = await _dbContext.Machines.Where(m => m.IsDeleted == false && m.SnackStats.Any(ss => ss.SnackId == snackId)).CountAsync();
         }
-        if (State.MachineCount != machineCount)
+        var oldMachineCount = State.MachineCount;
+        if (oldMachineCount != machineCount)
         {
             State.MachineCount = machineCount;
             await WriteStateAsync();
-            _logger.LogInformation("Updated count of machines that have this snack from {OldCount} to {NewCount}", State.MachineCount, machineCount);
+            _logger.LogInformation("Updated count of machines that have this snack from {OldCount} to {NewCount}", oldMachineCount, machineCount);
         }
     }
 
     private async Task ApplyTotalQuantityAsync(int totalQuantity)
     {
+        var snackId = this.GetPrimaryKey();
         if (totalQuantity < 0)
         {
-            var snackId = this.GetPrimaryKey();
             totalQuantity = await _dbContext.Machines.Where(m => m.IsDeleted == false).SelectMany(m => m.SnackStats).Where(ss => ss.SnackId == snackId).SumAsync(ss => ss.TotalQuantity);
         }
-        if (State.TotalQuantity != totalQuantity)
+        var oldTotalQuantity = State.TotalQuantity;
+        if (oldTotalQuantity != totalQuantity)
         {
             State.TotalQuantity = totalQuantity;
             await WriteStateAsync();
-            _logger.LogInformation("Updated quantity of this snack from {OldCQuantity} to {NewQuantity}", State.TotalQuantity, totalQuantity);
+            _logger.LogInformation("Updated quantity of this snack {SnackId} from {OldCQuantity} to {NewQuantity}", snackId, oldTotalQuantity, totalQuantity);
         }
     }
 
     private async Task ApplyTotalAmountAsync(decimal totalAmount)
     {
+        var snackId = this.GetPrimaryKey();
         if (totalAmount < 0)
         {
-            var snackId = this.GetPrimaryKey();
             totalAmount = await _dbContext.Machines.Where(m => m.IsDeleted == false).SelectMany(m => m.SnackStats).Where(ss => ss.SnackId == snackId).SumAsync(ss => ss.TotalAmount);
         }
-        if (State.TotalAmount != totalAmount)
+        var oldTotalAmount = State.TotalAmount;
+        if (oldTotalAmount != totalAmount)
         {
             State.TotalAmount = totalAmount;
             await WriteStateAsync();
-            _logger.LogInformation("Updated amount of this snack from {OldCAmount} to {NewAmount}", State.TotalAmount, totalAmount);
+            _logger.LogInformation("Updated amount of this snack {SnackId} from {OldCAmount} to {NewAmount}", snackId, oldTotalAmount, totalAmount);
         }
     }
 

@@ -89,31 +89,33 @@ public class MachineStatsOfPurchasesGrain : StatefulGrainWithGuidKey<StatsOfPurc
 
     private async Task ApplyBoughtCountAsync(int boughtCount)
     {
+        var machineId = this.GetPrimaryKey();
         if (boughtCount < 0)
         {
-            var machineId = this.GetPrimaryKey();
             boughtCount = await _dbContext.Purchases.Where(p => p.MachineId == machineId).CountAsync();
         }
-        if (State.BoughtCount != boughtCount)
+        var oldBoughtCount = State.BoughtCount;
+        if (oldBoughtCount != boughtCount)
         {
             State.BoughtCount = boughtCount;
             await WriteStateAsync();
-            _logger.LogInformation("Updated count of purchases that made for this machine from {OldCount} to {NewCount}", State.BoughtCount, boughtCount);
+            _logger.LogInformation("Updated count of purchases that made for this machine {MachineId} from {OldCount} to {NewCount}", machineId, oldBoughtCount, boughtCount);
         }
     }
 
     private async Task ApplyBoughtAmountAsync(decimal boughtAmount)
     {
+        var machineId = this.GetPrimaryKey();
         if (boughtAmount < 0)
         {
-            var machineId = this.GetPrimaryKey();
             boughtAmount = await _dbContext.Purchases.Where(p => p.MachineId == machineId).SumAsync(p => p.BoughtPrice);
         }
-        if (State.BoughtAmount != boughtAmount)
+        var oldBoughtAmount = State.BoughtAmount;
+        if (oldBoughtAmount != boughtAmount)
         {
             State.BoughtAmount = boughtAmount;
             await WriteStateAsync();
-            _logger.LogInformation("Updated amount of purchases that made for this machine from {OldAmount} to {NewAmount}", State.BoughtAmount, boughtAmount);
+            _logger.LogInformation("Updated amount of purchases that made for this machine {MachineId} from {OldAmount} to {NewAmount}", machineId, oldBoughtAmount, boughtAmount);
         }
     }
 

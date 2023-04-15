@@ -89,31 +89,33 @@ public class SnackStatsOfPurchasesGrain : StatefulGrainWithGuidKey<StatsOfPurcha
 
     private async Task ApplyBoughtCountAsync(int boughtCount)
     {
+        var snackId = this.GetPrimaryKey();
         if (boughtCount < 0)
         {
-            var snackId = this.GetPrimaryKey();
             boughtCount = await _dbContext.Purchases.Where(p => p.SnackId == snackId).CountAsync();
         }
-        if (State.BoughtCount != boughtCount)
+        var oldBoughtCount = State.BoughtCount;
+        if (oldBoughtCount != boughtCount)
         {
             State.BoughtCount = boughtCount;
             await WriteStateAsync();
-            _logger.LogInformation("Updated count of purchases that have this snack from {OldCount} to {NewCount}", State.BoughtCount, boughtCount);
+            _logger.LogInformation("Updated count of purchases that have this snack {SnackId} from {OldCount} to {NewCount}", snackId, oldBoughtCount, boughtCount);
         }
     }
 
     private async Task ApplyBoughtAmountAsync(decimal boughtAmount)
     {
+        var snackId = this.GetPrimaryKey();
         if (boughtAmount < 0)
         {
-            var snackId = this.GetPrimaryKey();
             boughtAmount = await _dbContext.Purchases.Where(p => p.SnackId == snackId).SumAsync(p => p.BoughtPrice);
         }
-        if (State.BoughtAmount != boughtAmount)
+        var oldBoughtAmount = State.BoughtAmount;
+        if (oldBoughtAmount != boughtAmount)
         {
             State.BoughtAmount = boughtAmount;
             await WriteStateAsync();
-            _logger.LogInformation("Updated amount of purchases that have this snack from {OldAmount} to {NewAmount}", State.BoughtAmount, boughtAmount);
+            _logger.LogInformation("Updated amount of purchases that have this snack {SnackId} from {OldAmount} to {NewAmount}", snackId, oldBoughtAmount, boughtAmount);
         }
     }
 
