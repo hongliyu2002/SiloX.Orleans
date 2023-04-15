@@ -60,7 +60,7 @@ public partial class MachineEditWindow
 
     private void ConfirmRemoveSlot(InteractionContext<string, bool> interaction)
     {
-        var result = MessageBox.Show($"Are you sure you want to remove {interaction.Input}?", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question);
+        var result = MessageBox.Show(this, $"Are you sure you want to remove {interaction.Input}?", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question);
         interaction.SetOutput(result == MessageBoxResult.Yes);
     }
 
@@ -68,7 +68,7 @@ public partial class MachineEditWindow
     {
         var errors = errorsInteraction.Input;
         var message = errors.ToMessage();
-        var result = MessageBox.Show($"{message}.\n\nRetry or cancel?", "Errors occurred when operating", MessageBoxButton.OKCancel, MessageBoxImage.Error);
+        var result = MessageBox.Show(this, $"{message}.\n\nRetry or cancel?", "Errors occurred when operating", MessageBoxButton.OKCancel, MessageBoxImage.Error);
         errorsInteraction.SetOutput(result == MessageBoxResult.OK ? ErrorRecovery.Retry : ErrorRecovery.Abort);
     }
 }

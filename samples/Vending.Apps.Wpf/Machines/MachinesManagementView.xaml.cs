@@ -75,7 +75,7 @@ public partial class MachinesManagementView
             window.Owner = hostWindow;
             window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
         }
-        window.ShowDialog();
+        window.Show();
         interaction.SetOutput(Unit.Default);
     }
 
