@@ -2,11 +2,12 @@
 using MudBlazor;
 using Orleans.FluentResults;
 using ReactiveUI;
+using ReactiveUI.Blazor;
 using SiloX.Domain.Abstractions.Extensions;
 
 namespace Vending.Apps.Blazor.Snacks;
 
-public partial class SnackEditView
+public partial class SnackEditView : ReactiveComponentBase<SnackEditViewModel>
 {
     private IDisposable? _errorsInteractionHandler;
 

@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using Orleans.FluentResults;
 using ReactiveUI;
+using ReactiveUI.Blazor;
 using SiloX.Domain.Abstractions.Extensions;
 
 namespace Vending.Apps.Blazor.Snacks;
 
-public partial class SnacksManagementView
+public partial class SnacksManagementView : ReactiveInjectableComponentBase<SnacksManagementViewModel>
 {
     private IDisposable? _errorsInteractionHandler;
     private IDisposable? _confirmRemoveSnackInteractionHandler;
