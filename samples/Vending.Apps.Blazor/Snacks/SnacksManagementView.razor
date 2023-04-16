@@ -6,12 +6,12 @@
         @* <MudItem xs="12"> *@
         @*     <MudAlert Severity="Severity.Error" Variant="Variant.Filled" Visible="@ViewModel.ErrorVisible">@ViewModel.ErrorMessage</MudAlert> *@
         @* </MudItem> *@
-        <MudItem xs="12" sm="8" md="6" lg="4" xl="3">
+        <MudItem xs="12" sm="5" md="4" lg="3" xl="2">
             <MudGrid>
                 <MudItem xs="12">
-                    <MudButton StartIcon="@Icons.Material.Filled.Add" Command="ViewModel.AddSnackCommand" Variant="Variant.Outlined" Margin="@Margin.Dense" Color="Color.Primary">Add</MudButton>
-                    <MudButton StartIcon="@Icons.Material.Filled.Remove" Variant="Variant.Outlined" Margin="@Margin.Dense" Color="Color.Warning">Remove</MudButton>
-                    <MudButton StartIcon="@Icons.Material.Filled.ViewSidebar" Variant="Variant.Outlined" Margin="@Margin.Dense" Color="Color.Default">Move Side</MudButton>
+                    <MudButton StartIcon="@Icons.Material.Filled.Add" Command="@ViewModel.AddSnackCommand" Variant="Variant.Outlined" Margin="@Margin.Dense" Color="Color.Primary">Add</MudButton>
+                    <MudButton StartIcon="@Icons.Material.Filled.Remove" Command="@ViewModel.RemoveSnackCommand" Variant="Variant.Outlined" Margin="@Margin.Dense" Color="Color.Warning">Remove</MudButton>
+                    <MudButton StartIcon="@Icons.Material.Filled.SwapHoriz" Command="@ViewModel.MoveNavigationSideCommand" Variant="Variant.Outlined" Margin="@Margin.Dense" Color="Color.Default">Move Side</MudButton>
                 </MudItem>
                 <MudItem xs="12">
                     <MudTextField T="string" Label="Search" @bind-Text="@ViewModel.SearchTerm" Variant="Variant.Outlined" Margin="Margin.Dense" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" />
@@ -21,7 +21,7 @@
                         <MudListSubheader>
                             Your choice:
                             <MudChip Color="Color.Secondary">
-                               @(((SnackViewModel)ViewModel.CurrentSnack)?.Name)
+                                @(((SnackViewModel)ViewModel.CurrentSnack)?.Name)
                             </MudChip>
                         </MudListSubheader>
                         @foreach (var snack in ViewModel.Snacks)
@@ -34,7 +34,7 @@
                 </MudItem>
             </MudGrid>
         </MudItem>
-        <MudItem xs="12" sm="6" md="8" lg="9" xl="10">
+        <MudItem xs="12" sm="7" md="8" lg="9" xl="10">
             <MudButton></MudButton>
         </MudItem>
     </MudGrid>

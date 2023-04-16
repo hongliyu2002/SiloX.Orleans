@@ -136,7 +136,9 @@ public class SnackEditViewModel : ReactiveObject, IActivatableViewModel
     /// </summary>
     public ReactiveCommand<Unit, Unit> SaveSnackCommand { get; }
 
-    private IObservable<bool> CanSaveSnack => this.WhenAnyValue(vm => vm.Name, vm => vm.IsDeleted, vm => vm.ClusterClient).Select(tuple => tuple.Item1.IsNotNullOrEmpty() && tuple is { Item2: false, Item3: not null });
+    private IObservable<bool> CanSaveSnack =>
+        this.WhenAnyValue(vm => vm.Name, vm => vm.IsDeleted, vm => vm.ClusterClient)
+            .Select(tuple => tuple.Item1.IsNotNullOrEmpty() && tuple is { Item2: false, Item3: not null });
 
     private async Task SaveSnackAsync()
     {

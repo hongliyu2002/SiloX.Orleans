@@ -1,0 +1,25 @@
+﻿@inherits ReactiveComponentBase<SnackEditViewModel>
+@if (ViewModel != null)
+{
+    <MudGrid Style="background-color: lightcyan;">
+        <MudItem xs="12">
+            @* <MudAlert Severity="Severity.Error" Variant="Variant.Filled" Visible="@ViewModel.ErrorVisible">@ViewModel.ErrorMessage</MudAlert> *@ *
+        </MudItem>
+        <MudItem xs="12">
+            <MudCard Style="background-color: linen;">
+                <MudCardContent>
+                    <MudTextField Label="Id:" @bind-Value="@ViewModel.Id" ReadOnly="true" Disabled="@ViewModel.IsDeleted" />
+                    <MudTextField Label="Name:" @bind-Value="@ViewModel.Name" Disabled="@ViewModel.IsDeleted" />
+                    <MudTextField Label="Picture Url:" @bind-Value="@ViewModel.PictureUrl" Disabled="@ViewModel.IsDeleted" />
+                    <MudImage Src="@ViewModel.PictureUrl" Alt="Picture" Width="256" Height="256" Disabled="@ViewModel.IsDeleted" />
+                    <MudCheckBox Label="Deleted" Checked="@ViewModel.IsDeleted" Disabled="true" />
+                    <MudButton StartIcon="@Icons.Material.Filled.Save" Command="@ViewModel.SaveSnackCommand" Variant="@Variant.Filled" Color="Color.Primary" Style="float: right;">Save</MudButton>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+}
+else
+{
+    <MudText Typo="Typo.body2">Loading...</MudText>
+}
