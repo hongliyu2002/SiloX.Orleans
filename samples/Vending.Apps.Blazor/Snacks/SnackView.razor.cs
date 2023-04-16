@@ -1,5 +1,7 @@
-﻿namespace Vending.Apps.Blazor.Snacks;
+﻿using ReactiveUI.Blazor;
 
-public partial class SnackView
+namespace Vending.Apps.Blazor.Snacks;
+
+public partial class SnackView : ReactiveComponentBase<SnackViewModel>
 {
 }

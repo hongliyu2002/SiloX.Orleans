@@ -37,7 +37,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Machines\" />
         <Folder Include="Purchases\" />
     </ItemGroup>
 

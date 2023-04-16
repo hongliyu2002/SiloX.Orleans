@@ -2,7 +2,7 @@
 using ReactiveUI;
 using Vending.Projection.Abstractions.Machines;
 
-namespace Vending.Apps.Wpf.Machines;
+namespace Vending.Apps.Blazor.Machines;
 
 public class MachineViewModel : ReactiveObject
 {
