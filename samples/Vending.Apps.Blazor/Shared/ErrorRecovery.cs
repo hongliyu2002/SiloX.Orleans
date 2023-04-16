@@ -3,7 +3,7 @@
 /// <summary>
 ///     Error recovery option.
 /// </summary>
-public enum ErrorRecoveryOption
+public enum ErrorRecovery
 {
     Retry,
     Abort

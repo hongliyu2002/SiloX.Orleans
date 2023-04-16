@@ -30,14 +30,24 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     {
         // When the cluster client is ready, set the cluster client.
         ClusterClientReady = Locator.Current.GetService<IClusterClientReady>();
-        this.WhenAnyValue(vm => vm.ClusterClientReady).Where(clientReady => clientReady != null).SelectMany(clientReady => clientReady!.ClusterClient.Task).ObserveOn(RxApp.MainThreadScheduler).Subscribe(client => ClusterClient = client);
+        this.WhenAnyValue(vm => vm.ClusterClientReady)
+            .Where(clientReady => clientReady != null)
+            .SelectMany(clientReady => clientReady!.ClusterClient.Task)
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .Subscribe(client => ClusterClient = client);
 
         // Create the cache for the snacks.
         var snacksCache = new SourceCache<SnackViewModel, Guid>(snack => snack.Id);
-        snacksCache.Connect().AutoRefresh(snack => snack.Id).Sort(SortExpressionComparer<SnackViewModel>.Ascending(snack => snack.Id)).ObserveOn(RxApp.MainThreadScheduler).Bind(out var snacks).Subscribe();
+        snacksCache.Connect()
+                   .AutoRefresh(snack => snack.Id)
+                   .Sort(SortExpressionComparer<SnackViewModel>.Ascending(snack => snack.Id))
+                   .ObserveOn(RxApp.MainThreadScheduler)
+                   .Bind(out var snacks)
+                   .Subscribe();
         Snacks = snacks;
         // Recalculate the snack count when the snacks change.
-        snacksCache.CountChanged.ObserveOn(RxApp.MainThreadScheduler).Subscribe(count => SnackCount = count);
+        snacksCache.CountChanged.ObserveOn(RxApp.MainThreadScheduler)
+                   .Subscribe(count => SnackCount = count);
 
         // Get snacks and update the cache.
         this.WhenAnyValue(vm => vm.ClusterClient)
@@ -63,7 +73,9 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
                                        .RefCount();
         // Sort and page the machines.
         machinesObs.Sort(SortExpressionComparer<MachineViewModel>.Ascending(machine => machine.Id))
-                   .Page(this.WhenAnyValue(vm => vm.PageNumber, vm => vm.PageSize).DistinctUntilChanged().Select(tuple => new PageRequest(tuple.Item1, tuple.Item2)))
+                   .Page(this.WhenAnyValue(vm => vm.PageNumber, vm => vm.PageSize)
+                             .DistinctUntilChanged()
+                             .Select(tuple => new PageRequest(tuple.Item1, tuple.Item2)))
                    .ObserveOn(RxApp.MainThreadScheduler)
                    .Bind(out var machines)
                    .Subscribe();
@@ -76,7 +88,9 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
                                   MachineCount = count;
                                   PageCount = (int)Math.Ceiling((double)count / PageSize);
                               });
-        this.WhenAnyValue(vm => vm.PageSize).ObserveOn(RxApp.MainThreadScheduler).Subscribe(size => PageCount = (int)Math.Ceiling((double)machinesCache.Count / size));
+        this.WhenAnyValue(vm => vm.PageSize)
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .Subscribe(size => PageCount = (int)Math.Ceiling((double)machinesCache.Count / size));
 
         // Recalculate the page number when the page size or page count changes.
         this.WhenAnyValue(vm => vm.PageSize, vm => vm.PageCount)
@@ -103,7 +117,10 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
             .Subscribe(machinesList => machinesCache.AddOrUpdateWith(machinesList));
 
         // When the current machine changes, if it is null, set the current machine edit view model to null.
-        this.WhenAnyValue(vm => vm.CurrentMachine, vm => vm.SnackCount, vm => vm.ClusterClient).Where(tuple => tuple.Item1 == null || tuple.Item2 == 0 || tuple.Item3 == null).ObserveOn(RxApp.MainThreadScheduler).Subscribe(_ => CurrentMachineEdit = null);
+        this.WhenAnyValue(vm => vm.CurrentMachine, vm => vm.SnackCount, vm => vm.ClusterClient)
+            .Where(tuple => tuple.Item1 == null || tuple.Item2 == 0 || tuple.Item3 == null)
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .Subscribe(_ => CurrentMachineEdit = null);
 
         // Stream events subscription.
         this.WhenActivated(disposable =>
@@ -292,7 +309,9 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     /// </summary>
     public ReactiveCommand<Unit, Unit> AddMachineCommand { get; }
 
-    private IObservable<bool> CanAddMachine => this.WhenAnyValue(vm => vm.SnackCount, vm => vm.ClusterClient).Select(tuple => tuple is { Item1: > 0, Item2: not null });
+    private IObservable<bool> CanAddMachine =>
+        this.WhenAnyValue(vm => vm.SnackCount, vm => vm.ClusterClient)
+            .Select(tuple => tuple is { Item1: > 0, Item2: not null });
 
     /// <summary>
     ///     Adds a new machine.
@@ -327,7 +346,9 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     /// </summary>
     public ReactiveCommand<Unit, Unit> EditMachineCommand { get; }
 
-    private IObservable<bool> CanEditMachine => this.WhenAnyValue(vm => vm.CurrentMachine, vm => vm.SnackCount, vm => vm.ClusterClient).Select(tuple => tuple is { Item1: not null, Item2: > 0, Item3: not null });
+    private IObservable<bool> CanEditMachine =>
+        this.WhenAnyValue(vm => vm.CurrentMachine, vm => vm.SnackCount, vm => vm.ClusterClient)
+            .Select(tuple => tuple is { Item1: not null, Item2: > 0, Item3: not null });
 
     /// <summary>
     ///     Edits the current machine.
@@ -363,7 +384,9 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     /// <summary>
     ///     Gets the observable that indicates whether the remove machine command can be executed.
     /// </summary>
-    private IObservable<bool> CanRemoveMachine => this.WhenAnyValue(vm => vm.CurrentMachine, vm => vm.ClusterClient).Select(tuple => tuple is { Item1: not null, Item2: not null });
+    private IObservable<bool> CanRemoveMachine =>
+        this.WhenAnyValue(vm => vm.CurrentMachine, vm => vm.ClusterClient)
+            .Select(tuple => tuple is { Item1: not null, Item2: not null });
 
     /// <summary>
     ///     Removes the current machine.
@@ -401,7 +424,9 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     /// <summary>
     ///     Gets the observable that indicates whether the sync machines command can be executed.
     /// </summary>
-    private IObservable<bool> CanSyncMachines => this.WhenAnyValue(vm => vm.ClusterClient).Select(client => client != null);
+    private IObservable<bool> CanSyncMachines =>
+        this.WhenAnyValue(vm => vm.ClusterClient)
+            .Select(client => client != null);
 
     /// <summary>
     ///     Syncs the machine data.
@@ -411,7 +436,10 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
         bool retry;
         do
         {
-            var result = await Result.Ok().Ensure(ClusterClient != null, "No cluster client available.").MapTry(() => ClusterClient!.GetGrain<IMachineSynchronizerGrain>(string.Empty)).MapTryAsync(grain => grain.SyncDifferencesAsync());
+            var result = await Result.Ok()
+                                     .Ensure(ClusterClient != null, "No cluster client available.")
+                                     .MapTry(() => ClusterClient!.GetGrain<IMachineSynchronizerGrain>(string.Empty))
+                                     .MapTryAsync(grain => grain.SyncDifferencesAsync());
             if (result.IsSuccess)
             {
                 return;
@@ -427,7 +455,9 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     /// </summary>
     public ReactiveCommand<Unit, Unit> GoPreviousPageCommand { get; }
 
-    private IObservable<bool> CanGoPreviousPage => this.WhenAnyValue(vm => vm.PageNumber).Select(number => number > 1);
+    private IObservable<bool> CanGoPreviousPage =>
+        this.WhenAnyValue(vm => vm.PageNumber)
+            .Select(number => number > 1);
 
     /// <summary>
     ///     Moves to the previous page.
@@ -442,7 +472,9 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     /// </summary>
     public ReactiveCommand<Unit, Unit> GoNextPageCommand { get; }
 
-    private IObservable<bool> CanGoNextPage => this.WhenAnyValue(vm => vm.PageNumber, vm => vm.PageCount).Select(tuple => tuple.Item1 < tuple.Item2);
+    private IObservable<bool> CanGoNextPage =>
+        this.WhenAnyValue(vm => vm.PageNumber, vm => vm.PageCount)
+            .Select(tuple => tuple.Item1 < tuple.Item2);
 
     /// <summary>
     ///     Moves to the next page.

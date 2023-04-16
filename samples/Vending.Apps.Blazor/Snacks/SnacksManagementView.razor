@@ -1,0 +1,44 @@
+﻿@page "/snacks"
+@inherits  ReactiveInjectableComponentBase<SnacksManagementViewModel>
+@if (ViewModel != null)
+{
+    <MudGrid>
+        @* <MudItem xs="12"> *@
+        @*     <MudAlert Severity="Severity.Error" Variant="Variant.Filled" Visible="@ViewModel.ErrorVisible">@ViewModel.ErrorMessage</MudAlert> *@
+        @* </MudItem> *@
+        <MudItem xs="12" sm="8" md="6" lg="4" xl="3">
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudButton StartIcon="@Icons.Material.Filled.Add" OnClick="@(async () => await AddSnackAsync())" Variant="Variant.Outlined" Margin="Margin.Dense">Add</MudButton>
+                    <MudButton StartIcon="@Icons.Material.Filled.Remove" OnClick="@(async () => await RemoveSnackAsync())" Variant="Variant.Outlined" Margin="Margin.Dense">Remove</MudButton>
+                    <MudButton StartIcon="@Icons.Material.Filled.Moving" OnClick="MoveNavigationSide" Variant="Variant.Outlined" Margin="Margin.Dense"></MudButton>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField Label="Search" @bind-Value="@ViewModel.SearchTerm" Variant="Variant.Outlined" Margin="Margin.Dense" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudList Clickable="true" @bind-SelectedValue="@ViewModel.CurrentSnack">
+                        @foreach (var snack in ViewModel.Snacks)
+                        {
+                            <MudListItem Value="@snack.Id" Disabled="@snack.IsDeleted">
+                                <SnackView ViewModel="snack" />
+                            </MudListItem>
+                        }
+                    </MudList>
+                </MudItem>
+            </MudGrid>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="8" lg="9" xl="10">
+        </MudItem>
+    </MudGrid>
+}
+else
+{
+    <MudContainer>
+        <MudGrid>
+            <MudItem xs="12">
+                <MudAlert Severity="Severity.Error" Variant="Variant.Filled" Visible="true">Loading...</MudAlert>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
+}

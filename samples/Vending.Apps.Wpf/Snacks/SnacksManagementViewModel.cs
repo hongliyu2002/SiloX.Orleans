@@ -26,7 +26,11 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel
     {
         // When the cluster client is ready, set the cluster client.
         ClusterClientReady = Locator.Current.GetService<IClusterClientReady>();
-        this.WhenAnyValue(vm => vm.ClusterClientReady).Where(clientReady => clientReady != null).SelectMany(clientReady => clientReady!.ClusterClient.Task).ObserveOn(RxApp.MainThreadScheduler).Subscribe(client => ClusterClient = client);
+        this.WhenAnyValue(vm => vm.ClusterClientReady)
+            .Where(clientReady => clientReady != null)
+            .SelectMany(clientReady => clientReady!.ClusterClient.Task)
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .Subscribe(client => ClusterClient = client);
 
         // Create the cache for the snacks.
         var snacksCache = new SourceCache<SnackViewModel, Guid>(snack => snack.Id);
@@ -177,7 +181,9 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel
     /// <summary>
     ///     Gets the observable that determines whether the add snack command can be executed.
     /// </summary>
-    private IObservable<bool> CanAddSnack => this.WhenAnyValue(vm => vm.ClusterClient).Select(client => client != null);
+    private IObservable<bool> CanAddSnack =>
+        this.WhenAnyValue(vm => vm.ClusterClient)
+            .Select(client => client != null);
 
     /// <summary>
     ///     Adds a new snack.
@@ -212,7 +218,9 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel
     /// <summary>
     ///     Gets the observable that indicates whether the remove snack command can be executed.
     /// </summary>
-    private IObservable<bool> CanRemoveSnack => this.WhenAnyValue(vm => vm.CurrentSnack, vm => vm.ClusterClient).Select(tuple => tuple is { Item1: not null, Item2: not null });
+    private IObservable<bool> CanRemoveSnack =>
+        this.WhenAnyValue(vm => vm.CurrentSnack, vm => vm.ClusterClient)
+            .Select(tuple => tuple is { Item1: not null, Item2: not null });
 
     /// <summary>
     ///     Removes the current snack.
