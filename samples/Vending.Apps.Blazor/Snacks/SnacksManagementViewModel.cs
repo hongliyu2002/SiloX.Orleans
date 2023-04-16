@@ -58,7 +58,7 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel
         // When the current snack changes, get the snack edit view model.
         this.WhenAnyValue(vm => vm.CurrentSnack, vm => vm.ClusterClient)
             .Where(tuple => tuple is { Item1: not null, Item2: not null })
-            .Select(tuple => tuple.Item2!.GetGrain<ISnackGrain>(tuple.Item1!.Id))
+            .Select(tuple => tuple.Item2!.GetGrain<ISnackGrain>(((SnackViewModel)tuple.Item1!).Id))
             .SelectMany(grain => grain.GetSnackAsync())
             .Subscribe(snack => CurrentSnackEdit = new SnackEditViewModel(snack, ClusterClient!));
 
@@ -133,8 +133,8 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel
         set => this.RaiseAndSetIfChanged(ref _searchTerm, value);
     }
 
-    private SnackViewModel? _currentSnack;
-    public SnackViewModel? CurrentSnack
+    private object? _currentSnack;
+    public object? CurrentSnack
     {
         get => _currentSnack;
         set => this.RaiseAndSetIfChanged(ref _currentSnack, value);
@@ -228,7 +228,7 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel
     /// </summary>
     private async Task RemoveSnackAsync()
     {
-        var confirm = await ConfirmRemoveSnackInteraction.Handle(CurrentSnack!.Name);
+        var confirm = await ConfirmRemoveSnackInteraction.Handle(((SnackViewModel)CurrentSnack!).Name);
         if (!confirm)
         {
             return;
@@ -240,7 +240,7 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel
                                      .Ensure(CurrentSnack != null, "No snack selected.")
                                      .Ensure(ClusterClient != null, "No cluster client available.")
                                      .MapTry(() => ClusterClient!.GetGrain<ISnackRepoGrain>(string.Empty))
-                                     .BindTryAsync(grain => grain.DeleteAsync(new SnackRepoDeleteCommand(CurrentSnack!.Id, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")));
+                                     .BindTryAsync(grain => grain.DeleteAsync(new SnackRepoDeleteCommand(((SnackViewModel)CurrentSnack!).Id, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")));
             if (result.IsSuccess)
             {
                 return;
