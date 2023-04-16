@@ -3,9 +3,9 @@
 @if (ViewModel != null)
 {
     <MudGrid>
-        @* <MudItem xs="12"> *@
-        @*     <MudAlert Severity="Severity.Error" Variant="Variant.Filled" Visible="@ViewModel.ErrorVisible">@ViewModel.ErrorMessage</MudAlert> *@
-        @* </MudItem> *@
+        <MudItem xs="12">
+            <MudAlert Severity="Severity.Error" Variant="Variant.Filled" Visible="@ViewModel.ErrorInfo.IsNotNullOrEmpty()">@ViewModel.ErrorInfo</MudAlert>
+        </MudItem>
         <MudItem xs="12" sm="12" md="5" lg="4" xl="3">
             <MudGrid>
                 <MudItem xs="12">
@@ -44,11 +44,5 @@
 }
 else
 {
-    <MudContainer>
-        <MudGrid>
-            <MudItem xs="12">
-                <MudAlert Severity="Severity.Error" Variant="Variant.Filled" Visible="true">Loading...</MudAlert>
-            </MudItem>
-        </MudGrid>
-    </MudContainer>
+    <MudProgressCircular Color="Color.Info" Indeterminate="true" />
 }

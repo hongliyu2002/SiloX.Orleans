@@ -68,7 +68,7 @@ public class SnackEditViewModel : ReactiveObject, IActivatableViewModel
         // Create the commands.
         SaveSnackCommand = ReactiveCommand.CreateFromTask(SaveSnackAsync, CanSaveSnack);
         // Load the snack.
-        LoadSnack(snack);
+        UpdateWith(snack);
     }
 
     #region Properties
@@ -152,7 +152,7 @@ public class SnackEditViewModel : ReactiveObject, IActivatableViewModel
                                      .MapTry(() => grain = ClusterClient!.GetGrain<ISnackRepoGrain>("Manager"))
                                      .BindTryIfAsync(Id == Guid.Empty, () => grain.CreateAsync(new SnackRepoCreateCommand(Name, PictureUrl, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")))
                                      .BindTryIfAsync<Snack>(Id != Guid.Empty, () => grain.UpdateAsync(new SnackRepoUpdateCommand(Id, Name, PictureUrl, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")))
-                                     .TapTryAsync(LoadSnack);
+                                     .TapTryAsync(UpdateWith);
             if (result.IsSuccess)
             {
                 return;
@@ -167,7 +167,7 @@ public class SnackEditViewModel : ReactiveObject, IActivatableViewModel
 
     #region Load Snack
 
-    private void LoadSnack(Snack snack)
+    private void UpdateWith(Snack snack)
     {
         Id = snack.Id;
         Name = snack.Name;

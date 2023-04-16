@@ -46,12 +46,12 @@ public partial class SnacksManagementView
         interaction.SetOutput(result == MessageBoxResult.Yes);
     }
 
-    private void HandleErrors(InteractionContext<IEnumerable<IError>, ErrorRecovery> errorsInteraction)
+    private void HandleErrors(InteractionContext<IEnumerable<IError>, ErrorRecovery> interaction)
     {
-        var errors = errorsInteraction.Input;
+        var errors = interaction.Input;
         var message = errors.ToMessage();
         var result = MessageBox.Show($"{message}.\n\nRetry or cancel?", "Errors occurred when operating", MessageBoxButton.OKCancel, MessageBoxImage.Error);
-        errorsInteraction.SetOutput(result == MessageBoxResult.OK ? ErrorRecovery.Retry : ErrorRecovery.Abort);
+        interaction.SetOutput(result == MessageBoxResult.OK ? ErrorRecovery.Retry : ErrorRecovery.Abort);
     }
 
     public int NavigationGridGridColumn

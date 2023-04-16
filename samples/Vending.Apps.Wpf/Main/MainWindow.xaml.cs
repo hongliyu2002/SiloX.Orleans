@@ -24,21 +24,4 @@ public partial class MainWindow : IMainWindow
                                this.BindCommand(ViewModel, vm => vm.GoPurchasesManagementCommand, v => v.PurchasesManagementMenuItem).DisposeWith(disposable);
                            });
     }
-
-    private void HandleException(InteractionContext<Exception, ErrorRecovery> exceptionInteraction)
-    {
-        var exception = exceptionInteraction.Input;
-        var message = exception.Message;
-        var title = $"Exception occurred in {exception.GetType().Name}";
-        var result = MessageBox.Show($"{message}.\n\nRetry or cancel?", title, MessageBoxButton.OKCancel, MessageBoxImage.Error);
-        exceptionInteraction.SetOutput(result == MessageBoxResult.OK ? ErrorRecovery.Retry : ErrorRecovery.Abort);
-    }
-
-    private void HandleErrors(InteractionContext<IEnumerable<IError>, ErrorRecovery> errorsInteraction)
-    {
-        var errors = errorsInteraction.Input;
-        var message = errors.ToMessage();
-        var result = MessageBox.Show($"{message}.\n\nRetry or cancel?", "Errors occurred when operating", MessageBoxButton.OKCancel, MessageBoxImage.Error);
-        errorsInteraction.SetOutput(result == MessageBoxResult.OK ? ErrorRecovery.Retry : ErrorRecovery.Abort);
-    }
 }

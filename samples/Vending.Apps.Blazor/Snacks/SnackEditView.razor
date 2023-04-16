@@ -1,9 +1,10 @@
-﻿@inherits ReactiveComponentBase<SnackEditViewModel>
+﻿@using Fluxera.Utilities.Extensions
+@inherits ReactiveComponentBase<SnackEditViewModel>
 @if (ViewModel != null)
 {
     <MudGrid>
         <MudItem xs="12">
-            @* <MudAlert Severity="Severity.Error" Variant="Variant.Filled" Visible="@ViewModel.ErrorVisible">@ViewModel.ErrorMessage</MudAlert> *@
+            <MudAlert Severity="Severity.Error" Variant="Variant.Filled" Visible="@ViewModel.ErrorInfo.IsNotNullOrEmpty()">@ViewModel.ErrorInfo</MudAlert>
         </MudItem>
         <MudItem xs="12">
             <MudCard>
@@ -25,5 +26,5 @@
 }
 else
 {
-    <MudText Typo="Typo.body2">Loading...</MudText>
+    <MudProgressCircular Color="Color.Info" Indeterminate="true" />
 }
