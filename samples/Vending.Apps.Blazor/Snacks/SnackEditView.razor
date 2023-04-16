@@ -1,20 +1,24 @@
 ﻿@inherits ReactiveComponentBase<SnackEditViewModel>
 @if (ViewModel != null)
 {
-    <MudGrid Style="background-color: lightcyan;">
+    <MudGrid>
         <MudItem xs="12">
-            @* <MudAlert Severity="Severity.Error" Variant="Variant.Filled" Visible="@ViewModel.ErrorVisible">@ViewModel.ErrorMessage</MudAlert> *@ *
+            @* <MudAlert Severity="Severity.Error" Variant="Variant.Filled" Visible="@ViewModel.ErrorVisible">@ViewModel.ErrorMessage</MudAlert> *@
         </MudItem>
         <MudItem xs="12">
-            <MudCard Style="background-color: linen;">
+            <MudCard>
                 <MudCardContent>
                     <MudTextField Label="Id:" @bind-Value="@ViewModel.Id" ReadOnly="true" Disabled="@ViewModel.IsDeleted" />
-                    <MudTextField Label="Name:" @bind-Value="@ViewModel.Name" Disabled="@ViewModel.IsDeleted" />
+                    <MudTextField Label="Name:" @bind-Value="@ViewModel.Name" Disabled="@ViewModel.IsDeleted" AutoFocus="true" />
                     <MudTextField Label="Picture Url:" @bind-Value="@ViewModel.PictureUrl" Disabled="@ViewModel.IsDeleted" />
-                    <MudImage Src="@ViewModel.PictureUrl" Alt="Picture" Width="256" Height="256" Disabled="@ViewModel.IsDeleted" />
+                    <MudDivider />
+                    <MudImage Src="@ViewModel.PictureUrl" Width="128" Height="128" Disabled="@ViewModel.IsDeleted" />
+                    <MudDivider />
                     <MudCheckBox Label="Deleted" Checked="@ViewModel.IsDeleted" Disabled="true" />
-                    <MudButton StartIcon="@Icons.Material.Filled.Save" Command="@ViewModel.SaveSnackCommand" Variant="@Variant.Filled" Color="Color.Primary" Style="float: right;">Save</MudButton>
                 </MudCardContent>
+                <MudCardActions>
+                    <MudButton StartIcon="@Icons.Material.Filled.Save" Command="@ViewModel.SaveSnackCommand" Variant="@Variant.Filled" Color="Color.Primary">Save</MudButton>
+                </MudCardActions>
             </MudCard>
         </MudItem>
     </MudGrid>

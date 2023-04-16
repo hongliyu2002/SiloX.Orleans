@@ -1,12 +1,12 @@
 ﻿@page "/snacks"
-@inherits  ReactiveInjectableComponentBase<SnacksManagementViewModel>
+@inherits ReactiveInjectableComponentBase<SnacksManagementViewModel>
 @if (ViewModel != null)
 {
     <MudGrid>
         @* <MudItem xs="12"> *@
         @*     <MudAlert Severity="Severity.Error" Variant="Variant.Filled" Visible="@ViewModel.ErrorVisible">@ViewModel.ErrorMessage</MudAlert> *@
         @* </MudItem> *@
-        <MudItem xs="12" sm="5" md="4" lg="3" xl="2">
+        <MudItem xs="12" sm="12" md="5" lg="4" xl="3">
             <MudGrid>
                 <MudItem xs="12">
                     <MudButton StartIcon="@Icons.Material.Filled.Add" Command="@ViewModel.AddSnackCommand" Variant="Variant.Outlined" Margin="@Margin.Dense" Color="Color.Primary">Add</MudButton>
@@ -14,14 +14,14 @@
                     <MudButton StartIcon="@Icons.Material.Filled.SwapHoriz" Command="@ViewModel.MoveNavigationSideCommand" Variant="Variant.Outlined" Margin="@Margin.Dense" Color="Color.Default">Move Side</MudButton>
                 </MudItem>
                 <MudItem xs="12">
-                    <MudTextField T="string" Label="Search" @bind-Text="@ViewModel.SearchTerm" Variant="Variant.Outlined" Margin="Margin.Dense" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" />
+                    <MudTextField T="string" Label="Search" @bind-Text="@ViewModel.SearchTerm" Immediate="true" Variant="Variant.Outlined" Margin="Margin.Dense" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" />
                 </MudItem>
                 <MudItem xs="12">
                     <MudList Clickable="true" @bind-SelectedValue="@ViewModel.CurrentSnack" Color="Color.Primary">
                         <MudListSubheader>
                             Your choice:
                             <MudChip Color="Color.Secondary">
-                                @(((SnackViewModel)ViewModel.CurrentSnack)?.Name)
+                                @(ViewModel.CurrentSnack == null ? "None" : ((SnackViewModel)ViewModel.CurrentSnack).Name)
                             </MudChip>
                         </MudListSubheader>
                         @foreach (var snack in ViewModel.Snacks)
@@ -34,8 +34,11 @@
                 </MudItem>
             </MudGrid>
         </MudItem>
-        <MudItem xs="12" sm="7" md="8" lg="9" xl="10">
-            <MudButton></MudButton>
+        <MudItem xs="12" sm="12" md="7" lg="8" xl="9">
+            @if(ViewModel.CurrentSnackEdit != null)
+            {
+                <SnackEditView EditViewModel="@ViewModel.CurrentSnackEdit" />
+            }
         </MudItem>
     </MudGrid>
 }

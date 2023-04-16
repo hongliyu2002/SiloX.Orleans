@@ -195,11 +195,7 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel
         {
             var result = Result.Ok()
                                .Ensure(ClusterClient != null, "No cluster client available.")
-                               .MapTry(() =>
-                                       {
-                                           var snack = new Snack();
-                                           return new SnackEditViewModel(snack, ClusterClient!);
-                                       });
+                               .TapTry(() => CurrentSnackEdit = new SnackEditViewModel(new Snack(), ClusterClient!));
             if (result.IsSuccess)
             {
                 return;
