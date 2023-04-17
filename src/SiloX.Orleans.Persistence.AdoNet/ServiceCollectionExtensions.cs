@@ -30,7 +30,7 @@ public static class ServiceCollectionExtensions
                                                                                      persistence.ConnectionString = connectionString;
                                                                                      persistence.Invariant = storage.DbProvider switch
                                                                                                              {
-                                                                                                                 AdoNetDbProvider.SQLServer => AdoNetInvariants.InvariantNameSqlServer,
+                                                                                                                 AdoNetDbProvider.SQLServer => AdoNetInvariants.InvariantNameSqlServerDotnetCore,
                                                                                                                  AdoNetDbProvider.PostgreSQL => AdoNetInvariants.InvariantNamePostgreSql,
                                                                                                                  AdoNetDbProvider.MySQL => AdoNetInvariants.InvariantNameMySql,
                                                                                                                  AdoNetDbProvider.Oracle => AdoNetInvariants.InvariantNameOracleDatabase,

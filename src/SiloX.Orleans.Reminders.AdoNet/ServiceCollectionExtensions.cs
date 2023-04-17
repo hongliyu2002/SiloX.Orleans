@@ -27,7 +27,7 @@ public static class ServiceCollectionExtensions
                                                                                     reminders.ConnectionString = connectionString;
                                                                                     reminders.Invariant = adoNetOptions.DbProvider switch
                                                                                                           {
-                                                                                                              AdoNetDbProvider.SQLServer => AdoNetInvariants.InvariantNameSqlServer,
+                                                                                                              AdoNetDbProvider.SQLServer => AdoNetInvariants.InvariantNameSqlServerDotnetCore,
                                                                                                               AdoNetDbProvider.PostgreSQL => AdoNetInvariants.InvariantNamePostgreSql,
                                                                                                               AdoNetDbProvider.MySQL => AdoNetInvariants.InvariantNameMySql,
                                                                                                               AdoNetDbProvider.Oracle => AdoNetInvariants.InvariantNameOracleDatabase,
