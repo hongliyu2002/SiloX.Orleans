@@ -1,4 +1,5 @@
-﻿using Vending.Apps.Blazor.Services;
+﻿using Vending.Apps.Blazor.Machines;
+using Vending.Apps.Blazor.Services;
 using Vending.Apps.Blazor.Snacks;
 
 namespace Vending.Apps.Blazor;
@@ -15,6 +16,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddVendingBlazor(this IServiceCollection services, AppOptions options)
     {
         return services.AddSingleton<IClusterClientReady, ClusterClientReady>()
-                       .AddScoped<SnacksManagementViewModel>();
+                       .AddScoped<SnacksManagementViewModel>()
+                       .AddScoped<MachinesManagementViewModel>();
     }
 }

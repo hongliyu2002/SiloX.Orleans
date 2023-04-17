@@ -1,0 +1,81 @@
+﻿@page "/machines-management"
+@inherits ReactiveInjectableComponentBase<MachinesManagementViewModel>
+@if (ViewModel != null)
+{
+    <MudGrid>
+        <MudItem xs="12">
+            <MudAlert Severity="Severity.Error" Variant="Variant.Filled" ShowCloseIcon="true" Style="@(ViewModel.ErrorInfo.IsNotNullOrEmpty() ? "display:block" : "display:none")">@ViewModel.ErrorInfo</MudAlert>
+        </MudItem>
+        <MudItem xs="12">
+            <MudTable T="MachineViewModel" Items="@ViewModel.Machines" @bind-SelectedItem="@ViewModel.CurrentMachine" RowsPerPage="int.MaxValue" Hover="true" Dense="true" Striped="true" Bordered="true" FixedHeader="true">
+                <ToolBarContent>
+                    <MudButton StartIcon="@Icons.Material.Filled.Add" Command="@ViewModel.AddMachineCommand" Variant="Variant.Filled" Margin="@Margin.Dense" Color="Color.Primary">Add</MudButton>
+                    <MudButton StartIcon="@Icons.Material.Filled.Edit" Command="@ViewModel.EditMachineCommand" Variant="Variant.Filled" Margin="@Margin.Dense" Color="Color.Secondary">Edit</MudButton>
+                    <MudButton StartIcon="@Icons.Material.Filled.Remove" Command="@ViewModel.RemoveMachineCommand" Variant="Variant.Filled" Margin="@Margin.Dense" Color="Color.Warning">Remove</MudButton>
+                    <MudButton StartIcon="@Icons.Material.Filled.Sync" Command="@ViewModel.SyncMachinesCommand" Variant="Variant.Filled" Margin="@Margin.Dense" Color="Color.Tertiary">Sync</MudButton>
+                    <MudSpacer />
+                    <MudTextField T="int" Label="Page Size" @bind-Value="@ViewModel.PageSize" Immediate="true" Variant="Variant.Outlined" Margin="Margin.Dense" Placeholder="Rows per page" />
+                    <MudSpacer />
+                    <MudInputLabel>Money Inside $:</MudInputLabel>
+                    <MudTextField T="decimal?" Label="From" @bind-Value="@ViewModel.MoneyAmountStart" Immediate="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                    <MudTextField T="decimal?" Label="To" @bind-Value="@ViewModel.MoneyAmountEnd" Immediate="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                </ToolBarContent>
+                <HeaderContent>
+                    <MudTh>Id</MudTh>
+                    <MudTh>Money Inside</MudTh>
+                    <MudTh>Money Total $</MudTh>
+                    <MudTh>Transaction $</MudTh>
+                    <MudTh>Slots #</MudTh>
+                    <MudTh>Snacks #</MudTh>
+                    <MudTh>Snacks *</MudTh>
+                    <MudTh>Snacks $</MudTh>
+                    <MudTh>Bought #</MudTh>
+                    <MudTh>Bought $</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Id">@context.Id</MudTd>
+                    <MudTd DataLabel="MoneyInside">
+                        <MudText Typo="Typo.caption">￥1: @context.MoneyInside.Yuan1</MudText>
+                        <MudText Typo="Typo.caption">￥2: @context.MoneyInside.Yuan2</MudText>
+                        <MudText Typo="Typo.caption">￥5: @context.MoneyInside.Yuan5</MudText>
+                        <MudText Typo="Typo.caption">￥10: @context.MoneyInside.Yuan10</MudText>
+                        <MudText Typo="Typo.caption">￥20: @context.MoneyInside.Yuan20</MudText>
+                        <MudText Typo="Typo.caption">￥50: @context.MoneyInside.Yuan50</MudText>
+                        <MudText Typo="Typo.caption">￥100: @context.MoneyInside.Yuan100</MudText>
+                    </MudTd>
+                    <MudTd DataLabel="MoneyInside.Amount">@context.MoneyInside.Amount.ToString("C2")</MudTd>
+                    <MudTd DataLabel="AmountInTransaction">@context.AmountInTransaction.ToString("C2")</MudTd>
+                    <MudTd DataLabel="SlotCount">@context.SlotCount</MudTd>
+                    <MudTd DataLabel="SnackCount">@context.SnackCount</MudTd>
+                    <MudTd DataLabel="SnackQuantity">@context.SnackQuantity</MudTd>
+                    <MudTd DataLabel="SnackAmount">@context.SnackAmount.ToString("C2")</MudTd>
+                    <MudTd DataLabel="BoughtCount">@context.BoughtCount</MudTd>
+                    <MudTd DataLabel="BoughtAmount">@context.BoughtAmount.ToString("C2")</MudTd>
+                </RowTemplate>
+                <NoRecordsContent>
+                    <MudText>No matching records found</MudText>
+                </NoRecordsContent>
+                <LoadingContent>
+                    <MudProgressCircular Color="Color.Info" Indeterminate="true" />
+                </LoadingContent>
+                <PagerContent>
+                    <MudTablePager InfoFormat="@($"{ViewModel.PageNumber} of {ViewModel.PageCount}")" HorizontalAlignment="HorizontalAlignment.Center" HidePageNumber="false" HidePagination="true" HideRowsPerPage="true" />
+                </PagerContent>
+            </MudTable>
+        </MudItem>
+    </MudGrid>
+    <MudGrid>
+        <MudItem xs="12">
+            Your choice:
+            <MudChip Color="Color.Secondary">
+                @(ViewModel.CurrentMachine == null ? "None" : ((MachineViewModel)ViewModel.CurrentMachine).Id)
+            </MudChip>
+            <MudButton StartIcon="@Icons.Material.Filled.FirstPage" Command="@ViewModel.GoPreviousPageCommand" Variant="Variant.Filled" Margin="@Margin.Dense" Color="Color.Primary">Previous</MudButton>
+            <MudButton StartIcon="@Icons.Material.Filled.LastPage" Command="@ViewModel.GoNextPageCommand" Variant="Variant.Filled" Margin="@Margin.Dense" Color="Color.Primary">Next</MudButton>
+        </MudItem>
+    </MudGrid>
+}
+else
+{
+    <MudProgressCircular Color="Color.Info" Indeterminate="true" />
+}
