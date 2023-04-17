@@ -6,6 +6,7 @@ using JetBrains.Annotations;
 using SiloX.Orleans;
 using SiloX.Orleans.Clustering.Redis;
 using SiloX.Orleans.EventSourcing.EventStore;
+using SiloX.Orleans.Persistence.AdoNet;
 using SiloX.Orleans.Persistence.EventStore;
 using SiloX.Orleans.Persistence.Redis;
 using SiloX.Orleans.Reminders.Redis;
@@ -24,6 +25,7 @@ namespace Vending.Hosting;
 [PublicAPI]
 [DependsOn<HealthChecksEndpointsModule>]
 [DependsOn<ServerModule>]
+[DependsOn<AdoNetPersistenceModule>]
 [DependsOn<RedisClusteringModule>]
 [DependsOn<RedisRemindersModule>]
 [DependsOn<RedisPersistenceModule>]
