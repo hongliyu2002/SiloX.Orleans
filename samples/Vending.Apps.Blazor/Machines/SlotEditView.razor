@@ -2,10 +2,11 @@
 @if (ViewModel != null)
 {
     <MudGrid>
-        <MudItem xs="12">
-            <MudText Typo="Typo.body1">P:</MudText>
-            <MudTextField T="int" @bind-Value="@ViewModel.Position" Variant="Variant.Outlined" Adornment="Adornment.None" Style="width: 50px;" />
-            <MudSelect @bind-Value="@ViewModel.CurrentSnack" Label="Snacks" Color="@Color.Primary" Style="width: 200px;">
+        <MudItem xs="4" sm="2">
+            <MudTextField T="int" @bind-Value="@ViewModel.Position" Label="Position" Variant="Variant.Text" Color="@Color.Info" />
+        </MudItem>
+        <MudItem xs="8" sm="4">
+            <MudSelect @bind-Value="@ViewModel.CurrentSnack" Label="Snack" Color="@Color.Info">
                 @foreach (var snack in ViewModel.Snacks)
                 {
                     <MudSelectItem Value="snack" Disabled="@snack.IsDeleted">
@@ -13,13 +14,16 @@
                     </MudSelectItem>
                 }
             </MudSelect>
-            <MudText Typo="Typo.body1">#:</MudText>
-            <MudTextField T="int?" @bind-Value="@ViewModel.Quantity" Variant="Variant.Outlined" Adornment="Adornment.None" Style="width: 50px;" />
-            <MudText Typo="Typo.body1">￥:</MudText>
-            <MudTextField T="decimal?" @bind-Value="@ViewModel.Price" Variant="Variant.Outlined" Adornment="Adornment.None" Style="width: 50px;" />
-            <MudText Typo="Typo.body1">Total:</MudText>
-            <MudText Typo="Typo.body1">@ViewModel.Amount</MudText>
         </MudItem>
+        <MudItem xs="4" sm="2">
+            <MudTextField T="int?" @bind-Value="@ViewModel.Quantity" Label="Quantity" Variant="Variant.Text" Color="@Color.Info" />
+        </MudItem>
+        <MudItem xs="4" sm="2">
+            <MudTextField T="decimal?" @bind-Value="@ViewModel.Price" Label="Price" Variant="Variant.Text" Color="@Color.Info" />
+        </MudItem>
+        <MudItem xs="4" sm="2">
+            <MudTextField T="decimal?" @bind-Value="@ViewModel.Amount" Label="Amount" Variant="Variant.Text" Color="@Color.Info" ReadOnly="true" />
+        </MudItem>     
     </MudGrid>
 }
 else

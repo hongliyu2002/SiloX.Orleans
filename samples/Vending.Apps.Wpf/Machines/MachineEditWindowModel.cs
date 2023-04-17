@@ -27,7 +27,7 @@ public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel
         Guard.Against.Null(machine, nameof(machine));
         _snacks = Guard.Against.Null(snacks, nameof(snacks));
         ClusterClient = Guard.Against.Null(clusterClient, nameof(clusterClient));
-        
+
         // Create the cache for the slots.
         _slotsCache = new SourceCache<SlotEditViewModel, int>(slot => slot.Position);
         _slotsCache.Connect()
@@ -310,6 +310,11 @@ public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel
     public Interaction<string, bool> ConfirmRemoveSlotInteraction { get; } = new();
 
     /// <summary>
+    ///     Interaction that notifies the user that the machine has been saved.
+    /// </summary>
+    public Interaction<string, Unit> NotifySavedMachineInteraction { get; } = new();
+
+    /// <summary>
     ///     Interaction for errors.
     /// </summary>
     public Interaction<IEnumerable<IError>, ErrorRecovery> ErrorsInteraction { get; } = new();
@@ -408,6 +413,7 @@ public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel
                                      .TapTryAsync(UpdateWith);
             if (result.IsSuccess)
             {
+                await NotifySavedMachineInteraction.Handle($"Machine {Id} saved successfully.");
                 return;
             }
             var errorRecovery = await ErrorsInteraction.Handle(result.Errors);

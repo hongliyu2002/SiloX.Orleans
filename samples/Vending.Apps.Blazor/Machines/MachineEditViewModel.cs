@@ -296,6 +296,11 @@ public class MachineEditViewModel : ReactiveObject, IActivatableViewModel
     public Interaction<string, bool> ConfirmRemoveSlotInteraction { get; } = new();
 
     /// <summary>
+    ///     Interaction that notifies the user that the machine has been saved.
+    /// </summary>
+    public Interaction<string, Unit> NotifySavedMachineInteraction { get; } = new();
+
+    /// <summary>
     ///     Interaction for errors.
     /// </summary>
     public Interaction<IEnumerable<IError>, ErrorRecovery> ErrorsInteraction { get; } = new();
@@ -394,6 +399,7 @@ public class MachineEditViewModel : ReactiveObject, IActivatableViewModel
                                      .TapTryAsync(UpdateWith);
             if (result.IsSuccess)
             {
+                await NotifySavedMachineInteraction.Handle($"Machine {Id} saved successfully.");
                 return;
             }
             var errorRecovery = await ErrorsInteraction.Handle(result.Errors);

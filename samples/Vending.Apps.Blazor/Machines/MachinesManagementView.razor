@@ -16,7 +16,7 @@
                     <MudSpacer />
                     <MudTextField T="int" Label="Page Size" @bind-Value="@ViewModel.PageSize" Immediate="true" Variant="Variant.Outlined" Margin="Margin.Dense" Placeholder="Rows per page" />
                     <MudSpacer />
-                    <MudInputLabel>Money Inside $:</MudInputLabel>
+                    <MudText Typo="Typo.body1">Money Inside $:</MudText>
                     <MudTextField T="decimal?" Label="From" @bind-Value="@ViewModel.MoneyAmountStart" Immediate="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
                     <MudTextField T="decimal?" Label="To" @bind-Value="@ViewModel.MoneyAmountEnd" Immediate="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
                 </ToolBarContent>

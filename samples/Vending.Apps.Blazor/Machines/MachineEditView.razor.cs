@@ -1,4 +1,5 @@
-﻿using System.Reactive.Linq;
+﻿using System.Reactive;
+using System.Reactive.Linq;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using Orleans.FluentResults;
@@ -11,6 +12,7 @@ namespace Vending.Apps.Blazor.Machines;
 public partial class MachineEditView : ReactiveComponentBase<MachineEditViewModel>
 {
     private IDisposable? _confirmRemoveSlotInteractionHandler;
+    private IDisposable? _notifySavedMachineInteractionHandler;
     private IDisposable? _errorsInteractionHandler;
 
     /// <inheritdoc />
@@ -22,6 +24,7 @@ public partial class MachineEditView : ReactiveComponentBase<MachineEditViewMode
             .Subscribe(_ => InvokeAsync(StateHasChanged));
         ViewModel?.Activator.Activate();
         _confirmRemoveSlotInteractionHandler = ViewModel?.ConfirmRemoveSlotInteraction.RegisterHandler(ConfirmRemoveSlot);
+        _notifySavedMachineInteractionHandler = ViewModel?.NotifySavedMachineInteraction.RegisterHandler(NotifySavedMachine);
         _errorsInteractionHandler = ViewModel?.ErrorsInteraction.RegisterHandler(HandleErrors);
     }
 
@@ -30,9 +33,13 @@ public partial class MachineEditView : ReactiveComponentBase<MachineEditViewMode
     {
         ViewModel?.Activator.Deactivate();
         _confirmRemoveSlotInteractionHandler?.Dispose();
+        _notifySavedMachineInteractionHandler?.Dispose();
         _errorsInteractionHandler?.Dispose();
         base.Dispose(disposing);
     }
+
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; } = default!;
 
     [Parameter]
     public MachineEditViewModel? EditViewModel
@@ -50,6 +57,11 @@ public partial class MachineEditView : ReactiveComponentBase<MachineEditViewMode
         }
     }
 
+    private void Close()
+    {
+        MudDialog.Cancel();
+    }
+
     [Inject]
     private IDialogService DialogService { get; set; } = default!;
 
@@ -57,6 +69,12 @@ public partial class MachineEditView : ReactiveComponentBase<MachineEditViewMode
     {
         var result = await DialogService.ShowMessageBox("Confirm", $"Are you sure you want to remove {interaction.Input}?", "Yes", "No");
         interaction.SetOutput(result == true);
+    }
+
+    private async Task NotifySavedMachine(InteractionContext<string, Unit> interaction)
+    {
+        await DialogService.ShowMessageBox("Notification", interaction.Input, "Ok");
+        interaction.SetOutput(Unit.Default);
     }
 
     private async Task HandleErrors(InteractionContext<IEnumerable<IError>, ErrorRecovery> interaction)

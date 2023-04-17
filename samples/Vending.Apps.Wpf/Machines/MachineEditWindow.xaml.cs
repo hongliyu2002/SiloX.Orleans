@@ -1,4 +1,5 @@
-﻿using System.Reactive.Disposables;
+﻿using System.Reactive;
+using System.Reactive.Disposables;
 using System.Windows;
 using Fluxera.Utilities.Extensions;
 using Orleans.FluentResults;
@@ -39,6 +40,7 @@ public partial class MachineEditWindow
                                this.BindCommand(ViewModel, vm => vm.RemoveSlotCommand, v => v.RemoveSlotButton).DisposeWith(disposable);
                                this.BindCommand(ViewModel, vm => vm.SaveMachineCommand, v => v.SaveMachineButton).DisposeWith(disposable);
                                ViewModel?.ConfirmRemoveSlotInteraction.RegisterHandler(ConfirmRemoveSlot).DisposeWith(disposable);
+                               ViewModel?.NotifySavedMachineInteraction.RegisterHandler(NotifySavedMachine).DisposeWith(disposable);
                                ViewModel?.ErrorsInteraction.RegisterHandler(HandleErrors).DisposeWith(disposable);
                            });
     }
@@ -62,6 +64,12 @@ public partial class MachineEditWindow
     {
         var result = MessageBox.Show(this, $"Are you sure you want to remove {interaction.Input}?", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question);
         interaction.SetOutput(result == MessageBoxResult.Yes);
+    }
+
+    private void NotifySavedMachine(InteractionContext<string, Unit> interaction)
+    {
+        MessageBox.Show(this, interaction.Input, "Notification", MessageBoxButton.YesNo, MessageBoxImage.Question);
+        interaction.SetOutput(Unit.Default);
     }
 
     private void HandleErrors(InteractionContext<IEnumerable<IError>, ErrorRecovery> interaction)

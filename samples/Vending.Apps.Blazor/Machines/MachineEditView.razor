@@ -1,71 +1,72 @@
 ﻿@inherits ReactiveComponentBase<MachineEditViewModel>
 @if (ViewModel != null)
 {
-    <MudGrid>
-        <MudItem xs="12">
-            <MudAlert Severity="Severity.Error" Variant="Variant.Filled" Style="@(ViewModel.ErrorInfo.IsNotNullOrEmpty() ? "display:block" : "display:none")">@ViewModel.ErrorInfo</MudAlert>
-        </MudItem>
-        <MudItem xs="12">
+    <MudDialog>
+        <DialogContent>
             <MudGrid>
                 <MudItem xs="12">
-                    <MudTextField @bind-Value="@ViewModel.Id" Label="Id:" ReadOnly="true" Disabled="@ViewModel.IsDeleted" />
+                    <MudAlert Severity="Severity.Error" Variant="Variant.Filled" Style="@(ViewModel.ErrorInfo.IsNotNullOrEmpty() ? "display:block" : "display:none")">@ViewModel.ErrorInfo</MudAlert>
                 </MudItem>
                 <MudItem xs="12">
-                    <MudText Typo="Typo.body1">Money Inside:</MudText>
                     <MudGrid>
-                        <MudItem xs="12" sm="6" md="4">
-                            <MudTextField @bind-Value="@ViewModel.MoneyYuan1" Label="￥1" Disabled="@ViewModel.IsDeleted" />
+                        <MudItem xs="12">
+                            <MudTextField @bind-Value="@ViewModel.Id" Label="Id:" ReadOnly="true" Disabled="@ViewModel.IsDeleted" />
                         </MudItem>
-                        <MudItem xs="12" sm="6" md="4">
-                            <MudTextField @bind-Value="@ViewModel.MoneyYuan2" Label="￥2" Disabled="@ViewModel.IsDeleted" />
-                        </MudItem>
-                        <MudItem xs="12" sm="6" md="4">
-                            <MudTextField @bind-Value="@ViewModel.MoneyYuan5" Label="￥5" Disabled="@ViewModel.IsDeleted" />
-                        </MudItem>
-                        <MudItem xs="12" sm="6" md="4">
-                            <MudTextField @bind-Value="@ViewModel.MoneyYuan10" Label="￥10" Disabled="@ViewModel.IsDeleted" />
-                        </MudItem>
-                        <MudItem xs="12" sm="6" md="4">
-                            <MudTextField @bind-Value="@ViewModel.MoneyYuan20" Label="￥20" Disabled="@ViewModel.IsDeleted" />
-                        </MudItem>
-                        <MudItem xs="12" sm="6" md="4">
-                            <MudTextField @bind-Value="@ViewModel.MoneyYuan50" Label="￥50" Disabled="@ViewModel.IsDeleted" />
-                        </MudItem>
-                        <MudItem xs="12" sm="6" md="4">
-                            <MudTextField @bind-Value="@ViewModel.MoneyYuan100" Label="￥100" Disabled="@ViewModel.IsDeleted" />
-                        </MudItem>
-                        <MudItem xs="12" sm="6" md="4">
-                            <MudText Typo="Typo.body1">Total: @ViewModel.MoneyAmount</MudText>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.body1">Money Inside:</MudText>
+                            <MudGrid>
+                                <MudItem xs="3" sm="2" md="1">
+                                    <MudTextField @bind-Value="@ViewModel.MoneyYuan1" Label="￥1" Disabled="@ViewModel.IsDeleted" />
+                                </MudItem>
+                                <MudItem xs="3" sm="2" md="1">
+                                    <MudTextField @bind-Value="@ViewModel.MoneyYuan2" Label="￥2" Disabled="@ViewModel.IsDeleted" />
+                                </MudItem>
+                                <MudItem xs="3" sm="2" md="1">
+                                    <MudTextField @bind-Value="@ViewModel.MoneyYuan5" Label="￥5" Disabled="@ViewModel.IsDeleted" />
+                                </MudItem>
+                                <MudItem xs="3" sm="2" md="1">
+                                    <MudTextField @bind-Value="@ViewModel.MoneyYuan10" Label="￥10" Disabled="@ViewModel.IsDeleted" />
+                                </MudItem>
+                                <MudItem xs="3" sm="2" md="1">
+                                    <MudTextField @bind-Value="@ViewModel.MoneyYuan20" Label="￥20" Disabled="@ViewModel.IsDeleted" />
+                                </MudItem>
+                                <MudItem xs="3" sm="2" md="1">
+                                    <MudTextField @bind-Value="@ViewModel.MoneyYuan50" Label="￥50" Disabled="@ViewModel.IsDeleted" />
+                                </MudItem>
+                                <MudItem xs="3" sm="2" md="1">
+                                    <MudTextField @bind-Value="@ViewModel.MoneyYuan100" Label="￥100" Disabled="@ViewModel.IsDeleted" />
+                                </MudItem>
+                                <MudItem xs="3" sm="2" md="1">
+                                    <MudText Typo="Typo.body1">Total: @ViewModel.MoneyAmount</MudText>
+                                </MudItem>
+                            </MudGrid>
                         </MudItem>
                     </MudGrid>
                 </MudItem>
-            </MudGrid>
-        </MudItem>
-        <MudItem xs="12">
-            <MudButton StartIcon="@Icons.Material.Filled.Add" Command="@ViewModel.AddSlotCommand" Variant="Variant.Filled" Margin="@Margin.Dense" Color="Color.Primary">Add</MudButton>
-            <MudButton StartIcon="@Icons.Material.Filled.Remove" Command="@ViewModel.RemoveSlotCommand" Variant="Variant.Filled" Margin="@Margin.Dense" Color="Color.Secondary">Remove</MudButton>
-        </MudItem>
-        <MudItem xs="12">
-            <MudList @bind-SelectedValue="@ViewModel.CurrentSlot">
-                @foreach (var slot in ViewModel.Slots)
-                {
-                    <MudListItem Value="slot">
-                        <SlotEditView ViewModel="slot" />
-                    </MudListItem>
-                }
-            </MudList>
-        </MudItem>
-        <MudItem xs="12">
-            <MudCheckBox Label="Deleted" Checked="@ViewModel.IsDeleted" Disabled="true" />
-        </MudItem>
-        <MudItem xs="12">
-            <MudGrid Justify="Justify.Center">
-                <MudItem>
-                    <MudButton StartIcon="@Icons.Material.Filled.Save" Command="@ViewModel.SaveMachineCommand" Variant="@Variant.Filled" Color="Color.Primary">Save</MudButton>
+                <MudItem xs="12">
+                    <MudButton StartIcon="@Icons.Material.Filled.Add" Command="@ViewModel.AddSlotCommand" Variant="Variant.Filled" Margin="@Margin.Dense" Color="Color.Primary">Add</MudButton>
+                    <MudButton StartIcon="@Icons.Material.Filled.Remove" Command="@ViewModel.RemoveSlotCommand" Variant="Variant.Filled" Margin="@Margin.Dense" Color="Color.Secondary">Remove</MudButton>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudList @bind-SelectedValue="@ViewModel.CurrentSlot">
+                        @foreach (var slot in ViewModel.Slots)
+                        {
+                            <MudListItem Value="slot">
+                                <SlotEditView ViewModel="slot" />
+                            </MudListItem>
+                        }
+                    </MudList>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudCheckBox Label="Deleted" Checked="@ViewModel.IsDeleted" Disabled="true" />
                 </MudItem>
             </MudGrid>
-        </MudItem>
-    </MudGrid>
+        </DialogContent>
+        <DialogActions>
+            <MudButton StartIcon="@Icons.Material.Filled.Save" Command="@ViewModel.SaveMachineCommand" Variant="@Variant.Filled" Color="Color.Primary">Save</MudButton>
+            <MudButton StartIcon="@Icons.Material.Filled.Cancel" OnClick="Close" Variant="@Variant.Filled" Color="Color.Primary">Close</MudButton>
+        </DialogActions>
+    </MudDialog>
 }
 else
 {
