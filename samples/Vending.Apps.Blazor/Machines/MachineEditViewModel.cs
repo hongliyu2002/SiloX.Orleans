@@ -22,6 +22,8 @@ public class MachineEditViewModel : ReactiveObject, IActivatableViewModel
 
     private StreamSequenceToken? _lastSequenceToken;
 
+    #region Constructor
+
     public MachineEditViewModel(Machine machine, ReadOnlyObservableCollection<SnackViewModel> snacks, IClusterClient clusterClient)
     {
         Guard.Against.Null(machine, nameof(machine));
@@ -171,6 +173,8 @@ public class MachineEditViewModel : ReactiveObject, IActivatableViewModel
         // Load the machine.
         UpdateWith(machine);
     }
+
+    #endregion
 
     #region Properties
 

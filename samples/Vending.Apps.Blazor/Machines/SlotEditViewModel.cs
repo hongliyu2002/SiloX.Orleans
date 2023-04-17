@@ -9,6 +9,9 @@ namespace Vending.Apps.Blazor.Machines;
 
 public class SlotEditViewModel : ReactiveObject
 {
+
+    #region Constructor
+
     public SlotEditViewModel(MachineSlot slot, ReadOnlyObservableCollection<SnackViewModel> snacks)
     {
         Guard.Against.Null(slot, nameof(slot));
@@ -51,6 +54,8 @@ public class SlotEditViewModel : ReactiveObject
         // Load the slot.
         UpdateWith(slot);
     }
+
+    #endregion
 
     #region Properties
 

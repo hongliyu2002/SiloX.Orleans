@@ -25,6 +25,8 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     private StreamSequenceToken? _machineSequenceToken;
     private StreamSequenceToken? _snackSequenceToken;
 
+    #region Constructor
+
     /// <inheritdoc />
     public MachinesManagementViewModel()
     {
@@ -179,6 +181,8 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
         GoPreviousPageCommand = ReactiveCommand.Create(GoPreviousPage, CanGoPreviousPage);
         GoNextPageCommand = ReactiveCommand.Create(GoNextPage, CanGoNextPage);
     }
+
+    #endregion
 
     #region Properties
 
