@@ -38,7 +38,7 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
         // Create the cache for the snacks.
         var snacksCache = new SourceCache<SnackViewModel, Guid>(snack => snack.Id);
         snacksCache.Connect()
-                   .AutoRefresh(snack => snack.Id)
+                   .AutoRefresh(snack => snack.Name)
                    .Sort(SortExpressionComparer<SnackViewModel>.Ascending(snack => snack.Id))
                    .Bind(out var snacks)
                    .Subscribe(set => SnacksChangeSet = set);
@@ -56,7 +56,7 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
         // Create the cache for the machines.
         var machinesCache = new SourceCache<MachineViewModel, Guid>(machine => machine.Id);
         var machinesObs = machinesCache.Connect()
-                                       .AutoRefresh(machine => machine.Id)
+                                       .AutoRefresh(machine => machine.MoneyInside)
                                        .Filter(this.WhenAnyValue(vm => vm.MoneyAmountStart, vm => vm.MoneyAmountEnd)
                                                    .Throttle(TimeSpan.FromMilliseconds(500))
                                                    .DistinctUntilChanged()

@@ -35,12 +35,12 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel
         // Create the cache for the snacks.
         var snacksCache = new SourceCache<SnackViewModel, Guid>(snack => snack.Id);
         snacksCache.Connect()
-                   .AutoRefresh(snack => snack.Id)
+                   .AutoRefresh(snack => snack.Name)
                    .Filter(this.WhenAnyValue(vm => vm.SearchTerm)
                                .Throttle(TimeSpan.FromMilliseconds(500))
                                .DistinctUntilChanged()
                                .Select(_ => new Func<SnackViewModel, bool>(snack => (SearchTerm.IsNullOrEmpty() || snack.Name.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase)) && snack.IsDeleted == false)))
-                   .Sort(SortExpressionComparer<SnackViewModel>.Ascending(snack => snack.Id))
+                   .Sort(SortExpressionComparer<SnackViewModel>.Ascending(snack => snack.Name))
                    .ObserveOn(RxApp.MainThreadScheduler)
                    .Bind(out var snacks)
                    .Subscribe();
