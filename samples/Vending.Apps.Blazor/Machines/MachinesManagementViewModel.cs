@@ -73,7 +73,7 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
                              .DistinctUntilChanged()
                              .Select(tuple => new PageRequest(tuple.Item1, tuple.Item2)))
                    .Bind(out var machines)
-                   .Subscribe();
+                   .Subscribe(set => MachinesChangeSet = set);
         Machines = machines;
         // Recalculate the page count when the cache changes.
         machinesObs.Count()
@@ -260,6 +260,13 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
         set => this.RaiseAndSetIfChanged(ref _machineCount, value);
     }
 
+    private IChangeSet<MachineViewModel, Guid>? _machinesChangeSet;
+    public IChangeSet<MachineViewModel, Guid>? MachinesChangeSet
+    {
+        get => _machinesChangeSet;
+        set => this.RaiseAndSetIfChanged(ref _machinesChangeSet, value);
+    }
+    
     public ReadOnlyObservableCollection<SnackViewModel> Snacks { get; }
 
     private IChangeSet<SnackViewModel, Guid>? _snacksChangeSet;
