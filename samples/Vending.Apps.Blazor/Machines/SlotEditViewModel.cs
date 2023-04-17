@@ -17,7 +17,6 @@ public class SlotEditViewModel : ReactiveObject
         // Set the current snack when the snack id changes.
         this.WhenAnyValue(vm => vm.SnackId)
             .Where(snackId => snackId != null && snackId.Value != Guid.Empty)
-            .ObserveOn(RxApp.MainThreadScheduler)
             .Subscribe(snackId =>
                        {
                            var snack = CurrentSnack;
@@ -29,7 +28,6 @@ public class SlotEditViewModel : ReactiveObject
 
         // Recreate the snack pile when any of the properties change.
         this.WhenAnyValue(vm => vm.CurrentSnack)
-            .ObserveOn(RxApp.MainThreadScheduler)
             .Subscribe(snack =>
                        {
                            if (snack == null)
@@ -45,7 +43,6 @@ public class SlotEditViewModel : ReactiveObject
                        });
         this.WhenAnyValue(vm => vm.CurrentSnack, vm => vm.Quantity, vm => vm.Price)
             .Where(tuple => tuple is { Item1: not null, Item2: not null, Item3: not null })
-            .ObserveOn(RxApp.MainThreadScheduler)
             .Subscribe(tuple =>
                        {
                            SnackPile = new SnackPile(tuple.Item1!.Id, tuple.Item2!.Value, tuple.Item3!.Value);

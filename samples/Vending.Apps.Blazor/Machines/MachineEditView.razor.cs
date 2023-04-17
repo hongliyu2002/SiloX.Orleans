@@ -6,11 +6,11 @@ using ReactiveUI;
 using ReactiveUI.Blazor;
 using SiloX.Domain.Abstractions.Extensions;
 
-namespace Vending.Apps.Blazor.Snacks;
+namespace Vending.Apps.Blazor.Machines;
 
-public partial class SnacksManagementView : ReactiveInjectableComponentBase<SnacksManagementViewModel>
+public partial class MachineEditView : ReactiveComponentBase<MachineEditViewModel>
 {
-    private IDisposable? _confirmRemoveSnackInteractionHandler;
+    private IDisposable? _confirmRemoveSlotInteractionHandler;
     private IDisposable? _errorsInteractionHandler;
 
     /// <inheritdoc />
@@ -21,7 +21,7 @@ public partial class SnacksManagementView : ReactiveInjectableComponentBase<Snac
             .Throttle(TimeSpan.FromMilliseconds(100))
             .Subscribe(_ => InvokeAsync(StateHasChanged));
         ViewModel?.Activator.Activate();
-        _confirmRemoveSnackInteractionHandler = ViewModel?.ConfirmRemoveSnackInteraction.RegisterHandler(ConfirmRemoveSnack);
+        _confirmRemoveSlotInteractionHandler = ViewModel?.ConfirmRemoveSlotInteraction.RegisterHandler(ConfirmRemoveSlot);
         _errorsInteractionHandler = ViewModel?.ErrorsInteraction.RegisterHandler(HandleErrors);
     }
 
@@ -29,15 +29,31 @@ public partial class SnacksManagementView : ReactiveInjectableComponentBase<Snac
     protected override void Dispose(bool disposing)
     {
         ViewModel?.Activator.Deactivate();
-        _confirmRemoveSnackInteractionHandler?.Dispose();
+        _confirmRemoveSlotInteractionHandler?.Dispose();
         _errorsInteractionHandler?.Dispose();
         base.Dispose(disposing);
+    }
+
+    [Parameter]
+    public MachineEditViewModel? EditViewModel
+    {
+        get => ViewModel;
+        set
+        {
+            if (ViewModel == value)
+            {
+                return;
+            }
+            ViewModel?.Activator.Deactivate();
+            ViewModel = value;
+            ViewModel?.Activator.Activate();
+        }
     }
 
     [Inject]
     private IDialogService DialogService { get; set; } = default!;
 
-    private async Task ConfirmRemoveSnack(InteractionContext<string, bool> interaction)
+    private async Task ConfirmRemoveSlot(InteractionContext<string, bool> interaction)
     {
         var result = await DialogService.ShowMessageBox("Confirm", $"Are you sure you want to remove {interaction.Input}?", "Yes", "No");
         interaction.SetOutput(result == true);

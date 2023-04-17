@@ -5,12 +5,12 @@ using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Aggregation;
 using DynamicData.Binding;
+using Fluxera.Guards;
 using Orleans.FluentResults;
 using Orleans.Streams;
 using ReactiveUI;
 using SiloX.Domain.Abstractions;
 using SiloX.Domain.Abstractions.Extensions;
-using Splat;
 using Vending.Apps.Blazor.Services;
 using Vending.Apps.Blazor.Snacks;
 using Vending.Domain.Abstractions;
@@ -26,14 +26,13 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     private StreamSequenceToken? _snackSequenceToken;
 
     /// <inheritdoc />
-    public MachinesManagementViewModel()
+    public MachinesManagementViewModel(IClusterClientReady clusterClientReady)
     {
         // When the cluster client is ready, set the cluster client.
-        ClusterClientReady = Locator.Current.GetService<IClusterClientReady>();
+        ClusterClientReady = Guard.Against.Null(clusterClientReady, nameof(clusterClientReady));
         this.WhenAnyValue(vm => vm.ClusterClientReady)
             .Where(clientReady => clientReady != null)
             .SelectMany(clientReady => clientReady!.ClusterClient.Task)
-            .ObserveOn(RxApp.MainThreadScheduler)
             .Subscribe(client => ClusterClient = client);
 
         // Create the cache for the snacks.
@@ -41,13 +40,9 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
         snacksCache.Connect()
                    .AutoRefresh(snack => snack.Id)
                    .Sort(SortExpressionComparer<SnackViewModel>.Ascending(snack => snack.Id))
-                   .ObserveOn(RxApp.MainThreadScheduler)
                    .Bind(out var snacks)
-                   .Subscribe();
+                   .Subscribe(set => SnacksChangeSet = set);
         Snacks = snacks;
-        // Recalculate the snack count when the snacks change.
-        snacksCache.CountChanged.ObserveOn(RxApp.MainThreadScheduler)
-                   .Subscribe(count => SnackCount = count);
 
         // Get snacks and update the cache.
         this.WhenAnyValue(vm => vm.ClusterClient)
@@ -56,7 +51,6 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
             .SelectMany(grain => grain.ListAsync(new SnackRetrieverListQuery(null, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")))
             .Where(result => result.IsSuccess)
             .Select(result => result.Value)
-            .ObserveOn(RxApp.MainThreadScheduler)
             .Subscribe(snacksList => snacksCache.AddOrUpdateWith(snacksList));
 
         // Create the cache for the machines.
@@ -76,25 +70,21 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
                    .Page(this.WhenAnyValue(vm => vm.PageNumber, vm => vm.PageSize)
                              .DistinctUntilChanged()
                              .Select(tuple => new PageRequest(tuple.Item1, tuple.Item2)))
-                   .ObserveOn(RxApp.MainThreadScheduler)
                    .Bind(out var machines)
                    .Subscribe();
         Machines = machines;
         // Recalculate the page count when the cache changes.
         machinesObs.Count()
-                   .ObserveOn(RxApp.MainThreadScheduler)
                    .Subscribe(count =>
                               {
                                   MachineCount = count;
                                   PageCount = (int)Math.Ceiling((double)count / PageSize);
                               });
         this.WhenAnyValue(vm => vm.PageSize)
-            .ObserveOn(RxApp.MainThreadScheduler)
             .Subscribe(size => PageCount = (int)Math.Ceiling((double)machinesCache.Count / size));
 
         // Recalculate the page number when the page size or page count changes.
         this.WhenAnyValue(vm => vm.PageSize, vm => vm.PageCount)
-            .ObserveOn(RxApp.MainThreadScheduler)
             .Subscribe(tuple =>
                        {
                            var pageNumber = PageNumber <= 0 ? 1 : PageNumber;
@@ -113,13 +103,11 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
             .SelectMany(tuple => tuple.Item3.ListAsync(new MachineRetrieverListQuery(null, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager", new DecimalRange(tuple.Item1, tuple.Item2))))
             .Where(result => result.IsSuccess)
             .Select(result => result.Value)
-            .ObserveOn(RxApp.MainThreadScheduler)
             .Subscribe(machinesList => machinesCache.AddOrUpdateWith(machinesList));
 
         // When the current machine changes, if it is null, set the current machine edit view model to null.
-        this.WhenAnyValue(vm => vm.CurrentMachine, vm => vm.SnackCount, vm => vm.ClusterClient)
-            .Where(tuple => tuple.Item1 == null || tuple.Item2 == 0 || tuple.Item3 == null)
-            .ObserveOn(RxApp.MainThreadScheduler)
+        this.WhenAnyValue(vm => vm.CurrentMachine, vm => vm.ClusterClient)
+            .Where(tuple => tuple.Item1 == null || tuple.Item2 == null)
             .Subscribe(_ => CurrentMachineEdit = null);
 
         // Stream events subscription.
@@ -132,7 +120,6 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
                                                               .Publish()
                                                               .RefCount();
                                allMachinesStreamObs.Where(tuple => tuple.Event is MachineInfoSavedEvent)
-                                                   .ObserveOn(RxApp.MainThreadScheduler)
                                                    .Subscribe(tuple =>
                                                               {
                                                                   _machineSequenceToken = tuple.SequenceToken;
@@ -141,7 +128,6 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
                                                               })
                                                    .DisposeWith(disposable);
                                allMachinesStreamObs.Where(tuple => tuple.Event is MachineInfoErrorEvent)
-                                                   .ObserveOn(RxApp.MainThreadScheduler)
                                                    .Subscribe(tuple =>
                                                               {
                                                                   var errorEvent = (MachineInfoErrorEvent)tuple.Event;
@@ -156,7 +142,6 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
                                                             .Publish()
                                                             .RefCount();
                                allSnacksStreamObs.Where(tuple => tuple.Event is SnackInfoSavedEvent)
-                                                 .ObserveOn(RxApp.MainThreadScheduler)
                                                  .Subscribe(tuple =>
                                                             {
                                                                 _snackSequenceToken = tuple.SequenceToken;
@@ -165,7 +150,6 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
                                                             })
                                                  .DisposeWith(disposable);
                                allSnacksStreamObs.Where(tuple => tuple.Event is SnackInfoErrorEvent)
-                                                 .ObserveOn(RxApp.MainThreadScheduler)
                                                  .Subscribe(tuple =>
                                                             {
                                                                 var errorEvent = (SnackInfoErrorEvent)tuple.Event;
@@ -256,8 +240,8 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
         set => this.RaiseAndSetIfChanged(ref _currentMachine, value);
     }
 
-    private MachineEditWindowModel? _currentMachineEdit;
-    public MachineEditWindowModel? CurrentMachineEdit
+    private MachineEditViewModel? _currentMachineEdit;
+    public MachineEditViewModel? CurrentMachineEdit
     {
         get => _currentMachineEdit;
         set => this.RaiseAndSetIfChanged(ref _currentMachineEdit, value);
@@ -274,11 +258,11 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
 
     public ReadOnlyObservableCollection<SnackViewModel> Snacks { get; }
 
-    private int _snackCount;
-    public int SnackCount
+    private IChangeSet<SnackViewModel, Guid>? _snacksChangeSet;
+    public IChangeSet<SnackViewModel, Guid>? SnacksChangeSet
     {
-        get => _snackCount;
-        set => this.RaiseAndSetIfChanged(ref _snackCount, value);
+        get => _snacksChangeSet;
+        set => this.RaiseAndSetIfChanged(ref _snacksChangeSet, value);
     }
 
     #endregion
@@ -288,7 +272,7 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     /// <summary>
     ///     Interaction that shows the machine edit dialog.
     /// </summary>
-    public Interaction<MachineEditWindowModel, Unit> ShowEditMachineInteraction { get; } = new();
+    public Interaction<MachineEditViewModel, Unit> ShowEditMachineInteraction { get; } = new();
 
     /// <summary>
     ///     Interaction that asks the user to confirm the removal of the current machine.
@@ -310,8 +294,8 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     public ReactiveCommand<Unit, Unit> AddMachineCommand { get; }
 
     private IObservable<bool> CanAddMachine =>
-        this.WhenAnyValue(vm => vm.SnackCount, vm => vm.ClusterClient)
-            .Select(tuple => tuple is { Item1: > 0, Item2: not null });
+        this.WhenAnyValue(vm => vm.ClusterClient)
+            .Select(client => client != null);
 
     /// <summary>
     ///     Adds a new machine.
@@ -322,13 +306,12 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
         do
         {
             var result = Result.Ok()
-                               .Ensure(SnackCount > 0, "No snacks available.")
                                .Ensure(ClusterClient != null, "No cluster client available.")
                                .MapTry(() =>
                                        {
                                            var machine = new Machine();
                                            machine.Slots.Add(new MachineSlot(machine.Id, 1));
-                                           return new MachineEditWindowModel(machine, Snacks, ClusterClient!);
+                                           return new MachineEditViewModel(machine, Snacks, ClusterClient!);
                                        });
             if (result.IsSuccess)
             {
@@ -347,8 +330,8 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     public ReactiveCommand<Unit, Unit> EditMachineCommand { get; }
 
     private IObservable<bool> CanEditMachine =>
-        this.WhenAnyValue(vm => vm.CurrentMachine, vm => vm.SnackCount, vm => vm.ClusterClient)
-            .Select(tuple => tuple is { Item1: not null, Item2: > 0, Item3: not null });
+        this.WhenAnyValue(vm => vm.CurrentMachine, vm => vm.ClusterClient)
+            .Select(tuple => tuple is { Item1: not null, Item2: not null });
 
     /// <summary>
     ///     Edits the current machine.
@@ -360,11 +343,10 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
         {
             var result = await Result.Ok()
                                      .Ensure(CurrentMachine != null, "No machine selected.")
-                                     .Ensure(SnackCount > 0, "No snacks available.")
                                      .Ensure(ClusterClient != null, "No cluster client available.")
                                      .MapTry(() => ClusterClient!.GetGrain<IMachineGrain>(CurrentMachine!.Id))
                                      .MapTryAsync(grain => grain.GetMachineAsync())
-                                     .TapTryAsync(machine => CurrentMachineEdit = new MachineEditWindowModel(machine, Snacks, ClusterClient!));
+                                     .TapTryAsync(machine => CurrentMachineEdit = new MachineEditViewModel(machine, Snacks, ClusterClient!));
             if (result.IsSuccess)
             {
                 await ShowEditMachineInteraction.Handle(CurrentMachineEdit!);

@@ -17,7 +17,11 @@
                     <MudCheckBox Label="Deleted" Checked="@ViewModel.IsDeleted" Disabled="true" />
                 </MudCardContent>
                 <MudCardActions>
-                    <MudButton StartIcon="@Icons.Material.Filled.Save" Command="@ViewModel.SaveSnackCommand" Variant="@Variant.Filled" Color="Color.Primary">Save</MudButton>
+                    <MudGrid Justify="Justify.Center">
+                        <MudItem>
+                            <MudButton StartIcon="@Icons.Material.Filled.Save" Command="@ViewModel.SaveSnackCommand" Variant="@Variant.Filled" Color="Color.Primary">Save</MudButton>
+                        </MudItem>
+                    </MudGrid>
                 </MudCardActions>
             </MudCard>
         </MudItem>

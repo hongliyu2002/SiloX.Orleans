@@ -27,12 +27,15 @@ public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel
         Guard.Against.Null(machine, nameof(machine));
         _snacks = Guard.Against.Null(snacks, nameof(snacks));
         ClusterClient = Guard.Against.Null(clusterClient, nameof(clusterClient));
+        
         // Create the cache for the slots.
         _slotsCache = new SourceCache<SlotEditViewModel, int>(slot => slot.Position);
-        _slotsCache.Connect().AutoRefresh(slot => slot.Position).Sort(SortExpressionComparer<SlotEditViewModel>.Ascending(slot => slot.Position)).ObserveOn(RxApp.MainThreadScheduler).Bind(out _slots).Subscribe();
-
-        // Recalculate the slot count when the slots change.
-        _slotsCache.CountChanged.ObserveOn(RxApp.MainThreadScheduler).Subscribe(count => SlotCount = count);
+        _slotsCache.Connect()
+                   .AutoRefresh(slot => slot.Position)
+                   .Sort(SortExpressionComparer<SlotEditViewModel>.Ascending(slot => slot.Position))
+                   .Bind(out var slots)
+                   .Subscribe(set => SlotsChangeSet = set);
+        Slots = slots;
 
         // Recreate the money inside when any of the money properties change.
         this.WhenAnyValue(vm => vm.MoneyYuan1, vm => vm.MoneyYuan2, vm => vm.MoneyYuan5, vm => vm.MoneyYuan10, vm => vm.MoneyYuan20, vm => vm.MoneyYuan50, vm => vm.MoneyYuan100)
@@ -286,14 +289,13 @@ public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel
         set => this.RaiseAndSetIfChanged(ref _currentSlot, value);
     }
 
-    private readonly ReadOnlyObservableCollection<SlotEditViewModel> _slots;
-    public ReadOnlyObservableCollection<SlotEditViewModel> Slots => _slots;
+    public ReadOnlyObservableCollection<SlotEditViewModel> Slots { get; }
 
-    private int _slotCount;
-    public int SlotCount
+    private IChangeSet<SlotEditViewModel, int>? _slotsChangeSet;
+    public IChangeSet<SlotEditViewModel, int>? SlotsChangeSet
     {
-        get => _slotCount;
-        set => this.RaiseAndSetIfChanged(ref _slotCount, value);
+        get => _slotsChangeSet;
+        set => this.RaiseAndSetIfChanged(ref _slotsChangeSet, value);
     }
 
     private readonly ReadOnlyObservableCollection<SnackViewModel> _snacks;
@@ -321,7 +323,9 @@ public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel
     /// </summary>
     public ReactiveCommand<Unit, Unit> AddSlotCommand { get; }
 
-    private IObservable<bool> CanAddSlot => this.WhenAnyValue(vm => vm._snacks).Select(_ => _snacks.IsNotNullOrEmpty());
+    private IObservable<bool> CanAddSlot =>
+        this.WhenAnyValue(vm => vm._snacks)
+            .Select(_ => _snacks.IsNotNullOrEmpty());
 
     /// <summary>
     ///     Adds a new slot.
@@ -356,7 +360,9 @@ public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel
     /// <summary>
     ///     Gets the observable that indicates whether the remove slot command can be executed.
     /// </summary>
-    private IObservable<bool> CanRemoveSlot => this.WhenAnyValue(vm => vm.CurrentSlot).Select(slot => slot != null);
+    private IObservable<bool> CanRemoveSlot =>
+        this.WhenAnyValue(vm => vm.CurrentSlot)
+            .Select(slot => slot != null);
 
     /// <summary>
     ///     Removes the current slot.
@@ -377,8 +383,11 @@ public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel
     public ReactiveCommand<Unit, Unit> SaveMachineCommand { get; }
 
     private IObservable<bool> CanSaveMachine =>
-        this.WhenAnyValue(vm => vm.Slots, vm => vm.SlotCount, vm => vm.IsDeleted, vm => vm.ClusterClient)
-            .Select(tuple => tuple.Item1.IsNotNullOrEmpty() && tuple.Item1.GroupBy(s => s.Position).All(g => g.Count() == 1) && tuple is { Item3: false, Item4: not null });
+        this.WhenAnyValue(vm => vm.Slots, vm => vm.SlotsChangeSet, vm => vm.IsDeleted, vm => vm.ClusterClient)
+            .Select(tuple => tuple.Item1.IsNotNullOrEmpty()
+                          && tuple.Item1.GroupBy(s => s.Position)
+                                  .All(g => g.Count() == 1)
+                          && tuple is { Item3: false, Item4: not null });
 
     private async Task SaveMachineAsync()
     {
@@ -389,7 +398,8 @@ public class MachineEditWindowModel : ReactiveObject, IActivatableViewModel
             Dictionary<int, SnackPile?> slots = null!;
             var result = await Result.Ok()
                                      .Ensure(Slots.IsNotNullOrEmpty(), "No slots available.")
-                                     .Ensure(Slots.GroupBy(s => s.Position).All(g => g.Count() == 1), "Duplicate slot positions.")
+                                     .Ensure(Slots.GroupBy(s => s.Position)
+                                                  .All(g => g.Count() == 1), "Duplicate slot positions.")
                                      .Ensure(ClusterClient != null, "No cluster client available.")
                                      .TapTry(() => slots = Slots.ToDictionary(slot => slot.Position, slot => slot.SnackPile))
                                      .TapTry(() => grain = ClusterClient!.GetGrain<IMachineRepoGrain>("Manager"))

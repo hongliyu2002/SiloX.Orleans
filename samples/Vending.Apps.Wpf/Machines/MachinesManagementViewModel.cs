@@ -43,11 +43,8 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
                    .Sort(SortExpressionComparer<SnackViewModel>.Ascending(snack => snack.Id))
                    .ObserveOn(RxApp.MainThreadScheduler)
                    .Bind(out var snacks)
-                   .Subscribe();
+                   .Subscribe(set => SnacksChangeSet = set);
         Snacks = snacks;
-        // Recalculate the snack count when the snacks change.
-        snacksCache.CountChanged.ObserveOn(RxApp.MainThreadScheduler)
-                   .Subscribe(count => SnackCount = count);
 
         // Get snacks and update the cache.
         this.WhenAnyValue(vm => vm.ClusterClient)
@@ -117,8 +114,8 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
             .Subscribe(machinesList => machinesCache.AddOrUpdateWith(machinesList));
 
         // When the current machine changes, if it is null, set the current machine edit view model to null.
-        this.WhenAnyValue(vm => vm.CurrentMachine, vm => vm.SnackCount, vm => vm.ClusterClient)
-            .Where(tuple => tuple.Item1 == null || tuple.Item2 == 0 || tuple.Item3 == null)
+        this.WhenAnyValue(vm => vm.CurrentMachine, vm => vm.ClusterClient)
+            .Where(tuple => tuple.Item1 == null || tuple.Item2 == null)
             .ObserveOn(RxApp.MainThreadScheduler)
             .Subscribe(_ => CurrentMachineEdit = null);
 
@@ -274,11 +271,11 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
 
     public ReadOnlyObservableCollection<SnackViewModel> Snacks { get; }
 
-    private int _snackCount;
-    public int SnackCount
+    private IChangeSet<SnackViewModel, Guid>? _snacksChangeSet;
+    public IChangeSet<SnackViewModel, Guid>? SnacksChangeSet
     {
-        get => _snackCount;
-        set => this.RaiseAndSetIfChanged(ref _snackCount, value);
+        get => _snacksChangeSet;
+        set => this.RaiseAndSetIfChanged(ref _snacksChangeSet, value);
     }
 
     #endregion
@@ -310,8 +307,8 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     public ReactiveCommand<Unit, Unit> AddMachineCommand { get; }
 
     private IObservable<bool> CanAddMachine =>
-        this.WhenAnyValue(vm => vm.SnackCount, vm => vm.ClusterClient)
-            .Select(tuple => tuple is { Item1: > 0, Item2: not null });
+        this.WhenAnyValue(vm => vm.ClusterClient)
+            .Select(client => client != null);
 
     /// <summary>
     ///     Adds a new machine.
@@ -322,7 +319,6 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
         do
         {
             var result = Result.Ok()
-                               .Ensure(SnackCount > 0, "No snacks available.")
                                .Ensure(ClusterClient != null, "No cluster client available.")
                                .MapTry(() =>
                                        {
@@ -347,8 +343,8 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
     public ReactiveCommand<Unit, Unit> EditMachineCommand { get; }
 
     private IObservable<bool> CanEditMachine =>
-        this.WhenAnyValue(vm => vm.CurrentMachine, vm => vm.SnackCount, vm => vm.ClusterClient)
-            .Select(tuple => tuple is { Item1: not null, Item2: > 0, Item3: not null });
+        this.WhenAnyValue(vm => vm.CurrentMachine, vm => vm.ClusterClient)
+            .Select(tuple => tuple is { Item1: not null, Item2: not null });
 
     /// <summary>
     ///     Edits the current machine.
@@ -360,7 +356,6 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
         {
             var result = await Result.Ok()
                                      .Ensure(CurrentMachine != null, "No machine selected.")
-                                     .Ensure(SnackCount > 0, "No snacks available.")
                                      .Ensure(ClusterClient != null, "No cluster client available.")
                                      .MapTry(() => ClusterClient!.GetGrain<IMachineGrain>(CurrentMachine!.Id))
                                      .MapTryAsync(grain => grain.GetMachineAsync())
