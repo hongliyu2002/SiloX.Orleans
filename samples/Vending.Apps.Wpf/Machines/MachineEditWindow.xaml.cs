@@ -68,7 +68,7 @@ public partial class MachineEditWindow
 
     private void NotifySavedMachine(InteractionContext<string, Unit> interaction)
     {
-        MessageBox.Show(this, interaction.Input, "Notification", MessageBoxButton.YesNo, MessageBoxImage.Question);
+        MessageBox.Show(this, interaction.Input, "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
         interaction.SetOutput(Unit.Default);
     }
 

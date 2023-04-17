@@ -47,7 +47,7 @@ public partial class SnacksManagementView : ReactiveInjectableComponentBase<Snac
     {
         var errors = interaction.Input;
         var message = errors.ToMessage();
-        var result = await DialogService.ShowMessageBox("Errors occurred when operating", (MarkupString)$">{message}.\n## Retry or cancel?", "Retry", "Abort");
+        var result = await DialogService.ShowMessageBox("Errors occurred when operating", (MarkupString)$">{message}.\n\n Retry or cancel?", "Retry", "Abort");
         interaction.SetOutput(result == true ? ErrorRecovery.Retry : ErrorRecovery.Abort);
     }
 }

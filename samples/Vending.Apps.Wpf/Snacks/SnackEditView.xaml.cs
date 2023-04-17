@@ -1,4 +1,5 @@
-﻿using System.Reactive.Disposables;
+﻿using System.Reactive;
+using System.Reactive.Disposables;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using Fluxera.Utilities.Extensions;
@@ -27,6 +28,7 @@ public partial class SnackEditView
                                this.OneWayBind(ViewModel, vm => vm.IsDeleted, v => v.NameTextBox.IsEnabled, deleted => !deleted).DisposeWith(disposable);
                                this.OneWayBind(ViewModel, vm => vm.IsDeleted, v => v.PictureTextBox.IsEnabled, deleted => !deleted).DisposeWith(disposable);
                                this.BindCommand(ViewModel, vm => vm.SaveSnackCommand, v => v.SaveButton).DisposeWith(disposable);
+                               ViewModel?.NotifySavedSnackInteraction.RegisterHandler(NotifySavedSnack).DisposeWith(disposable);
                                ViewModel?.ErrorsInteraction.RegisterHandler(HandleErrors).DisposeWith(disposable);
                            });
     }
@@ -34,6 +36,12 @@ public partial class SnackEditView
     private Visibility StringToVisibilityConverter(string value)
     {
         return value.IsNotNullOrEmpty() ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    private void NotifySavedSnack(InteractionContext<string, Unit> interaction)
+    {
+        MessageBox.Show(interaction.Input, "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
+        interaction.SetOutput(Unit.Default);
     }
 
     private void HandleErrors(InteractionContext<IEnumerable<IError>, ErrorRecovery> interaction)

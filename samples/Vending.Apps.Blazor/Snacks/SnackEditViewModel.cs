@@ -117,7 +117,12 @@ public class SnackEditViewModel : ReactiveObject, IActivatableViewModel
     #endregion
 
     #region Interactions
-
+    
+    /// <summary>
+    ///     Interaction that notifies the user that the snack has been saved.
+    /// </summary>
+    public Interaction<string, Unit> NotifySavedSnackInteraction { get; } = new();
+    
     /// <summary>
     ///     Interaction for errors.
     /// </summary>
@@ -151,6 +156,7 @@ public class SnackEditViewModel : ReactiveObject, IActivatableViewModel
                                      .TapTryAsync(UpdateWith);
             if (result.IsSuccess)
             {
+                await NotifySavedSnackInteraction.Handle($"Snack {Id} saved successfully.");
                 return;
             }
             var errorRecovery = await ErrorsInteraction.Handle(result.Errors);
