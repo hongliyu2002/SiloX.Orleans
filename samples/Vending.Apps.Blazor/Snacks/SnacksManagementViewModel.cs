@@ -39,7 +39,7 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel
                                .Throttle(TimeSpan.FromMilliseconds(500))
                                .DistinctUntilChanged()
                                .Select(_ => new Func<SnackViewModel, bool>(snack => (SearchTerm.IsNullOrEmpty() || snack.Name.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase)) && snack.IsDeleted == false)))
-                   .Sort(SortExpressionComparer<SnackViewModel>.Ascending(snack => snack.Id))
+                   .Sort(SortExpressionComparer<SnackViewModel>.Ascending(snack => snack.Name))
                    .Bind(out var snacks)
                    .Subscribe(set => SnacksChangeSet = set);
         Snacks = snacks;

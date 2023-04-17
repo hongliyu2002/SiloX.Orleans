@@ -41,7 +41,7 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
         var snacksCache = new SourceCache<SnackViewModel, Guid>(snack => snack.Id);
         snacksCache.Connect()
                    .AutoRefresh(snack => snack.Name)
-                   .Sort(SortExpressionComparer<SnackViewModel>.Ascending(snack => snack.Id))
+                   .Sort(SortExpressionComparer<SnackViewModel>.Ascending(snack => snack.Name))
                    .Bind(out var snacks)
                    .Subscribe(set => SnacksChangeSet = set);
         Snacks = snacks;
