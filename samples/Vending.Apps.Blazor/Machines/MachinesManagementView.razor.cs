@@ -11,6 +11,7 @@ namespace Vending.Apps.Blazor.Machines;
 
 public partial class MachinesManagementView : ReactiveInjectableComponentBase<MachinesManagementViewModel>
 {
+    private IDisposable? _viewModelChangedSubscription;
     private IDisposable? _showEditMachineInteractionHandler;
     private IDisposable? _confirmRemoveMachineInteractionHandler;
     private IDisposable? _errorsInteractionHandler;
@@ -19,23 +20,38 @@ public partial class MachinesManagementView : ReactiveInjectableComponentBase<Ma
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        this.WhenAnyValue(v => v.ViewModel!.Changed)
-            .Throttle(TimeSpan.FromMilliseconds(100))
-            .Subscribe(_ => InvokeAsync(StateHasChanged));
-        ViewModel?.Activator.Activate();
-        _showEditMachineInteractionHandler = ViewModel?.ShowEditMachineInteraction.RegisterHandler(ShowEditMachine);
-        _confirmRemoveMachineInteractionHandler = ViewModel?.ConfirmRemoveMachineInteraction.RegisterHandler(ConfirmRemoveMachine);
-        _errorsInteractionHandler = ViewModel?.ErrorsInteraction.RegisterHandler(HandleErrors);
+        Activate();
     }
 
     /// <inheritdoc />
     protected override void Dispose(bool disposing)
     {
-        ViewModel?.Activator.Deactivate();
+        Deactivate();
+        base.Dispose(disposing);
+    }
+
+    private void Activate()
+    {
+        if (ViewModel == null)
+        {
+            return;
+        }
+        _viewModelChangedSubscription = this.WhenAnyValue(v => v.ViewModel!.Changed)
+                                            .Throttle(TimeSpan.FromMilliseconds(200))
+                                            .Subscribe(_ => InvokeAsync(StateHasChanged));
+        _showEditMachineInteractionHandler = ViewModel.ShowEditMachineInteraction.RegisterHandler(ShowEditMachine);
+        _confirmRemoveMachineInteractionHandler = ViewModel.ConfirmRemoveMachineInteraction.RegisterHandler(ConfirmRemoveMachine);
+        _errorsInteractionHandler = ViewModel.ErrorsInteraction.RegisterHandler(HandleErrors);
+        ViewModel.Activator.Activate();
+    }
+
+    private void Deactivate()
+    {
+        _viewModelChangedSubscription?.Dispose();
         _showEditMachineInteractionHandler?.Dispose();
         _confirmRemoveMachineInteractionHandler?.Dispose();
         _errorsInteractionHandler?.Dispose();
-        base.Dispose(disposing);
+        ViewModel?.Activator.Deactivate();
     }
 
     [Inject]

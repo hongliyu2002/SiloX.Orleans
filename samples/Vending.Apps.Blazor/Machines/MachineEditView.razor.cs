@@ -11,35 +11,17 @@ namespace Vending.Apps.Blazor.Machines;
 
 public partial class MachineEditView : ReactiveComponentBase<MachineEditViewModel>
 {
+    private IDisposable? _viewModelChangedSubscription;
     private IDisposable? _confirmRemoveSlotInteractionHandler;
     private IDisposable? _notifySavedMachineInteractionHandler;
     private IDisposable? _errorsInteractionHandler;
 
     /// <inheritdoc />
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        this.WhenAnyValue(v => v.ViewModel!.Changed)
-            .Throttle(TimeSpan.FromMilliseconds(100))
-            .Subscribe(_ => InvokeAsync(StateHasChanged));
-        ViewModel?.Activator.Activate();
-        _confirmRemoveSlotInteractionHandler = ViewModel?.ConfirmRemoveSlotInteraction.RegisterHandler(ConfirmRemoveSlot);
-        _notifySavedMachineInteractionHandler = ViewModel?.NotifySavedMachineInteraction.RegisterHandler(NotifySavedMachine);
-        _errorsInteractionHandler = ViewModel?.ErrorsInteraction.RegisterHandler(HandleErrors);
-    }
-
-    /// <inheritdoc />
     protected override void Dispose(bool disposing)
     {
-        ViewModel?.Activator.Deactivate();
-        _confirmRemoveSlotInteractionHandler?.Dispose();
-        _notifySavedMachineInteractionHandler?.Dispose();
-        _errorsInteractionHandler?.Dispose();
+        Deactivate();
         base.Dispose(disposing);
     }
-
-    [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; } = default!;
 
     [Parameter]
     public MachineEditViewModel? EditViewModel
@@ -51,16 +33,43 @@ public partial class MachineEditView : ReactiveComponentBase<MachineEditViewMode
             {
                 return;
             }
-            ViewModel?.Activator.Deactivate();
+            Deactivate();
             ViewModel = value;
-            ViewModel?.Activator.Activate();
+            Activate();
         }
+    }
+
+    private void Activate()
+    {
+        if (ViewModel == null)
+        {
+            return;
+        }
+        _viewModelChangedSubscription = this.WhenAnyValue(v => v.ViewModel!.Changed)
+                                            .Throttle(TimeSpan.FromMilliseconds(200))
+                                            .Subscribe(_ => InvokeAsync(StateHasChanged));
+        _confirmRemoveSlotInteractionHandler = ViewModel.ConfirmRemoveSlotInteraction.RegisterHandler(ConfirmRemoveSlot);
+        _notifySavedMachineInteractionHandler = ViewModel.NotifySavedMachineInteraction.RegisterHandler(NotifySavedMachine);
+        _errorsInteractionHandler = ViewModel.ErrorsInteraction.RegisterHandler(HandleErrors);
+        ViewModel.Activator.Activate();
+    }
+
+    private void Deactivate()
+    {
+        _viewModelChangedSubscription?.Dispose();
+        _confirmRemoveSlotInteractionHandler?.Dispose();
+        _notifySavedMachineInteractionHandler?.Dispose();
+        _errorsInteractionHandler?.Dispose();
+        ViewModel?.Activator.Deactivate();
     }
 
     private void Close()
     {
         MudDialog.Cancel();
     }
+
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; } = default!;
 
     [Inject]
     private IDialogService DialogService { get; set; } = default!;

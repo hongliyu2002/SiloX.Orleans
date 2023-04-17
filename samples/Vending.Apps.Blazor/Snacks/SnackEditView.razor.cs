@@ -14,19 +14,9 @@ public partial class SnackEditView : ReactiveComponentBase<SnackEditViewModel>
     private IDisposable? _errorsInteractionHandler;
 
     /// <inheritdoc />
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        _notifySavedSnackInteractionHandler = ViewModel?.NotifySavedSnackInteraction.RegisterHandler(NotifySavedSnack);
-        _errorsInteractionHandler = ViewModel?.ErrorsInteraction.RegisterHandler(HandleErrors);
-    }
-
-    /// <inheritdoc />
     protected override void Dispose(bool disposing)
     {
-        ViewModel?.Activator.Deactivate();
-        _notifySavedSnackInteractionHandler?.Dispose();
-        _errorsInteractionHandler?.Dispose();
+        Deactivate();
         base.Dispose(disposing);
     }
 
@@ -40,10 +30,28 @@ public partial class SnackEditView : ReactiveComponentBase<SnackEditViewModel>
             {
                 return;
             }
-            ViewModel?.Activator.Deactivate();
+            Deactivate();
             ViewModel = value;
-            ViewModel?.Activator.Activate();
+            Activate();
         }
+    }
+
+    private void Activate()
+    {
+        if (ViewModel == null)
+        {
+            return;
+        }
+        _notifySavedSnackInteractionHandler = ViewModel.NotifySavedSnackInteraction.RegisterHandler(NotifySavedSnack);
+        _errorsInteractionHandler = ViewModel.ErrorsInteraction.RegisterHandler(HandleErrors);
+        ViewModel.Activator.Activate();
+    }
+
+    private void Deactivate()
+    {
+        _notifySavedSnackInteractionHandler?.Dispose();
+        _errorsInteractionHandler?.Dispose();
+        ViewModel?.Activator.Deactivate();
     }
 
     [Inject]

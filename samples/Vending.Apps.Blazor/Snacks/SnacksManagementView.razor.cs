@@ -10,6 +10,7 @@ namespace Vending.Apps.Blazor.Snacks;
 
 public partial class SnacksManagementView : ReactiveInjectableComponentBase<SnacksManagementViewModel>
 {
+    private IDisposable? _viewModelChangedSubscription;
     private IDisposable? _confirmRemoveSnackInteractionHandler;
     private IDisposable? _errorsInteractionHandler;
 
@@ -17,21 +18,36 @@ public partial class SnacksManagementView : ReactiveInjectableComponentBase<Snac
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        this.WhenAnyValue(v => v.ViewModel!.Changed)
-            .Throttle(TimeSpan.FromMilliseconds(100))
-            .Subscribe(_ => InvokeAsync(StateHasChanged));
-        ViewModel?.Activator.Activate();
-        _confirmRemoveSnackInteractionHandler = ViewModel?.ConfirmRemoveSnackInteraction.RegisterHandler(ConfirmRemoveSnack);
-        _errorsInteractionHandler = ViewModel?.ErrorsInteraction.RegisterHandler(HandleErrors);
+        Activate();
     }
 
     /// <inheritdoc />
     protected override void Dispose(bool disposing)
     {
-        ViewModel?.Activator.Deactivate();
+        Deactivate();
+        base.Dispose(disposing);
+    }
+
+    private void Activate()
+    {
+        if (ViewModel == null)
+        {
+            return;
+        }
+        _viewModelChangedSubscription = this.WhenAnyValue(v => v.ViewModel!.Changed)
+                                            .Throttle(TimeSpan.FromMilliseconds(200))
+                                            .Subscribe(_ => InvokeAsync(StateHasChanged));
+        _confirmRemoveSnackInteractionHandler = ViewModel.ConfirmRemoveSnackInteraction.RegisterHandler(ConfirmRemoveSnack);
+        _errorsInteractionHandler = ViewModel.ErrorsInteraction.RegisterHandler(HandleErrors);
+        ViewModel.Activator.Activate();
+    }
+
+    private void Deactivate()
+    {
+        _viewModelChangedSubscription?.Dispose();
         _confirmRemoveSnackInteractionHandler?.Dispose();
         _errorsInteractionHandler?.Dispose();
-        base.Dispose(disposing);
+        ViewModel?.Activator.Deactivate();
     }
 
     [Inject]
