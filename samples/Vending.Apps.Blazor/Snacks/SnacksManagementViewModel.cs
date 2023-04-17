@@ -35,6 +35,7 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel
         var snacksCache = new SourceCache<SnackViewModel, Guid>(snack => snack.Id);
         snacksCache.Connect()
                    .AutoRefresh(snack => snack.Name)
+                   .AutoRefresh(snack => snack.IsDeleted)
                    .Filter(this.WhenAnyValue(vm => vm.SearchTerm)
                                .Throttle(TimeSpan.FromMilliseconds(500))
                                .DistinctUntilChanged()
