@@ -215,12 +215,12 @@ public sealed class Money : IEquatable<Money>
 
     public static bool operator ==(Money? left, Money? right)
     {
-        return Equals(left, right);
+        return left?.Equals(right) ?? right is null;
     }
 
     public static bool operator !=(Money? left, Money? right)
     {
-        return !Equals(left, right);
+        return !(left == right);
     }
 
     #endregion
