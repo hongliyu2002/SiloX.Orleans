@@ -128,6 +128,7 @@ public class MachineViewModel : ReactiveObject, IActivatableViewModel
                                                           {
                                                               _lastSequenceToken = tuple.SequenceToken;
                                                               var machineEvent = (MachineMoneyInsertedEvent)tuple.Event;
+                                                              AmountInTransaction = machineEvent.AmountInTransaction;
                                                               UpdateWith(machineEvent.MoneyInside);
                                                           })
                                                .DisposeWith(disposable);
@@ -136,6 +137,7 @@ public class MachineViewModel : ReactiveObject, IActivatableViewModel
                                                           {
                                                               _lastSequenceToken = tuple.SequenceToken;
                                                               var machineEvent = (MachineMoneyReturnedEvent)tuple.Event;
+                                                              AmountInTransaction = machineEvent.AmountInTransaction;
                                                               UpdateWith(machineEvent.MoneyInside);
                                                           })
                                                .DisposeWith(disposable);
@@ -160,6 +162,7 @@ public class MachineViewModel : ReactiveObject, IActivatableViewModel
                                                           {
                                                               _lastSequenceToken = tuple.SequenceToken;
                                                               var machineEvent = (MachineSnackBoughtEvent)tuple.Event;
+                                                              AmountInTransaction = machineEvent.AmountInTransaction;
                                                               _slotsCache.AddOrUpdateWith(machineEvent.Slot);
                                                           })
                                                .DisposeWith(disposable);
@@ -174,6 +177,7 @@ public class MachineViewModel : ReactiveObject, IActivatableViewModel
         // Create the commands.
         InsertMoneyCommand = ReactiveCommand.CreateFromTask<Money, bool>(InsertMoneyAsync, CanInsertMoney);
         ReturnMoneyCommand = ReactiveCommand.CreateFromTask(ReturnMoneyAsync, CanReturnMoney);
+        BuySnackCommand = ReactiveCommand.CreateFromTask<int, bool>(BuySnackAsync, CanBuySnack);
     }
 
     #endregion
@@ -389,6 +393,43 @@ public class MachineViewModel : ReactiveObject, IActivatableViewModel
                                      .Ensure(ClusterClient != null, "No cluster client available.")
                                      .MapTry(() => ClusterClient!.GetGrain<IMachineGrain>(Id))
                                      .MapTryAsync(grain => grain.ReturnMoneyAsync(new MachineReturnMoneyCommand(Guid.NewGuid(), DateTimeOffset.UtcNow, "User")));
+            if (result.IsSuccess)
+            {
+                return true;
+            }
+            var errorRecovery = await ErrorsInteraction.Handle(result.Errors);
+            retry = errorRecovery == ErrorRecovery.Retry;
+        }
+        while (retry);
+        return false;
+    }
+
+    #endregion
+
+    #region Buy Snack
+
+    /// <summary>
+    ///     Gets the command that buys snack.
+    /// </summary>
+    public ReactiveCommand<int, bool> BuySnackCommand { get; }
+
+    private IObservable<bool> CanBuySnack =>
+        this.WhenAnyValue(vm => vm.Id, vm => vm.ClusterClient)
+            .Select(tuple => tuple.Item1 != Guid.Empty && tuple.Item2 != null);
+
+    /// <summary>
+    ///     Buys snack on the current machine.
+    /// </summary>
+    private async Task<bool> BuySnackAsync(int position)
+    {
+        bool retry;
+        do
+        {
+            var result = await Result.Ok()
+                                     .Ensure(Id != Guid.Empty, "No machine id.")
+                                     .Ensure(ClusterClient != null, "No cluster client available.")
+                                     .MapTry(() => ClusterClient!.GetGrain<IMachineGrain>(Id))
+                                     .MapTryAsync(grain => grain.BuySnackAsync(new MachineBuySnackCommand(position, Guid.NewGuid(), DateTimeOffset.UtcNow, "User")));
             if (result.IsSuccess)
             {
                 return true;

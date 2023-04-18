@@ -2,10 +2,10 @@
 @if (ViewModel != null)
 {
     <MudGrid>
-        <MudItem xs="2" sm="1">
+        <MudItem xs="5">
             <Vending.Apps.Blazor.Business.SnackView DisplayViewModel="@ViewModel.Snack" />
         </MudItem>
-        <MudItem xs="4" sm="2">
+        <MudItem xs="7">
             <MudStack Justify="Justify.Center">
                 <MudText Typo="Typo.body1" Color="Color.Info">Remain: @ViewModel.Quantity</MudText>
                 <MudText Typo="Typo.body1" Color="Color.Info">Price: @ViewModel.Price?.ToString("C2")</MudText>

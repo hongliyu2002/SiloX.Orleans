@@ -56,10 +56,14 @@
                 @foreach (var slot in ViewModel.Slots)
                 {
                     <MudListItem Value="slot">
-                        <MudStack Row="true" Justify="Justify.FlexStart">
-                            <MudButton StartIcon="@Icons.Material.Filled.Money" Command="@ViewModel.InsertMoneyCommand" CommandParameter="@Money.OneYuan" Variant="Variant.Filled" Color="Color.Success">Buy</MudButton>
-                            <SlotView DisplayViewModel="slot" />
-                        </MudStack>
+                        <MudGrid>
+                            <MudItem xs="8" sm="5" md="4" lg="3" xl="2">
+                                <SlotView DisplayViewModel="slot" />
+                            </MudItem>
+                            <MudItem xs="4" sm="3" md="2" lg="1" xl="1">
+                                <MudButton StartIcon="@Icons.Material.Filled.Money" Command="@ViewModel.BuySnackCommand" CommandParameter="@slot.Position" Variant="Variant.Filled" Color="Color.Success">Buy</MudButton>
+                            </MudItem>
+                        </MudGrid>
                     </MudListItem>
                 }
             </MudList>
