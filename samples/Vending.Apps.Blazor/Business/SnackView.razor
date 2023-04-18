@@ -2,13 +2,13 @@
 @if (ViewModel != null)
 {
     <MudGrid>
-        <MudItem xs="12">
-            <MudAlert Severity="Severity.Error" Variant="Variant.Filled" Style="@(ViewModel.ErrorInfo.IsNotNullOrEmpty() ? "display:block" : "display:none")">@ViewModel.ErrorInfo</MudAlert>
+        <MudItem xs="12" Style="@(ViewModel.ErrorInfo.IsNotNullOrEmpty() ? "display:block" : "display:none")">
+            <MudAlert Severity="Severity.Error" Variant="Variant.Filled">@ViewModel.ErrorInfo</MudAlert>
         </MudItem>
         @if (ViewModel.IsDeleted == false)
         {
             <MudItem xs="12">
-                <MudStack Justify="Justify.Center">
+                <MudStack>
                     <MudAvatar Image="@ViewModel.PictureUrl" Size="Size.Large" Rounded="true" />
                     <MudText Typo="Typo.caption">@ViewModel.Name</MudText>
                 </MudStack>

@@ -2,16 +2,13 @@
 @if (ViewModel != null)
 {
     <MudGrid>
-        <MudItem xs="4" sm="2">
-            <MudTextField T="int" @bind-Value="@ViewModel.Position" Label="Position" Variant="Variant.Text" Color="@Color.Info" />
-        </MudItem>
-        <MudItem xs="8" sm="6">
+        <MudItem xs="2" sm="1">
             <Vending.Apps.Blazor.Business.SnackView DisplayViewModel="@ViewModel.Snack" />
         </MudItem>
-        <MudItem xs="6" sm="4">
+        <MudItem xs="4" sm="2">
             <MudStack Justify="Justify.Center">
-                <MudTextField T="int?" @bind-Value="@ViewModel.Quantity" Label="Quantity" Variant="Variant.Text" Color="@Color.Info" />
-                <MudTextField T="decimal?" @bind-Value="@ViewModel.Price" Label="Price" Variant="Variant.Text" Color="@Color.Info" />
+                <MudText Typo="Typo.body1" Color="Color.Info">Remain: @ViewModel.Quantity</MudText>
+                <MudText Typo="Typo.body1" Color="Color.Info">Price: @ViewModel.Price?.ToString("C2")</MudText>
             </MudStack>
         </MudItem>
     </MudGrid>
