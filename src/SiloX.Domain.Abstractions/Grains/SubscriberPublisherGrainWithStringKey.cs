@@ -106,7 +106,7 @@ public abstract class SubscriberPublisherGrainWithStringKey<TSubEvent, TSubError
     /// <returns>The stream.</returns>
     private IAsyncStream<TPubEvent> GetPubBroadcastStream()
     {
-        return _pubBroadcastStream ??= _pubStreamProvider.GetStream<TPubEvent>(StreamId.Create(GetPubBroadcastStreamNamespace(), string.Empty));
+        return _pubBroadcastStream ??= _pubStreamProvider.GetStream<TPubEvent>(StreamId.Create(GetPubBroadcastStreamNamespace(), "Default"));
     }
 
     /// <summary>

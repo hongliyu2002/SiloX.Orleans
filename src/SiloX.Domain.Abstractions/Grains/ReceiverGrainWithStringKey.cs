@@ -55,7 +55,7 @@ public abstract class ReceiverGrainWithStringKey<TSubEvent, TSubErrorEvent> : Gr
     /// <returns>The stream.</returns>
     private IAsyncStream<TSubEvent> GetSubBroadcastStream()
     {
-        return _subBroadcastStream ??= _subStreamProvider.GetStream<TSubEvent>(StreamId.Create(GetSubBroadcastStreamNamespace(), string.Empty));
+        return _subBroadcastStream ??= _subStreamProvider.GetStream<TSubEvent>(StreamId.Create(GetSubBroadcastStreamNamespace(), "Default"));
     }
 
     /// <summary>

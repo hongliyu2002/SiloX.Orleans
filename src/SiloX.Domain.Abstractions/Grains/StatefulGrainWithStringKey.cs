@@ -56,7 +56,7 @@ public abstract class StatefulGrainWithStringKey<TState, TPubEvent, TPubErrorEve
     /// <returns>The stream.</returns>
     private IAsyncStream<TPubEvent> GetPubBroadcastStream()
     {
-        return _pubBroadcastStream ??= _pubStreamProvider.GetStream<TPubEvent>(StreamId.Create(GetPubBroadcastStreamNamespace(), string.Empty));
+        return _pubBroadcastStream ??= _pubStreamProvider.GetStream<TPubEvent>(StreamId.Create(GetPubBroadcastStreamNamespace(), "Default"));
     }
 
     /// <summary>

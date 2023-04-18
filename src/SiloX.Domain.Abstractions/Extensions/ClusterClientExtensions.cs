@@ -132,7 +132,7 @@ public static class ClusterClientExtensions
                                                                     try
                                                                     {
                                                                         var streamProvider = clusterClient.GetStreamProvider(providerName);
-                                                                        var stream = streamProvider.GetStream<TEvent>(StreamId.Create(broadcastNamespace, string.Empty));
+                                                                        var stream = streamProvider.GetStream<TEvent>(StreamId.Create(broadcastNamespace, "Default"));
                                                                         var subscription = await stream.SubscribeAsync((evt, token) => HandleNextAsync(evt, token, observer), ex => OnErrorAsync(ex, observer), () => OnCompletedAsync(observer), sequenceToken)
                                                                                                        .ConfigureAwait(false);
                                                                         return Disposable.Create(() => HandleUnsubscribeAsync(subscription));

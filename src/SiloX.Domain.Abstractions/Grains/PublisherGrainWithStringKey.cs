@@ -53,7 +53,7 @@ public abstract class PublisherGrainWithStringKey<TPubEvent, TPubErrorEvent> : G
     /// <returns>The stream.</returns>
     private IAsyncStream<TPubEvent> GetPubBroadcastStream()
     {
-        return _pubBroadcastStream ??= _pubStreamProvider.GetStream<TPubEvent>(StreamId.Create(GetPubBroadcastStreamNamespace(), string.Empty));
+        return _pubBroadcastStream ??= _pubStreamProvider.GetStream<TPubEvent>(StreamId.Create(GetPubBroadcastStreamNamespace(), "Default"));
     }
 
     /// <summary>
