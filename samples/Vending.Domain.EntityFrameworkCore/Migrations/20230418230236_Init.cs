@@ -29,7 +29,8 @@ namespace Vending.Domain.EntityFrameworkCore.Migrations
                     SlotCount = table.Column<int>(type: "int", nullable: false),
                     SnackCount = table.Column<int>(type: "int", nullable: false),
                     SnackQuantity = table.Column<int>(type: "int", nullable: false),
-                    SnackAmount = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false)
+                    SnackAmount = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false),
+                    Version = table.Column<int>(type: "int", nullable: false, defaultValue: 0)
                 },
                 constraints: table =>
                 {
@@ -42,7 +43,8 @@ namespace Vending.Domain.EntityFrameworkCore.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    Version = table.Column<int>(type: "int", nullable: false, defaultValue: 0)
                 },
                 constraints: table =>
                 {
@@ -113,7 +115,8 @@ namespace Vending.Domain.EntityFrameworkCore.Migrations
                     SnackId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     BoughtPrice = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false),
                     BoughtAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    BoughtBy = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true)
+                    BoughtBy = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true),
+                    Version = table.Column<int>(type: "int", nullable: false, defaultValue: 0)
                 },
                 constraints: table =>
                 {

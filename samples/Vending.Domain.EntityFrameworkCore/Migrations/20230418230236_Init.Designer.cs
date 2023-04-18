@@ -12,7 +12,7 @@ using Vending.Domain.EntityFrameworkCore;
 namespace Vending.Domain.EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(DomainDbContext))]
-    [Migration("20230410142245_Init")]
+    [Migration("20230418230236_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -20,7 +20,7 @@ namespace Vending.Domain.EntityFrameworkCore.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.4")
+                .HasAnnotation("ProductVersion", "7.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -50,6 +50,12 @@ namespace Vending.Domain.EntityFrameworkCore.Migrations
 
                     b.Property<int>("SnackQuantity")
                         .HasColumnType("int");
+
+                    b.Property<int>("Version")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("Version");
 
                     b.HasKey("Id");
 
@@ -119,6 +125,12 @@ namespace Vending.Domain.EntityFrameworkCore.Migrations
                     b.Property<Guid>("SnackId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("Version")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("Version");
+
                     b.HasKey("Id");
 
                     b.HasIndex("MachineId");
@@ -141,6 +153,12 @@ namespace Vending.Domain.EntityFrameworkCore.Migrations
                         .IsRequired()
                         .HasMaxLength(128)
                         .HasColumnType("nvarchar(128)");
+
+                    b.Property<int>("Version")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("Version");
 
                     b.HasKey("Id");
 
