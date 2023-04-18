@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Orleans.Runtime.Development;
 
 namespace SiloX.Orleans.Streaming;
 
@@ -31,8 +32,8 @@ public static class ServiceCollectionExtensions
         }
         return services.AddOrleans(siloBuilder =>
                                    {
-        
                                        siloBuilder.AddStreaming();
+                                       siloBuilder.UseInMemoryLeaseProvider();
                                        foreach (var broadcast in options.Broadcasts)
                                        {
                                            siloBuilder.AddBroadcastChannel(broadcast.ProviderName,
