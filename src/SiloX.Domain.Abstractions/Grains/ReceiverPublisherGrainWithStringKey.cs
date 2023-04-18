@@ -88,7 +88,7 @@ public abstract class ReceiverPublisherGrainWithStringKey<TSubEvent, TSubErrorEv
     /// <returns>The stream.</returns>
     private IAsyncStream<TSubEvent> GetSubBroadcastStream()
     {
-        return _subBroadcastStream ??= _subStreamProvider.GetStream<TSubEvent>(StreamId.Create(GetSubBroadcastStreamNamespace(), "Default"));
+        return _subBroadcastStream ??= _subStreamProvider.GetStream<TSubEvent>(StreamId.Create(GetSubBroadcastStreamNamespace(), Guid.Empty.ToString("N")));
     }
 
     /// <summary>
@@ -106,7 +106,7 @@ public abstract class ReceiverPublisherGrainWithStringKey<TSubEvent, TSubErrorEv
     /// <returns>The stream.</returns>
     private IAsyncStream<TPubEvent> GetPubBroadcastStream()
     {
-        return _pubBroadcastStream ??= _pubStreamProvider.GetStream<TPubEvent>(StreamId.Create(GetPubBroadcastStreamNamespace(), "Default"));
+        return _pubBroadcastStream ??= _pubStreamProvider.GetStream<TPubEvent>(StreamId.Create(GetPubBroadcastStreamNamespace(), Guid.Empty.ToString("N")));
     }
 
     /// <summary>
