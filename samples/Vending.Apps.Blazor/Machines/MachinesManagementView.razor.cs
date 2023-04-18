@@ -36,7 +36,7 @@ public partial class MachinesManagementView : ReactiveInjectableComponentBase<Ma
         {
             return;
         }
-        _viewModelChangedSubscription = this.WhenAnyValue(v => v.ViewModel!.Changed)
+        _viewModelChangedSubscription = this.WhenAnyObservable(v => v.ViewModel!.Changed)
                                             .Throttle(TimeSpan.FromMilliseconds(200))
                                             .Subscribe(_ => InvokeAsync(StateHasChanged));
         _showEditMachineInteractionHandler = ViewModel.ShowEditMachineInteraction.RegisterHandler(ShowEditMachine);

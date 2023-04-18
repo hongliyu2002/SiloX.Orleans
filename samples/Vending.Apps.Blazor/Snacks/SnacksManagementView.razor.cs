@@ -34,7 +34,7 @@ public partial class SnacksManagementView : ReactiveInjectableComponentBase<Snac
         {
             return;
         }
-        _viewModelChangedSubscription = this.WhenAnyValue(v => v.ViewModel!.Changed)
+        _viewModelChangedSubscription = this.WhenAnyObservable(v => v.ViewModel!.Changed)
                                             .Throttle(TimeSpan.FromMilliseconds(200))
                                             .Subscribe(_ => InvokeAsync(StateHasChanged));
         _confirmRemoveSnackInteractionHandler = ViewModel.ConfirmRemoveSnackInteraction.RegisterHandler(ConfirmRemoveSnack);

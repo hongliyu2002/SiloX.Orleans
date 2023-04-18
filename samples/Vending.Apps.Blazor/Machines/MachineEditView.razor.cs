@@ -45,7 +45,7 @@ public partial class MachineEditView : ReactiveComponentBase<MachineEditViewMode
         {
             return;
         }
-        _viewModelChangedSubscription = this.WhenAnyValue(v => v.ViewModel!.Changed)
+        _viewModelChangedSubscription = this.WhenAnyObservable(v => v.ViewModel!.Changed)
                                             .Throttle(TimeSpan.FromMilliseconds(200))
                                             .Subscribe(_ => InvokeAsync(StateHasChanged));
         _confirmRemoveSlotInteractionHandler = ViewModel.ConfirmRemoveSlotInteraction.RegisterHandler(ConfirmRemoveSlot);
