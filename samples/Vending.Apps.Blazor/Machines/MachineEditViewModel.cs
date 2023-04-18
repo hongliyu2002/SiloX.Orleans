@@ -53,6 +53,7 @@ public class MachineEditViewModel : ReactiveObject, IActivatableViewModel
                                // When the cluster client changes, subscribe to the machine info stream.
                                var machineStreamObs = this.WhenAnyValue(vm => vm.Id, vm => vm.ClusterClient)
                                                           .Where(tuple => tuple.Item1 != Guid.Empty && tuple.Item2 != null)
+                                                          .DistinctUntilChanged()
                                                           .SelectMany(tuple => tuple.Item2!.GetSubscriberStreamWithGuidKey<MachineEvent>(Constants.StreamProviderName, Constants.MachinesNamespace, tuple.Item1, _lastSequenceToken))
                                                           .Publish()
                                                           .RefCount();

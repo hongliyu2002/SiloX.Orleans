@@ -1,27 +1,34 @@
-﻿using System.Reactive;
-using System.Reactive.Disposables;
+﻿using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Fluxera.Guards;
-using Fluxera.Utilities.Extensions;
-using Orleans.FluentResults;
 using Orleans.Streams;
 using ReactiveUI;
 using SiloX.Domain.Abstractions.Extensions;
 using Vending.Domain.Abstractions;
 using Vending.Domain.Abstractions.Snacks;
 
-namespace Vending.Apps.Blazor.Snacks;
+namespace Vending.Apps.Blazor.Business;
 
-public class SnackEditViewModel : ReactiveObject, IActivatableViewModel
+public class SnackViewModel : ReactiveObject, IActivatableViewModel
 {
     private StreamSequenceToken? _lastSequenceToken;
 
     #region Constructor
 
-    public SnackEditViewModel(Snack snack, IClusterClient clusterClient)
+    public SnackViewModel(Guid snackId, IClusterClient clusterClient)
     {
-        Guard.Against.Null(snack, nameof(snack));
+        Id = Guard.Against.Empty(snackId, nameof(snackId));
         ClusterClient = Guard.Against.Null(clusterClient, nameof(clusterClient));
+
+        // Search snacks and update the cache.
+        this.WhenAnyValue(vm => vm.Id, vm => vm.ClusterClient)
+            .Where(tuple => tuple.Item1 != Guid.Empty && tuple.Item2 != null)
+            .DistinctUntilChanged()
+            .Select(tuple => tuple.Item2!.GetGrain<ISnackGrain>(tuple.Item1))
+            .SelectMany(grain => grain.GetSnackAsync())
+            .Subscribe(UpdateWith);
+
+        // Subscribe to the snack stream.
         this.WhenActivated(disposable =>
                            {
                                // When the cluster client changes, subscribe to the snack info stream.
@@ -64,10 +71,6 @@ public class SnackEditViewModel : ReactiveObject, IActivatableViewModel
                                                    })
                                         .DisposeWith(disposable);
                            });
-        // Create the commands.
-        SaveSnackCommand = ReactiveCommand.CreateFromTask(SaveSnackAsync, CanSaveSnack);
-        // Load the snack.
-        UpdateWith(snack);
     }
 
     #endregion
@@ -77,11 +80,11 @@ public class SnackEditViewModel : ReactiveObject, IActivatableViewModel
     /// <inheritdoc />
     public ViewModelActivator Activator { get; } = new();
 
-    private readonly IClusterClient? _clusterClient;
+    private IClusterClient? _clusterClient;
     public IClusterClient? ClusterClient
     {
         get => _clusterClient;
-        init => this.RaiseAndSetIfChanged(ref _clusterClient, value);
+        set => this.RaiseAndSetIfChanged(ref _clusterClient, value);
     }
 
     private string _errorInfo = string.Empty;
@@ -121,60 +124,9 @@ public class SnackEditViewModel : ReactiveObject, IActivatableViewModel
 
     #endregion
 
-    #region Interactions
-    
-    /// <summary>
-    ///     Interaction that notifies the user that the snack has been saved.
-    /// </summary>
-    public Interaction<string, Unit> NotifySavedSnackInteraction { get; } = new();
-    
-    /// <summary>
-    ///     Interaction for errors.
-    /// </summary>
-    public Interaction<IEnumerable<IError>, ErrorRecovery> ErrorsInteraction { get; } = new();
-
-    #endregion
-
-    #region Commands
-
-    /// <summary>
-    ///     Gets the command to save the snack.
-    /// </summary>
-    public ReactiveCommand<Unit, Unit> SaveSnackCommand { get; }
-
-    private IObservable<bool> CanSaveSnack =>
-        this.WhenAnyValue(vm => vm.Name, vm => vm.IsDeleted, vm => vm.ClusterClient)
-            .Select(tuple => tuple.Item1.IsNotNullOrEmpty() && tuple is { Item2: false, Item3: not null });
-
-    private async Task SaveSnackAsync()
-    {
-        bool retry;
-        do
-        {
-            ISnackRepoGrain grain = null!;
-            var result = await Result.Ok()
-                                     .Ensure(Name.IsNotNullOrEmpty(), "Name is required.")
-                                     .Ensure(ClusterClient != null, "No cluster client available.")
-                                     .MapTry(() => grain = ClusterClient!.GetGrain<ISnackRepoGrain>("Manager"))
-                                     .BindTryIfAsync(Id == Guid.Empty, () => grain.CreateAsync(new SnackRepoCreateCommand(Name, PictureUrl, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")))
-                                     .BindTryIfAsync<Snack>(Id != Guid.Empty, () => grain.UpdateAsync(new SnackRepoUpdateCommand(Id, Name, PictureUrl, Guid.NewGuid(), DateTimeOffset.UtcNow, "Manager")))
-                                     .TapTryAsync(UpdateWith);
-            if (result.IsSuccess)
-            {
-                await NotifySavedSnackInteraction.Handle($"Snack {Id} saved successfully.");
-                return;
-            }
-            var errorRecovery = await ErrorsInteraction.Handle(result.Errors);
-            retry = errorRecovery == ErrorRecovery.Retry;
-        }
-        while (retry);
-    }
-
-    #endregion
-
     #region Load Snack
 
-    private void UpdateWith(Snack snack)
+    public void UpdateWith(Snack snack)
     {
         Id = snack.Id;
         Name = snack.Name;

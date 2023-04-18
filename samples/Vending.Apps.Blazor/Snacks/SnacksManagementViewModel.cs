@@ -21,6 +21,8 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel
 {
     private StreamSequenceToken? _snackSequenceToken;
 
+    #region Constructor
+
     /// <inheritdoc />
     public SnacksManagementViewModel(IClusterClientReady clusterClientReady)
     {
@@ -69,6 +71,7 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel
                                // When the cluster client changes, subscribe to the snack info stream.
                                var allSnacksStreamObs = this.WhenAnyValue(vm => vm.ClusterClient)
                                                             .Where(client => client != null)
+                                                            .DistinctUntilChanged()
                                                             .SelectMany(client => client!.GetReceiverStreamWithGuidKey<SnackInfoEvent>(Constants.StreamProviderName, Constants.SnackInfosBroadcastNamespace, _snackSequenceToken))
                                                             .Publish()
                                                             .RefCount();
@@ -93,6 +96,8 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel
         RemoveSnackCommand = ReactiveCommand.CreateFromTask(RemoveSnackAsync, CanRemoveSnack);
         MoveNavigationSideCommand = ReactiveCommand.Create(MoveNavigationSide);
     }
+
+    #endregion
 
     #region Properties
 

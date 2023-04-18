@@ -6,12 +6,17 @@ namespace Vending.Apps.Blazor.Snacks;
 
 public class SnackViewModel : ReactiveObject
 {
+
+    #region Constructor
+
     public SnackViewModel(SnackInfo snackInfo)
     {
         Guard.Against.Null(snackInfo, nameof(snackInfo));
         // Load the snack info.
         UpdateWith(snackInfo);
     }
+
+    #endregion
 
     #region Properties
 

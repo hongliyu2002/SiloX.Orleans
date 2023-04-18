@@ -119,6 +119,7 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
                            {
                                // When the cluster client changes, subscribe to the machine info stream.
                                var allMachinesStreamObs = this.WhenAnyValue(vm => vm.ClusterClient)
+                                                              .DistinctUntilChanged()
                                                               .Where(client => client != null)
                                                               .SelectMany(client => client!.GetReceiverStreamWithGuidKey<MachineInfoEvent>(Constants.StreamProviderName, Constants.MachineInfosBroadcastNamespace, _machineSequenceToken))
                                                               .Publish()
@@ -142,6 +143,7 @@ public class MachinesManagementViewModel : ReactiveObject, IActivatableViewModel
                                // When the cluster client changes, subscribe to the snack info stream.
                                var allSnacksStreamObs = this.WhenAnyValue(vm => vm.ClusterClient)
                                                             .Where(client => client != null)
+                                                            .DistinctUntilChanged()
                                                             .SelectMany(client => client!.GetReceiverStreamWithGuidKey<SnackInfoEvent>(Constants.StreamProviderName, Constants.SnackInfosBroadcastNamespace, _snackSequenceToken))
                                                             .Publish()
                                                             .RefCount();
