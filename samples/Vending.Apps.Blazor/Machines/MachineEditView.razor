@@ -48,7 +48,7 @@
                     <MudButton StartIcon="@Icons.Material.Filled.Remove" Command="@ViewModel.RemoveSlotCommand" Variant="Variant.Filled" Margin="@Margin.Dense" Color="Color.Secondary">Remove</MudButton>
                 </MudItem>
                 <MudItem xs="12">
-                    <MudList @bind-SelectedValue="@ViewModel.CurrentSlot">
+                    <MudList @bind-SelectedValue="@ViewModel.CurrentSlot" Clickable="true">
                         @foreach (var slot in ViewModel.Slots)
                         {
                             <MudListItem Value="slot">

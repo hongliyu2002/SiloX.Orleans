@@ -4,6 +4,8 @@ using Fluxera.Guards;
 using Orleans.Streams;
 using ReactiveUI;
 using SiloX.Domain.Abstractions.Extensions;
+using Splat;
+using Vending.Apps.Blazor.Services;
 using Vending.Domain.Abstractions;
 using Vending.Domain.Abstractions.Snacks;
 
@@ -15,12 +17,18 @@ public class SnackViewModel : ReactiveObject, IActivatableViewModel
 
     #region Constructor
 
-    public SnackViewModel(Guid snackId, IClusterClient clusterClient)
+    public SnackViewModel(Guid snackId)
     {
         Id = Guard.Against.Empty(snackId, nameof(snackId));
-        ClusterClient = Guard.Against.Null(clusterClient, nameof(clusterClient));
 
-        // Search snacks and update the cache.
+        // When the cluster client is ready, set the cluster client.
+        ClusterClientReady = Locator.Current.GetService<IClusterClientReady>();
+        this.WhenAnyValue(vm => vm.ClusterClientReady)
+            .Where(clientReady => clientReady != null)
+            .SelectMany(clientReady => clientReady!.ClusterClient.Task)
+            .Subscribe(client => ClusterClient = client);
+
+        // Load the snack and update the view model.
         this.WhenAnyValue(vm => vm.Id, vm => vm.ClusterClient)
             .Where(tuple => tuple.Item1 != Guid.Empty && tuple.Item2 != null)
             .DistinctUntilChanged()
@@ -79,6 +87,13 @@ public class SnackViewModel : ReactiveObject, IActivatableViewModel
 
     /// <inheritdoc />
     public ViewModelActivator Activator { get; } = new();
+
+    private readonly IClusterClientReady? _clusterClientReady;
+    public IClusterClientReady? ClusterClientReady
+    {
+        get => _clusterClientReady;
+        init => this.RaiseAndSetIfChanged(ref _clusterClientReady, value);
+    }
 
     private IClusterClient? _clusterClient;
     public IClusterClient? ClusterClient

@@ -1,0 +1,69 @@
+﻿@page "/machines/{id:guid}"
+@using Vending.Domain.Abstractions.Machines
+@inherits ReactiveComponentBase<MachineViewModel>
+@if (ViewModel != null)
+{
+    <MudGrid>
+        <MudItem xs="12">
+            <MudAlert Severity="Severity.Error" Variant="Variant.Filled" Style="@(ViewModel.ErrorInfo.IsNotNullOrEmpty() ? "display:block" : "display:none")">@ViewModel.ErrorInfo</MudAlert>
+        </MudItem>
+        <MudItem xs="12">
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudText Typo="Typo.h6">ID: @ViewModel.Id</MudText>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudText Typo="Typo.h6">Money Inside: @ViewModel.MoneyAmount.ToString("C2")</MudText>
+                    <MudGrid>
+                        <MudItem xs="3" sm="2" md="1">
+                            <MudText >￥1: @ViewModel.MoneyYuan1</MudText>
+                            <MudButton StartIcon="@Icons.Material.Filled.CurrencyBitcoin" Command="@ViewModel.InsertMoneyCommand" CommandParameter="@Money.OneYuan" Variant="Variant.Outlined" Color="Color.Info">Insert</MudButton>
+                        </MudItem>
+                        <MudItem xs="3" sm="2" md="1">
+                            <MudText >￥2: @ViewModel.MoneyYuan2</MudText>
+                            <MudButton StartIcon="@Icons.Material.Filled.CurrencyYuan" Command="@ViewModel.InsertMoneyCommand" CommandParameter="@Money.TwoYuan" Variant="Variant.Outlined" Color="Color.Info">Insert</MudButton>
+                        </MudItem>
+                        <MudItem xs="3" sm="2" md="1">
+                            <MudText >￥5: @ViewModel.MoneyYuan5</MudText>
+                            <MudButton StartIcon="@Icons.Material.Filled.CurrencyYuan" Command="@ViewModel.InsertMoneyCommand" CommandParameter="@Money.FiveYuan" Variant="Variant.Outlined" Color="Color.Info">Insert</MudButton>
+                        </MudItem>
+                        <MudItem xs="3" sm="2" md="1">
+                            <MudText >￥10: @ViewModel.MoneyYuan10</MudText>
+                            <MudButton StartIcon="@Icons.Material.Filled.CurrencyYuan" Command="@ViewModel.InsertMoneyCommand" CommandParameter="@Money.TenYuan" Variant="Variant.Outlined" Color="Color.Info">Insert</MudButton>
+                        </MudItem>
+                        <MudItem xs="3" sm="2" md="1">
+                            <MudText >￥20: @ViewModel.MoneyYuan20</MudText>
+                            <MudButton StartIcon="@Icons.Material.Filled.CurrencyYuan" Command="@ViewModel.InsertMoneyCommand" CommandParameter="@Money.TwentyYuan" Variant="Variant.Outlined" Color="Color.Info">Insert</MudButton>
+                        </MudItem>
+                        <MudItem xs="3" sm="2" md="1">
+                            <MudText >￥50: @ViewModel.MoneyYuan50</MudText>
+                            <MudButton StartIcon="@Icons.Material.Filled.CurrencyYuan" Command="@ViewModel.InsertMoneyCommand" CommandParameter="@Money.FiftyYuan" Variant="Variant.Outlined" Color="Color.Info">Insert</MudButton>
+                        </MudItem>
+                        <MudItem xs="3" sm="2" md="1">
+                            <MudText >￥100: @ViewModel.MoneyYuan100</MudText>
+                            <MudButton StartIcon="@Icons.Material.Filled.CurrencyYuan" Command="@ViewModel.InsertMoneyCommand" CommandParameter="@Money.OneHundredYuan" Variant="Variant.Outlined" Color="Color.Info">Insert</MudButton>
+                        </MudItem>
+                    </MudGrid>
+                </MudItem>
+            </MudGrid>
+        </MudItem>
+        <MudItem xs="12">
+            <MudButton StartIcon="@Icons.Material.Filled.AttachMoney" Command="@ViewModel.ReturnMoneyCommand" Variant="Variant.Filled" Color="Color.Primary">Return</MudButton>
+        </MudItem>
+        <MudItem xs="12">
+            <MudList>
+                @foreach (var slot in ViewModel.Slots)
+                {
+                    <MudListItem Value="slot">
+                        <SlotView DisplayViewModel="slot" />
+                        <MudButton StartIcon="@Icons.Material.Filled.Money" Command="@ViewModel.InsertMoneyCommand" CommandParameter="@Money.OneYuan" Variant="Variant.Outlined" Color="Color.Info">Buy</MudButton>
+                    </MudListItem>
+                }
+            </MudList>
+        </MudItem>
+    </MudGrid>
+}
+else
+{
+    <MudProgressCircular Color="Color.Info" Indeterminate="true" />
+}

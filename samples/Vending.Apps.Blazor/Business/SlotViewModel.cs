@@ -10,10 +10,9 @@ public class SlotViewModel : ReactiveObject
 
     #region Constructor
 
-    public SlotViewModel(MachineSlot slot, IClusterClient clusterClient)
+    public SlotViewModel(MachineSlot slot)
     {
         Guard.Against.Null(slot, nameof(slot));
-        Guard.Against.Null(clusterClient, nameof(clusterClient));
         // Set the current snack when the snack id changes.
         this.WhenAnyValue(vm => vm.SnackId)
             .DistinctUntilChanged()
@@ -28,7 +27,7 @@ public class SlotViewModel : ReactiveObject
                                var snack = Snack;
                                if (snack == null || snack.Id != snackId.Value)
                                {
-                                   Snack = new SnackViewModel(snackId.Value, clusterClient);
+                                   Snack = new SnackViewModel(snackId.Value);
                                }
                            }
                        });
