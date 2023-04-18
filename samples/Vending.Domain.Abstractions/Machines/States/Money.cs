@@ -7,7 +7,7 @@ namespace Vending.Domain.Abstractions.Machines;
 /// </summary>
 [Serializable]
 [GenerateSerializer]
-public sealed class Money
+public sealed class Money : IEquatable<Money>
 {
     public static readonly Money Zero = new(0, 0, 0, 0, 0, 0, 0);
     public static readonly Money OneYuan = new(1, 0, 0, 0, 0, 0, 0);
@@ -181,6 +181,46 @@ public sealed class Money
         Yuan50 = Guard.Against.Negative(Yuan50 - money.Yuan50, nameof(money.Yuan50));
         Yuan100 = Guard.Against.Negative(Yuan100 - money.Yuan100, nameof(money.Yuan100));
         Amount = Guard.Against.Negative(Amount - money.Amount, nameof(money.Amount));
+    }
+
+    #endregion
+
+    #region IEquatable Implementation
+
+    /// <inheritdoc />
+    public bool Equals(Money? other)
+    {
+        if (other is null)
+        {
+            return false;
+        }
+        if (ReferenceEquals(this, other))
+        {
+            return true;
+        }
+        return Yuan1 == other.Yuan1 && Yuan2 == other.Yuan2 && Yuan5 == other.Yuan5 && Yuan10 == other.Yuan10 && Yuan20 == other.Yuan20 && Yuan50 == other.Yuan50 && Yuan100 == other.Yuan100 && Amount == other.Amount;
+    }
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj)
+    {
+        return ReferenceEquals(this, obj) || (obj is Money other && Equals(other));
+    }
+
+    /// <inheritdoc />
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Yuan1, Yuan2, Yuan5, Yuan10, Yuan20, Yuan50, Yuan100, Amount);
+    }
+
+    public static bool operator ==(Money? left, Money? right)
+    {
+        return Equals(left, right);
+    }
+
+    public static bool operator !=(Money? left, Money? right)
+    {
+        return !Equals(left, right);
     }
 
     #endregion
