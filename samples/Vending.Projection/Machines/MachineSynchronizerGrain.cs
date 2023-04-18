@@ -213,7 +213,41 @@ public class MachineSynchronizerGrain : PublisherGrainWithGuidKey<MachineInfoEve
                     machineInfo = new MachineInfo();
                     _projectionDbContext.Machines.Add(machineInfo);
                 }
-                machineInfo = await machine.ToProjection(GetSnackNameAndPictureUrlAsync, machineInfo);
+                machineInfo.Id = machine.Id;
+                machineInfo.MoneyInside = machine.MoneyInside.ToProjection(machineInfo.MoneyInside);
+                machineInfo.AmountInTransaction = machine.AmountInTransaction;
+                // Remove slots that are not in the new machine.
+                foreach (var existingSlotInfo in machineInfo.Slots.Where(slot => machine.Slots.All(ms => ms.Position != slot.Position)))
+                {
+                    _projectionDbContext.Remove(existingSlotInfo);
+                }
+                // Update or add slots.
+                foreach (var newSlot in machine.Slots)
+                {
+                    var existingSlotInfo = machineInfo.Slots.SingleOrDefault(ms => ms.Position == newSlot.Position);
+                    if (existingSlotInfo == null)
+                    {
+                        var newSlotInfo = await newSlot.ToProjection(GetSnackNameAndPictureUrlAsync);
+                        machineInfo.Slots.Add(newSlotInfo);
+                    }
+                    else
+                    {
+                        var newSlotInfo = await newSlot.ToProjection(GetSnackNameAndPictureUrlAsync);
+                        _projectionDbContext.Entry(existingSlotInfo).CurrentValues.SetValues(newSlotInfo);
+                        existingSlotInfo.SnackPile = newSlotInfo.SnackPile;
+                    }
+                }
+                machineInfo.CreatedAt = machine.CreatedAt;
+                machineInfo.LastModifiedAt = machine.LastModifiedAt;
+                machineInfo.DeletedAt = machine.DeletedAt;
+                machineInfo.CreatedBy = machine.CreatedBy;
+                machineInfo.LastModifiedBy = machine.LastModifiedBy;
+                machineInfo.DeletedBy = machine.DeletedBy;
+                machineInfo.IsDeleted = machine.IsDeleted;
+                machineInfo.SlotCount = machine.SlotCount;
+                machineInfo.SnackCount = machine.SnackCount;
+                machineInfo.SnackQuantity = machine.SnackQuantity;
+                machineInfo.SnackAmount = machine.SnackAmount;
                 machineInfo.Version = await machineGrain.GetVersionAsync();
                 var statsOfPurchasesGrain = GrainFactory.GetGrain<IMachineStatsOfPurchasesGrain>(machineId);
                 machineInfo.BoughtCount = await statsOfPurchasesGrain.GetBoughtCountAsync();

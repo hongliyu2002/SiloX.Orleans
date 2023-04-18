@@ -100,7 +100,7 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
                               {
                                   Id = machineEvent.MachineId,
                                   MoneyInside = machineEvent.MoneyInside.ToProjection(),
-                                  Slots = await Task.WhenAll(machineEvent.Slots.Select(slot => slot.ToProjection(GetSnackNameAndPictureUrlAsync))),
+                                  Slots = (await Task.WhenAll(machineEvent.Slots.Select(slot => slot.ToProjection(GetSnackNameAndPictureUrlAsync)))).ToList(),
                                   SlotCount = machineEvent.SlotCount,
                                   SnackCount = machineEvent.SnackCount,
                                   SnackQuantity = machineEvent.SnackQuantity,
@@ -147,13 +147,6 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
                 await ApplyFullUpdateAsync(machineEvent);
                 return;
             }
-            machineInfo.MoneyInside = machineEvent.MoneyInside.ToProjection(machineInfo.MoneyInside);
-            machineInfo.AmountInTransaction = machineEvent.AmountInTransaction;
-            machineInfo.Slots = (await Task.WhenAll(machineEvent.Slots.Select(slot => slot.ToProjection(GetSnackNameAndPictureUrlAsync, machineInfo.Slots.FirstOrDefault(ms => ms.MachineId == slot.MachineId && ms.Position == slot.Position))))).ToList();
-            machineInfo.SlotCount = machineEvent.SlotCount;
-            machineInfo.SnackCount = machineEvent.SnackCount;
-            machineInfo.SnackQuantity = machineEvent.SnackQuantity;
-            machineInfo.SnackAmount = machineEvent.SnackAmount;
             machineInfo.DeletedAt = machineEvent.OperatedAt;
             machineInfo.DeletedBy = machineEvent.OperatedBy;
             machineInfo.IsDeleted = true;
@@ -189,7 +182,27 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
                 return;
             }
             machineInfo.MoneyInside = machineEvent.MoneyInside.ToProjection(machineInfo.MoneyInside);
-            machineInfo.Slots = (await Task.WhenAll(machineEvent.Slots.Select(slot => slot.ToProjection(GetSnackNameAndPictureUrlAsync, machineInfo.Slots.FirstOrDefault(ms => ms.MachineId == slot.MachineId && ms.Position == slot.Position))))).ToList();
+            // Remove slots that are not in the new machine.
+            foreach (var existingSlotInfo in machineInfo.Slots.Where(slot => machineEvent.Slots.All(ms => ms.Position != slot.Position)))
+            {
+                _dbContext.Remove(existingSlotInfo);
+            }
+            // Update or add slots.
+            foreach (var newSlot in machineEvent.Slots)
+            {
+                var existingSlotInfo = machineInfo.Slots.SingleOrDefault(ms => ms.Position == newSlot.Position);
+                if (existingSlotInfo == null)
+                {
+                    var newSlotInfo = await newSlot.ToProjection(GetSnackNameAndPictureUrlAsync);
+                    machineInfo.Slots.Add(newSlotInfo);
+                }
+                else
+                {
+                    var newSlotInfo = await newSlot.ToProjection(GetSnackNameAndPictureUrlAsync);
+                    _dbContext.Entry(existingSlotInfo).CurrentValues.SetValues(newSlotInfo);
+                    existingSlotInfo.SnackPile = newSlotInfo.SnackPile;
+                }
+            }
             machineInfo.SlotCount = machineEvent.SlotCount;
             machineInfo.SnackCount = machineEvent.SnackCount;
             machineInfo.SnackQuantity = machineEvent.SnackQuantity;
@@ -227,7 +240,7 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
                 await ApplyFullUpdateAsync(machineEvent);
                 return;
             }
-            var slotInfo = machineInfo.Slots.FirstOrDefault(ms => ms.MachineId == machineEvent.Slot.MachineId && ms.Position == machineEvent.Slot.Position);
+            var slotInfo = machineInfo.Slots.FirstOrDefault(ms => ms.Position == machineEvent.Slot.Position);
             if (slotInfo != null)
             {
                 _logger.LogWarning("Apply MachineSlotAddedEvent: Slot at position {Position} in machine {MachineId} is already in the database. Try to execute full update...", machineEvent.Slot.Position, machineEvent.MachineId);
@@ -273,7 +286,7 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
                 await ApplyFullUpdateAsync(machineEvent);
                 return;
             }
-            var slotInfo = machineInfo.Slots.FirstOrDefault(ms => ms.MachineId == machineEvent.Slot.MachineId && ms.Position == machineEvent.Slot.Position);
+            var slotInfo = machineInfo.Slots.FirstOrDefault(ms => ms.Position == machineEvent.Slot.Position);
             if (slotInfo == null)
             {
                 _logger.LogWarning("Apply MachineSlotRemovedEvent: Slot at position {Position} in machine {MachineId} does not exist in the database. Try to execute full update...", machineEvent.Slot.Position, machineEvent.MachineId);
@@ -456,7 +469,7 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
                 await ApplyFullUpdateAsync(machineEvent);
                 return;
             }
-            var slotInfo = machineInfo.Slots.FirstOrDefault(ms => ms.MachineId == machineEvent.Slot.MachineId && ms.Position == machineEvent.Slot.Position);
+            var slotInfo = machineInfo.Slots.FirstOrDefault(ms => ms.Position == machineEvent.Slot.Position);
             if (slotInfo == null)
             {
                 _logger.LogWarning("Apply MachineSnacksLoadedEvent: Slot at position {Position} in machine {MachineId} does not exist in the database. Try to execute full update...", machineEvent.Slot.Position, machineEvent.MachineId);
@@ -501,7 +514,7 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
                 await ApplyFullUpdateAsync(machineEvent);
                 return;
             }
-            var slotInfo = machineInfo.Slots.FirstOrDefault(ms => ms.MachineId == machineEvent.Slot.MachineId && ms.Position == machineEvent.Slot.Position);
+            var slotInfo = machineInfo.Slots.FirstOrDefault(ms => ms.Position == machineEvent.Slot.Position);
             if (slotInfo == null)
             {
                 _logger.LogWarning("Apply MachineSnacksUnloadedEvent: Slot at position {Position} in machine {MachineId} does not exist in the database. Try to execute full update...", machineEvent.Slot.Position, machineEvent.MachineId);
@@ -547,7 +560,7 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
                 return;
             }
             machineInfo.AmountInTransaction = machineEvent.AmountInTransaction;
-            var slotInfo = machineInfo.Slots.FirstOrDefault(ms => ms.MachineId == machineEvent.Slot.MachineId && ms.Position == machineEvent.Slot.Position);
+            var slotInfo = machineInfo.Slots.FirstOrDefault(ms => ms.Position == machineEvent.Slot.Position);
             if (slotInfo == null)
             {
                 _logger.LogWarning("Apply MachineSnackBoughtEvent: Slot at position {Position} in machine {MachineId} does not exist in the database. Try to execute full update...", machineEvent.Slot.Position, machineEvent.MachineId);
@@ -634,7 +647,7 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
                 var machineId = machineEvent.MachineId;
                 var machineGrain = GrainFactory.GetGrain<IMachineGrain>(machineId);
                 var machine = await machineGrain.GetMachineAsync();
-                var machineInfo = await _dbContext.Machines.Include(m => m.Slots).FirstOrDefaultAsync(m => m.Id == machineId);
+                var machineInfo = await _dbContext.Machines.Include(m => m.MoneyInside).Include(m => m.Slots).ThenInclude(ms => ms.SnackPile).FirstOrDefaultAsync(m => m.Id == machineId);
                 if (machine == null || machine.Id == Guid.Empty)
                 {
                     if (machineInfo == null)
@@ -650,7 +663,41 @@ public sealed class MachineProjectionGrain : SubscriberPublisherGrainWithGuidKey
                     machineInfo = new MachineInfo();
                     _dbContext.Machines.Add(machineInfo);
                 }
-                machineInfo = await machine.ToProjection(GetSnackNameAndPictureUrlAsync, machineInfo);
+                machineInfo.Id = machine.Id;
+                machineInfo.MoneyInside = machine.MoneyInside.ToProjection(machineInfo.MoneyInside);
+                machineInfo.AmountInTransaction = machine.AmountInTransaction;
+                // Remove slots that are not in the new machine.
+                foreach (var existingSlotInfo in machineInfo.Slots.Where(slot => machine.Slots.All(ms => ms.Position != slot.Position)))
+                {
+                    _dbContext.Remove(existingSlotInfo);
+                }
+                // Update or add slots.
+                foreach (var newSlot in machine.Slots)
+                {
+                    var existingSlotInfo = machineInfo.Slots.SingleOrDefault(ms => ms.Position == newSlot.Position);
+                    if (existingSlotInfo == null)
+                    {
+                        var newSlotInfo = await newSlot.ToProjection(GetSnackNameAndPictureUrlAsync);
+                        machineInfo.Slots.Add(newSlotInfo);
+                    }
+                    else
+                    {
+                        var newSlotInfo = await newSlot.ToProjection(GetSnackNameAndPictureUrlAsync);
+                        _dbContext.Entry(existingSlotInfo).CurrentValues.SetValues(newSlotInfo);
+                        existingSlotInfo.SnackPile = newSlotInfo.SnackPile;
+                    }
+                }
+                machineInfo.CreatedAt = machine.CreatedAt;
+                machineInfo.LastModifiedAt = machine.LastModifiedAt;
+                machineInfo.DeletedAt = machine.DeletedAt;
+                machineInfo.CreatedBy = machine.CreatedBy;
+                machineInfo.LastModifiedBy = machine.LastModifiedBy;
+                machineInfo.DeletedBy = machine.DeletedBy;
+                machineInfo.IsDeleted = machine.IsDeleted;
+                machineInfo.SlotCount = machine.SlotCount;
+                machineInfo.SnackCount = machine.SnackCount;
+                machineInfo.SnackQuantity = machine.SnackQuantity;
+                machineInfo.SnackAmount = machine.SnackAmount;
                 machineInfo.Version = await machineGrain.GetVersionAsync();
                 var statsOfPurchasesGrain = GrainFactory.GetGrain<IMachineStatsOfPurchasesGrain>(machineId);
                 machineInfo.BoughtCount = await statsOfPurchasesGrain.GetBoughtCountAsync();
