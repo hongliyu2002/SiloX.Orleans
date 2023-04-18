@@ -6,12 +6,17 @@ namespace Vending.Apps.Wpf.Machines;
 
 public class MachineViewModel : ReactiveObject
 {
+
+    #region Constructor
+
     public MachineViewModel(MachineInfo machineInfo)
     {
         Guard.Against.Null(machineInfo, nameof(machineInfo));
         // Load the machine info.
         UpdateWith(machineInfo);
     }
+
+    #endregion
 
     #region Properties
 
