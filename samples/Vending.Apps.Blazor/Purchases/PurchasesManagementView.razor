@@ -22,7 +22,8 @@
                     <MudTh>Id</MudTh>
                     <MudTh>Machine Id</MudTh>
                     <MudTh>Position</MudTh>
-                    <MudTh>Snack</MudTh>
+                    <MudTh>Snack Id</MudTh>
+                    <MudTh>Snack Name</MudTh>
                     <MudTh>Bought Price</MudTh>
                     <MudTh>Bought At</MudTh>
                 </HeaderContent>
@@ -30,7 +31,15 @@
                     <MudTd DataLabel="Id">@context.Id</MudTd>
                     <MudTd DataLabel="MachineId">@context.MachineId</MudTd>
                     <MudTd DataLabel="Position">@context.Position</MudTd>
-                    <MudTd DataLabel="SnackName"><MudAvatar Image="@context.SnackPictureUrl" Size="Size.Medium">@context.SnackName</MudAvatar></MudTd>
+                    <MudTd DataLabel="SnackId">@context.SnackId</MudTd>
+                    <MudTd DataLabel="SnackName">
+                        <MudStack Row="true">
+                            <MudAvatar Image="@context.SnackPictureUrl" Size="Size.Medium" />
+                            <MudStack Justify="Justify.Center" Spacing="0">
+                                <MudText Typo="Typo.body2">@context.SnackName</MudText>
+                            </MudStack>
+                        </MudStack>
+                    </MudTd>
                     <MudTd DataLabel="BoughtPrice">@context.BoughtPrice.ToString("C2")</MudTd>
                     <MudTd DataLabel="BoughtAt">@context.BoughtAt.ToString("yyyy-MM-dd HH:mm:ss zz")</MudTd>
                 </RowTemplate>
