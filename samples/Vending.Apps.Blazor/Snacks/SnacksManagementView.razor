@@ -4,7 +4,7 @@
 {
     <MudGrid>
         <MudItem xs="12">
-            <MudAlert Severity="Severity.Error" Variant="Variant.Filled" ShowCloseIcon="true" Style="@(ViewModel.ErrorInfo.IsNotNullOrEmpty() ? "display:block" : "display:none")">@ViewModel.ErrorInfo</MudAlert>
+            <MudAlert Severity="Severity.Error" Variant="Variant.Outlined" ShowCloseIcon="true" Style="@(ViewModel.ErrorInfo.IsNotNullOrEmpty() ? "display:block" : "display:none")">@ViewModel.ErrorInfo</MudAlert>
         </MudItem>
         @if (ViewModel.NavigationSide == NavigationSide.Left)
         {

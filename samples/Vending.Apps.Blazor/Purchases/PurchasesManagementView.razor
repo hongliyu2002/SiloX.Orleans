@@ -1,0 +1,59 @@
+﻿@page "/purchases-management"
+@inherits ReactiveInjectableComponentBase<PurchasesManagementViewModel>
+@if (ViewModel != null)
+{
+    <MudGrid>
+        <MudItem xs="12" Style="@(ViewModel.ErrorInfo.IsNotNullOrEmpty() ? "display:block" : "display:none")">
+            <MudAlert Severity="Severity.Error" Variant="Variant.Outlined" ShowCloseIcon="true">@ViewModel.ErrorInfo</MudAlert>
+        </MudItem>
+        <MudItem xs="12">
+            <MudTable T="PurchaseViewModel" Items="@ViewModel.Purchases" RowsPerPage="int.MaxValue" Hover="true" Dense="true" Striped="true" Bordered="true" FixedHeader="true">
+                <ToolBarContent>
+                    <MudButton StartIcon="@Icons.Material.Filled.Sync" Command="@ViewModel.SyncPurchasesCommand" Variant="Variant.Filled" Margin="@Margin.Dense" Color="Color.Tertiary">Sync</MudButton>
+                    <MudSpacer />
+                    <MudTextField T="int" Label="Page Size" @bind-Value="@ViewModel.PageSize" Immediate="true" Variant="Variant.Outlined" Margin="Margin.Dense" Placeholder="Rows per page" />
+                    <MudSpacer />
+                    <MudText Typo="Typo.body1">Bought Price $:</MudText>
+                    <MudTextField T="decimal?" Label="From" @bind-Value="@ViewModel.BoughtPriceStart" Immediate="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                    <MudTextField T="decimal?" Label="To" @bind-Value="@ViewModel.BoughtPriceEnd" Immediate="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                    <MudTextField T="string" Label="Search" @bind-Text="@ViewModel.SearchTerm" Immediate="true" Variant="Variant.Outlined" Margin="Margin.Dense" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" />
+                </ToolBarContent>
+                <HeaderContent>
+                    <MudTh>Id</MudTh>
+                    <MudTh>Machine Id</MudTh>
+                    <MudTh>Position</MudTh>
+                    <MudTh>Snack</MudTh>
+                    <MudTh>Bought Price</MudTh>
+                    <MudTh>Bought At</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Id">@context.Id</MudTd>
+                    <MudTd DataLabel="MachineId">@context.MachineId</MudTd>
+                    <MudTd DataLabel="Position">@context.Position</MudTd>
+                    <MudTd DataLabel="SnackName"><MudAvatar Image="@context.SnackPictureUrl" Size="Size.Medium">@context.SnackName</MudAvatar></MudTd>
+                    <MudTd DataLabel="BoughtPrice">@context.BoughtPrice.ToString("C2")</MudTd>
+                    <MudTd DataLabel="BoughtAt">@context.BoughtAt.ToString("yyyy-MM-dd HH:mm:ss zz")</MudTd>
+                </RowTemplate>
+                <NoRecordsContent>
+                    <MudText>No matching records found</MudText>
+                </NoRecordsContent>
+                <LoadingContent>
+                    <MudProgressCircular Color="Color.Info" Indeterminate="true" />
+                </LoadingContent>
+                <PagerContent>
+                    <MudTablePager InfoFormat="@($"{ViewModel.PageNumber} of {ViewModel.PageCount}")" HorizontalAlignment="HorizontalAlignment.Center" HidePageNumber="false" HidePagination="true" HideRowsPerPage="true" />
+                </PagerContent>
+            </MudTable>
+        </MudItem>
+    </MudGrid>
+    <MudGrid>
+        <MudItem xs="12">
+            <MudButton StartIcon="@Icons.Material.Filled.FirstPage" Command="@ViewModel.GoPreviousPageCommand" Variant="Variant.Filled" Margin="@Margin.Dense" Color="Color.Primary">Previous</MudButton>
+            <MudButton StartIcon="@Icons.Material.Filled.LastPage" Command="@ViewModel.GoNextPageCommand" Variant="Variant.Filled" Margin="@Margin.Dense" Color="Color.Primary">Next</MudButton>
+        </MudItem>
+    </MudGrid>
+}
+else
+{
+    <MudProgressCircular Color="Color.Info" Indeterminate="true" />
+}

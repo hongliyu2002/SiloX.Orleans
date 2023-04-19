@@ -3,8 +3,8 @@
 @if (ViewModel != null)
 {
     <MudGrid>
-        <MudItem xs="12">
-            <MudAlert Severity="Severity.Error" Variant="Variant.Filled" ShowCloseIcon="true" Style="@(ViewModel.ErrorInfo.IsNotNullOrEmpty() ? "display:block" : "display:none")">@ViewModel.ErrorInfo</MudAlert>
+        <MudItem xs="12" Style="@(ViewModel.ErrorInfo.IsNotNullOrEmpty() ? "display:block" : "display:none")">
+            <MudAlert Severity="Severity.Error" Variant="Variant.Outlined" ShowCloseIcon="true">@ViewModel.ErrorInfo</MudAlert>
         </MudItem>
         <MudItem xs="12">
             <MudTable T="MachineViewModel" Items="@ViewModel.Machines" @bind-SelectedItem="@ViewModel.CurrentMachine" RowsPerPage="int.MaxValue" Hover="true" Dense="true" Striped="true" Bordered="true" FixedHeader="true">

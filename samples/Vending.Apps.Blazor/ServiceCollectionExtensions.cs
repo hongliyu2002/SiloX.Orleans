@@ -1,4 +1,5 @@
 ﻿using Vending.Apps.Blazor.Machines;
+using Vending.Apps.Blazor.Purchases;
 using Vending.Apps.Blazor.Services;
 using Vending.Apps.Blazor.Snacks;
 
@@ -17,6 +18,7 @@ public static class ServiceCollectionExtensions
     {
         return services.AddSingleton<IClusterClientReady, ClusterClientReady>()
                        .AddScoped<SnacksManagementViewModel>()
-                       .AddScoped<MachinesManagementViewModel>();
+                       .AddScoped<MachinesManagementViewModel>()
+                       .AddScoped<PurchasesManagementViewModel>();
     }
 }

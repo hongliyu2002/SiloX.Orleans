@@ -4,8 +4,8 @@
     <MudDialog>
         <DialogContent>
             <MudGrid>
-                <MudItem xs="12">
-                    <MudAlert Severity="Severity.Error" Variant="Variant.Filled" Style="@(ViewModel.ErrorInfo.IsNotNullOrEmpty() ? "display:block" : "display:none")">@ViewModel.ErrorInfo</MudAlert>
+                <MudItem xs="12" Style="@(ViewModel.ErrorInfo.IsNotNullOrEmpty() ? "display:block" : "display:none")">
+                    <MudAlert Severity="Severity.Error" Variant="Variant.Outlined" ShowCloseIcon="true">@ViewModel.ErrorInfo</MudAlert>
                 </MudItem>
                 <MudItem xs="12">
                     <MudGrid>

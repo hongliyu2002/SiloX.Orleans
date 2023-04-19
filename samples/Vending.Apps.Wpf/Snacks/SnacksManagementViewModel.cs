@@ -40,7 +40,7 @@ public class SnacksManagementViewModel : ReactiveObject, IActivatableViewModel
                    .Filter(this.WhenAnyValue(vm => vm.SearchTerm)
                                .Throttle(TimeSpan.FromMilliseconds(500))
                                .DistinctUntilChanged()
-                               .Select(_ => new Func<SnackViewModel, bool>(snack => (SearchTerm.IsNullOrEmpty() || snack.Name.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase)) && snack.IsDeleted == false)))
+                               .Select(term => new Func<SnackViewModel, bool>(snack => (term.IsNullOrEmpty() || snack.Name.Contains(term, StringComparison.OrdinalIgnoreCase)) && snack.IsDeleted == false)))
                    .Sort(SortExpressionComparer<SnackViewModel>.Ascending(snack => snack.Name))
                    .ObserveOn(RxApp.MainThreadScheduler)
                    .Bind(out var snacks)
