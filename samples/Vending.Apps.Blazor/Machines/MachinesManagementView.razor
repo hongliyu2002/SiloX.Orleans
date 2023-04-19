@@ -33,7 +33,9 @@
                     <MudTh>Bought $</MudTh>
                 </HeaderContent>
                 <RowTemplate>
-                    <MudTd DataLabel="Id">@context.Id</MudTd>
+                    <MudTd DataLabel="Id">
+                        <MudButton Href="@($"/machines/{context.Id}")" Variant="Variant.Text" Color="Color.Primary">@context.Id</MudButton>
+                    </MudTd>
                     <MudTd DataLabel="MoneyInside">
                         <MudText Typo="Typo.caption">￥1: @context.MoneyInside.Yuan1</MudText>
                         <MudText Typo="Typo.caption">￥2: @context.MoneyInside.Yuan2</MudText>
