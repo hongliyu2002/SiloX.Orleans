@@ -14,7 +14,7 @@ using SiloX.Orleans.Persistence.AdoNet;
 using SiloX.Orleans.Persistence.EventStore;
 using SiloX.Orleans.Persistence.Redis;
 using SiloX.Orleans.Reminders.Redis;
-using SiloX.Orleans.Streaming.EventStore;
+using SiloX.Orleans.Streaming.InMemory;
 using SiloX.Orleans.Transactions;
 using Vending.Domain;
 using Vending.Domain.Abstractions;
@@ -35,7 +35,7 @@ namespace Vending.Hosting;
 [DependsOn<RedisPersistenceModule>]
 [DependsOn<EventStoreEventSourcingModule>]
 [DependsOn<EventStorePersistenceModule>]
-[DependsOn<EventStoreStreamingModule>]
+[DependsOn<InMemoryStreamingModule>]
 [DependsOn<TransactionsModule>]
 [DependsOn<DomainModule>]
 [DependsOn<ProjectionModule>]
