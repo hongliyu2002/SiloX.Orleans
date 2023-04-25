@@ -31,10 +31,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.Configuration" Version="7.2.0" />
-        <PackageReference Include="Microsoft.Orleans.Reminders" Version="7.1.1" />
-        <PackageReference Include="Microsoft.Orleans.Runtime" Version="7.1.1" />
-        <PackageReference Include="Microsoft.Orleans.Sdk" Version="7.1.1" />
+        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.Configuration" Version="7.2.1" />
+        <PackageReference Include="Microsoft.Orleans.Reminders" Version="7.1.2" />
+        <PackageReference Include="Microsoft.Orleans.Runtime" Version="7.1.2" />
+        <PackageReference Include="Microsoft.Orleans.Sdk" Version="7.1.2" />
     </ItemGroup>
 
     <ItemGroup>

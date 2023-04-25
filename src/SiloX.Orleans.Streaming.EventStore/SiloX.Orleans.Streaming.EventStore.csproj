@@ -32,9 +32,9 @@
 
     <ItemGroup>
         <PackageReference Include="AspNetCore.HealthChecks.EventStore.gRPC" Version="6.0.1" />
-        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.DataManagement" Version="7.2.0" />
-        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.HealthChecks" Version="7.2.0" />
-        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.OpenTelemetry" Version="7.2.0" />
+        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.DataManagement" Version="7.2.1" />
+        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.HealthChecks" Version="7.2.1" />
+        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.OpenTelemetry" Version="7.2.1" />
         <PackageReference Include="Orleans.Streaming.EventStore" Version="7.1.2" />
     </ItemGroup>
 

@@ -35,13 +35,13 @@
         <PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="6.0.2" />
         <PackageReference Include="AspNetCore.HealthChecks.Oracle" Version="6.0.3" />
         <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="6.0.2" />
-        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.DataManagement" Version="7.2.0" />
-        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.HealthChecks" Version="7.2.0" />
-        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.OpenTelemetry" Version="7.2.0" />
-        <PackageReference Include="Microsoft.Orleans.Persistence.AdoNet" Version="7.1.1" />
+        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.DataManagement" Version="7.2.1" />
+        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.HealthChecks" Version="7.2.1" />
+        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.OpenTelemetry" Version="7.2.1" />
+        <PackageReference Include="Microsoft.Orleans.Persistence.AdoNet" Version="7.1.2" />
         <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.1" />
-        <PackageReference Include="MySql.Data" Version="8.0.32.1" />
-        <PackageReference Include="Npgsql" Version="7.0.2" />
+        <PackageReference Include="MySql.Data" Version="8.0.33" />
+        <PackageReference Include="Npgsql" Version="7.0.4" />
     </ItemGroup>
 
     <ItemGroup>

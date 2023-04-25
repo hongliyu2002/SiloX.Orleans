@@ -3,6 +3,9 @@ using Fluxera.Extensions.Hosting;
 using Fluxera.Extensions.Hosting.Modules.AspNetCore.HealthChecks;
 using Fluxera.Extensions.Hosting.Modules.Serilog;
 using Fluxera.Extensions.Hosting.Plugins;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Extensions.Logging;
 
@@ -24,15 +27,9 @@ public sealed class ServiceHost : WebApplicationHost<HostingModule>
     protected override void ConfigureHostBuilder(IHostBuilder builder)
     {
         // Add user secrets configuration source.
-        builder.ConfigureAppConfiguration(configuration =>
-                                          {
-                                              configuration.AddUserSecrets(Assembly.GetExecutingAssembly());
-                                          });
+        builder.ConfigureAppConfiguration(configuration => configuration.AddUserSecrets(Assembly.GetExecutingAssembly()));
         // Add Serilog logging
-        builder.AddSerilogLogging((context, configuration) =>
-                                  {
-                                      configuration.ReadFrom.Configuration(context.Configuration).Enrich.FromLogContext();
-                                  });
+        builder.AddSerilogLogging();
     }
 
     /// <inheritdoc />

@@ -5,12 +5,13 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <RootNamespace>Vending.Hosting</RootNamespace>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Fluxera.Extensions.Hosting.AspNetCore" Version="7.1.4" />
-        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.AspNetCore.HealthChecks" Version="7.2.0" />
-        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.Serilog" Version="7.2.0" />
+        <PackageReference Include="Fluxera.Extensions.Hosting.AspNetCore" Version="7.1.5" />
+        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.AspNetCore.HealthChecks" Version="7.2.1" />
+        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.Serilog" Version="7.2.1" />
         <PackageReference Include="OrleansDashboard" Version="7.2.0" />
         <PackageReference Include="Serilog.AspNetCore" Version="6.1.0" />
         <PackageReference Include="Serilog.Sinks.Async" Version="1.5.0" />
@@ -41,6 +42,12 @@
 
     <ItemGroup>
       <Folder Include="Logs\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
     </ItemGroup>
 
 </Project>

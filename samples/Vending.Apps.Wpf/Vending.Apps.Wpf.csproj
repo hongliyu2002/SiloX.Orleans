@@ -11,9 +11,9 @@
 
     <ItemGroup>
         <PackageReference Include="DynamicData" Version="7.13.5" />
-        <PackageReference Include="Fluxera.Extensions.Hosting.Wpf" Version="7.1.4" />
-        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.Serilog" Version="7.2.0" />
-        <PackageReference Include="ReactiveUI.WPF" Version="18.4.26" />
+        <PackageReference Include="Fluxera.Extensions.Hosting.Wpf" Version="7.1.5" />
+        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.Serilog" Version="7.2.1" />
+        <PackageReference Include="ReactiveUI.WPF" Version="18.4.34" />
         <PackageReference Include="Serilog.Sinks.Async" Version="1.5.0" />
         <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
         <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />

@@ -8,11 +8,11 @@
 
     <ItemGroup>
         <PackageReference Include="DynamicData" Version="7.13.5" />
-        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.AspNetCore.HealthChecks" Version="7.2.0" />
-        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.Serilog" Version="7.2.0" />
+        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.AspNetCore.HealthChecks" Version="7.2.1" />
+        <PackageReference Include="Fluxera.Extensions.Hosting.Modules.Serilog" Version="7.2.1" />
         <PackageReference Include="MudBlazor" Version="6.2.2" />
         <PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.4.0" />
-        <PackageReference Include="ReactiveUI.Blazor" Version="18.4.26" />
+        <PackageReference Include="ReactiveUI.Blazor" Version="18.4.34" />
         <PackageReference Include="Serilog.AspNetCore" Version="6.1.0" />
         <PackageReference Include="Serilog.Sinks.Async" Version="1.5.0" />
         <PackageReference Include="Splat.Microsoft.Extensions.DependencyInjection" Version="14.6.8" />

@@ -1,4 +1,8 @@
-﻿namespace Vending.Hosting;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Orleans;
+
+namespace Vending.Hosting;
 
 /// <summary>
 /// </summary>

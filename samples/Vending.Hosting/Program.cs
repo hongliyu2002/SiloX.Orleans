@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Fluxera.Extensions.Hosting;
 using Vending.Hosting;
 
